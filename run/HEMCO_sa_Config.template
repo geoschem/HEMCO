@@ -1,0 +1,196 @@
+#------------------------------------------------------------------------------
+#                  Harvard-NASA Emissions Component (HEMCO)                   !
+#------------------------------------------------------------------------------
+#BOP
+#
+# !MODULE: HEMCO_Config.rc
+#
+# !DESCRIPTION: Contains configuration information for the HEMCO standalone
+#  model.  You can define global settings here.  You can also insert entire
+#  configuration files can be inserted into this configuration file with
+#  an '>>>include' statement, e.g. '>>>include HEMCO\_Config\_test.rc'
+#  The settings of include-files will overridden by settings in this file.
+#\\
+#\\
+# !REMARKS:
+#  The following tokens will be replaced:
+#  (1) ROOT    : Filepath to HEMCO root directory
+#  (2) METDIR  : Filepath to met field directory
+#  (2) CFDIR   : Filepath to directory of this configuration file.
+#  (3) MET     : Met field type (from G-C compilation command)
+#  (4) GRID    : Horizontal grid type (from G-C compilation command)
+#  (5) SIM     : Simulation type (from G-C compilation command)
+#  (6) NEST    : Nested-grid type (CH, EU, NA, SE)
+#  (7) LEVRED  : String w/ the # of levels in the reduced GEOS-Chem grid
+#                as used in some filenames (e.g. "23L", "30L", "47L")
+#  (8) LEVFULL : String w/ the # of levels in the full GEOS-Chem grid
+#                as used in some filenames (e.g. "55L", "72L")
+#
+# !REVISION HISTORY:
+#  Navigate to your unit tester directory and type 'gitk' at the prompt
+#  to browse the revision history.
+#EOP
+#------------------------------------------------------------------------------
+#BOC
+###############################################################################
+### BEGIN SECTION SETTINGS
+###
+### NOTES about settings:
+### ---------------------
+### (1) Make sure that DiagnFreq matches the duration of the run
+###     that is specified in HEMCO_sa_Time.  You can also use "End",
+###     "Monthly", "Daily", etc. as described in the HEMCO user's guide.
+###
+### (2) MET and RES should be automatically specified in the build
+###     process, at least for geosfp and merra2.  Comment these out
+###     for now. If you are using other met input, then you may have
+###     to manually specify these values (bmy,
+###
+### (3) You will have to point METDIR to the folder in which your met
+###     field data lives.  The default is to point the GEOS-FP folder
+###     on the Harvard "Odyssey" cluster.
+###
+### (4) You can leave DefaultDiagnOn set at "false".  This will archive
+###     extra diagnostics for each HEMCO species.  In most cases, you 
+###     would only be interested in archiving out the diagnostics as 
+###     specified in the diagnostic configuration file.
+###
+### (5) By default, the diagnostics will be saved to the output folder
+###     with template HEMCO_sa_Diagnostics.YYYYYMMDD_hhmmss.nc.  You
+###     can modify this by changing the DiagnPrefix setting.
+###  
+### (5) PBL dry deposition is set to false, as we are not running HEMCO
+###     within GEOS-Chem.
+###
+### (6) The HEMCO standalone will read the diagnostic configuration 
+###     file (named HEMCO_sa_Diagn.rc) by default.  But we also provide 
+###     the diagnostic configuration file corresponding to the GEOS-Chem 
+###     benchmark simulation (named HEMCO_Diagn.rc) in the HEMCO standalone
+###     run directory that you generate with the GEOS-Chem unit tester.  
+###     You can change the HEMCO diagnostic configuration file by modifying
+###     the DiagnFile setting below.
+###############################################################################
+ROOT:                /n/holylfs/EXTERNAL_REPOS/GEOS-CHEM/gcgrid/data/ExtData/HEMCO
+GridFile:            HEMCO_sa_Grid.4x5.rc
+SpecFile:            HEMCO_sa_Spec.rc
+TimeFile:            HEMCO_sa_Time.rc
+DiagnFile:           HEMCO_Diagn.rc
+DefaultDiagnOn:      false
+DefaultDiagnSname:   TOTAL_
+DefaultDiagnLname:   HEMCO_total_emissions_
+DefaultDiagnDim:     2
+DefaultDiagnUnit:    kgm-2s-1
+DiagnPrefix:         output/HEMCO_sa.diagnostics
+DiagnFreq:           00000100 000000
+Logfile:             HEMCO.log
+Unit tolerance:      2
+Negative values:     0
+Verbose:             0
+Warnings:            1
+PBL dry deposition:  False
+###############################################################
+# Uncomment these lines if you are using GEOS-FP met fields!
+#METDIR:              /n/holylfs/EXTERNAL_REPOS/GEOS-CHEM/gcgrid/data/ExtData/GEOS_4x5/GEOS_FP
+#MET:                 GEOSFP
+#met:                 geosfp
+#CNYR:                2011
+#RES:                 4x5
+#NC:                  nc
+###############################################################
+# Uncomment these lines if you are using MERRA-2 met fields
+#METDIR:              /n/holylfs/EXTERNAL_REPOS/GEOS-CHEM/gcgrid/data/ExtData/GEOS_4x5/MERRA2
+#MET:                 MERRA2
+#met:                 merra2
+#CNYR:                2015
+#RES:                 4x5
+#NC:                  nc4
+###############################################################
+### END SECTION SETTINGS ###
+
+###############################################################################
+### BEGIN SECTION EXTENSION SWITCHES
+###############################################################################
+###
+### NOTE FOR HEMCO STANDALONE SIMULATIONS:
+### ===========================================================================
+### We can just "drop in" an existing HEMCO_Config.rc file from another
+### GEOS-Chem run directory, and those settings will be activated.  This is
+### done with the ">>>include HEMCO_Config.rc" statement.  
+###
+### Settings in HEMCO_sa_Config.rc will always override any settings in
+### the included HEMCO_Config.rc. 
+###
+### By default, we will include HEMCO_Config.rc from the geosfp_4x5_standard 
+### simulation (which is also used for geosfp_4x5_benchmark).  You can, 
+### of course, include a HEMCO_Config.rc for a different simulation.
+###
+### Because the included HEMCO_Config.rc (in GEOS-Chem 12.1.0 and later) 
+### contains entries for reading in met fields via FlexGrid), we will use 
+### these entries instead of overriding them in HEMCO_sa_Config.rc.
+###
+### We recommend to use the emissions options in HEMCO_Config.rc (rather than
+### overriding them in HEMCO_sa_Config.rc) so that the standalone simulation
+### will provide the same emissions as would the corresponding GEOS-Chem
+### simulation.
+###
+### We have set the following switches to false.  These are only needed for
+### regular GEOS-Chem simualations, but not for HEMCO standalone simulations.
+###
+###   (1) GC_RESTART      : Reads GEOS-Chem species restart file
+###   (2) +UValbedo+      : Reads UV albedo data for photolysis
+###   (3) +TOMS_SBUV_O3+  : Reads TOMS/SBUV data for photolysis
+###   (4) +STATE_PSC+     : Reads polar strat cloud info for UCX
+###   (5) +LinStratChem+  : Reads strat chemistry P/L data for UCX
+###
+### We have also turned off several extensions (at least for now) in this
+### HEMCO_sa_Config.rc file.  This will avoid having to supply certain data
+### fields for these extentions that usually are obtained directly from
+### GEOS-Chem.
+###
+###   (1) ParaNOx
+###   (2) SoilNOx
+###   (3) MEGAN_Mono
+###   (4) Inorg_Iodine
+###
+###   -- GEOS-Chem Support Team (18 Jan 2019)
+###############################################################################
+# ExtNr ExtName           on/off  Species
+0       Base                   : on    *
+    --> GC_RESTART             :       false
+    --> +UValbedo+             :       false
+    --> +TOMS_SBUV_O3+         :       false
+    --> +STATE_PSC+            :       false
+    --> +LinStratChem+         :       false
+# -----------------------------------------------------------------------------
+102     ParaNOx                : off   NO/NO2/O3/HNO3
+104     SoilNOx                : off   NO 
+109     MEGAN_Mono             : off   CO/MTPA/MTPO/LIMO/SESQ
+120     Inorg_Iodine           : off   HOI/I2
+### END SECTION EXTENSION SWITCHES ###
+
+###############################################################################
+### BEGIN SECTION BASE EMISSIONS
+###############################################################################
+
+### Drop in a "HEMCO_Config.rc" file from a GEOS-Chem run directory here
+>>>include HEMCO_Config.rc
+
+### END SECTION BASE EMISSIONS ###
+
+###############################################################################
+### BEGIN SECTION SCALE FACTORS
+###############################################################################
+
+# ScalID Name sourceFile sourceVar sourceTime C/R/E SrcDim SrcUnit Oper
+
+### END SECTION SCALE FACTORS ###
+
+###############################################################################
+### BEGIN SECTION MASKS
+###############################################################################
+
+# ScalID Name sourceFile sourceVar sourceTime C/R/E SrcDim SrcUnit Oper Lon1/Lat1/Lon2/Lat2
+### END SECTION MASKS ###
+
+### END OF HEMCO INPUT FILE ###
+#EOC
