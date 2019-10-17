@@ -1,6 +1,6 @@
 ---
 name: Request a new HEMCO feature
-about: Template for users to request new features in HEMCO
+about: Use this template to request a new feature for HEMCO.
 title: "[FEATURE REQUEST]"
 labels: feature
 assignees: ''

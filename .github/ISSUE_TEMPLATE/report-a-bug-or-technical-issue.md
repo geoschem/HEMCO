@@ -1,6 +1,6 @@
 ---
 name: Report a bug or technical issue
-about: This template allows users to report HEMCO bugs and technical issues in the Github issue tracker.
+about: Use this template to report bugs and technical issues encountered while using HEMCO.
 title: "[BUG/ISSUE]"
 labels: bug
 assignees: ''

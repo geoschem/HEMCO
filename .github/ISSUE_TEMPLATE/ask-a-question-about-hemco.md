@@ -1,6 +1,6 @@
 ---
 name: Ask a question about HEMCO
-about: Template for asking general questions about HEMCO
+about: Use this template to ask for more information about HEMCO
 title: "[QUESTION]"
 labels: question
 assignees: ''
