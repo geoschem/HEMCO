@@ -1,5 +1,4 @@
-[![License](https://img.shields.io/badge/License-MIT-blu\
-e.svg)](https://github.com/geoschem/geos-chem/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/geoschem/geos-chem/blob/master/LICENSE.txt)
 
 # README for the HEMCO source code repository
 
