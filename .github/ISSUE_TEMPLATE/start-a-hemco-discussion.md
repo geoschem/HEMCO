@@ -2,7 +2,7 @@
 name: Start an extended discussion about a HEMCO-related topic
 about: This template allows users to open an extended discussion about a particular HEMCO-related topic.
 title: "[DISCUSSION]"
-labels: ''
+labels: discussion
 assignees: ''
 
 ---
@@ -17,7 +17,7 @@ This issue template is intended for extended discussions about open GEOS-Chem to
 
 Feel free to edit the section headers below accordingly
 
--------YOU CAN DELETE ALL OF THE TEXT ABOVE THIS LINE IF YOU WISH -----------
+------ YOU CAN DELETE ALL OF THE TEXT ABOVE THIS LINE IF YOU WISH ------
 
 ## Overview
 
