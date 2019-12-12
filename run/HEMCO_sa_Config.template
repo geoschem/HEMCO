@@ -55,8 +55,8 @@
 ###     would only be interested in archiving out the diagnostics as
 ###     specified in the diagnostic configuration file.
 ###
-### (5) By default, the diagnostics will be saved to the output folder
-###     with template HEMCO_sa_Diagnostics.YYYYYMMDD_hhmmss.nc.  You
+### (5) By default, the diagnostics will be saved to the OutputDir folder
+###     with template HEMCO_sa_diagnostics.YYYYYMMDD_hhmmss.nc.  You
 ###     can modify this by changing the DiagnPrefix setting.
 ###
 ### (5) PBL dry deposition is set to false, as we are not running HEMCO
@@ -80,7 +80,7 @@ DefaultDiagnSname:   TOTAL_
 DefaultDiagnLname:   HEMCO_total_emissions_
 DefaultDiagnDim:     2
 DefaultDiagnUnit:    kgm-2s-1
-DiagnPrefix:         output/HEMCO_sa.diagnostics
+DiagnPrefix:         OutputDir/HEMCO_sa_diagnostics
 DiagnFreq:           00000100 000000
 Logfile:             HEMCO.log
 Unit tolerance:      2
