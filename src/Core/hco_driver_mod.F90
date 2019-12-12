@@ -63,7 +63,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_Run( am_I_Root, HcoState, Phase, RC )
+  SUBROUTINE HCO_Run( am_I_Root, HcoState, Phase, RC, IsEndStep )
 !
 ! !USES:
 !
@@ -78,6 +78,7 @@ CONTAINS
 !
     LOGICAL,         INTENT(IN   ) :: am_I_Root   ! root CPU?
     INTEGER,         INTENT(IN   ) :: Phase       ! Run phase (1 or 2)
+    LOGICAL,         INTENT(IN   ), OPTIONAL :: IsEndStep ! Last timestep of simulation?
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -100,7 +101,13 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    LOGICAL       :: IsEmisTime
+    ! Scalars
+    LOGICAL            :: IsEmisTime
+    LOGICAL            :: notDryRun
+    LOGICAL            :: ItIsEndStep
+
+    ! Strings
+    CHARACTER(LEN=255) :: MSG
 
     !=================================================================
     ! HCO_RUN begins here!
@@ -110,27 +117,47 @@ CONTAINS
     CALL HCO_ENTER( HcoState%Config%Err, 'HCO_RUN (hco_driver_mod.F90)', RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
+    ! Define a local convenience variable to negate HcoState%Options%isDryRun
+    notDryRun = ( .not. HcoState%Options%isDryRun )
+
+    ! Define a shadow variable for optional argument IsEndStep
+    IF ( PRESENT( IsEndStep ) ) THEN
+       ItIsEndStep = IsEndStep
+    ELSE
+       ItIsEndStep = .FALSE.
+    ENDIF
+
     !--------------------------------------------------------------
     ! 1. Check if it's time for emissions
     !--------------------------------------------------------------
-    CALL HcoClock_Get ( am_I_Root, HcoState%Clock, IsEmisTime=IsEmisTime, RC=RC )
+    CALL HcoClock_Get ( am_I_Root,             HcoState%Clock,              &
+                        IsEmisTime=IsEmisTime, RC=RC                       )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     !--------------------------------------------------------------
     ! 2. Write HEMCO diagnostics. Do this only if the corresponding
     ! option is enabled. Otherwise, let the user decide when to
-    ! call HcoDiagn_Write.
+    ! call HcoDiagn_Write.  Skip if it is a GEOS-Chem "dry-run".
     !--------------------------------------------------------------
-    IF ( HcoState%Options%HcoWritesDiagn ) THEN
+    IF ( HcoState%Options%HcoWritesDiagn .and. notDryRun ) THEN
        CALL HcoDiagn_Write( am_I_Root, HcoState, .FALSE., RC )
        IF ( RC /= HCO_SUCCESS ) RETURN
     ENDIF
 
+    ! Check if this is the last timestep of simulation. If so, return
+    ! and not read in update data.
+    IF ( ItIsEndStep .and. notDryRun ) RETURN
+
     !--------------------------------------------------------------
     ! 3. Read/update data
+    !
     ! Check if there are any data files that need to be read or
     ! updated, e.g. on the first call of HEMCO or if we enter a new
     ! month, year, etc.
+    !
+    ! NOTE: If this is a GEOS-Chem "dry-run", then HEMCO will
+    ! print the files that will be read to either the stdout
+    ! (log file) and HEMCO log file, but will not read them.
     !--------------------------------------------------------------
 
     ! Update data, as specified in ReadList.
@@ -152,12 +179,13 @@ CONTAINS
 
     ENDIF
 
+
     !-----------------------------------------------------------------
     ! 4. Calculate the emissions for current time stamp based on the
     ! content of EmisList. Emissions become written into HcoState.
-    ! Do this only if it's time for emissions.
+    ! Do this only if it's time for emissions and NOT a dry-run.
     !-----------------------------------------------------------------
-    IF ( IsEmisTime .AND. Phase == 2 ) THEN
+    IF ( IsEmisTime .AND. Phase == 2 .and. notDryRun ) THEN
 
        ! Use emission data only
        CALL HCO_CalcEmis( am_I_Root, HcoState, .FALSE., RC )

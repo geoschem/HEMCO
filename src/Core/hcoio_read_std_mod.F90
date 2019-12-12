@@ -73,7 +73,7 @@ MODULE HCOIO_read_std_mod
 
 CONTAINS
 !EOC
-#if !defined(ESMF_)
+#if !defined( ESMF_ )
 !------------------------------------------------------------------------------
 !                  Harvard-NASA Emissions Component (HEMCO)                   !
 !------------------------------------------------------------------------------
@@ -128,6 +128,7 @@ CONTAINS
     USE HCO_Unit_Mod,       ONLY : HCO_UnitTolerance
     USE HCO_GeoTools_Mod,   ONLY : HCO_ValidateLon
     USE HCO_FileData_Mod,   ONLY : FileData_ArrCheck
+    USE HCO_FileData_Mod,   ONLY : FileData_ArrInit
     USE HCO_FileData_Mod,   ONLY : FileData_Cleanup
     USE HCOIO_MESSY_MOD,    ONLY : HCO_MESSY_REGRID
     USE HCO_INTERP_MOD,     ONLY : REGRID_MAPA2A
@@ -180,6 +181,7 @@ CONTAINS
 !                              found in the file
 !  24 Feb 2019 - C. Keller   - Bug fix for interpolation: make sure that it
 !                              searches both into the future and the past.
+!  02 Nov 2019 - H.P. Lin    - Skip IO and erroring out if HcoState%Options%isDryRun
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -254,48 +256,157 @@ CONTAINS
     NX = HcoState%NX
     NY = HcoState%NY
 
+    ! Verbose
+    IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       WRITE(MSG,*) 'Processing container: ', TRIM(Lct%Dct%cName)
+       CALL HCO_MSG( HcoState%Config%Err, MSG, SEP1='-' )
+    ENDIF
+
     ! ----------------------------------------------------------------
     ! Parse source file name. This will replace all tokens ($ROOT,
     ! ($YYYY), etc., with valid values.
     ! ----------------------------------------------------------------
     CALL SrcFile_Parse ( am_I_Root, HcoState, Lct, srcFile, FOUND, RC )
 
-    ! If file not found, return w/ error. No error if cycling attribute is
-    ! select to range. In that case, just make sure that array is empty.
-    IF ( .NOT. FOUND ) THEN
-       IF ( ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_RANGE ) .OR.      &
-            ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_EXACT )     ) THEN
+    ! Handle found or not in the standard way if HEMCO is in regular run mode.
+    IF ( .NOT. HcoState%Options%isDryRun ) THEN
 
-          ! If MustFind flag is enabled, return with error if field is not
-          ! found
-          IF ( Lct%Dct%Dta%MustFind ) THEN
+       !====================================================================
+       ! HEMCO is in regular simulation mode (not dry-run)!
+       !====================================================================
+
+       ! If file not found, return w/ error. No error if cycling attribute is
+       ! select to range. In that case, just make sure that array is empty.
+       IF ( .NOT. FOUND ) THEN
+          IF ( ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_RANGE ) .OR.      &
+               ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_EXACT )     ) THEN
+
+             ! If MustFind flag is enabled, return with error if field is not
+             ! found
+             IF ( Lct%Dct%Dta%MustFind ) THEN
+                MSG = 'Cannot find file for current simulation time: ' // &
+                     TRIM(srcFile) // ' - Cannot get field ' // &
+                     TRIM(Lct%Dct%cName) // '. Please check file name ' // &
+                     'and time (incl. time range flag) in the config. file'
+                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                RETURN
+
+             ! If MustFind flag is not enabled, ignore this field and return
+             ! with a warning.
+             ELSE
+                CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE. )
+                MSG = 'No valid file found for current simulation time - data '// &
+                     'will be ignored for time being - ' // TRIM(Lct%Dct%cName)
+                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+                CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
+                RETURN
+             ENDIF
+
+          ELSE
              MSG = 'Cannot find file for current simulation time: ' // &
-                   TRIM(srcFile) // ' - Cannot get field ' // &
-                   TRIM(Lct%Dct%cName) // '. Please check file name ' // &
-                   'and time (incl. time range flag) in the config. file'
+                  TRIM(srcFile) // ' - Cannot get field ' // &
+                  TRIM(Lct%Dct%cName) // '. Please check file name ' // &
+                  'and time (incl. time range flag) in the config. file'
              CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
              RETURN
-
-          ! If MustFind flag is not enabled, ignore this field and return
-          ! with a warning.
-          ELSE
-             CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE. )
-             MSG = 'No valid file found for current simulation time - data '// &
-                   'will be ignored for time being - ' // TRIM(Lct%Dct%cName)
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
-             CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
-             RETURN
           ENDIF
+       ENDIF
 
-       ELSE
-          MSG = 'Cannot find file for current simulation time: ' // &
-                TRIM(srcFile) // ' - Cannot get field ' // &
-                TRIM(Lct%Dct%cName) // '. Please check file name ' // &
-                'and time (incl. time range flag) in the config. file'
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+    ELSE
+
+       !====================================================================
+       ! HEMCO is in a "dry-run" mode!
+       ! Populate the data container with dummy values
+       ! to ensure GEOS-Chem plays along
+       !====================================================================
+
+       ! 2D array init
+       IF ( Lct%Dct%Dta%SpaceDim <= 2 ) THEN
+          CALL FileData_ArrInit( Lct%Dct%Dta, 1,                             &
+                                 HcoState%NX, HcoState%NY, RC               )
+          IF ( RC /= 0 ) RETURN
+       ENDIF
+
+       ! 3D data and index data is first written into a temporary array,
+       ! REGR_4D.
+       IF ( Lct%Dct%Dta%SpaceDim == 3 ) THEN
+          CALL FileData_ArrInit( Lct%Dct%Dta, 1,           HcoState%NX,      &
+                                 HcoState%NY, HcoState%NZ, RC               )
+          IF ( RC /= 0 ) RETURN
+       ENDIF
+
+       ! Simulate file read buffer
+       IF ( TRIM(HcoState%ReadLists%FileInArchive) == TRIM(srcFile) ) THEN
+          CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
           RETURN
        ENDIF
-    ENDIF
+
+       ! If file exists, print the result. If NOT, then handle accordingly
+       ! But NEVER error out (HCO_ERROR), as we want to get a list of all
+       ! files. (hplin, 11/2/19)
+       IF ( .NOT. FOUND ) THEN
+          IF ( ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_RANGE )       .OR.       &
+               ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_EXACT )     ) THEN
+
+             ! If MustFind flag is enabled, return with error if field is not
+             ! found
+             IF ( Lct%Dct%Dta%MustFind ) THEN
+                MSG = 'Cannot find file for current simulation time: '    // &
+                     TRIM(srcFile) // ' - Cannot get field '              // &
+                     TRIM(Lct%Dct%cName) // '. Please check file name '   // &
+                     'and time (incl. time range flag) in the config. file'
+                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+
+                ! Write a msg to stdout (NOT FOUND)
+                WRITE( 6, 300 ) TRIM( srcFile )
+ 300            FORMAT( 'HEMCO: REQUIRED FILE NOT FOUND ', a )
+
+             ! If MustFind flag is not enabled, ignore this field and return
+             ! with a warning.
+             ELSE
+                CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE. )
+                MSG = 'No valid file found for current simulation time - '// &
+                     'data will be ignored for time being - '             // &
+                     TRIM(Lct%Dct%cName)
+                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+
+                ! Write a msg to stdout (OPTIONAL)
+                WRITE( 6, 310 ) TRIM( srcFile )
+ 310            FORMAT( 'HEMCO: OPTIONAL FILE NOT FOUND ', a )
+
+             ENDIF
+
+          ! Not range or exact
+          ELSE
+             MSG = 'Cannot find file for current simulation time: '       // &
+                  TRIM(srcFile) // ' - Cannot get field '                 // &
+                  TRIM(Lct%Dct%cName) // '. Please check file name '      // &
+                  'and time (incl. time range flag) in the config. file'
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+
+             ! Write a msg to stdout (NOT FOUND)
+             WRITE( 6, 300 ) TRIM(srcFile)
+
+          ENDIF
+       ELSE
+
+          ! Write a mesage to stdout (HEMCO: Opening...)
+          WRITE( 6, 100 ) TRIM( srcFile )
+
+       ENDIF
+
+       ! It is safe to leave now, we do not need to handle opening the file.
+       ! This may be changed in the future if the "dry-run" mode requires
+       ! a check of the file contents... this may be beyond the scope for now.
+
+       ! Simulate the "reading" in netCDF to prevent duplicate entries
+       ! in the log
+       HcoState%ReadLists%FileInArchive = TRIM(srcFile)
+
+       ! Skip further processing
+       CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
+       RETURN
+    ENDIF ! End of dry-run mode else clause
 
     ! ----------------------------------------------------------------
     ! Open netCDF
@@ -319,8 +430,8 @@ CONTAINS
 
        ! Verbose mode
        IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
-          WRITE(MSG,*) '- Reading from existing stream: ', TRIM(srcFile)
-          CALL HCO_MSG(MSG,SEP1='-')
+          WRITE(MSG,*) 'Reading from existing stream: ', TRIM(srcFile)
+          CALL HCO_MSG( HcoState%Config%Err, MSG )
        ENDIF
 
     ! To open a new file:
@@ -329,8 +440,8 @@ CONTAINS
 
        ! Verbose mode
        IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
-          WRITE(MSG,*) '- Opening file: ', TRIM(srcFile)
-          CALL HCO_MSG(MSG,SEP1='-')
+          WRITE(MSG,*) 'Opening file: ', TRIM(srcFile)
+          CALL HCO_MSG( HcoState%Config%Err, MSG )
        ENDIF
 
        ! Also write to standard output
@@ -1451,11 +1562,11 @@ CONTAINS
 
     ! verbose mode
     IF ( verb ) THEN
-       write(MSG,'(A30,I14)') '# time slices found: ', nTime
+       write(MSG,*) 'Number of time slices found: ', nTime
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        IF ( nTime > 0 ) THEN
-          write(MSG,'(A30,f14.0,f14.0)') '# time slice range: ', &
-                                     availYMDhm(1), availYMDhm(nTime)
+          write(MSG,*) 'Time slice range : ', &
+                       availYMDhm(1), availYMDhm(nTime)
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
     ENDIF
@@ -1568,6 +1679,21 @@ CONTAINS
           ExitSearch = IsClosest( prefYMDhm, availYMDhm, nTime, tidx1a )
        ENDIF
 
+       ! When using the interpolation flag, use the first or last timestep
+       ! when outside of the available date range
+       IF ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_INTER .and. tidx1a < 0 ) THEN
+          IF ( prefYMDhm < availYMDhm(1) ) THEN
+             tidx1a = 1
+          ELSE IF ( prefYMDhm > availYMDhm(nTime) ) THEN
+             tidx1a = nTime
+          ENDIF
+       ENDIF
+
+       ! Do not continue search if data is not discontinuous (mps, 10/23/19)
+       IF ( .not. Lct%Dct%Dta%Discontinuous ) THEN
+          ExitSearch = .TRUE.
+       ENDIF
+
        ! Write to tidx1 if this is the best match.
        IF ( ExitSearch ) THEN
           tidx1 = tidx1a
@@ -1615,6 +1741,32 @@ CONTAINS
              tidx1 = 1
           ELSE
              tidx1 = nTime
+          ENDIF
+       ENDIF
+
+       ! -------------------------------------------------------------
+       ! If we are dealing with 3-hourly or hourly data, select all timesteps
+       ! -------------------------------------------------------------
+
+       ! Hour flag is -1: wildcard
+       IF ( Lct%Dct%Dta%ncHrs(1) == -1 .AND. nTime == 8 ) THEN
+          tidx1 = 1
+          tidx2 = nTime
+
+          ! verbose mode
+          IF ( verb ) THEN
+             WRITE(MSG,*) 'Data is 3-hourly. Entire day will be read.'
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
+          ENDIF
+       ENDIF
+       IF ( Lct%Dct%Dta%ncHrs(1) == -1 .AND. nTime == 24 ) THEN
+          tidx1 = 1
+          tidx2 = nTime
+
+          ! verbose mode
+          IF ( verb ) THEN
+             WRITE(MSG,*) 'Data is hourly. Entire day will be read.'
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
        ENDIF
 
@@ -2716,6 +2868,8 @@ CONTAINS
     INTEGER :: origYr,  origMt, origDy, origHr
     LOGICAL :: hasFile, hasYr,  hasMt,  hasDy, hasHr
     LOGICAL :: nextTyp
+    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=1023) :: srcFileOrig
 
     ! maximum # of iterations for file search
     INTEGER, PARAMETER :: MAXIT = 10000
@@ -2726,6 +2880,12 @@ CONTAINS
 
     ! Initialize to input string
     srcFile = Lct%Dct%Dta%ncFile
+
+    ! verbose mode
+    IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       WRITE(MSG,*) 'Parsing source file and replacing tokens'
+       CALL HCO_MSG(HcoState%Config%Err,MSG)
+    ENDIF
 
     ! Get preferred dates (to be passed to parser)
     CALL HCO_GetPrefTimeAttr ( am_I_Root, HcoState, Lct, prefYr, &
@@ -2756,6 +2916,7 @@ CONTAINS
     ! Call the parser
     CALL HCO_CharParse ( HcoState%Config, srcFile, prefYr, prefMt, prefDy, prefHr, prefMn, RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
+    srcFileOrig = TRIM(srcFile)
 
     ! Check if file exists
     INQUIRE( FILE=TRIM(srcFile), EXIST=HasFile )
@@ -2944,6 +3105,11 @@ CONTAINS
     ! field is not outside of the given range
     IF ( HasFile .AND. ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_RANGE ) ) THEN
        HasFile = TIDX_IsInRange ( Lct, prefYr, prefMt, prefDy, prefHr )
+    ENDIF
+
+    ! Restore original source file name and date to avoid confusion in log file
+    IF ( .not. HasFile ) THEN
+       srcFile = Trim(srcFileOrig)
     ENDIF
 
     ! Return variable
@@ -4329,7 +4495,8 @@ CONTAINS
 ! by the actual expression. Each expression must include at least one
 ! variable (evaluated at runtime). The following variables are currently
 ! supported: YYYY (year), MM (month), DD (day), HH (hour), LH (local hour),
-! NN (minute), SS (second), WD (weekday), LWD (local weekday), DOY (day of year).
+! NN (minute), SS (second), WD (weekday), LWD (local weekday),
+! DOY (day of year), ELH (elapsed hours), ELS (elapsed seconds).
 ! In addition, the following variables can be used: PI (3.141...), DOM
 ! (\# of days of current month).
 ! For example, the following expression would yield a continuous sine
@@ -4370,6 +4537,8 @@ CONTAINS
 !  07 Jul 2017 - C. Keller - Parse function before evaluation to allow
 !                            the usage of user-defined tokens within the
 !                            function.
+!  27 Aug 2019 - C. Keller - Add tokens 'ELS' and 'ELH' for elapsed seconds
+!                            and hours, respectively.
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4381,6 +4550,8 @@ CONTAINS
     INTEGER            :: I, NVAL, LHIDX, LWDIDX
     INTEGER            :: prefYr, prefMt, prefDy, prefHr, prefMn
     INTEGER            :: prefWD, prefDOY, prefS, LMD, cHr
+    INTEGER            :: nSteps
+    REAL(hp)           :: ELH, ELS
     REAL(hp)           :: Val
     CHARACTER(LEN=255) :: MSG
     CHARACTER(LEN=255) :: LOC = 'ReadMath (hcoio_dataread_mod.F90)'
@@ -4416,7 +4587,8 @@ CONTAINS
 
     ! Get some other current time stamps
     CALL HcoClock_Get( am_I_Root, HcoState%Clock, cS=prefS, cH=cHr, &
-                       cWEEKDAY=prefWD, cDOY=prefDOY, LMD=LMD, RC=RC )
+                       cWEEKDAY=prefWD, cDOY=prefDOY, LMD=LMD,      &
+                       nSteps=nSteps, RC=RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     ! GetPrefTimeAttr can return -999 for hour. In this case set to current
@@ -4429,8 +4601,12 @@ CONTAINS
                          prefYr, prefMt, prefDy, prefHr, prefMn, RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
+    ! Elapsed hours and seconds since start time
+    ELS = HcoState%TS_DYN * nSteps
+    ELH = ELS / 3600.0_hp
+
     ! Check which variables are in string.
-    ! Possible variables are YYYY, MM, DD, WD, HH, NN, SS, DOY
+    ! Possible variables are YYYY, MM, DD, WD, HH, NN, SS, DOY, ELH, ELS
     NVAL   = 0
     LHIDX  = -1
     LWDIDX = -1
@@ -4497,12 +4673,22 @@ CONTAINS
        all_variables(NVAL)       = 'dom'
        all_variablesvalues(NVAL) = LMD
     ENDIF
+    IF ( INDEX(func,'ELH') > 0 ) THEN
+       NVAL                      = NVAL + 1
+       all_variables(NVAL)       = 'elh'
+       all_variablesvalues(NVAL) = ELH
+    ENDIF
+    IF ( INDEX(func,'ELS') > 0 ) THEN
+       NVAL                      = NVAL + 1
+       all_variables(NVAL)       = 'els'
+       all_variablesvalues(NVAL) = ELS
+    ENDIF
 
     ! Need at least one expression
     IF ( NVAL == 0 ) THEN
        MSG = 'No valid time expression found - '//&
              'the function should contain at least one of '//&
-             'YYYY,MM,DD,HH,NN,SS,DOY,WD; '//TRIM(func)
+             'YYYY,MM,DD,HH,NN,SS,DOY,WD,ELH,ELS; '//TRIM(func)
        CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF

@@ -101,7 +101,7 @@ MODULE HCOI_StandAlone_Mod
 ! !PRIVATE TYPES:
 !
   ! Default values for HEMCO input files: contain definitions of
-  ! species, grid, and time settings.
+  ! species, grid, and time settings, etc.
   CHARACTER(LEN=255)             :: GridFile  = 'HEMCO_sa_Grid'
   CHARACTER(LEN=255)             :: SpecFile  = 'HEMCO_sa_Spec'
   CHARACTER(LEN=255)             :: TimeFile  = 'HEMCO_sa_Time'
@@ -161,15 +161,20 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOI_StandAlone_Run( ConfigFile )
+  SUBROUTINE HCOI_StandAlone_Run( ConfigFile, IsDryRun, RC )
 !
 ! !INPUT PARAMETERS:
 !
-    CHARACTER(LEN=*), INTENT(IN)  :: ConfigFile
+    CHARACTER(LEN=*), INTENT(IN)  :: ConfigFile   ! HEMCO configuration file
+    LOGICAL,          INTENT(IN)  :: IsDryRun     ! Is it a dry-run?
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,          INTENT(OUT) :: RC           ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
+!  See the Git history with the gitk browser!
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -178,7 +183,6 @@ CONTAINS
 !
     ! Scalars
     LOGICAL            :: am_I_Root
-    INTEGER            :: RC
 
     ! Strings
     CHARACTER(LEN=255) :: ErrMsg, ThisLoc
@@ -189,23 +193,24 @@ CONTAINS
 
     ! Initialize
     RC        = HCO_SUCCESS
-    am_I_Root = .TRUE.       ! Treat as root CPU
+    am_I_Root = .TRUE.         ! Treat this as if we are on the root core!
     ErrMsg    = ''
-    ThisLoc   = 'HCOI_StandAlone_Run (in module HEMCO/Interfaces/hcoi_standalone_mod.F90'
+    ThisLoc   = ' -> at HCOI_StandAlone_Run '                             // &
+                '(in module HEMCO/Interfaces/hcoi_standalone_mod.F90)'
 
     ! Initialize the HEMCO standalone
-    CALL HCOI_Sa_Init( am_I_Root, TRIM(ConfigFile), RC )
+    CALL HCOI_Sa_Init( am_I_Root, ConfigFile, IsDryRun, RC                  )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in routine "HCO_Sa_Init"!'
-       CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+       CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc                   )
        RETURN
     ENDIF
 
     ! Run the HEMCO standalone
-    CALL HCOI_Sa_Run( am_I_Root, RC )
+    CALL HCOI_Sa_Run( am_I_Root, RC                                         )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in routine "HCO_Sa_Run"!'
-       CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+       CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc                   )
        RETURN
     ENDIF
 
@@ -227,7 +232,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOI_SA_Init( am_I_Root, ConfigFile, RC )
+  SUBROUTINE HCOI_SA_Init( am_I_Root, ConfigFile, IsDryRun, RC )
 !
 ! !USES:
 !
@@ -239,12 +244,13 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    LOGICAL,          INTENT(IN   ) :: am_I_Root  ! root CPU?
-    CHARACTER(LEN=*), INTENT(IN   ) :: ConfigFile ! Configuration file
+    LOGICAL,          INTENT(IN)    :: am_I_Root   ! Are we on the root core?
+    CHARACTER(LEN=*), INTENT(IN)    :: ConfigFile  ! Configuration file
+    LOGICAL,          INTENT(IN)    :: IsDryRun    ! Is it a dry-run?
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,          INTENT(INOUT) :: RC         ! Failure or success
+    INTEGER,          INTENT(INOUT) :: RC          ! Failure or success
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
@@ -257,15 +263,15 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
-    INTEGER            :: nnMatch
-    LOGICAL            :: Dum,    Found
+    INTEGER            :: nnMatch, LUN
+    LOGICAL            :: Dum,     Found
 
     ! Strings
-    CHARACTER(LEN=255) :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: ErrMsg,  ThisLoc
 
-    !=================================================================
+    !=======================================================================
     ! HCOI_SA_INIT begins here!
-    !=================================================================
+    !=======================================================================
 
     ! Initialize
     RC      = HCO_SUCCESS
@@ -273,21 +279,22 @@ CONTAINS
     ThisLoc = &
      'HCOI_SA_Init (in module HEMCO/Interfaces/hcoi_standalone_mod.F90)'
 
-    !=================================================================
+    !=======================================================================
     ! Read HEMCO configuration file and save into buffer. This also
     ! sets the HEMCO error properties (verbose mode? log file name,
     ! etc.) based upon the specifications in the configuration file.
-    !=================================================================
-    CALL Config_ReadFile( am_I_Root, HcoConfig, TRIM(ConfigFile), 0, RC )
+    !=======================================================================
+    CALL Config_ReadFile( am_I_Root, HcoConfig, ConfigFile,                 &
+                          0,         RC,        IsDryRun=IsDryRun          )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in routine "Config_Readfile!"'
        CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
 
-    !=================================================================
+    !=======================================================================
     ! Open logfile
-    !=================================================================
+    !======================================================================
     IF ( am_I_Root ) THEN
        CALL HCO_LogFile_Open( HcoConfig%Err, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -297,11 +304,11 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !=================================================================
+    !=======================================================================
     ! Initialize HEMCO state object and populate it
-    !=================================================================
+    !=======================================================================
 
-    !-----------------------------------------------------------------
+    !-----------------------------------------------------------------------
     ! Extract species to use in HEMCO
     CALL Get_nnMatch( am_I_Root, HcoConfig, nnMatch, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
@@ -311,10 +318,10 @@ CONTAINS
        RETURN
     ENDIF
 
-    !-----------------------------------------------------------------
+    !-----------------------------------------------------------------------
     ! Initialize HCO state. Use only species that are used
     ! in HEMCO_sa_Spec.rc and are also found in the HEMCO config. file.
-    CALL HcoState_Init ( am_I_Root, HcoState, HcoConfig, nnMatch, RC )
+    CALL HcoState_Init( am_I_Root, HcoState, HcoConfig, nnMatch, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in routine "HcoState_Init"!'
        CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
@@ -322,7 +329,7 @@ CONTAINS
        RETURN
     ENDIF
 
-    !-----------------------------------------------------------------
+    !-----------------------------------------------------------------------
     ! Set grid
     CALL Set_Grid ( am_I_Root, HcoState, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
@@ -332,7 +339,7 @@ CONTAINS
        RETURN
     ENDIF
 
-    !-----------------------------------------------------------------
+    !-----------------------------------------------------------------------
     ! Register species
     CALL Register_Species( am_I_Root, HcoState, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
@@ -342,7 +349,7 @@ CONTAINS
        RETURN
     ENDIF
 
-    !-----------------------------------------------------------------
+    !-----------------------------------------------------------------------
     ! Read time information, incl. timesteps and simulation time(s)
     CALL Read_Time( am_I_Root, HcoState, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
@@ -352,12 +359,12 @@ CONTAINS
        RETURN
     ENDIF
 
-    !=================================================================
+    !=======================================================================
     ! Set misc. parameter
-    !=================================================================
+    !=======================================================================
 
     ! Set ESMF flag
-    HcoState%isESMF = .FALSE.
+    HcoState%Options%isESMF = .FALSE.
 
     ! Let HEMCO schedule the diagnostics output
     HcoState%Options%HcoWritesDiagn = .TRUE.
@@ -374,12 +381,35 @@ CONTAINS
     ENDIF
     IF ( .NOT. Found ) HcoState%Options%Field2Diagn = .TRUE.
 
-    !=================================================================
+    !=======================================================================
+    ! Are we running the HEMCO standalone in a dry-run mode?
+    ! This is dictated by the HEMCO environment. If HEMCO is in a
+    ! dry-run mode, no compute is performed and files are only "checked".
+    ! Simulations will NOT stop on missing files. This is intended to be a
+    ! quick sanity check to make sure that GEOS-Chem IO are all correctly
+    ! set up, which is why most of the runs fail to complete successfully.
+    ! (hplin, 11/2/19)
+    !
+    ! Dry-run simulations now send output to a log file that is separate
+    ! from the HEMCO log files. (bmy, 11/11/19)
+    !
+    ! NOTE: The dry-run option is not invoked when we use HEMCO
+    ! in external ESMs. (bmy, 11/13/19)
+    !=======================================================================
+    CALL Init_Dry_Run( am_I_Root, IsDryRun, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       ErrMsg = 'Error encountered in routine "Init_Dry_Run"!'
+       CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+       CALL Flush( HcoState%Config%Err%Lun )
+       RETURN
+    ENDIF
+
+    !=======================================================================
     ! Initialize HEMCO internal lists and variables. All data
     ! information is written into internal lists (ReadList) and
     ! the HEMCO configuration file is removed from buffer in this
     ! step. Also initializes the HEMCO clock
-    !=================================================================
+    !=======================================================================
     CALL HCO_Init( am_I_Root, HcoState, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in routine "HCO_Init"!'
@@ -388,11 +418,11 @@ CONTAINS
        RETURN
     ENDIF
 
-    !=================================================================
+    !=======================================================================
     ! Initialize extensions.
     ! This initializes all (enabled) extensions and selects all met.
     ! fields needed by them.
-    !=================================================================
+    !=======================================================================
     CALL HCOX_Init( am_I_Root, HcoState, ExtState, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in routine "HCOX_Init"!'
@@ -401,20 +431,36 @@ CONTAINS
        RETURN
     ENDIF
 
-    !=================================================================
+    !=======================================================================
     ! Define diagnostics
-    !=================================================================
-    CALL Define_Diagnostics( am_I_Root, HcoState, RC )
-    IF ( RC /= HCO_SUCCESS ) THEN
-       ErrMsg = 'Error encountered in routine "Define_Diagnostics"!'
-       CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
-       CALL Flush( HcoState%Config%Err%Lun )
-       RETURN
+    !=======================================================================
+    IF ( HcoState%Options%IsDryRun ) THEN
+
+       !--------------------------------------------------------------------
+       ! For dry-run simulations, print the status of the HEMCO
+       ! diagnostic configurations file (but do not read from it)
+       !--------------------------------------------------------------------
+       CALL DiagnFileOpen( am_I_Root, HcoConfig,      LUN,                  &
+                           RC,        IsDryRun=.TRUE.                      )
+
+    ELSE
+
+       !--------------------------------------------------------------------
+       ! For regular simulations, read diagnostics configuration file
+       ! and define diagnostic variables for output
+       !--------------------------------------------------------------------
+       CALL Define_Diagnostics( am_I_Root, HcoState, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error encountered in routine "Define_Diagnostics"!'
+          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+          CALL Flush( HcoState%Config%Err%Lun )
+          RETURN
+       ENDIF
     ENDIF
 
-    !-----------------------------------------------------------------
+    !=======================================================================
     ! Leave
-    !-----------------------------------------------------------------
+    !=======================================================================
     CALL HCOI_SA_InitCleanup( am_I_Root, RC )
 
     ! Leave w/ success
@@ -465,19 +511,24 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    ! Scalars
+    LOGICAL            :: notDryRun
     INTEGER            :: CNT
     INTEGER            :: YR, MT, DY, HR, MN, SC
+
+    ! Strings
     CHARACTER(LEN=255) :: Msg, ErrMsg, ThisLoc
 
-    !=================================================================
+    !=======================================================================
     ! HCOI_SA_RUN begins here!
-    !=================================================================
+    !=======================================================================
 
     ! Initialize
-    RC      = HCO_SUCCESS
-    ErrMsg  = ''
-    ThisLoc = &
-     'HCOI_SA_Run (in module HEMCO/Standalone/hcoi_standalone_mod.F90)'
+    RC        = HCO_SUCCESS
+    notDryRun = ( .not. HcoState%Options%IsDryRun )
+    ErrMsg    = ''
+    ThisLoc   = &
+     ' -> at HCOI_SA_Run (in module HEMCO/Standalone/hcoi_standalone_mod.F90)'
 
     ! Time step counter
     CNT = 0
@@ -494,10 +545,10 @@ CONTAINS
           EXIT
        ENDIF
 
-       !=================================================================
-       ! Set HcoClock. On first call, use specified start date. Increase
-       ! clock by one emission time step otherwise.
-       !=================================================================
+       !====================================================================
+       ! Set HcoClock. On first call, use specified start date.
+       ! Increase clock by one emission time step otherwise.
+       !====================================================================
        IF ( CNT == 1 ) THEN
           CALL HcoClock_Set ( am_I_Root, HcoState, YRS(1), MTS(1), &
                               DYS(1),    HRS(1),   MNS(1), SCS(1), &
@@ -521,21 +572,25 @@ CONTAINS
        ! Leave loop if this is the end of the simulation
        IF ( IsEndOfSimulation(YR,MT,DY,HR,MN,SC) ) EXIT
 
-       ! Write to logfile and standard output
-       WRITE( Msg, 100 ) YR, MT, DY, HR, MN, SC
-100    FORMAT( 'Calculate emissions at ', i4,'-',i2.2,'-',i2.2,' ', &
-                 i2.2,':',i2.2,':',i2.2 )
-       CALL HCO_MSG(HcoState%Config%Err,Msg)
-       WRITE(*,*) TRIM( MSG )
+       ! Write to logfile and standard output (skip for dry-run)
+       IF ( notDryRun ) THEN
+          WRITE( Msg, 100 ) YR, MT, DY, HR, MN, SC
+100       FORMAT( 'Calculate emissions at ', i4,  '-', i2.2 ,'-', i2.2,' ',  &
+                                             i2.2,':', i2.2, ':', i2.2      )
+          CALL HCO_MSG(HcoState%Config%Err,Msg)
+          WRITE(*,*) TRIM( MSG )
+       ENDIF
 
        ! ================================================================
        ! Reset all emission and deposition values
        ! ================================================================
-       CALL HCO_FluxArrReset( HcoState, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in routine "HCO_FluxArrReset"!'
-          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
-          RETURN
+       IF ( notDryRun ) THEN
+          CALL HCO_FluxArrReset( HcoState, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in routine "HCO_FluxArrReset"!'
+             CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
        ENDIF
 
        ! ================================================================
@@ -573,31 +628,36 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! Phase 2: Compute emissions
-       CALL HCO_Run( am_I_Root, HcoState, 2, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in routine "Hco_Run", phase 2!'
-          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
-          RETURN
+       ! Phase 2: Compute emissions (skip for dry-run)
+       IF ( notDryRun ) THEN
+          CALL HCO_Run( am_I_Root, HcoState, 2, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in routine "Hco_Run", phase 2!'
+             CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
        ENDIF
 
        ! ================================================================
        ! Run HCO extensions
        ! ================================================================
+       IF ( notDryRun ) THEN
 
-       ! Set / update ExtState fields
-       CALL ExtState_SetFields ( am_I_Root, HcoState, ExtState, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in routine "ExtState_SetFields"!'
-          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
-          RETURN
-       ENDIF
+          ! Set ExtState fields (skip for dry-run)
+          CALL ExtState_SetFields ( am_I_Root, HcoState, ExtState, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in routine "ExtState_SetFields"!'
+             CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
 
-       CALL ExtState_UpdateFields( am_I_Root, HcoState, ExtState, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in routine "ExtState_Update_Fields"!'
-          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
-          RETURN
+          ! Update ExtState fields (skip for dry-run)
+          CALL ExtState_UpdateFields( am_I_Root, HcoState, ExtState, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in routine "ExtState_Update_Fields"!'
+             CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
        ENDIF
 
        ! Execute all enabled emission extensions. Emissions will be
@@ -610,13 +670,15 @@ CONTAINS
        ENDIF
 
        !=================================================================
-       ! Update all autofill diagnostics
+       ! Update all autofill diagnostics (skip for dry-run)
        !=================================================================
-       CALL HcoDiagn_AutoUpdate ( am_I_Root, HcoState, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in routine "HCOX_AutoUpdate"!'
-          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
-          RETURN
+       IF ( notDryRun ) THEN
+          CALL HcoDiagn_AutoUpdate ( am_I_Root, HcoState, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in routine "HCOX_AutoUpdate"!'
+             CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
        ENDIF
     ENDDO
 
@@ -672,6 +734,9 @@ CONTAINS
     ThisLoc = &
     'HCOI_SA_FINAL (in module HEMCO/Interfaces/hcoi_standalone_mod.F90)'
 
+    ! Cleanup the dry-run
+    CALL Cleanup_Dry_Run( am_I_Root, RC )
+
     ! Cleanup HCO core
     CALL HCO_FINAL( am_I_Root, HcoState, .FALSE., RC )
     IF ( RC /= HCO_SUCCESS ) THEN
@@ -689,8 +754,10 @@ CONTAINS
        RETURN
     ENDIF
 
-    ! Cleanup diagnostics
-    CALL DiagnBundle_Cleanup( HcoState%Diagn )
+    ! Cleanup diagnostics (skip if dry-run)
+    IF ( .not. HcoState%Options%IsDryRun ) THEN
+       CALL DiagnBundle_Cleanup( HcoState%Diagn )
+    ENDIF
 
     ! Deallocate module arrays/pointers
     IF ( ALLOCATED( XMID    ) ) DEALLOCATE ( XMID    )
@@ -1019,7 +1086,7 @@ CONTAINS
     CHARACTER(LEN=255)    :: LOC
     CHARACTER(LEN=  1)    :: COL
     CHARACTER(LEN=255)    :: MyGridFile, ThisLoc
-    CHARACTER(LEN=2047)   :: DUM,        ErrMsg,  Msg
+    CHARACTER(LEN=4095)   :: DUM,        ErrMsg,  Msg
 
     !=================================================================
     ! SET_GRID begins here
@@ -2483,20 +2550,6 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%% Chlorophyll concentration %%%%%
-    IF ( ExtState%CHLR%DoUse ) THEN
-       Name = 'CHLR'
-       CALL ExtDat_Set( am_I_Root,    HcoState, ExtState%CHLR,               &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
-       IF ( RC == HCO_SUCCESS ) THEN
-          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
-                   '" for the HEMCO standalone simulation!'
-          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
-          CALL HCO_Leave( HcoState%Config%Err, RC )
-          RETURN
-       ENDIF
-    ENDIF
-
     !%%%%% Photolysis values %%%%%
     IF ( ExtState%JNO2%DoUse ) THEN
        Name = 'JNO2'
@@ -2944,5 +2997,231 @@ CONTAINS
 
   END SUBROUTINE HCOI_SA_InitCleanup
 !EOC
-END MODULE HCOI_StandAlone_Mod
+!------------------------------------------------------------------------------
+!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: Init_Dry_Run
+!
+! !DESCRIPTION: Looks at the input arguments to determine if the user
+!  has selected to do a GEOS-Chem dry-run.  If so, then the proper
+!  fields of Input\_Opt will be populated accordingly, and the dry-run
+!  log file will be opened.
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE Init_Dry_Run( am_I_Root, IsDryRun, RC )
+!
+! !USES:
+!
+    USE InquireMod, ONLY : FindFreeLUN
+!
+! !INPUT PARAMETERS:
+!
+    LOGICAL,          INTENT(IN)    :: am_I_Root     ! Are we on the root core?
+    LOGICAL,          INTENT(IN)    :: IsDryRun      ! Is it a dry-run?
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,          INTENT(OUT)   :: RC            ! Success or failure?
+!
+! !REMARKS:
+!  If in a "dry-run" mode, HEMCO will simply check whether files
+!  are present (and possibly in the correct format) and go through
+!  time-steps to check met fields and other IO issues.
+!  No actual "compute" is performed.
+!
+! !REVISION HISTORY:
+!  13 Nov 2019 - R. Yantosca - Initial version
+!  See the subsequent Git history with the gitk browser!
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Scalars
+    INTEGER            :: nArg,   ArgLen
 
+    ! Strings
+    CHARACTER(LEN=255) :: ArgVal, ErrMsg, ThisLoc
+
+    !=======================================================================
+    ! Init_Dry_Run begins here!
+    !=======================================================================
+
+    ! Initialize
+    RC      = HCO_SUCCESS
+    ErrMsg  = ''
+    ThisLoc = &
+        ' -> at Init_Dry_Run (in HEMCO/Interfaces/hcoi_standalone_mod.F90)'
+
+    ! Enter
+    CALL HCO_Enter( HcoState%Config%Err, ThisLoc, RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    !=======================================================================
+    ! Initialize dry-run fields of the HEMCO state object
+    !=======================================================================
+    IF ( IsDryRun ) THEN
+
+       !--------------------------------------------------------------------
+       ! If HEMCO is running in dry-run mode:
+       !
+       ! (1) Define dry-run parameters in HEMCO state
+       ! (2) Print a warning to both to stdout and the HEMCO log file
+       !--------------------------------------------------------------------
+
+       ! Set parameters
+       HcoState%Options%IsDryRun = IsDryRun
+
+       ! Print dry-run header to stdout
+       CALL Print_Dry_Run_Warning( 6 )
+
+       ! Print dry-run header to the HEMCO log file
+       CALL Print_Dry_Run_Warning( HcoState%Config%Err%LUN )
+
+    ELSE
+
+       !--------------------------------------------------------------------
+       ! If this is a regular HEMCO standalone simuation,
+       ! then set HEMCO dry-run parameters to default (off) values
+       !--------------------------------------------------------------------
+       HcoState%Options%IsDryRun = .FALSE.
+
+    ENDIF
+
+    ! Leave
+    CALL HCO_Leave( HcoState%Config%Err, RC )
+
+  END SUBROUTINE Init_Dry_Run
+!EOC
+!------------------------------------------------------------------------------
+!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: Cleanup_Dry_Run
+!
+! !DESCRIPTION: Looks at the input arguments to determine if the user
+!  has selected to do a GEOS-Chem dry-run.  If so, then the proper
+!  fields of Input\_Opt will be populated accordingly.
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE Cleanup_Dry_Run( am_I_Root, RC )
+!
+! !INPUT PARAMETERS:
+!
+    LOGICAL, INTENT(IN)  :: am_I_Root   ! Are we on the root core?
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER, INTENT(OUT) :: RC          ! Success or failure?
+!
+! !REVISION HISTORY:
+!  13 Nov 2019 - R. Yantosca - Initial version
+!  See the subsequent Git history with the gitk browser!
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Strings
+    CHARACTER(LEN=255 ) :: ErrMsg, ThisLoc
+
+    !=======================================================================
+    ! Cleanup_Dry_Run begins here!
+    !=======================================================================
+
+    ! Initialize
+    RC     = HCO_SUCCESS
+    ErrMsg  = ''
+    ThisLoc = &
+       ' -> at Cleanup_Dry_Run (in HEMCO/Interfaces/hcoi_standalone_mod.F90)'
+
+    ! Enter
+    CALL HCO_Enter( HcoState%Config%Err, ThisLoc, RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Only do the following for the dry-run simulation
+    IF ( HcoState%Options%IsDryRun ) THEN
+
+       ! Print dry-run header to stdout
+       CALL Print_Dry_Run_Warning( 6 )
+
+       ! Print dry-run header to the HEMCO log file
+       CALL Print_Dry_Run_Warning( HcoState%Config%Err%LUN )
+
+    ENDIF
+
+    ! Leave
+    CALL HCO_Leave( HcoState%Config%Err, RC )
+
+  END SUBROUTINE Cleanup_Dry_Run
+!EOC
+!------------------------------------------------------------------------------
+!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: Print_Dry_Run_Warning
+!
+! !DESCRIPTION: Prints the warning for the GEOS-Chem dry run to either
+!  stdout (aka the GC log file) and the dry-run log file.
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE Print_Dry_Run_Warning( U )
+!
+! !REVISION HISTORY:
+!  06 Jan 2015 - R. Yantosca - Initial version
+!  See the subsequent Git history with the gitk browser!
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    INTEGER :: U
+
+    !=================================================================
+    ! Print warning info to the desired file
+    !=================================================================
+    WRITE( U, 100 )
+    WRITE( U, 100 ) REPEAT( '!', 79 )
+    WRITE( U, 100 ) '!!! HEMCO-STANDALONE IS IN DRY-RUN MODE!'
+    WRITE( U, 100 ) '!!!'
+    WRITE( U, 100 ) '!!! You will NOT get output for this run!'
+    WRITE( U, 100 ) '!!! Use this command to validate a '                 // &
+                     'HEMCO-STANDALONE run configuration:'
+    WRITE( U, 100 ) '!!!    ./hemco_standalone.x -c CONFIG_FILE '         // &
+                    '--dryrun > log'
+    WRITE( U, 100 ) '!!!'
+    WRITE( U, 100 ) '!!! REMOVE THE --dryrun ARGUMENT FROM THE COMMAND '  // &
+                    'LINE'
+    WRITE( U, 100 ) '!!! BEFORE RUNNING A HEMCO-STANDALONE PRODUCTION '   // &
+                    'SIMULATION!'
+    WRITE( U, 100 ) REPEAT( '!', 79 )
+    WRITE( U, 120 ) '!!! Start Date       : ', YRS(1), MTS(1), DYS(1),       &
+                                               HRS(1), MNS(1), SCS(1)
+    WRITE( U, 120 ) '!!! End Date         : ', YRS(2), MTS(2), DYS(2),       &
+                                               HRS(2), MNS(2), SCS(2)
+    WRITE( U, 110 ) '!!! Meteorology      : ', TRIM(HcoState%Config%MetField)
+    WRITE( U, 110 ) '!!! Grid Resolution  : ', TRIM(HcoState%Config%GridRes )
+    WRITE( U, 100 ) REPEAT( '!', 79 )
+    WRITE( U, 100 )
+
+    ! Format statements
+100 FORMAT( a                             )
+110 FORMAT( a, a                          )
+120 FORMAT( a, i4.4, 2(i2.2), 1x, 3(i2.2) )
+
+  END SUBROUTINE Print_Dry_Run_Warning
+!EOC
+END MODULE HCOI_StandAlone_Mod

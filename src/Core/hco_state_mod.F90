@@ -79,10 +79,10 @@ MODULE HCO_State_Mod
 
      !%%%%% Aerosol quantities %%%%%
      INTEGER                     :: nDust      ! # of dust species
+     LOGICAL                     :: MarinePOA  ! MUse marine organic aerosols?
      TYPE(HcoMicroPhys), POINTER :: MicroPhys  ! Microphysics settings
 
      !%%%%%  Run time options %%%%%
-     LOGICAL                     :: isESMF     ! Are we using ESMF?
      TYPE(HcoOpt),       POINTER :: Options    ! HEMCO run options
 
      !%%%%% ReadLists %%%%%
@@ -127,6 +127,10 @@ MODULE HCO_State_Mod
 !  08 Apr 2015 - C. Keller   - Added MaskFractions to HcoState options.
 !  13 Jul 2015 - C. Keller   - Added option 'Field2Diagn'.
 !  15 Feb 2016 - C. Keller   - Update to v2.0
+!  02 Nov 2019 - H.P. Lin    - Add a HEMCO isDryRun option which is intended to flag
+!                              that all "meaningful" IO is skipped and files should
+!                              only be checked. If file does not exist DO NOT STOP
+!                              THE RUN. (This is for GC Classic for now)
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -291,7 +295,6 @@ CONTAINS
     !=====================================================================
     ! Set misc. parameter
     !=====================================================================
-    HcoState%isESMF     = .FALSE.
 
     ! Physical constants
     ALLOCATE ( HcoState%Phys, STAT = AS )
@@ -323,6 +326,9 @@ CONTAINS
     ! Dust bins (set default to 4)
     HcoState%nDust = 4
 
+    ! Turn off marine POA by default
+    HcoState%MarinePOA = .FALSE.
+
     ! Aerosol options
     ALLOCATE ( HcoState%MicroPhys, STAT = AS )
     IF ( AS /= 0 ) THEN
@@ -334,7 +340,7 @@ CONTAINS
     NULLIFY( HcoState%MicroPhys%BinBound )
 
     ! Default HEMCO options
-    ! ==> execute HEMCO core; use all species and categories
+    ! ==> execute HEMCO core; use all species, categories; not ESMF; not dryrun
     ALLOCATE( HcoState%Options )
     HcoState%Options%ExtNr          =  0
     HcoState%Options%SpcMin         =  1
@@ -344,6 +350,8 @@ CONTAINS
     HcoState%Options%AutoFillDiagn  = .TRUE.
     HcoState%Options%HcoWritesDiagn = .FALSE.
     HcoState%Options%FillBuffer     = .FALSE.
+    HcoState%Options%isESMF         = .FALSE.
+    HcoState%Options%isDryRun       = .FALSE.
 
     ! SetReadList has not been called yet
     HcoState%SetReadListCalled      = .FALSE.
@@ -432,7 +440,7 @@ CONTAINS
        WRITE(MSG,'(A33,L2)') 'Do drydep over entire PBL      : ', HcoState%Options%PBL_DRYDEP
        CALL HCO_MSG(HcoConfig%Err,MSG)
        WRITE(MSG,'(A33,F6.2)') 'Upper limit for deposition x ts: ', HcoState%Options%MaxDepExp
-       CALL HCO_MSG(HcoConfig%Err,MSG,SEP2='-')
+       CALL HCO_MSG(HcoConfig%Err,MSG)
        WRITE(MSG,'(A33,L2)') 'Scale emissions                : ', HcoState%Options%ScaleEmis
        CALL HCO_MSG(HcoConfig%Err,MSG)
        WRITE(MSG,'(A33,L2)') 'Cap time shift                 : ', HcoState%Options%TimeShiftCap

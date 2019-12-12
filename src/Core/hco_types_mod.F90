@@ -55,6 +55,7 @@ MODULE HCO_TYPES_MOD
   INTEGER, PARAMETER, PUBLIC  :: HCO_UFLAG_FROMFILE = 1
   INTEGER, PARAMETER, PUBLIC  :: HCO_UFLAG_ALWAYS   = 2
   INTEGER, PARAMETER, PUBLIC  :: HCO_UFLAG_ONCE     = 3
+  INTEGER, PARAMETER, PUBLIC  :: HCO_UFLAG_3HR      = 4
 
   ! Data container types. These are used to distinguish between
   ! base emissions, scale factors and masks.
@@ -142,6 +143,8 @@ MODULE HCO_TYPES_MOD
      LOGICAL  :: ScaleEmis      ! Scale emissions by uniform scale factors set
                                 ! in HEMCO configuration file? Defaults to yes.
      LOGICAL  :: TimeShiftCap   ! Cap time shift to same day. Defaults to no.
+     LOGICAL  :: isESMF         ! Are we using ESMF?
+     LOGICAL  :: isDryRun       ! Are we in a dry run?
   END TYPE HcoOpt
 
   !=========================================================================
@@ -296,6 +299,7 @@ MODULE HCO_TYPES_MOD
      TYPE(ListCont), POINTER :: Month
      TYPE(ListCont), POINTER :: Day
      TYPE(ListCont), POINTER :: Hour
+     TYPE(ListCont), POINTER :: Hour3
      INTEGER                 :: FileLun       = -1  ! LUN of file in archive
      CHARACTER(LEN=2023)     :: FileInArchive = ''  ! name of file in archive
      INTEGER                 :: Counter       =  0  ! ReadList read counter
@@ -345,10 +349,11 @@ MODULE HCO_TYPES_MOD
      INTEGER                     :: ncMts(2)  ! month range
      INTEGER                     :: ncDys(2)  ! day range
      INTEGER                     :: ncHrs(2)  ! hour range
-     INTEGER                     :: tShift(2) ! time stamp shift in months & seconds
+     INTEGER                     :: tShift(6) ! time stamp shift (YMDhms)
      INTEGER                     :: CycleFlag ! cycle flag
      LOGICAL                     :: MustFind  ! file must be found
      LOGICAL                     :: UseSimYear! use simulation year
+     LOGICAL                     :: Discontinuous ! discontinuous dataset?
      INTEGER                     :: UpdtFlag  ! update flag
      LOGICAL                     :: ncRead    ! read from source?
      TYPE(Arr3D_SP),     POINTER :: V3(:)     ! vector of 3D fields
