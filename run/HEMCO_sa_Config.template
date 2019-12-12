@@ -51,22 +51,22 @@
 ###     on the Harvard "Odyssey" cluster.
 ###
 ### (4) You can leave DefaultDiagnOn set at "false".  This will archive
-###     extra diagnostics for each HEMCO species.  In most cases, you 
-###     would only be interested in archiving out the diagnostics as 
+###     extra diagnostics for each HEMCO species.  In most cases, you
+###     would only be interested in archiving out the diagnostics as
 ###     specified in the diagnostic configuration file.
 ###
 ### (5) By default, the diagnostics will be saved to the output folder
 ###     with template HEMCO_sa_Diagnostics.YYYYYMMDD_hhmmss.nc.  You
 ###     can modify this by changing the DiagnPrefix setting.
-###  
+###
 ### (5) PBL dry deposition is set to false, as we are not running HEMCO
 ###     within GEOS-Chem.
 ###
-### (6) The HEMCO standalone will read the diagnostic configuration 
-###     file (named HEMCO_sa_Diagn.rc) by default.  But we also provide 
-###     the diagnostic configuration file corresponding to the GEOS-Chem 
+### (6) The HEMCO standalone will read the diagnostic configuration
+###     file (named HEMCO_sa_Diagn.rc) by default.  But we also provide
+###     the diagnostic configuration file corresponding to the GEOS-Chem
 ###     benchmark simulation (named HEMCO_Diagn.rc) in the HEMCO standalone
-###     run directory that you generate with the GEOS-Chem unit tester.  
+###     run directory that you generate with the GEOS-Chem unit tester.
 ###     You can change the HEMCO diagnostic configuration file by modifying
 ###     the DiagnFile setting below.
 ###############################################################################
@@ -115,17 +115,17 @@ PBL dry deposition:  False
 ### ===========================================================================
 ### We can just "drop in" an existing HEMCO_Config.rc file from another
 ### GEOS-Chem run directory, and those settings will be activated.  This is
-### done with the ">>>include HEMCO_Config.rc" statement.  
+### done with the ">>>include HEMCO_Config.rc" statement.
 ###
 ### Settings in HEMCO_sa_Config.rc will always override any settings in
-### the included HEMCO_Config.rc. 
+### the included HEMCO_Config.rc.
 ###
-### By default, we will include HEMCO_Config.rc from the geosfp_4x5_standard 
-### simulation (which is also used for geosfp_4x5_benchmark).  You can, 
+### By default, we will include HEMCO_Config.rc from the geosfp_4x5_standard
+### simulation (which is also used for geosfp_4x5_benchmark).  You can,
 ### of course, include a HEMCO_Config.rc for a different simulation.
 ###
-### Because the included HEMCO_Config.rc (in GEOS-Chem 12.1.0 and later) 
-### contains entries for reading in met fields via FlexGrid), we will use 
+### Because the included HEMCO_Config.rc (in GEOS-Chem 12.1.0 and later)
+### contains entries for reading in met fields via FlexGrid), we will use
 ### these entries instead of overriding them in HEMCO_sa_Config.rc.
 ###
 ### We recommend to use the emissions options in HEMCO_Config.rc (rather than
@@ -163,7 +163,7 @@ PBL dry deposition:  False
     --> +LinStratChem+         :       false
 # -----------------------------------------------------------------------------
 102     ParaNOx                : off   NO/NO2/O3/HNO3
-104     SoilNOx                : off   NO 
+104     SoilNOx                : off   NO
 109     MEGAN_Mono             : off   CO/MTPA/MTPO/LIMO/SESQ
 120     Inorg_Iodine           : off   HOI/I2
 ### END SECTION EXTENSION SWITCHES ###
