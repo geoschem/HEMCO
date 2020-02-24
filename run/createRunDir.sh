@@ -199,11 +199,11 @@ mkdir -p ${rundir}
 # Copy run directory files and subdirectories
 #-----------------------------------------------------------------
 cp -r ./OutputDir ${rundir}
-cp ./HEMCO_sa_Config.template  ${rundir}/HEMCO_Config.rc
+cp ./HEMCO_Config.template     ${rundir}/HEMCO_Config.rc
+cp ./HEMCO_sa_Config.template  ${rundir}/HEMCO_sa_Config.rc
 cp ./HEMCO_sa_Time.rc          ${rundir}
 cp ./HEMCO_sa_Spec.rc          ${rundir}
 cp ./${grid_file}              ${rundir}
-cp ./HEMCO_Config.template     ${rundir}
 cp ./HEMCO_Diagn.rc            ${rundir}
 cp ./runHEMCO.sh               ${rundir}
 cp ./README                    ${rundir}
