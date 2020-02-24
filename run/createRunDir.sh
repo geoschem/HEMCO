@@ -161,7 +161,7 @@ if [ -z "$1" ]; then
     printf "\nEnter run directory name, or press return to use default:\n"
     read rundir_name
     if [[ -z "${rundir_name}" ]]; then
-	rundir_name="${met_name,,}"_${grid_name}_HEMCO
+	rundir_name=hemco_${grid_name}_"${met_name,,}"
 	printf "Using default directory name ${rundir_name}\n"
     fi
 else
@@ -206,6 +206,7 @@ cp ./${grid_file}              ${rundir}
 cp ./HEMCO_Config.template     ${rundir}
 cp ./HEMCO_Diagn.rc            ${rundir}
 cp ./runHEMCO.sh               ${rundir}
+cp ./README                    ${rundir}
 mkdir ${rundir}/build
 echo "To build HEMCO with CMake type 'cmake ../CodeDir'" >> ${rundir}/build/README
 
@@ -257,8 +258,7 @@ do
 	cd ${rundir}
 	printf "\n\nChanges to the following run directory files are tracked by git:\n\n" >> ${version_log}
 	git init
-	git add *.rc *.sh environmentFileSamples/* runScriptSamples/* README .gitignore
-	git add setCodeDir Makefile input.geos input.nml
+	git add *.rc *.sh
 	printf " " >> ${version_log}
 	git commit -m "Initial run directory" >> ${version_log}
 	cd ${curdir}
