@@ -1,4 +1,4 @@
-add_library(NcdfUtil STATIC EXCLUDE_FROM_ALL
+add_library(NcdfUtilHco STATIC EXCLUDE_FROM_ALL
 	m_do_err_out.F90
 	m_netcdf_io_checks.F90
 	m_netcdf_io_close.F90
@@ -12,7 +12,7 @@ add_library(NcdfUtil STATIC EXCLUDE_FROM_ALL
 	m_netcdf_io_write.F90
 	ncdf_mod.F90
 )
-target_link_libraries(NcdfUtil
-	PUBLIC JulDay
+target_link_libraries(NcdfUtilHco
+	PUBLIC JulDayHco
 )
 

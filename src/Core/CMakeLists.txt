@@ -36,7 +36,7 @@ add_library(HCO STATIC EXCLUDE_FROM_ALL
 	messy_ncregrid_mpi.F90
 )
 target_link_libraries(HCO
-	PUBLIC GeosUtil NcdfUtil BaseTarget
+	PUBLIC GeosUtilHco NcdfUtilHco BaseTarget
 )
 target_compile_options(HCO
 	PRIVATE
