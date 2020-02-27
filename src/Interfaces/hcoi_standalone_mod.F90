@@ -1826,8 +1826,6 @@ CONTAINS
        RETURN
     ENDIF
 
-    print*, '### Define_Diagnostics: NNDIAGN: ', N
-
     ! If there are no diagnostics defined yet, define some default
     ! diagnostics below. These are simply the overall emissions
     ! (across all extensions, categories, hierarchies) for each
@@ -2601,7 +2599,7 @@ CONTAINS
 
     !%%%%% Specific humidity %%%%%
     IF ( ExtState%SPHU%DoUse ) THEN
-       Name = 'SPHU1'
+       Name = 'SPHU'
        CALL ExtDat_Set( am_I_Root,    HcoState, ExtState%SPHU,               &
                         TRIM( Name ), RC,       FIRST=FIRST                 )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -2615,7 +2613,7 @@ CONTAINS
 
     !%%%%% Temperature %%%%%
     IF ( ExtState%TK%DoUse ) THEN
-       Name = 'TMPU1'
+       Name = 'TMPU'
        CALL ExtDat_Set( am_I_Root,    HcoState, ExtState%TK,                 &
                         TRIM( Name ), RC,       FIRST=FIRST                 )
        IF ( RC /= HCO_SUCCESS ) THEN
