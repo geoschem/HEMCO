@@ -70,10 +70,11 @@ do
     read met_num
     if [[ ${met_num} = "1" ]]; then
 	met_name='GEOSFP'
-	met_resolution='025x03125'
+	met_dir='GEOS_FP'
 	met_native='0.25x0.3125'
 	met_latres='025'
 	met_lonres='03125'
+	met_resolution='${met_latres}x${met_lonres}'
 	met_extension='nc'
 	met_cn_year='2011'
 	pressure_unit='hPa'
@@ -82,10 +83,11 @@ do
 	dust_sf='6.42e-5'
     elif [[ ${met_num} = "2" ]]; then
 	met_name='MERRA2'
-	met_resolution='05x0625'
+	met_dir='MERRA2'
 	met_native='0.5x0.625'
 	met_latres='05'
 	met_lonres='0625'
+	met_resolution='${met_latres}x${met_lonres}'
 	met_extension='nc4'
 	met_cn_year='2015'
 	pressure_unit='Pa '
@@ -112,18 +114,22 @@ do
     read res_num
     if [[ ${res_num} = "1" ]]; then
 	grid_name='4x5'
+	grid_res='4x5'
 	grid_file='HEMCO_sa_Grid.4x5.rc'
 	valid_res=1
     elif [[ ${res_num} = "2" ]]; then
 	grid_name='2x25'
+	grid_res='2x2.5'
 	grid_file='HEMCO_sa_Grid.2x25.rc'
 	valid_res=1
     elif [[ ${res_num} = "3" ]]; then
 	grid_name='05x0625'
+	grid_res='0.5x0.625'
 	grid_file='HEMCO_sa_Grid.05x0625.rc'
 	valid_res=1
     elif [[ ${res_num} = "4" ]]; then
 	grid_name='025x03125'
+	grid_res='0.25x0.3125'
 	grid_file='HEMCO_sa_Grid.025x03125.rc'
 	valid_res=1
     elif [[ ${res_num} = "5" ]]; then
@@ -133,6 +139,26 @@ do
 	valid_res=1
     else
 	printf "Invalid resolution option. Try again.\n"
+    fi
+done
+
+#-----------------------------------------------------------------
+# Ask user to provide path to HEMCO_Config.template file
+#-----------------------------------------------------------------
+printf "\nEnter path to the HEMCO_Config.rc file with your emissions settings.\n\n"
+printf "NOTE: This may be a HEMCO_Config.rc file from a GEOS-Chem run directory\n"
+printf "or a HEMCO_Config.template file from the GEOS-Chem source code repository.\n"
+valid_path=0
+while [ "$valid_path" -eq 0 ]
+do
+    read hco_config_path
+    if [[ ${hco_config_path} = "q" ]]; then
+	printf "\nExiting.\n"
+	exit 1
+    elif [[ ! -f ${hco_config_path} ]]; then
+        printf "\nError: ${hco_config_path} does not exist. Enter a new path or hit q to quit.\n"
+    else
+	valid_path=1
     fi
 done
 
@@ -199,7 +225,7 @@ mkdir -p ${rundir}
 # Copy run directory files and subdirectories
 #-----------------------------------------------------------------
 cp -r ./OutputDir ${rundir}
-cp ./HEMCO_Config.template     ${rundir}/HEMCO_Config.rc
+cp ${hco_config_path}          ${rundir}/HEMCO_Config.rc
 cp ./HEMCO_sa_Config.template  ${rundir}/HEMCO_sa_Config.rc
 cp ./HEMCO_sa_Time.rc          ${rundir}
 cp ./HEMCO_sa_Spec.rc          ${rundir}
@@ -208,7 +234,7 @@ cp ./HEMCO_Diagn.rc            ${rundir}
 cp ./runHEMCO.sh               ${rundir}
 cp ./README                    ${rundir}
 mkdir ${rundir}/build
-echo "To build HEMCO with CMake type 'cmake ../CodeDir'" >> ${rundir}/build/README
+printf "To build HEMCO type:\n   make ../CodeDir\n   make -j\n   make install\n" >> ${rundir}/build/README
 
 #--------------------------------------------------------------------
 # Create symbolic links to data directories, restart files, and code
@@ -218,7 +244,18 @@ ln -s ${hemcodir}                            ${rundir}/CodeDir
 #-----------------------------------------------------------------
 # Replace token strings in certain files
 #-----------------------------------------------------------------
+# HEMCO_sa_Config.rc
+sed -i -e "s|{DATA_ROOT}|${GC_DATA_ROOT}|"   ${rundir}/HEMCO_sa_Config.rc
+sed -i -e "s|{GRID_FILE}|${grid_file}|"      ${rundir}/HEMCO_sa_Config.rc
+sed -i -e "s|{MET_NAME}|${met_name}|"        ${rundir}/HEMCO_sa_Config.rc
+sed -i -e "s|{MET_RES}|${grid_res}|"         ${rundir}/HEMCO_sa_Config.rc
+
+# HEMCO_Config.rc (copied from GEOS-Chem)
 sed -i -e "s|{DATA_ROOT}|${GC_DATA_ROOT}|"   ${rundir}/HEMCO_Config.rc
+sed -i -e "s|{GRID_DIR}|${grid_res}|"        ${rundir}/HEMCO_Config.rc
+sed -i -e "s|{MET_DIR}|${met_dir}|"          ${rundir}/HEMCO_Config.rc
+sed -i -e "s|{VERBOSE}|0|"                   ${rundir}/HEMCO_Config.rc
+sed -i -e "s|{WARNINGS}|1|"                  ${rundir}/HEMCO_Config.rc
 sed -i -e "s|{NATIVE_RES}|${met_native}|"    ${rundir}/HEMCO_Config.rc
 sed -i -e "s|{LATRES}|${met_latres}|"        ${rundir}/HEMCO_Config.rc
 sed -i -e "s|{LONRES}|${met_lonres}|"        ${rundir}/HEMCO_Config.rc
