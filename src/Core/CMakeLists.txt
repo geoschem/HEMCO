@@ -43,3 +43,6 @@ target_compile_options(HCO
 		""
 		$<$<STREQUAL:"${CMAKE_Fortran_COMPILER_ID}","GNU">:-ffree-line-length-none>
 )
+target_include_directories(HCO
+	INTERFACE ${HEMCO_BINARY_DIR}/mod
+)

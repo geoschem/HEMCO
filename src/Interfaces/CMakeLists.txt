@@ -1,9 +1,14 @@
+# Interfaces/CMakeLists.txt
+
 add_library(HCOI STATIC EXCLUDE_FROM_ALL
 	hcoi_esmf_mod.F90
 	hcoi_standalone_mod.F90
 )
 target_link_libraries(HCOI
 	PUBLIC HCOX
+)
+target_include_directories(HCOI
+	INTERFACE ${HEMCO_BINARY_DIR}/mod
 )
 target_compile_options(HCOI
 	PRIVATE
