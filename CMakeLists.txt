@@ -22,29 +22,18 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
    set(STANDALONE TRUE)
 endif()
 
-if(STANDALONE)
-   # Declare the BaseTarget. All HEMCO targets depend on BaseTarget.
-   # This is used to control the compiler options and definitions for HEMCO
-   # targets (via inheritance).
-   add_library(BaseTarget INTERFACE)
-else()
-   # Not sure if this is needed. Can each project have its own BaseTarget?
-   add_library(HEMCOBuildProperties INTERFACE)
-endif()
+# Declare the HEMCOBuildProperties. All HEMCO targets depend on
+# HEMCOBuildProperties. This is used to control the compiler options and
+# definitions for HEMCO targets (via inheritance).
+add_library(HEMCOBuildProperties INTERFACE)
 
 # Put all of HEMCO's mod files in a subdirectory of the build
 # directory called mod
 set(CMAKE_Fortran_MODULE_DIRECTORY ${HEMCO_BINARY_DIR}/mod)
 
-if(STANDALONE)
-   target_include_directories(BaseTarget
-   	INTERFACE ${HEMCO_BINARY_DIR}/mod
-   )
-else()
-   target_include_directories(HEMCOBuildProperties
-    	INTERFACE ${HEMCO_BINARY_DIR}/mod
-   )
-endif()
+target_include_directories(HEMCOBuildProperties
+	INTERFACE ${HEMCO_BINARY_DIR}/mod
+)
 
 # Append HEMCO's environment variables to CMAKE_PREFIX_PATH
 list(APPEND CMAKE_PREFIX_PATH
@@ -60,36 +49,35 @@ list(APPEND CMAKE_PREFIX_PATH
 	$ENV{GC_F_LIB} 		$ENV{GC_LIB}
 )
 
-# Link NetCDF-F to BaseTarget
+# Link NetCDF-F to HEMCOBuildProperties
 find_package(NetCDF REQUIRED)
-if(STANDALONE)
-   target_include_directories(BaseTarget INTERFACE ${NETCDF_INCLUDE_DIRS})
-   target_link_libraries(BaseTarget INTERFACE ${NETCDF_LIBRARIES})
-else()
-   target_include_directories(HEMCOBuildProperties INTERFACE ${NETCDF_INCLUDE_DIRS})
-   target_link_libraries(HEMCOBuildProperties INTERFACE ${NETCDF_LIBRARIES})
-endif()   
+target_include_directories(HEMCOBuildProperties
+	INTERFACE ${NETCDF_INCLUDE_DIRS}
+)
+target_link_libraries(HEMCOBuildProperties
+	INTERFACE ${NETCDF_LIBRARIES}
+)
 
-# not sure if we want this for non-standalone
-if(STANDALONE)
-   # Use the NC_HAS_COMPRESSION definition if nf_def_var_deflate is in netcdf.inc
-   if(EXISTS ${NETCDF_F77_INCLUDE_DIR}/netcdf.inc)
-   	file(READ ${NETCDF_F77_INCLUDE_DIR}/netcdf.inc NCINC)
-   	if("${NCINC}" MATCHES ".*nf_def_var_deflate.*")
-   		target_compile_definitions(BaseTarget INTERFACE "NC_HAS_COMPRESSION")
-   	endif()
-   endif()
+# Use the NC_HAS_COMPRESSION definition if nf_def_var_deflate is in
+# netcdf.inc
+if(EXISTS ${NETCDF_F77_INCLUDE_DIR}/netcdf.inc)
+	file(READ ${NETCDF_F77_INCLUDE_DIR}/netcdf.inc NCINC)
+	if("${NCINC}" MATCHES ".*nf_def_var_deflate.*")
+		target_compile_definitions(HEMCOBuildProperties
+			INTERFACE "NC_HAS_COMPRESSION"
+		)
+	endif()
 endif()
 
 # Print a description of the source code repo's version
-# NOTE: this currently is blank so I'm commenting it out
+# (this doesn't work. come back to it -ewl )
 #get_repo_version(HEMCO_REPO_VERSION ${CMAKE_CURRENT_SOURCE_DIR})
-#message(STATUS "HEMCO @ ${HEMCO_REPO_VERSION}")
+#message(STATUS "HEMCO @ ${HEMCO_REPO_VERSION})
 
-if(NOT HEMCO_EXTERNAL_CONFIG)
+if(STANDALONE)
 	# This conditional block configures the HEMCO build for HEMCO
         # standalone. It sets HEMCO_EXE_TARGETS and it configures
-        # the BaseTarget.
+        # the HEMCOBuildProperties.
 
 	# Set CMAKE_BUILD_TYPE to Release by default
 	if(NOT CMAKE_BUILD_TYPE)
@@ -110,44 +98,66 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
 	set(RUNDIR ".." CACHE PATH "Path to your run directory")
 	hemco_pretty_print(VARIABLE RUNDIR)
 	message(STATUS "Bootstrapping  ${RUNDIR}")
-	get_filename_component(RUNDIR "${RUNDIR}" ABSOLUTE BASE_DIR "${CMAKE_BINARY_DIR}") # Make RUNDIR an absolute path
+        # Make RUNDIR an absolute path
+	get_filename_component(RUNDIR "${RUNDIR}" ABSOLUTE BASE_DIR "${CMAKE_BINARY_DIR}")
 
-	## Configure the GEOS-Chem build for GCHP or GC-Classic
-	#set(BUILD_WITHOUT_RUNDIR FALSE)
-	#if(EXISTS ${RUNDIR}/HEMCO_sa_Spec.rc)
-	#	file(STRINGS ${RUNDIR}/HEMCO_sa_Spec.rc )
-	#elseif(EXISTS ${RUNDIR}/getRunInfo)
-	#	set(GCHP FALSE) # getRunInfo is only in GC-Classic run direcotries
-	#elseif((NOT EXISTS RUNDIR) AND (DEFINED RUNDIR_SIM))
-	#	set(GCHP FALSE) # special case for building without a run directory
-	#	set(RUNDIR ${CMAKE_BINARY_DIR})
-	#	set(BUILD_WITHOUT_RUNDIR TRUE)
-	#else()
-	#	message(FATAL_ERROR "Your run directory doesn't have an input.geos or getRunInfo! Set RUNDIR to a valid run directory.")
-	#endif()
-
-	if(STANDALONE)
-		# Configure for HEMCO standalone
-		include(HEMCO-ConfigureStandalone)
-		configureHEMCOStandalone()
+	# Configure the run directory, if any. This section needs work to
+        # handle all possible paths and only have what is needed.
+	set(BUILD_WITHOUT_RUNDIR FALSE)
+	if(EXISTS ${RUNDIR}/HEMCO_sa_Spec.rc)
+		file(STRINGS ${RUNDIR}/HEMCO_sa_Spec.rc HEMCO_SA)
+	elseif(NOT EXISTS RUNDIR)
+		set(RUNDIR ${CMAKE_BINARY_DIR})
+		set(BUILD_WITHOUT_RUNDIR TRUE)
+	else()
+		message(FATAL_ERROR "Your run directory doesn't have HEMCO_sa_Spec.rc! Set RUNDIR to a valid run directory.")
 	endif()
 
-	# Use the default compiler options (do this for non-standalone too?)
+	# Configure for HEMCO standalone
+	include(HEMCO-ConfigureStandalone)
+	configureHEMCOStandalone()
+
+	# Use the default compiler options
 	include(HEMCO-DefaultCompilerOptions)
 endif()
 
-# Write BaseTarget's configuration to a file
-get_target_property(BT_DEFINITIONS  BaseTarget INTERFACE_COMPILE_DEFINITIONS)
-get_target_property(BT_OPTIONS      BaseTarget INTERFACE_COMPILE_OPTIONS)
-get_target_property(BT_LIBRARIES    BaseTarget INTERFACE_LINK_LIBRARIES)
-get_target_property(BT_INCLUDES     BaseTarget INTERFACE_INCLUDE_DIRECTORIES)
-file(WRITE ${CMAKE_BINARY_DIR}/BaseTarget.txt
-    "# This file shows the BaseTarget's configuration.\n"
+if(GCHPCTM)
+	target_link_libraries(HEMCOBuildProperties
+		INTERFACE MAPL_Base
+	)
+
+#	# Configure HEMCO for GCHPctm
+#	include(HEMCO-ConfigureGCHPctm)
+#	configureHEMCOGCHPctm()
+#
+#	# Use the default compiler options
+#	include(HEMCO-DefaultCompilerOptions)
+endif()
+
+target_compile_definitions(HEMCOBuildProperties
+	INTERFACE ESMF_
+)
+
+# Write HEMCOBuildProperties's configuration to a file
+get_target_property(BT_DEFINITIONS  HEMCOBuildProperties
+	INTERFACE_COMPILE_DEFINITIONS
+)
+get_target_property(BT_OPTIONS      HEMCOBuildProperties
+	INTERFACE_COMPILE_OPTIONS
+)
+get_target_property(BT_LIBRARIES    HEMCOBuildProperties
+	INTERFACE_LINK_LIBRARIES
+)
+get_target_property(BT_INCLUDES     HEMCOBuildProperties
+	INTERFACE_INCLUDE_DIRECTORIES
+)
+file(WRITE ${CMAKE_BINARY_DIR}/HEMCOBuildProperties.txt
+    "# This file shows the HEMCOBuildProperties's configuration.\n"
     "\n"
-    "BaseTarget::INTERFACE_COMPILE_DEFINITIONS:${BT_DEFINITIONS}\n"
-    "BaseTarget::INTERFACE_COMPILE_OPTIONS:${BT_OPTIONS}\n"
-    "BaseTarget::INTERFACE_LINK_LIBRARIES:${BT_LIBRARIES}\n"
-    "BaseTarget::INTERFACE_INCLUDE_DIRECTORIES:${BT_INCLUDES}\n"
+    "HEMCOBuildProperties::INTERFACE_COMPILE_DEFINITIONS:${BT_DEFINITIONS}\n"
+    "HEMCOBuildProperties::INTERFACE_COMPILE_OPTIONS:${BT_OPTIONS}\n"
+    "HEMCOBuildProperties::INTERFACE_LINK_LIBRARIES:${BT_LIBRARIES}\n"
+    "HEMCOBuildProperties::INTERFACE_INCLUDE_DIRECTORIES:${BT_INCLUDES}\n"
     "CMAKE_Fortran_FLAGS_RELEASE:${CMAKE_Fortran_FLAGS_RELEASE}\n"
     "CMAKE_Fortran_FLAGS_DEBUG:${CMAKE_Fortran_FLAGS_DEBUG}\n"
     "CMAKE_Fortran_FLAGS:${CMAKE_Fortran_FLAGS}\n\n"
@@ -205,8 +215,6 @@ if(NOT HEMCO_EXTERNAL_CONFIG AND NOT HEMCO_TRY_RUN_PASSED)
 	endif()
 endif()
 
-if(NOT GEOS AND NOT STANDALONE)
-    add_subdirectory(src)
-endif()
+add_subdirectory(src)
 
 

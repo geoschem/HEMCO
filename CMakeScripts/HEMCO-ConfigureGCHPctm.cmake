@@ -1,8 +1,8 @@
-function(configureHEMCOStandalone)
+function(configureHEMCOGCHPctm)
 
     # Find OpenMP if we're building a multithreaded executable
     hemco_pretty_print(SECTION "Threading")
-    set(OMP "ON" CACHE STRING "Switch to enable/disable OpenMP threading in HEMCO")
+    set(OMP "OFF" CACHE STRING "Switch to enable/disable OpenMP threading in HEMCO")
     hemco_pretty_print(VARIABLE OMP IS_BOOLEAN)
     if("${OMP}")
        find_package(OpenMP REQUIRED)
@@ -25,25 +25,11 @@ function(configureHEMCOStandalone)
 	INTERFACE "USE_REAL8"
     )
 
+    # Always set ESMF_
+    target_compile_definitions(HEMCOBuildProperties
+	INTERFACE "ESMF_"
+    )
+
     #hemco_pretty_print(SECTION "Components")
-
-    # Determine which executables should be built
-    set(HEMCO_EXE_TARGETS "hemco_standalone" CACHE STRING "Executable targets that get built as a part of \"all\"")
-
-    # Export the following variables to GEOS-Chem's directory's scope
-    set(HEMCO_EXE_TARGETS       ${HEMCO_EXE_TARGETS}        PARENT_SCOPE)
-    set(RUNDIR                  ${RUNDIR}                   PARENT_SCOPE)
-
-    ## CPP flags used in HEMCO
-    #ESMF_
-    #USE_REAL8
-    #MODEL_GEOS
-    #TOMAS
-    #TOMAS12
-    #DEVEL
-    #MPI
-    #MESSY
-    #__SX__
-    #LINUX_IFORT
 
 endfunction()
