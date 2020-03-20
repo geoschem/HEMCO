@@ -234,7 +234,7 @@ cp ./HEMCO_Diagn.rc            ${rundir}
 cp ./runHEMCO.sh               ${rundir}
 cp ./README                    ${rundir}
 mkdir ${rundir}/build
-printf "To build HEMCO type:\n   make ../CodeDir\n   make -j\n   make install\n" >> ${rundir}/build/README
+printf "To build HEMCO type:\n   cmake ../CodeDir\n   make -j\n   make install\n" >> ${rundir}/build/README
 
 #--------------------------------------------------------------------
 # Create symbolic links to data directories, restart files, and code

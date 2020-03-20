@@ -4,3 +4,6 @@ add_library(HeadersHco STATIC EXCLUDE_FROM_ALL
 	physconstants.F
 	precision_mod.F
 )
+target_link_libraries(HeadersHco
+	PUBLIC BaseTarget
+)
