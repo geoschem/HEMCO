@@ -16,17 +16,9 @@ if(POLICY CMP0079)
 endif()
 
 #---------------------------------------------------------------------
-# Add CMakeScripts/ to the module path and import helper functions
+# Add CMakeScripts/ to the module path
 #---------------------------------------------------------------------
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts)
-include(HEMCO-Helpers)
-
-
-# Can probably get rid of this and just use HEMCO_EXTERNAL_CONFIG
-# Must define HEMCO_EXTERNAL_CONFIG for all models except standalone
-if(NOT HEMCO_EXTERNAL_CONFIG)
-    set(STANDALONE TRUE)
-endif()
 
 #---------------------------------------------------------------------
 # Declare the HEMCOBuildProperties library
@@ -35,6 +27,52 @@ endif()
 # control the compiler options and definitions for HEMCO targets
 # (via inheritance).
 add_library(HEMCOBuildProperties INTERFACE)
+
+#---------------------------------------------------------------------
+# Set default compiler options
+#---------------------------------------------------------------------
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+    target_compile_options(HEMCOBuildProperties
+	INTERFACE
+        -cpp -w -auto -noalign -convert big_endian -fp-model source -mcmodel=medium
+        -shared-intel -traceback -DLINUX_IFORT
+    )
+    set(CMAKE_Fortran_FLAGS_RELEASE "-O2")
+    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O2")
+    set(CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -check arg_temp_created -debug all -DDEBUG")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(HEMCOBuildProperties
+	INTERFACE
+        -cpp -w -std=legacy -fautomatic -fno-align-commons -fconvert=big-endian
+        -fno-range-check -mcmodel=medium -fbacktrace -g -DLINUX_GFORTRAN
+    )
+    set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -funroll-loops")
+    # same as release for GEOS-Chem
+    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O3 -funroll-loops")
+    set(CMAKE_Fortran_FLAGS_DEBUG "-g -gdwarf-2 -gstrict-dwarf -O0 -Wall -Wextra -Wconversion -Warray-temporaries -fcheck-array-temporaries")
+else()
+    message(FATAL_ERROR "Unknown Fortran compiler: ${CMAKE_Fortran_COMPILER_ID}")
+endif()
+
+#---------------------------------------------------------------------
+# Always set USE_REAL8
+#---------------------------------------------------------------------
+target_compile_definitions(HEMCOBuildProperties
+    INTERFACE "USE_REAL8"
+)
+
+#---------------------------------------------------------------------
+# Set OpenMP setting as cache variable to not override existing definition
+#---------------------------------------------------------------------
+set(OMP "TRUE" CACHE STRING "Enables/disables HEMCO built with OpenMP")
+if("${OMP}")
+    find_package(OpenMP REQUIRED)
+    target_link_libraries(HEMCOBuildProperties INTERFACE OpenMP::OpenMP_Fortran) # Prefer OpenMP::OpenMP target rather than variables
+else()
+    target_compile_definitions(HEMCOBuildProperties
+        INTERFACE "NO_OMP"
+    )
+endif()
 
 #---------------------------------------------------------------------
 # Put all of HEMCO's mod files in build subdir called mod
@@ -85,6 +123,7 @@ endif()
 
 #---------------------------------------------------------------------
 # Print a description of the source code repo's version
+# (Needs more work to enable)
 #---------------------------------------------------------------------
 #get_repo_version(HEMCO_REPO_VERSION ${CMAKE_CURRENT_SOURCE_DIR})
 #message(STATUS "HEMCO @ ${HEMCO_REPO_VERSION})
@@ -107,16 +146,10 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
     	)
     endif()
     
-    # Display CMAKE_PREFIX_PATH and CMAKE_BUILD_TYPE
-    hemco_pretty_print(SECTION "Useful CMake variables")
-    hemco_pretty_print(VARIABLE CMAKE_PREFIX_PATH)
-    hemco_pretty_print(VARIABLE CMAKE_BUILD_TYPE)
-    
-    # Get the run directory
-    hemco_pretty_print(SECTION "Run directory setup")
+    # Set the run directory to one directory up
     set(RUNDIR ".." CACHE PATH "Path to your run directory")
-    hemco_pretty_print(VARIABLE RUNDIR)
     message(STATUS "Bootstrapping  ${RUNDIR}")
+
     # Make RUNDIR an absolute path
     get_filename_component(RUNDIR "${RUNDIR}"
         ABSOLUTE BASE_DIR "${CMAKE_BINARY_DIR}"
@@ -135,36 +168,23 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
                 valid run directory.")
     endif()
     
-    # Configure for HEMCO standalone
-    include(HEMCO-ConfigureStandalone)
-    configureHEMCOStandalone()
-    
-    # Use the default compiler options
-    include(HEMCO-DefaultCompilerOptions)
+    # Determine which executables should be built
+    set(HEMCO_EXE_TARGETS "hemco_standalone"
+        CACHE STRING "Executable targets that get built as a part of \"all\""
+    )
+
 endif()
 
 #---------------------------------------------------------------------
-# For HEMCO as submodule in GCHP wrapper
+# For HEMCO as submodule in MAPL/ESMF superproject
 #---------------------------------------------------------------------
-if(GCHPCTM)
+if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
     target_link_libraries(HEMCOBuildProperties
         INTERFACE MAPL_Base
     )
     target_compile_definitions(HEMCOBuildProperties
         INTERFACE ESMF_
     )
-endif()
-
-#---------------------------------------------------------------------
-# For HEMCO as submodule in GEOS-Chem Classic wrapper
-#---------------------------------------------------------------------
-if(NOT GC_EXTERNAL_CONFIG)
-    # Configure for HEMCO standalone
-    include(HEMCO-ConfigureGCClassic)
-    configureHEMCOGCClassic()
-
-    # Use the default compiler options
-    include(HEMCO-DefaultCompilerOptions)
 endif()
 
 #---------------------------------------------------------------------
@@ -216,7 +236,6 @@ if(NOT HEMCO_EXTERNAL_CONFIG AND NOT HEMCO_TRY_RUN_PASSED)
     	RUN_OUTPUT_VARIABLE RUN_OUTPUT
     )
 
-    
     # Display a warning if its compilation failed
     if(NOT COMPILED_OK)
         if(OMP)
@@ -259,6 +278,7 @@ if(NOT HEMCO_EXTERNAL_CONFIG AND NOT HEMCO_TRY_RUN_PASSED)
     endif()
 endif()
 
+#---------------------------------------------------------------------
+# Add source code directory
+#---------------------------------------------------------------------
 add_subdirectory(src)
-
-
