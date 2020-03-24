@@ -35,7 +35,6 @@ PROGRAM HEMCO_StandAlone
 !
   ! Scalars
   LOGICAL            :: IsDryRun
-  LOGICAL            :: Exists
   INTEGER            :: ArgLen
   INTEGER            :: nArg
   INTEGER            :: RC
@@ -87,9 +86,7 @@ PROGRAM HEMCO_StandAlone
            CALL Get_Command_Argument( nArg, ArgVal, ArgLen )
            SELECT CASE( TRIM( ArgVal ) )
               CASE( '--dryrun' )
-                 WRITE( 6, '(a)' ) 'Please provide a HEMCO configuration ' // &
-                      'file or remove config file argument to use the '   // &
-                      'default HEMCO_sa_Config.rc.'
+                 WRITE( 6, 100 )
                  STOP
               CASE DEFAULT
                  IF ( ArgLen > 0 ) THEN
@@ -110,20 +107,10 @@ PROGRAM HEMCO_StandAlone
      nArg = nArg + 1
   ENDDO
 
-  ! If no configuration file is provided, use HEMCO_sa_Config.rc
+  ! Make sure we have a proper configuration file specified
   IF ( LEN_TRIM( ConfigFile ) == 0 ) THEN
-     ConfigFile='HEMCO_sa_Config.rc'
-  ENDIF
-
-  ! Test if the config file exists
-  INQUIRE( FILE=TRIM( ConfigFile ), EXIST=Exists )
-
-  ! Test if the file exists and define an output string
-  IF ( .not. Exists ) THEN
-     ! Write message to stdout
-     WRITE( 6, '(a)' ) TRIM( ConfigFile ) // &
-                       TRIM( ' NOT FOUND! Check the path of your HEMCO ' // &
-                             'configuration file. (hemco_standalone.F90)' )
+     WRITE( 6, 100 )
+ 100 FORMAT( 'Please provide a HEMCO configuration file as input!' )
      STOP
   ENDIF
 
