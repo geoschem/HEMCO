@@ -13,6 +13,8 @@ add_library(NcdfUtilHco STATIC EXCLUDE_FROM_ALL
 	ncdf_mod.F90
 )
 target_link_libraries(NcdfUtilHco
-	PUBLIC JulDayHco
+	PUBLIC JulDayHco HeadersHco
 )
-
+target_include_directories(NcdfUtilHco
+	INTERFACE ${HEMCO_BINARY_DIR}/mod
+)
