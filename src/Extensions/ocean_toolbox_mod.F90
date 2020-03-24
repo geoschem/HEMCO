@@ -157,7 +157,7 @@ CONTAINS
        VERB = .FALSE.
     ENDIF
 
-    ! Set KG to zero and return if winds are 0 
+    ! Set KG to zero and return if winds are 0
     IF ( V == 0.d0 ) THEN
        KG = 0d0
        RC = OC_SUCCESS
