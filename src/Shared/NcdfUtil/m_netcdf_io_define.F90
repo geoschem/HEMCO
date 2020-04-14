@@ -4,11 +4,11 @@
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: m_netcdf_io_define.F90
+! !MODULE: HCO_m_netcdf_io_define.F90
 !
 ! !INTERFACE:
 !
-MODULE m_netcdf_io_define
+MODULE HCO_m_netcdf_io_define
 !
 ! !USES:
 !
@@ -1203,4 +1203,4 @@ CONTAINS
 
   END SUBROUTINE NcBegin_Def
 !EOC
-END MODULE m_netcdf_io_define
+END MODULE HCO_m_netcdf_io_define

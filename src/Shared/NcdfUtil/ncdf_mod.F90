@@ -4,28 +4,28 @@
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: ncdf_mod.F90
+! !MODULE: HCO_ncdf_mod.F90
 !
-! !DESCRIPTION: Module NCDF\_MOD contains routines to read data from
+! !DESCRIPTION: Module HCO\_NCDF\_MOD contains routines to read data from
 ! netCDF files.
 !\\
 !\\
 ! !INTERFACE:
 !
-MODULE NCDF_MOD
+MODULE HCO_NCDF_MOD
 !
 ! !USES:
 !
   ! Modules for netCDF read
-  USE m_netcdf_io_open
-  USE m_netcdf_io_get_dimlen
-  USE m_netcdf_io_read
-  USE m_netcdf_io_readattr
-  USE m_netcdf_io_close
-  USE m_netcdf_io_create
-  USE m_netcdf_io_define
-  USE m_netcdf_io_write
-  USE m_netcdf_io_checks
+  USE HCO_m_netcdf_io_open
+  USE HCO_m_netcdf_io_get_dimlen
+  USE HCO_m_netcdf_io_read
+  USE HCO_m_netcdf_io_readattr
+  USE HCO_m_netcdf_io_close
+  USE HCO_m_netcdf_io_create
+  USE HCO_m_netcdf_io_define
+  USE HCO_m_netcdf_io_write
+  USE HCO_m_netcdf_io_checks
 
   IMPLICIT NONE
   PRIVATE
@@ -609,7 +609,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CHARPAK_MOD, ONLY : TRANLC
+    USE HCO_CHARPAK_MOD, ONLY : TRANLC
 !
 ! !INPUT PARAMETERS:
 !
@@ -1217,7 +1217,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE JULDAY_MOD, ONLY : JULDAY, CALDATE
+    USE HCO_JULDAY_MOD, ONLY : JULDAY, CALDATE
 !
 ! !INPUT PARAMETERS:
 !
@@ -1346,7 +1346,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CHARPAK_MOD, ONLY : TRANLC
+    USE HCO_CHARPAK_MOD, ONLY : TRANLC
 !
 ! !INPUT PARAMETERS:
 !
@@ -1731,7 +1731,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CHARPAK_MOD, ONLY : TRANLC
+    USE HCO_CHARPAK_MOD, ONLY : TRANLC
 !
 ! !INPUT PARAMETERS:
 !
@@ -4804,7 +4804,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE JULDAY_MOD, ONLY : JULDAY
+    USE HCO_JULDAY_MOD, ONLY : JULDAY
 !
 ! !INPUT PARAMETERS:
 !
@@ -4956,4 +4956,4 @@ CONTAINS
 
   END FUNCTION NC_ISMODELLEVEL
 !EOC
-END MODULE NCDF_MOD
+END MODULE HCO_NCDF_MOD

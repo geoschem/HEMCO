@@ -319,7 +319,7 @@ CONTAINS
     USE HCO_STATE_MOD,   ONLY : HCO_State
     USE HCO_ExtList_Mod, ONLY : GetExtOpt
     USE HCO_ExtList_Mod, ONLY : CoreNr
-    USE CHARPAK_MOD,     ONLY : TRANLC
+    USE HCO_CHARPAK_MOD, ONLY : TRANLC
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -541,8 +541,8 @@ CONTAINS
 ! !USES:
 !
     USE HCO_CharTools_Mod
-    USE CHARPAK_Mod,       ONLY : STRREPL, STRSPLIT
-    USE inquireMod,        ONLY : findFreeLUN
+    USE HCO_CHARPAK_Mod,   ONLY : STRREPL, STRSPLIT
+    USE HCO_inquireMod,    ONLY : findFreeLUN
     USE HCO_STATE_MOD,     ONLY : HCO_GetHcoID
     USE HCO_STATE_MOD,     ONLY : HCO_State
     USE HCO_EXTLIST_MOD,   ONLY : GetExtOpt
@@ -4334,7 +4334,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE inquireMod,        ONLY : findFreeLUN
+    USE HCO_inquireMod,    ONLY : findFreeLUN
     USE HCO_ExtList_Mod,   ONLY : CoreNr, GetExtOpt
 !
 ! !INPUT PARAMETERS:
@@ -4469,7 +4469,7 @@ CONTAINS
 ! !USES:
 !
     USE HCO_CharTools_Mod
-    USE CHARPAK_Mod,       ONLY : STRREPL, STRSPLIT
+    USE HCO_CHARPAK_Mod,  ONLY : STRREPL, STRSPLIT
 !
 ! !INPUT PARAMETERS:
 !

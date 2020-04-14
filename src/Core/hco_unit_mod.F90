@@ -362,7 +362,7 @@ CONTAINS
 ! !USES:
 !
     USE HCO_TYPES_MOD,    ONLY : ConfigObj
-    USE CharPak_Mod,      ONLY : CStrip
+    USE HCO_CharPak_Mod,  ONLY : CStrip
 !
 ! !INPUT PARAMETERS:
 !
@@ -957,7 +957,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CharPak_Mod, ONLY : TRANLC
+    USE HCO_CharPak_Mod, ONLY : TRANLC
 !
 ! !INPUT PARAMETERS:
 !

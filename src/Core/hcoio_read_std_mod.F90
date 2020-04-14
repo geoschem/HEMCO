@@ -113,14 +113,14 @@ CONTAINS
 !
 ! !USES:
 !
-    USE Ncdf_Mod,           ONLY : NC_Open
-    USE Ncdf_Mod,           ONLY : NC_Close
-    USE Ncdf_Mod,           ONLY : NC_Read_Var
-    USE Ncdf_Mod,           ONLY : NC_Read_Arr
-    USE Ncdf_Mod,           ONLY : NC_Get_Grid_Edges
-    USE Ncdf_Mod,           ONLY : NC_Get_Sigma_Levels
-    USE Ncdf_Mod,           ONLY : NC_ISMODELLEVEL
-    USE CHARPAK_MOD,        ONLY : TRANLC
+    USE HCO_Ncdf_Mod,       ONLY : NC_Open
+    USE HCO_Ncdf_Mod,       ONLY : NC_Close
+    USE HCO_Ncdf_Mod,       ONLY : NC_Read_Var
+    USE HCO_Ncdf_Mod,       ONLY : NC_Read_Arr
+    USE HCO_Ncdf_Mod,       ONLY : NC_Get_Grid_Edges
+    USE HCO_Ncdf_Mod,       ONLY : NC_Get_Sigma_Levels
+    USE HCO_Ncdf_Mod,       ONLY : NC_ISMODELLEVEL
+    USE HCO_CHARPAK_MOD,    ONLY : TRANLC
     USE HCO_Unit_Mod,       ONLY : HCO_Unit_Change
     USE HCO_Unit_Mod,       ONLY : HCO_Unit_ScalCheck
     USE HCO_Unit_Mod,       ONLY : HCO_IsUnitless
@@ -1475,7 +1475,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE Ncdf_Mod,      ONLY : NC_Read_Time_YYYYMMDDhhmm
+    USE HCO_Ncdf_Mod,  ONLY : NC_Read_Time_YYYYMMDDhhmm
     USE HCO_tIdx_Mod,  ONLY : HCO_GetPrefTimeAttr
 !
 ! !INPUT PARAMETERS:
@@ -2635,7 +2635,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE Julday_Mod
+    USE HCO_Julday_Mod
 !
 ! !INPUT PARAMETERS:
 !
@@ -3249,8 +3249,8 @@ CONTAINS
 !
 ! !USES:
 !
-    USE m_netcdf_io_checks
-    USE m_netcdf_io_get_dimlen
+    USE HCO_m_netcdf_io_checks
+    USE HCO_m_netcdf_io_get_dimlen
     USE HCO_ExtList_Mod,    ONLY : GetExtOpt
 !
 ! !INPUT PARAMETERS:
@@ -3449,7 +3449,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE inquireMod,         ONLY : findFreeLUN
+    USE HCO_inquireMod,     ONLY : findFreeLUN
     USE HCO_CHARTOOLS_MOD,  ONLY : HCO_CMT, HCO_SPC, NextCharPos
     USE HCO_EmisList_Mod,   ONLY : HCO_GetPtr
     USE HCO_FileData_Mod,   ONLY : FileData_ArrCheck
@@ -3809,7 +3809,7 @@ CONTAINS
 ! !USES:
 !
 #if !defined(ESMF_)
-    USE Ncdf_Mod,       ONLY : NC_CLOSE
+    USE HCO_Ncdf_Mod,   ONLY : NC_CLOSE
 #endif
 !
 ! !INPUT PARAMTERS:

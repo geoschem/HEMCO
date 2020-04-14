@@ -900,7 +900,7 @@ CONTAINS
     USE HCO_State_Mod,     ONLY : HCO_GetHcoID
     USE HCO_State_Mod,     ONLY : HCO_GetExtHcoID
     USE HCO_ReadList_Mod,  ONLY : ReadList_Remove
-    USE inquireMod,        ONLY : findfreeLUN
+    USE HCO_inquireMod,    ONLY : findfreeLUN
 !
 ! !INPUT PARAMETERS:
 !

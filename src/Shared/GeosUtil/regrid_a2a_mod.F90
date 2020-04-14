@@ -5,13 +5,13 @@
 !
 ! !MODULE: regrid_a2a_mod.F90
 !
-! !DESCRIPTION: Module REGRID\_A2A\_MOD uses an algorithm adapted from
+! !DESCRIPTION: Module HCO\_REGRID\_A2A\_MOD uses an algorithm adapted from
 !  MAP\_A2A code to regrid from one horizontal grid to another.
 !\\
 !\\
 ! !INTERFACE:
 !
-MODULE Regrid_A2A_Mod
+MODULE HCO_Regrid_A2A_Mod
 !
 ! !USES:
 !
@@ -2660,4 +2660,4 @@ CONTAINS
 
   END SUBROUTINE Cleanup_Map_A2A
 !EOC
-END MODULE Regrid_A2A_Mod
+END MODULE HCO_Regrid_A2A_Mod

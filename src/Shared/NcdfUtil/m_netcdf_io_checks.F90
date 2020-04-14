@@ -4,11 +4,11 @@
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: m_netcdf_io_checks.F90
+! !MODULE: HCO_m_netcdf_io_checks.F90
 !
 ! !INTERFACE:
 !
-module m_netcdf_io_checks
+module HCO_m_netcdf_io_checks
 !
   implicit none
 !
@@ -271,4 +271,4 @@ CONTAINS
 
   end function Ncdoes_Dim_Exist
 !EOC
-end module m_netcdf_io_checks
+end module HCO_m_netcdf_io_checks

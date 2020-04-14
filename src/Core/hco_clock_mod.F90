@@ -57,7 +57,7 @@ MODULE HCO_CLOCK_MOD
 ! !USES:
 !
   USE HCO_Error_Mod
-  USE Julday_Mod
+  USE HCO_Julday_Mod
   USE HCO_TYPES_MOD, ONLY : HcoClock
 
   IMPLICIT NONE

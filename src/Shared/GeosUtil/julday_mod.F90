@@ -5,13 +5,13 @@
 !
 ! !MODULE: julday_mod.F90
 !
-! !DESCRIPTION: Module JULDAY\_MOD contains routines used to convert from
+! !DESCRIPTION: Module HCO\_JULDAY\_MOD contains routines used to convert from
 !  month/day/year to Astronomical Julian Date and back again.
 !\\
 !\\
 ! !INTERFACE:
 !
-MODULE JULDAY_MOD
+MODULE HCO_JULDAY_MOD
 !
 ! !USES:
 !
@@ -289,4 +289,4 @@ CONTAINS
 
   END SUBROUTINE CALDATE
 !EOC
-END MODULE JULDAY_MOD
+END MODULE HCO_JULDAY_MOD

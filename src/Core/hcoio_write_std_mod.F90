@@ -88,21 +88,21 @@ CONTAINS
 !
 ! !USES:
 !
-    USE m_netCDF_io_define
-    USE m_netcdf_io_read
-    USE m_netcdf_io_open
-    USE Ncdf_Mod,            ONLY : NC_Open
-    USE Ncdf_Mod,            ONLY : NC_Read_Time
-    USE Ncdf_Mod,            ONLY : NC_Read_Arr
-    USE Ncdf_Mod,            ONLY : NC_Create
-    USE Ncdf_Mod,            ONLY : NC_Close
-    USE Ncdf_Mod,            ONLY : NC_Var_Def
-    USE Ncdf_Mod,            ONLY : NC_Var_Write
-    USE Ncdf_Mod,            ONLY : NC_Get_RefDateTime
-    USE CHARPAK_Mod,         ONLY : TRANLC
+    USE HCO_m_netCDF_io_define
+    USE HCO_m_netcdf_io_read
+    USE HCO_m_netcdf_io_open
+    USE HCO_Ncdf_Mod,        ONLY : NC_Open
+    USE HCO_Ncdf_Mod,        ONLY : NC_Read_Time
+    USE HCO_Ncdf_Mod,        ONLY : NC_Read_Arr
+    USE HCO_Ncdf_Mod,        ONLY : NC_Create
+    USE HCO_Ncdf_Mod,        ONLY : NC_Close
+    USE HCO_Ncdf_Mod,        ONLY : NC_Var_Def
+    USE HCO_Ncdf_Mod,        ONLY : NC_Var_Write
+    USE HCO_Ncdf_Mod,        ONLY : NC_Get_RefDateTime
+    USE HCO_CHARPAK_Mod,     ONLY : TRANLC
     USE HCO_Chartools_Mod,   ONLY : HCO_CharParse
     USE HCO_State_Mod,       ONLY : HCO_State
-    USE JulDay_Mod,          ONLY : JulDay
+    USE HCO_JulDay_Mod,      ONLY : JulDay
     USE HCO_EXTLIST_MOD,     ONLY : GetExtOpt, CoreNr
     USE HCO_Types_Mod,       ONLY : DiagnCont
     USE HCO_Clock_Mod
@@ -828,7 +828,7 @@ CONTAINS
 !
     USE HCO_State_Mod,       ONLY : HCO_State
     USE HCO_Clock_Mod
-    USE JULDAY_MOD
+    USE HCO_JULDAY_MOD
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !

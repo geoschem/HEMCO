@@ -4,11 +4,11 @@
 !-------------------------------------------------------------------------
 !BOP
 !
-! !MODULE:  m_netcdf_io_read
+! !MODULE:  HCO_m_netcdf_io_read
 !
 ! !INTERFACE:
 !
-      MODULE m_netcdf_io_read
+      MODULE HCO_m_netcdf_io_read
 !
 ! !USES:
 !
@@ -1661,5 +1661,5 @@ CONTAINS
       end subroutine Ncrd_2d_Char
 !EOC
 !------------------------------------------------------------------------
-end module m_netcdf_io_read
+end module HCO_m_netcdf_io_read
 

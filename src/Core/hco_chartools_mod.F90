@@ -81,7 +81,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CharPak_Mod,  ONLY : StrSplit
+    USE HCO_CharPak_Mod,  ONLY : StrSplit
 !
 ! !INPUT PARAMETERS:
 !
@@ -167,7 +167,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CharPak_Mod,  ONLY : StrSplit
+    USE HCO_CharPak_Mod,  ONLY : StrSplit
 !
 ! !INPUT PARAMETERS:
 !
@@ -252,7 +252,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CharPak_Mod, ONLY : StrSplit
+    USE HCO_CharPak_Mod, ONLY : StrSplit
 !
 ! !INPUT PARAMETERS:
 !
@@ -683,7 +683,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CharPak_Mod, ONLY : StrSplit
+    USE HCO_CharPak_Mod, ONLY : StrSplit
 !
 ! !INPUT PARAMETERS:
 !

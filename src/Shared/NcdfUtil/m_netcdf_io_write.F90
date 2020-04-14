@@ -4,11 +4,11 @@
 !-------------------------------------------------------------------------
 !BOP
 !
-! !MODULE:  m_netcdf_io_write
+! !MODULE:  HCO_m_netcdf_io_write
 !
 ! !INTERFACE:
 !
-      module m_netcdf_io_write
+      module HCO_m_netcdf_io_write
 !
       IMPLICIT NONE
       PRIVATE
@@ -1448,5 +1448,5 @@ CONTAINS
       end subroutine Ncwr_2d_Char
 !EOC
 !------------------------------------------------------------------------
-end module m_netcdf_io_write
+end module HCO_m_netcdf_io_write
 

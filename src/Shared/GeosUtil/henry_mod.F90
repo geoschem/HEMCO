@@ -5,7 +5,7 @@
 !
 ! !MODULE: henry_mod.F90
 !
-! !DESCRIPTION: Module HENRY\_MOD contains routines to calculate
+! !DESCRIPTION: Module HCO\_HENRY\_MOD contains routines to calculate
 ! The dimensionless liquid-over-gas Henry constant KH as well as the
 ! effective Henry constant HEFF, which accounts for hydrolysis.
 !\\
@@ -31,7 +31,7 @@
 !
 ! !INTERFACE:
 !
-MODULE HENRY_MOD
+MODULE HCO_HENRY_MOD
 
   IMPLICIT NONE
   PRIVATE
@@ -201,4 +201,4 @@ CONTAINS
 
   END SUBROUTINE CALC_HEFF
 !EOC
-END MODULE HENRY_MOD
+END MODULE HCO_HENRY_MOD
