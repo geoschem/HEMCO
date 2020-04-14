@@ -1,5 +1,5 @@
 add_library(JulDayHco STATIC EXCLUDE_FROM_ALL
-        julday_mod.F
+        julday_mod.F90
 )
 target_link_libraries(JulDayHco
         PUBLIC HeadersHco
@@ -10,7 +10,7 @@ target_include_directories(JulDayHco
 
 add_library(GeosUtilHco STATIC EXCLUDE_FROM_ALL
 	regrid_a2a_mod.F90
-	henry_mod.F
+	henry_mod.F90
 )
 target_link_libraries(GeosUtilHco
 	PUBLIC NcdfUtilHco
