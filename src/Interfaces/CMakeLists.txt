@@ -1,6 +1,7 @@
 # Interfaces/CMakeLists.txt
 
 add_library(HCOI STATIC EXCLUDE_FROM_ALL
+        hco_interface_common.F90
 	hcoi_esmf_mod.F90
 	hcoi_standalone_mod.F90
 )
