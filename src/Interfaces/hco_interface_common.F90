@@ -62,10 +62,9 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE SetHcoTime( am_I_Root, HcoState,  ExtState,             &
-                         year,      month,     day,       dayOfYr,   &
-                         hour,      minute,    second,               &
-                         IsEmisTime,           RC )
+  SUBROUTINE SetHcoTime( HcoState,  ExtState,   year,   month,  &
+                         day,       dayOfYr,    hour,   minute, &
+                         second,    IsEmisTime, RC             )
 !
 ! !USES:
 !
@@ -73,7 +72,6 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    LOGICAL,         INTENT(IN)    :: am_I_Root   ! Root PET?
     TYPE(HCO_State), POINTER       :: HcoState    ! HEMCO state object
     TYPE(Ext_State), POINTER       :: ExtState    ! HEMCO extensions state object
     INTEGER,         INTENT(IN)    :: year        ! UTC year 
@@ -104,8 +102,8 @@ CONTAINS
     ! SetHcoTime begins here
     !=================================================================
 
-    CALL HcoClock_Set ( am_I_Root,  HcoState, year, month, day, hour, &
-                        minute, second, dayOfYr, IsEmisTime=IsEmisTime, RC=RC )
+    CALL HcoClock_Set ( HcoState, year, month, day, hour, minute, &
+                        second, dayOfYr, IsEmisTime=IsEmisTime, RC=RC )
 
   END SUBROUTINE SetHcoTime
 !EOC
@@ -200,9 +198,9 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE GetHcoDiagn ( am_I_Root, HcoState,  ExtState,           &
-                           DiagnName, StopIfNotFound, RC,            &
-                           Ptr2D,     Ptr3D,     COL, AutoFill        )
+  SUBROUTINE GetHcoDiagn ( HcoState,       ExtState,  DiagnName, &
+                           StopIfNotFound, RC,        Ptr2D,     &
+                           Ptr3D,          COL,       AutoFill  )
 !
 ! !USES:
 !
@@ -211,7 +209,6 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    LOGICAL,          INTENT(IN)           :: am_I_Root      ! Are we on the root CPU?
     TYPE(HCO_State), POINTER               :: HcoState       ! HEMCO state object
     TYPE(Ext_State), POINTER               :: ExtState       ! HEMCO extensions state object
     CHARACTER(LEN=*), INTENT(IN)           :: DiagnName      ! Name of diagnostics
@@ -269,9 +266,8 @@ CONTAINS
     ! Get diagnostics by name. Search all diagnostics, i.e. both AutoFill
     ! and manually filled diagnostics. Also include those with a manual
     ! output interval.
-    CALL Diagn_Get( am_I_Root,   HcoState, .FALSE., DgnCont,         &
-                    FLAG,        RC,        cName=TRIM(DiagnName),   &
-                    AutoFill=AF, COL=PS                            )
+    CALL Diagn_Get( HcoState, .FALSE., DgnCont, FLAG, RC, &
+                    cName=TRIM(DiagnName), AutoFill=AF, COL=PS )
 
     ! Trap potential errors
     IF ( RC /= HCO_SUCCESS ) THEN
