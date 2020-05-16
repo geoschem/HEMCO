@@ -11,6 +11,7 @@ add_library(NcdfUtilHco STATIC EXCLUDE_FROM_ALL
 	m_netcdf_io_readattr.F90
 	m_netcdf_io_write.F90
 	ncdf_mod.F90
+	hco_inquireMod.F90
 )
 target_link_libraries(NcdfUtilHco
 	PUBLIC JulDayHco HeadersHco
