@@ -1,4 +1,4 @@
-# HEMCO/src/Interfaces/GCHP/CMakeLists.txt
+# HEMCO/src/Interfaces/GCHPctm/CMakeLists.txt
 
 # Add Registry subdirectory
 add_subdirectory(Registry)
@@ -10,7 +10,7 @@ add_library(HCOI_GCHP STATIC EXCLUDE_FROM_ALL
 
 # Libraries that must be built before this library
 target_link_libraries(HCOI_GCHP
-	PUBLIC HCOI_ESMF_MAPL HCOI_Standalone
+	PUBLIC HCOI_MAPL_ESMF HCOI_Standalone
 )
 
 # Where to store mod files
