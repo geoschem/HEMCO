@@ -897,7 +897,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE inquireMod,   ONLY : findFreeLUN
+    USE HCO_inquireMod,   ONLY : findFreeLUN
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !

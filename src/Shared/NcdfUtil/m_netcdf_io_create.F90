@@ -4,11 +4,11 @@
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: m_netcdf_io_create.F90
+! !MODULE: HCO_m_netcdf_io_create.F90
 !
 ! !INTERFACE:
 !
-module m_netcdf_io_create
+module HCO_m_netcdf_io_create
 !
   implicit none
 !
@@ -169,4 +169,4 @@ CONTAINS
 
   end subroutine Ncdo_Sync
 !EOC
-end module m_netcdf_io_create
+end module HCO_m_netcdf_io_create

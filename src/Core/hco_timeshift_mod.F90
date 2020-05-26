@@ -208,7 +208,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE Julday_Mod
+    USE HCO_Julday_Mod
     USE HCO_TYPES_MOD,    ONLY : ListCont
 !
 ! !INPUT/OUTPUT PARAMETERS:

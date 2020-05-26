@@ -4,11 +4,11 @@
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE:  m_netcdf_io_close.F90
+! !MODULE:  HCO_m_netcdf_io_close.F90
 !
 ! !INTERFACE:
 !
-module m_netcdf_io_close
+module HCO_m_netcdf_io_close
 !
   implicit none
 !
@@ -126,5 +126,5 @@ CONTAINS
 
   end subroutine Nccl_Noerr
 !EOC
-end module m_netcdf_io_close
+end module HCO_m_netcdf_io_close
 

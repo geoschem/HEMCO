@@ -1586,11 +1586,11 @@ CONTAINS
 ! !USES:
 !
    ! Modules for netCDF read
-   USE m_netcdf_io_open
-   USE m_netcdf_io_get_dimlen
-   USE m_netcdf_io_read
-   USE m_netcdf_io_readattr
-   USE m_netcdf_io_close
+   USE HCO_m_netcdf_io_open
+   USE HCO_m_netcdf_io_get_dimlen
+   USE HCO_m_netcdf_io_read
+   USE HCO_m_netcdf_io_readattr
+   USE HCO_m_netcdf_io_close
 
 #  include "netcdf.inc"
 !
@@ -1884,7 +1884,7 @@ CONTAINS
 !
 ! !USES:
 !
-   USE inquireMod, ONLY : findFreeLUN
+   USE HCO_inquireMod, ONLY : findFreeLUN
 !
 ! !INPUT PARAMETERS:
 !
@@ -2120,7 +2120,7 @@ CONTAINS
 !
 ! !USES:
 !
-   USE inquireMod, ONLY : findFreeLUN
+   USE HCO_inquireMod, ONLY : findFreeLUN
 !
 ! !INPUT PARAMETERS:
 !

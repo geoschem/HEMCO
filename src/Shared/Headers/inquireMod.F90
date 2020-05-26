@@ -1,4 +1,4 @@
-#if defined( ESMF_ )
+#ifdef ESMF_
 ! We only need to refer to this include file if we are connecting
 ! to the GEOS-5 GCM via the ESMF/MAPL framework (bmy, 8/3/12)
 #include "MAPL_Generic.h"
@@ -8,18 +8,18 @@
 !------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: inquireMod
+! !MODULE: HCO_inquireMod
 !
 ! !DESCRIPTION: Module inquireMod contains functions to find free and
 !  unopened logical file units (LUNs) for Fortran I/O.
 !
 ! !INTERFACE:
 !
-MODULE inquireMod
+MODULE HCO_inquireMod
 !
 ! !USES:
 !
-#if defined( ESMF_ )
+#ifdef ESMF_
   ! We only need to refer to these modules if we are connecting
   ! to the GEOS-5 GCM via the ESMF/MAPL framework (bmy, 8/3/12)
   USE ESMF
@@ -32,12 +32,10 @@ MODULE inquireMod
 ! !PUBLIC MEMBER FUNCTIONS:
 !
   PUBLIC  :: findFreeLUN
-  PUBLIC  :: I_Am_UnOPENed
 !
-! !REVISION HISTORY:
+! !REVI<SION HISTORY:
 !  14 Jun 2012 - E. Nielsen  - Initial version
-!  03 Aug 2012 - R. Yantosca - Block off ESMF-specific code with #ifdefs
-!  03 Aug 2012 - R. Yantosca - Cosmetic changes
+!  See https://github.com/geoschem/geos-chem for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -71,9 +69,7 @@ MODULE inquireMod
 !
 ! !REVISION HISTORY:
 !  14 Jun 2012 - E. Nielsen  - Initial version
-!  03 Aug 2012 - R. Yantosca - Block off ESMF-specific code with #ifdefs
-!  03 Aug 2012 - R. Yantosca - Cosmetic changes
-!  06 Aug 2012 - R. Yantosca - Now make LUN range 11..199
+!  See https://github.com/geoschem/geos-chem for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -85,7 +81,7 @@ MODULE inquireMod
     LOGICAL                    :: found         ! Detect unused logical unit
     LOGICAL                    :: open          ! Is open?
 
-#if defined( ESMF_ )
+#ifdef ESMF_
     CHARACTER(LEN=ESMF_MAXSTR) :: Iam
 #else
     CHARACTER(LEN=255)         :: Iam
@@ -122,76 +118,10 @@ MODULE inquireMod
        PRINT *,TRIM( Iam ) // ": No available logical units"
     ENDIF
 
-#if defined( ESMF_ )
+#ifdef ESMF_
     VERIFY_(status)
 #endif
 
   END FUNCTION findFreeLUN
 !EOC
-!------------------------------------------------------------------------
-!     NASA/GSFC, Global Modeling and Assimilation Office, Code 910.1    !
-!------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: I_Am_UnOPENed
-!
-! !DESCRIPTION: Inquire as to the availability of a given logical unit
-!\\
-!\\
-! !INTERFACE:
-!
-  FUNCTION I_Am_UnOPENed( n ) RESULT( TorF )
-!
-! !USES:
-    !
-    IMPLICIT NONE
-!
-! !INPUT PARAMETERS:
-!
-    INTEGER :: n     ! Logical unit # to test
-!
-! !RETURN VALUE:
-!
-    LOGICAL :: TorF  ! .TRUE. means the file is unopened
-!
-! !REVISION HISTORY:
-!  14 Jun 2012 - E. Nielsen  - Initial version
-!  03 Aug 2012 - R. Yantosca - Block off ESMF-specific code with #ifdefs
-!  03 Aug 2012 - R. Yantosca - Cosmetic changes
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-!
-! !LOCAL VARIABLES:
-!
-    INTEGER                    :: rc, status
-    LOGICAL                    :: exists       ! File existence
-    LOGICAL                    :: open         ! Is open?
-
-#if defined( ESMF_ )
-    CHARACTER(LEN=ESMF_MAXSTR) :: Iam
-#else
-    CHARACTER(LEN=255)         :: Iam
-#endif
-
-    !======================================================================
-    ! Initialization
-    !======================================================================
-    Iam    = "GEOSCHEMCHEM::I_Am_UnOPENed"
-    status = 0
-    rc     = 0
-
-    !======================================================================
-    ! Inquire if the LUN is available
-    !======================================================================
-    INQUIRE( UNIT=n, EXIST=exists, OPENED=open )
-
-    IF ( exists .AND. .NOT. open ) THEN
-       TorF = .TRUE.
-    ELSE
-       TorF = .FALSE.
-    ENDIF
-
-  END FUNCTION I_Am_UnOPENed
-!EOC
-END MODULE inquireMod
+END MODULE HCO_inquireMod

@@ -4,11 +4,11 @@
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: m_netcdf_io_readattr.F90
+! !MODULE: HCO_m_netcdf_io_readattr.F90
 !
 ! !INTERFACE:
 !
-MODULE m_netcdf_io_readattr
+MODULE HCO_m_netcdf_io_readattr
 !
 ! !USES:
 
@@ -983,4 +983,4 @@ CONTAINS
 
   END SUBROUTINE NcGet_Glob_Attr_R8_arr
 !EOC
-END MODULE m_netcdf_io_readattr
+END MODULE HCO_m_netcdf_io_readattr

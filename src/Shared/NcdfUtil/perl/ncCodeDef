@@ -204,10 +204,10 @@ sub writeFortranVars($@) {
 ! !USES:
 !
       ! Modules for netCDF define
-      USE m_netcdf_io_create
-      USE m_netcdf_io_get_dimlen
-      USE m_netcdf_io_define
-      USE m_netcdf_io_close
+      USE HCO_m_netcdf_io_create
+      USE HCO_m_netcdf_io_get_dimlen
+      USE HCO_m_netcdf_io_define
+      USE HCO_m_netcdf_io_close
 
       IMPLICIT NONE
 

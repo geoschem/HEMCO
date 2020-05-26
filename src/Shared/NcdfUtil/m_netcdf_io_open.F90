@@ -4,11 +4,11 @@
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: m_netcdf_io_open.F90
+! !MODULE: HCO_m_netcdf_io_open.F90
 !
 ! !INTERFACE:
 !
-module m_netcdf_io_open
+module HCO_m_netcdf_io_open
 !
   implicit none
 !
@@ -145,5 +145,5 @@ CONTAINS
   end subroutine Ncop_Wr
 !EOC
 !------------------------------------------------------------------------
-end module m_netcdf_io_open
+end module HCO_m_netcdf_io_open
 

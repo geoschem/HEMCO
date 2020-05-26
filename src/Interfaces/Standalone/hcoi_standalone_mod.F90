@@ -784,7 +784,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE inquireMod,      ONLY : findfreeLUN
+    USE HCO_inquireMod,  ONLY : findfreeLUN
     USE HCO_EXTLIST_Mod, ONLY : GetExtOpt, CoreNr
 !
 ! !OUTPUT PARAMETERS:
@@ -1031,7 +1031,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE inquireMod,       ONLY  : findFreeLUN
+    USE HCO_inquireMod,   ONLY  : findFreeLUN
     USE HCO_ExtList_Mod,  ONLY  : HCO_GetOpt, GetExtOpt, CoreNr
     USE HCO_VertGrid_Mod, ONLY  : HCO_VertGrid_Define
 !
@@ -1951,7 +1951,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE inquireMod,      ONLY : findfreeLUN
+    USE HCO_inquireMod,  ONLY : findfreeLUN
     USE HCO_Extlist_Mod, ONLY : HCO_GetOpt, GetExtOpt, CoreNr
 !
 ! !INPUT PARAMETERS:
@@ -2975,7 +2975,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE InquireMod, ONLY : FindFreeLUN
+    USE HCO_InquireMod, ONLY : FindFreeLUN
 !
 ! !INPUT PARAMETERS:
 !

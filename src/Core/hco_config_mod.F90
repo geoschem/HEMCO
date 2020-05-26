@@ -130,8 +130,8 @@ CONTAINS
 !
 ! !USES:
 !
-    USE inquireMod,        ONLY : findFreeLUN
-    USE CharPak_Mod,       ONLY : STRREPL
+    USE HCO_inquireMod,    ONLY : findFreeLUN
+    USE HCO_CharPak_Mod,   ONLY : STRREPL
     USE HCO_EXTLIST_MOD,   ONLY : AddExt, CoreNr, ExtNrInUse
 !
 ! !INPUT PARAMETERS:
@@ -560,7 +560,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CHARPAK_MOD,      ONLY : StrSplit
+    USE HCO_CHARPAK_MOD,  ONLY : StrSplit
     USE HCO_EXTLIST_MOD,  ONLY : ExtNrInUse, HCO_GetOpt
     USE HCO_TIDX_Mod,     ONLY : HCO_ExtractTime
     USE HCO_FILEDATA_Mod, ONLY : FileData_Init
@@ -1933,7 +1933,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CHARPAK_Mod,        ONLY : STRREPL, STRSPLIT, TRANLC
+    USE HCO_CHARPAK_Mod,    ONLY : STRREPL, STRSPLIT, TRANLC
     USE HCO_EXTLIST_MOD,    ONLY : AddExt, AddExtOpt, HCO_GetOpt
     USE HCO_EXTLIST_MOD,    ONLY : GetExtNr
 !
@@ -2107,7 +2107,7 @@ CONTAINS
     USE HCO_EXTLIST_MOD,    ONLY : AddExtOpt, GetExtOpt, CoreNr
     USE HCO_EXTLIST_MOD,    ONLY : HCO_SetDefaultToken
     USE HCO_EXTLIST_MOD,    ONLY : HCO_GetOpt
-    USE CHARPAK_MOD,        ONLY : STRREPL, STRSPLIT, TRANLC
+    USE HCO_CHARPAK_MOD,    ONLY : STRREPL, STRSPLIT, TRANLC
 !
 ! !INPUT PARAMETERS:
 !
@@ -3289,7 +3289,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE CHARPAK_Mod,        ONLY : STRREPL, STRSPLIT
+    USE HCO_CHARPAK_Mod,    ONLY : STRREPL, STRSPLIT
 !
 ! !INPUT PARAMETERS:
 !

@@ -4,11 +4,11 @@
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE:  m_netcdf_io_handle_err.F90
+! !MODULE:  HCO_m_netcdf_io_handle_err.F90
 !
 ! !INTERFACE:
 !
-module m_netcdf_io_handle_err
+module HCO_m_netcdf_io_handle_err
 !
   implicit none
 !
@@ -79,5 +79,5 @@ CONTAINS
 
   end subroutine Nchandle_Err
 !EOC
-end module m_netcdf_io_handle_err
+end module HCO_m_netcdf_io_handle_err
 

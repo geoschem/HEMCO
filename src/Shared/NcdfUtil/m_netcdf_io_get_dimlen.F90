@@ -4,11 +4,11 @@
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: m_netcdf_io_get_dimlen
+! !MODULE: HCO_m_netcdf_io_get_dimlen
 !
 ! !INTERFACE:
 !
-module m_netcdf_io_get_dimlen
+module HCO_m_netcdf_io_get_dimlen
 !
   implicit none
 !
@@ -163,4 +163,4 @@ CONTAINS
 
   end subroutine Ncget_Unlim_Dimlen
 !EOC
-end module m_netcdf_io_get_dimlen
+end module HCO_m_netcdf_io_get_dimlen

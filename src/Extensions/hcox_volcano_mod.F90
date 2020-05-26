@@ -510,7 +510,7 @@ CONTAINS
 ! !USES:
 !
     USE HCO_CharTools_Mod
-    USE inquireMod,         ONLY : findfreeLun
+    USE HCO_inquireMod,     ONLY : findfreeLun
     USE HCO_CLOCK_MOD,      ONLY : HcoClock_NewDay
     USE HCO_CLOCK_MOD,      ONLY : HcoClock_Get
     USE HCO_GeoTools_MOD,   ONLY : HCO_GetHorzIJIndex

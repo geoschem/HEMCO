@@ -122,7 +122,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE REGRID_A2A_Mod,     ONLY : MAP_A2A
+    USE HCO_REGRID_A2A_Mod, ONLY : MAP_A2A
     USE HCO_FileData_Mod,   ONLY : FileData_ArrCheck
     USE HCO_UNIT_MOD,       ONLY : HCO_IsIndexData
 !

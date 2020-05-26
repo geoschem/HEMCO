@@ -16,16 +16,16 @@ PROGRAM TestNcdfUtil
 ! !USES:
 !
   ! Modules for netCDF write
-  USE m_netcdf_io_define
-  USE m_netcdf_io_create
-  USE m_netcdf_io_write
+  USE HCO_m_netcdf_io_define
+  USE HCO_m_netcdf_io_create
+  USE HCO_m_netcdf_io_write
 
   ! Modules for netCDF read
-  USE m_netcdf_io_open
-  USE m_netcdf_io_get_dimlen
-  USE m_netcdf_io_read
-  USE m_netcdf_io_readattr
-  USE m_netcdf_io_close
+  USE HCO_m_netcdf_io_open
+  USE HCO_m_netcdf_io_get_dimlen
+  USE HCO_m_netcdf_io_read
+  USE HCO_m_netcdf_io_readattr
+  USE HCO_m_netcdf_io_close
 
   IMPLICIT NONE
 

@@ -306,7 +306,7 @@ CONTAINS
 ! !USES:
 !
     USE Ocean_ToolBox_Mod,  ONLY : CALC_KG
-    USE Henry_Mod,          ONLY : CALC_KH, CALC_HEFF
+    USE Hco_Henry_Mod,      ONLY : CALC_KH, CALC_HEFF
     USE HCO_CALC_MOD,       ONLY : HCO_CheckDepv
     USE HCO_GeoTools_Mod,   ONLY : HCO_LANDTYPE
 !
