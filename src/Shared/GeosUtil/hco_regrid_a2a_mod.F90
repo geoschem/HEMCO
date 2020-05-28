@@ -15,7 +15,7 @@ MODULE HCO_Regrid_A2A_Mod
 !
 ! !USES:
 !
-  USE PRECISION_MOD    ! For GEOS-Chem Precision (fp)
+  USE HCO_PRECISION_MOD    ! For GEOS-Chem Precision (fp)
 
   IMPLICIT NONE
   PRIVATE
