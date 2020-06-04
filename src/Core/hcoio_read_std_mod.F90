@@ -317,7 +317,6 @@ CONTAINS
        ! HEMCO is in a "dry-run" mode!
        !====================================================================
 
-
        ! Simulate file read buffer
        IF ( TRIM(HcoState%ReadLists%FileInArchive) == TRIM(srcFile) ) THEN
           CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
@@ -2903,6 +2902,15 @@ CONTAINS
     ! If the direction flag is on, force HasFile to be false.
     IF ( PRESENT(Direction) ) THEN
        IF ( Direction /= 0 ) HasFile = .FALSE.
+    ENDIF
+
+    ! If this is a HEMCO dry-run simulation then do not enter the loop
+    ! where we will attempt to go back in time until a file is found.
+    ! For the dry-run we need to report all files, even missing.
+    ! This fixes Github issue geoschem/geos-chem #312. (bmy, 6/4/20)
+    IF ( HcoState%Options%isDryRun ) THEN
+       RC = HCO_SUCCESS
+       RETURN
     ENDIF
 
     ! If file does not exist, check if we can adjust prefYr, prefMt, etc.
