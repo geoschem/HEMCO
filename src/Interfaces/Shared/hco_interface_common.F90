@@ -253,7 +253,6 @@ CONTAINS
 
     ! For error handling
     ErrMsg  = ''
-    CALL HCO_Enter ( HcoState%Config%Err, 'GetHcoDiagn (hco_interface_common.F90)', RC )
 
     ! Set collection number
     PS = HcoState%Diagn%HcoDiagnIDManual
