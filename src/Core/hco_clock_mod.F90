@@ -400,7 +400,7 @@ CONTAINS
     REAL(sp)                 :: UTC
     INTEGER                  :: DUM, DOY
     INTEGER                  :: UseYr, UseMt, UseDy, UseHr
-    CHARACTER(LEN=255)       :: MSG
+    CHARACTER(LEN=255)       :: MSG, ErrMsg
     LOGICAL                  :: FND, NewStep, EmisTime, WasEmisTime
 
     !======================================================================
@@ -421,7 +421,11 @@ CONTAINS
     IF ( Clock%nSteps == 0 ) THEN
        CALL GetExtOpt( CF, CoreNr, 'Emission year', OptValInt=DUM, &
                        FOUND=FND, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error getting emission year'
+          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          RETURN
+       ENDIF
        IF ( FND ) THEN
           Clock%FixYY = DUM
           WRITE(MSG,*) 'Emission year will be fixed to day ', Clock%FixYY
@@ -430,7 +434,12 @@ CONTAINS
 
        CALL GetExtOpt( CF, CoreNr, 'Emission month', OptValInt=DUM, &
                        FOUND=FND, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error getting emission month'
+          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          RETURN
+       ENDIF
+
        IF ( FND ) THEN
           Clock%FixMM = DUM
           WRITE(MSG,*) 'Emission month will be fixed to day ', Clock%FixMM
@@ -439,7 +448,12 @@ CONTAINS
 
        CALL GetExtOpt( CF, CoreNr, 'Emission day', OptValInt=DUM, &
                        FOUND=FND, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error getting emission day'
+          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          RETURN
+       ENDIF
+
        IF ( FND ) THEN
           Clock%Fixdd = DUM
           WRITE(MSG,*) 'Emission day will be fixed to day ', Clock%Fixdd
@@ -448,7 +462,12 @@ CONTAINS
 
        CALL GetExtOpt( CF, CoreNr, 'Emission hour', OptValInt=DUM, &
                        FOUND=FND, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error getting emission hour'
+          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          RETURN
+       ENDIF
+
        IF ( FND ) THEN
           Clock%Fixhh = DUM
           WRITE(MSG,*) 'Emission hour will be fixed to day ', Clock%Fixhh
@@ -532,7 +551,12 @@ CONTAINS
        ! Set local times
        ! ----------------------------------------------------------------
        CALL Set_LocalTime ( HcoState, Clock, UTC, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error setting local time'
+          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          RETURN
+       ENDIF
+
 
        ! ----------------------------------------------------------------
        ! Update counter
