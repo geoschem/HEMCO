@@ -179,6 +179,7 @@ endif()
 # For HEMCO as submodule in MAPL/ESMF superproject
 #---------------------------------------------------------------------
 if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
+    message("SUCCESS for HEMCO ESMF")
     target_link_libraries(HEMCOBuildProperties
         INTERFACE MAPL_Base
     )

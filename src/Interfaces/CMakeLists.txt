@@ -5,7 +5,7 @@ add_subdirectory(Shared)
 
 # For now, always build standalone interface files
 add_subdirectory(Standalone)
-
+# add_subdirectory(MAPL_ESMF)
 add_subdirectory(GEOS)
 
 # if GCHP CTM:
