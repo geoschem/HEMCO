@@ -1,4 +1,4 @@
-esma_set_this ()
+esma_set_this (OVERRIDE HEMCO_GridComp)
 
 set (srcs
    HEMCO_GridCompMod.F90
@@ -7,7 +7,7 @@ set (srcs
 esma_add_library (
   ${this}
   SRCS ${srcs}
-  DEPENDENCIES Chem_Shared MAPL HEMCO HCO HCOI_Shared HCOI_MAPL_ESMF GeosUtilHco
+  DEPENDENCIES Chem_Shared MAPL HCO HCOI_Shared HCOI_MAPL_ESMF GeosUtilHco HCOI_Standalone
   )
 target_compile_definitions (${this} PRIVATE ESMF_ DEVEL GEOS_FP)
 target_include_directories (${this} PUBLIC ${INC_ESMF} ${INC_NETCDF})
