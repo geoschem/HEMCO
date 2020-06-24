@@ -7,7 +7,7 @@ set (srcs
 esma_add_library (
   ${this}
   SRCS ${srcs}
-  DEPENDENCIES Chem_Shared MAPL HCO HCOI_Shared HCOI_MAPL_ESMF GeosUtilHco HCOI_Standalone
+  DEPENDENCIES Chem_Shared MAPL HCOI_Standalone
   )
 target_compile_definitions (${this} PRIVATE ESMF_ DEVEL GEOS_FP)
 target_include_directories (${this} PUBLIC ${INC_ESMF} ${INC_NETCDF})
@@ -26,8 +26,7 @@ add_custom_command (
   OUTPUT ${acg_headers}
   COMMAND ${generator} ${acg_flags} -v -F ${CMAKE_CURRENT_SOURCE_DIR}/HEMCO_Registry.rc
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  MAIN_DEPENDENCY HEMCO_Registry.rc 
-#  DEPENDS ${include_MAPL_Base}/mapl_acg.pl
+  MAIN_DEPENDENCY HEMCO_Registry.rc
   COMMENT "Generating automated code for HEMCO"
   )
 add_custom_target (phony_HEMCO DEPENDS ${acg_headers})
