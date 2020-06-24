@@ -8,7 +8,7 @@ target_include_directories(JulDayHco
 	INTERFACE ${HEMCO_BINARY_DIR}/mod
 )
 
-add_library(GeosUtilHco STATIC
+add_library(GeosUtilHco STATIC EXCLUDE_FROM_ALL
 	regrid_a2a_mod.F90
 	henry_mod.F90
 )
