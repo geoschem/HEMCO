@@ -329,6 +329,7 @@ CONTAINS
 
     ! Leave with success
     RC = HCO_SUCCESS
+    CALL HCO_LEAVE ( HcoState%Config%Err, RC )
 
   END SUBROUTINE GetHcoDiagn
 !EOC
