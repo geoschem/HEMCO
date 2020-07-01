@@ -12,3 +12,10 @@ if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
     add_subdirectory(GCHPctm)
     add_subdirectory(GEOS)
 endif()
+
+# if org GEOS:
+option (BUILD_GEOS_INTERFACE FALSE)
+
+if (BUILD_GEOS_INTERFACE)
+    add_subdirectory(GEOS)
+endif()
