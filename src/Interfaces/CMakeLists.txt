@@ -13,7 +13,7 @@ if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
 endif()
 
 # if org GEOS:
-option (BUILD_GEOS_INTERFACE FALSE)
+# option (BUILD_GEOS_INTERFACE FALSE)
 
 if (BUILD_GEOS_INTERFACE)
     add_subdirectory(GEOS)
