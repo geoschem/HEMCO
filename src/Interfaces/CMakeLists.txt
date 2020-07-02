@@ -10,7 +10,6 @@ add_subdirectory(Standalone)
 if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
     add_subdirectory(MAPL_ESMF)
     add_subdirectory(GCHPctm)
-    add_subdirectory(GEOS)
 endif()
 
 # if org GEOS:
