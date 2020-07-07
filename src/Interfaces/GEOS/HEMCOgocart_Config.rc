@@ -37,7 +37,7 @@ BEGIN SECTION EXTENSION SWITCHES
     --> MEGAN_FIELDS      :       true
     --> HTAP              :       false
     --> KORUS             :       false
-108     MEGAN             : on    ISOP/ACET/PRPE/C2H4/ALD2/EOH/SOAP/SOAS
+108     MEGAN             : on    ISOP/ACET/PRPE/C2H4/ALD2/MOH/EOH/MTPA/MTPO/LIMO/SESQ/SOAP/SOAS
     --> Isoprene scaling  :       1.0
     --> CO2 inhibition    :       true
     --> CO2 conc (ppmv)   :       390.0
