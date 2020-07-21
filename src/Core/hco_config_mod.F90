@@ -2229,9 +2229,9 @@ CONTAINS
              GridRes = '4.0x5.0'
           CASE( '2x25', '2x2.5' )
              GridRes = '2.0x2.5'
-          CASE( '05x0625' )
+          CASE( '05x0625', '0.5x0.625' )
              GridRes = '0.5x0.625'
-          CASE( '025x03125' )
+          CASE( '025x03125', '0.25x0.3125' )
              GridRes = '0.25x0.3125'
           CASE DEFAULT
              Msg = 'Improperly formatted grid resolution: ' // TRIM( GridRes )
