@@ -1577,7 +1577,8 @@ CONTAINS
        ENDIF
 
        ! Otherwise return with success
-       RC = HCO_SUCCESS
+       RC    = HCO_SUCCESS
+       Found = HasFile
        RETURN
     ENDIF
 
