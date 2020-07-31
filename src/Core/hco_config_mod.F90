@@ -2442,9 +2442,10 @@ CONTAINS
              ! can be seen as fully covering a given CPU even though in
              ! reality it may only cover parts of it. Thus, in ESMF mode
              ! always set coverage to zero or partial (ckeller, 3/17/16).
-             IF ( HcoState%Options%isESMF ) THEN
-                IF ( ThisCover == 1 ) ThisCover = -1
-             ENDIF
+#if defined ( ESMF_ ) || defined( MODEL_WRF ) || defined( MODEL_CESM )
+             IF ( ThisCover == 1 ) ThisCover = -1
+#endif
+
           ENDIF
 
           ! Update container information
