@@ -687,7 +687,7 @@ CONTAINS
                            'Cannot allocate EmissBe7Strat', RC )
           RETURN
        ENDIF
-       IF ( RC /= 0 ) RETURN
+       Inst%EmissBe7Strat = 0.0_hp
     ENDIF
 
     IF ( Inst%IDTBe10 > 0 ) THEN
@@ -698,7 +698,7 @@ CONTAINS
                            'Cannot allocate EmissBe10', RC )
           RETURN
        ENDIF
-       IF ( RC /= 0 ) RETURN
+       Inst%EmissBe10Strat = 0.0_hp
     ENDIF
 
     IF ( Inst%IDTBe10Strat > 0 ) THEN
