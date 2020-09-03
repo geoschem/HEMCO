@@ -180,7 +180,7 @@ endif()
 #---------------------------------------------------------------------
 if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
     target_link_libraries(HEMCOBuildProperties
-        INTERFACE MAPL_Base
+        INTERFACE MAPL
     )
     target_compile_definitions(HEMCOBuildProperties
         INTERFACE ESMF_
