@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -58,7 +58,7 @@ MODULE HCO_Charpak_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -130,7 +130,7 @@ CONTAINS
   END SUBROUTINE CntMat
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -187,7 +187,7 @@ CONTAINS
   END SUBROUTINE CopyTxt
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -257,7 +257,7 @@ CONTAINS
   END SUBROUTINE CStrip
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -303,7 +303,7 @@ CONTAINS
   END FUNCTION IsDigit
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -361,7 +361,7 @@ CONTAINS
   END SUBROUTINE StrRepl
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -426,7 +426,7 @@ CONTAINS
   END SUBROUTINE StrSplit
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -461,7 +461,7 @@ CONTAINS
   END SUBROUTINE StrSqueeze
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -505,7 +505,7 @@ CONTAINS
   END SUBROUTINE TRANLC
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -549,7 +549,7 @@ CONTAINS
   END SUBROUTINE TRANUC
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -857,7 +857,7 @@ CONTAINS
   END FUNCTION Str2Hash31
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -916,7 +916,7 @@ CONTAINS
   END FUNCTION To_UpperCase
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -987,7 +987,7 @@ CONTAINS
   END FUNCTION ReadOneLine
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1034,7 +1034,7 @@ CONTAINS
   END FUNCTION CleanText
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !

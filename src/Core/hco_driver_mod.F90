@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -44,7 +44,7 @@ MODULE HCO_Driver_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -186,7 +186,7 @@ CONTAINS
     ! content of EmisList. Emissions become written into HcoState.
     ! Do this only if it's time for emissions and NOT a dry-run.
     !-----------------------------------------------------------------
-    IF ( IsEmisTime .AND. Phase == 2 .and. notDryRun ) THEN
+    IF ( IsEmisTime .AND. Phase > 1 .and. notDryRun ) THEN
 
        ! Use emission data only
        CALL HCO_CalcEmis( HcoState, .FALSE., RC )
@@ -205,7 +205,7 @@ CONTAINS
   END SUBROUTINE HCO_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -300,7 +300,7 @@ CONTAINS
   END SUBROUTINE HCO_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !

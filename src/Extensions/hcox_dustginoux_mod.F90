@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -113,7 +113,7 @@ MODULE HCOX_DustGinoux_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -442,7 +442,7 @@ CONTAINS
   END SUBROUTINE HcoX_DustGinoux_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -790,7 +790,7 @@ CONTAINS
   END SUBROUTINE HcoX_DustGinoux_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -825,7 +825,7 @@ CONTAINS
   END SUBROUTINE HcoX_DustGinoux_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -892,7 +892,7 @@ CONTAINS
   END FUNCTION HCOX_DustGinoux_GetChDust
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -946,7 +946,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1022,7 +1022,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !BOP

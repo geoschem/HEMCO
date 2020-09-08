@@ -5,7 +5,7 @@
 !BOP
 !
 ! !MODULE: HEMCO_GridCompMod -- A gridded component to compute emissions 
-!  using the Harvard-NASA emissions component HEMCO. 
+!  using the Harmonized Emissions Component (HEMCO). 
 !
 !  !DESCRIPTION:
 !

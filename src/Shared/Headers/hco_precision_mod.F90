@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -11,7 +11,7 @@
 !\\
 ! !INTERFACE:
 !
-MODULE PRECISION_MOD
+MODULE HCO_PRECISION_MOD
 !
 ! !USES:
 !
@@ -61,5 +61,5 @@ MODULE PRECISION_MOD
 !EOP
 !-----------------------------------------------------------------------------
 !BOC
-END MODULE PRECISION_MOD
+END MODULE HCO_PRECISION_MOD
 !EOC

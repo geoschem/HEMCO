@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -65,7 +65,7 @@ MODULE HCO_GeoTools_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -124,7 +124,7 @@ CONTAINS
   END FUNCTION HCO_LandType_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -183,7 +183,7 @@ CONTAINS
   END FUNCTION HCO_LandType_Dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -266,7 +266,7 @@ CONTAINS
   END SUBROUTINE HCO_ValidateLon_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -347,7 +347,7 @@ CONTAINS
   END SUBROUTINE HCO_ValidateLon_Dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -525,7 +525,7 @@ CONTAINS
 !EOC
 #if defined(ESMF_)
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -604,7 +604,7 @@ CONTAINS
 !EOC
 #else
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -724,7 +724,7 @@ CONTAINS
 !EOC
 #endif
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1258,7 +1258,7 @@ CONTAINS
   END SUBROUTINE HCO_CalcVertGrid
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1392,7 +1392,7 @@ CONTAINS
   END SUBROUTINE HCO_SetPBLm
 !EOC
 !!------------------------------------------------------------------------------
-!!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!!                   Harmonized Emissions Component (HEMCO)                    !
 !!------------------------------------------------------------------------------
 !!BOP
 !!
@@ -1474,7 +1474,7 @@ CONTAINS
 !  END SUBROUTINE HCO_CalcPBLlev3D
 !!EOC
 !!------------------------------------------------------------------------------
-!!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!!                   Harmonized Emissions Component (HEMCO)                    !
 !!------------------------------------------------------------------------------
 !!BOP
 !!

@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -15,7 +15,7 @@ MODULE HCO_Regrid_A2A_Mod
 !
 ! !USES:
 !
-  USE PRECISION_MOD    ! For GEOS-Chem Precision (fp)
+  USE HCO_PRECISION_MOD    ! For GEOS-Chem Precision (fp)
 
   IMPLICIT NONE
   PRIVATE
@@ -94,7 +94,7 @@ MODULE HCO_Regrid_A2A_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -227,7 +227,7 @@ CONTAINS
   END SUBROUTINE Map_A2A_r8r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -359,7 +359,7 @@ CONTAINS
   END SUBROUTINE Map_A2A_r4r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -492,7 +492,7 @@ CONTAINS
   END SUBROUTINE Map_A2A_r4r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -625,7 +625,7 @@ CONTAINS
   END SUBROUTINE Map_A2A_r8r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -821,7 +821,7 @@ CONTAINS
    END SUBROUTINE ymap_r8r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1018,7 +1018,7 @@ CONTAINS
    END SUBROUTINE ymap_r4r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1216,7 +1216,7 @@ CONTAINS
    END SUBROUTINE ymap_r8r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1415,7 +1415,7 @@ CONTAINS
    END SUBROUTINE ymap_r4r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1709,7 +1709,7 @@ CONTAINS
   END SUBROUTINE xmap_r8r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2005,7 +2005,7 @@ CONTAINS
   END SUBROUTINE xmap_r4r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2289,7 +2289,7 @@ CONTAINS
   END SUBROUTINE xmap_r4r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2573,7 +2573,7 @@ CONTAINS
   END SUBROUTINE xmap_r8r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2650,7 +2650,7 @@ CONTAINS
   END SUBROUTINE Init_Map_A2A
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !

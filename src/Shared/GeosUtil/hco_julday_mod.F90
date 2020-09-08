@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -15,7 +15,7 @@ MODULE HCO_JULDAY_MOD
 !
 ! !USES:
 !
-  USE PRECISION_MOD    ! For GEOS-Chem Precision (fp)
+  USE HCO_PRECISION_MOD    ! For GEOS-Chem Precision (fp)
 
   IMPLICIT NONE
   PRIVATE
@@ -37,7 +37,7 @@ MODULE HCO_JULDAY_MOD
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -142,7 +142,7 @@ CONTAINS
   END FUNCTION JULDAY
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -185,7 +185,7 @@ CONTAINS
   END FUNCTION MINT
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !

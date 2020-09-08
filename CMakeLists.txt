@@ -69,7 +69,27 @@ target_compile_definitions(HEMCOBuildProperties
 set(OMP "TRUE" CACHE STRING "Enables/disables HEMCO built with OpenMP")
 if("${OMP}")
     find_package(OpenMP REQUIRED)
-    target_link_libraries(HEMCOBuildProperties INTERFACE OpenMP::OpenMP_Fortran) # Prefer OpenMP::OpenMP target rather than variables
+    ###########################################################################
+    # NOTE: Newer versions of CMake (maybe > 3.8) prefer OpenMP::OpenMP
+    # rather than ${OpenMP_Fortran_FLAGS} to specify compilation options
+    # for OpenMP.  However, this is not supported in older versions.
+    # For backwards compatibility, especially with Azure DevOps, we will
+    # leave the new syntax commented out.  It can be restored later.
+    #  -- Bob Yantosca (28 Jul 2020)
+    #
+    #    target_compile_options(HEMCOBuildProperties
+    #      INTERFACE OpenMP::OpenMP_Fortran
+    #    )
+    #    target_link_libraries(HEMCOBuildProperties
+    #      INTERFACE OpenMP::OpenMP_Fortran
+    #    )
+    ###########################################################################
+    target_compile_options(HEMCOBuildProperties
+      INTERFACE ${OpenMP_Fortran_FLAGS}
+    )
+    target_link_libraries(HEMCOBuildProperties
+      INTERFACE ${OpenMP_Fortran_FLAGS}
+    )
 else()
     target_compile_definitions(HEMCOBuildProperties
         INTERFACE "NO_OMP"
@@ -182,7 +202,7 @@ endif()
 #---------------------------------------------------------------------
 if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
     target_link_libraries(HEMCOBuildProperties
-        INTERFACE MAPL
+        INTERFACE MAPL.base
     )
     target_compile_definitions(HEMCOBuildProperties
         INTERFACE ESMF_
