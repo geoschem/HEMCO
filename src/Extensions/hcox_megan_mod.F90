@@ -3074,19 +3074,19 @@ CONTAINS
 
     ! Temperature over last 24 hours
     CALL HCO_RestartGet( HcoState, 'T_PREVDAY', &
-                         Inst%T_LAST24H, RC, DefVal = 288.15 )
+                         Inst%T_LAST24H, RC, DefVal = 288.15_sp )
 
     ! Temperature over last X days
     CALL HCO_RestartGet( HcoState, 'T_DAVG', &
-                         Inst%T_LASTXDAYS, RC, DefVal = 288.15 )
+                         Inst%T_LASTXDAYS, RC, DefVal = 288.15_sp )
 
     ! Direct radiation (PARDR) over last X days
     CALL HCO_RestartGet( HcoState, 'PARDR_DAVG', &
-                         Inst%PARDR_LASTXDAYS, RC, DefVal = 30.0 )
+                         Inst%PARDR_LASTXDAYS, RC, DefVal = 30.0_sp )
 
     ! Diffuse radiation (PARDF) over last X days
     CALL HCO_RestartGet( HcoState, 'PARDF_DAVG', &
-                         Inst%PARDF_LASTXDAYS, RC, DefVal = 48.0 )
+                         Inst%PARDF_LASTXDAYS, RC, DefVal = 48.0_sp )
 
     ! Return w/ success
     RC = HCO_SUCCESS
