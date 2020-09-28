@@ -1,8 +1,10 @@
-This is a HEMCO standalone run directory for a 4x5 simulation. For more
-information on how to download and run the HEMCO standalone model, see:
+This is a HEMCO standalone run directory.
 
-  http://wiki.seg.harvard.edu/geos-chem/index.php/HEMCO_standalone
+For more information on how to download and run the HEMCO standalone model,
+please see:
 
-19 May 2017
+  http://wiki.geos-chem.org/HEMCO_standalone
+
+28 Sep 2020
 GEOS-Chem Support Team
 geos-chem-support@g.harvard.edu
