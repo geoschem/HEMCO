@@ -13,9 +13,7 @@
 !
 ! !REVISION HISTORY:
 !  12 May 2017 - C. Keller   - Modified for use in HEMCO: use hp instead of realkind.
-!  16 May 2017 - R. Yantosca - Do not use SIND, COSD, TAND functions, because
-!                              these are non-standard (Gfortran chokes)
-!  16 May 2017 - R. Yantosca - Replaced TABs with spaces, cosmetic changes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 

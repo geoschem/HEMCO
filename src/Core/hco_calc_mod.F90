@@ -103,12 +103,7 @@ MODULE HCO_Calc_Mod
 !
 ! !REVISION HISTORY:
 !  25 Aug 2012 - C. Keller   - Initial version.
-!  06 Jun 2014 - R. Yantosca - Add cosmetic changes in ProTeX headers
-!  08 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  29 Dec 2014 - C. Keller   - Added MASK_THRESHOLD parameter. Added option to
-!                              apply scale factors only over masked area.
-!  08 Apr 2015 - C. Keller   - Added option for fractional masks.
-!  11 May 2015 - C. Keller   - Added HCO_EvalFld interface.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -154,14 +149,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  25 Aug 2012 - C. Keller   - Initial Version
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX header
-!  03 Aug 2014 - C. Keller   - Bug fix for adding data to diagnostics. Now
-!                              explicitly check for new species OR category.
-!  21 Aug 2014 - C. Keller   - Added concentration.
-!  14 Apr 2016 - C. Keller   - Bug fix: avoid double-counting if multiple
-!                              regional inventories have the same hierarchy.
-!  19 Sep 2016 - R. Yantosca - Use .neqv. for LOGICAL comparisons
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -684,6 +672,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller   - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -757,18 +746,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  25 Aug 2012 - C. Keller   - Initial Version
-!  09 Nov 2012 - C. Keller   - MASK update. Masks are now treated
-!                              separately so that multiple masks can be
-!                              added.
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  07 Sep 2014 - C. Keller   - Mask update. Now set mask to zero as soon as
-!                              on of the applied masks is zero.
-!  03 Dec 2014 - C. Keller   - Now calculate time slice index on-the-fly.
-!  29 Dec 2014 - C. Keller   - Added scale factor masks.
-!  02 Mar 2015 - C. Keller   - Now check for missing values. Missing values are
-!                              excluded from emission calculation.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  11 May 2017 - C. Keller   - Added universal scaling
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1290,14 +1268,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  25 Aug 2012 - C. Keller   - Initial Version
-!  09 Nov 2012 - C. Keller   - MASK update. Masks are now treated
-!                              separately so that multiple masks can be
-!                              added.
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX header
-!  07 Sep 2014 - C. Keller   - Mask update. Now set mask to zero as soon as
-!                              on of the applied masks is zero.
-!  02 Mar 2015 - C. Keller   - Now check for missing values
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1704,7 +1675,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2015 - C. Keller   - Initial Version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1824,8 +1795,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2015 - C. Keller   - Initial Version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  01 Nov 2016 - C. Keller   - Added error trap for UseLL
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1952,6 +1922,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  09 Apr 2015 - C. Keller   - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2036,7 +2007,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Jun 2015 - C. Keller   - Initial Version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2167,6 +2138,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 May 2016 - C. Keller   - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2273,6 +2245,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Jan 2018 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2334,6 +2307,7 @@ END FUNCTION GetEmisL
 !
 ! !REVISION HISTORY:
 !  26 Jan 2018 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2396,6 +2370,7 @@ END FUNCTION GetEmisLUnit
 !
 ! !REVISION HISTORY:
 !  09 May 2016 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2527,8 +2502,7 @@ END FUNCTION GetEmisLUnit
 !
 ! !REVISION HISTORY:
 !  06 May 2016 - C. Keller   - Initial Version
-!  16 Jul 2018 - C. Keller   - Bug fix: get PBL height in m, properly compute
-!                              fractions in lowest / highest level.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

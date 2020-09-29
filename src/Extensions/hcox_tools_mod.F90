@@ -32,6 +32,7 @@ MODULE HCOX_TOOLS_MOD
 !
 ! !REVISION HISTORY:
 !  11 Jun 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-----------------------------------------------------------------------------
 !BOC
@@ -78,6 +79,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Jun 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -136,6 +138,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Jun 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -200,6 +203,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Jun 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -259,6 +263,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Jun 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

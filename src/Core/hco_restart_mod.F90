@@ -95,6 +95,7 @@ MODULE HCO_RESTART_MOD
 !
 ! !REVISION HISTORY:
 !  10 Mar 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -138,6 +139,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -206,6 +208,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -284,7 +287,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -438,7 +441,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -592,6 +595,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -659,6 +663,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -725,7 +730,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Mar 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

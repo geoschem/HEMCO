@@ -46,6 +46,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  24 Jun 2014 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -120,7 +121,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  27 Jun 2014 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -540,6 +541,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  22 Jun 2014 - C. Keller - Initial version (from messy_ncregrid_geohyb.f90)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -799,6 +801,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  28 Aug 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -853,6 +856,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  27 Jun 2014 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -978,6 +982,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  27 Jun 2014 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

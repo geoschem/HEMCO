@@ -29,9 +29,7 @@ MODULE HCOIO_Read_ESMF_mod
 !
 ! !REVISION HISTORY:
 !  22 Aug 2013 - C. Keller   - Initial version
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  22 Feb 2016 - C. Keller   - Split off from hcoio_dataread_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -73,7 +71,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Aug 2013 - C. Keller   - Initial version
-!  27 Aug 2014 - R. Yantosca - Err msg now displays hcoio_dataread_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

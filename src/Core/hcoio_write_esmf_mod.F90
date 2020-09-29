@@ -35,14 +35,8 @@ MODULE HCOIO_WRITE_ESMF_MOD
 !  at a later time.  They will be turned on when debugging & unit testing.
 !
 ! !REVISION HISTORY:
-!  04 May 2014 - C. Keller   - Initial version.
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  11 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  28 Jul 2014 - C. Keller   - Removed GC specific initialization calls and
-!                              moved to HEMCO core.
-!  05 Aug 2014 - C. Keller   - Added dummy interface for ESMF.
-!  03 Apr 2015 - C. Keller   - Added HcoDiagn_Write
-!  22 Feb 2016 - C. Keller   - Split off from hcoio_diagn_mod.F90
+!  04 May 2014 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -106,8 +100,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Aug 2014 - C. Keller    - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

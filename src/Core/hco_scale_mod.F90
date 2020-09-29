@@ -41,10 +41,6 @@ MODULE HCO_Scale_Mod
 !
   REAL(hp), ALLOCATABLE :: SpcScal(:)
 !
-! !REVISION HISTORY:
-!  11 May 2017 - C. Keller   - Initial version
-!EOP
-!
 ! !INTERFACES:
 !
   INTERFACE HCO_ScaleArr
@@ -56,6 +52,10 @@ MODULE HCO_Scale_Mod
      MODULE PROCEDURE HCO_ScaleArr1D_sp
   END INTERFACE
 !
+! !REVISION HISTORY:
+!  11 May 2017 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
+!EOP
 !------------------------------------------------------------------------------
 !BOC
 CONTAINS
@@ -92,6 +92,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -167,6 +168,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -219,6 +221,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -282,6 +285,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -344,6 +348,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -406,6 +411,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -467,6 +473,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -528,6 +535,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -580,6 +588,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

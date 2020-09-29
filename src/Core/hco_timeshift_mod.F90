@@ -51,6 +51,7 @@ MODULE HCO_TIMESHIFT_MOD
 !
 ! !REVISION HISTORY:
 !  29 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -91,7 +92,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Feb 2016 - C. Keller - Initial version
-!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -224,8 +225,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Feb 2016 - C. Keller - Initial version
-!  19 Nov 2018 - C. Keller - Add option TimeShiftCap
-!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

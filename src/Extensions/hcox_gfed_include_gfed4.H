@@ -40,12 +40,7 @@
 
 ! !REVISION HISTORY:
 !  08 Aug 2014 - R. Yantosca - Initial version
-!  10 Jul 2015 - R. Yantosca - Fixed minor issues in ProTeX header
-!  08 Mar 2017 - M. Sulprizio- Added the following updates from E. Fischer:
-!                              - Added EOH and MTPA for PAN updates
-!  29 Mar 2018 - K. Travis   - Updated to latest GFED4 emission factors from
-!                           https://www.geo.vu.nl/~gwerf/GFED/GFED4/ancill/
-!                            - Added HAC, GLYX, Hg0
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

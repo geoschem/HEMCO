@@ -527,12 +527,7 @@ MODULE HCO_TYPES_MOD
 !
 ! !REVISION HISTORY:
 !  15 Feb 2016 - C. Keller   - Initial version (collected from various modules)
-!  12 May 2017 - C. Keller   - Added option ScaleEmis
-!  05 Oct 2018 - R. Yantosca - Added HCO_UFLAG_ONCE parameter
-!  23 Oct 2018 - M. Sulprizio- Added derived type for external model species
-!                              to ConfigObj to facilitate reading GEOS-Chem
-!                              restart file via HEMCO.
-!  07 Feb 2019 - C. Keller   - Added ReadList read counter.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

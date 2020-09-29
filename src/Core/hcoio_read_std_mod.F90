@@ -35,12 +35,7 @@ MODULE HCOIO_read_std_mod
 !
 ! !REVISION HISTORY:
 !  22 Aug 2013 - C. Keller   - Initial version
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  22 Feb 2016 - C. Keller   - Split off from hcoio_dataread_mod.F90
-!  10 Apr 2017 - R. Yantosca - Time vectors now use YYYYMMDDhhmm format,
-!                              and are now all REAL(dp) instead of INTEGER(8)
-!  11 Apr 2017 - R. Yantosca - Added more minor fixes for robustness
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -131,36 +126,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller   - Initial version
-!  27 Aug 2014 - R. Yantosca - Err msg now displays hcoio_dataread_mod.F90
-!  01 Oct 2014 - C. Keller   - Added file name parser
-!  03 Oct 2014 - C. Keller   - Added vertical regridding capability
-!  12 Dec 2014 - C. Keller   - Don't do vertical regridding if data is already
-!                              on GEOS-Chem levels.
-!  31 Dec 2014 - C. Keller   - Now call ModelLev_Interpolate for model remapping
-!                              of model levels.
-!  15 Jan 2015 - C. Keller   - Now allow model level interpolation in
-!                              combination with MESSy (horizontal) regridding.
-!  03 Feb 2015 - C. Keller   - Moved map_a2a regridding to hco_interp_mod.F90.
-!  24 Mar 2015 - C. Keller   - Added arguments LUN and CloseFile.
-!  27 Mar 2015 - R. Yantosca - Now use a FORMAT statement when printing the
-!                              filename to the Unix stdout.
-!  08 Apr 2015 - R. Yantosca - Bug fix: set KeepSpec=.TRUE. if there is no
-!                              species in the container.  This prevents
-!                              diffs in output in sp vs mp runs.
-!  13 Jul 2015 - C. Keller   - Write data into diagnostics right after reading
-!                              (if a diagnostics with the same name exists).
-!  23 Sep 2015 - C. Keller   - Support time averaging (cycle flags A and RA).
-!  06 Oct 2015 - C. Keller   - Support additional horizontal coordinates. Added
-!                              MustFind error checks (cycle flags EF and RF).
-!  22 Nov 2015 - C. Keller   - Bug fix: now use Lun2 if reading second file.
-!  24 Mar 2016 - C. Keller   - Simplified handling of file in buffer. Remove
-!                              args LUN and CloseFile.
-!  29 Apr 2016 - R. Yantosca - Don't initialize pointers in declaration stmts
-!  02 Nov 2018 - M. Sulprizio- Add option to skip variables when they're not
-!                              found in the file
-!  24 Feb 2019 - C. Keller   - Bug fix for interpolation: make sure that it
-!                              searches both into the future and the past.
-!  02 Nov 2019 - H.P. Lin    - Skip IO and erroring out if HcoState%Options%isDryRun
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1391,6 +1357,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Dec 2014 - C. Keller: Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1458,6 +1425,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Mar 2016 - C. Keller: Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

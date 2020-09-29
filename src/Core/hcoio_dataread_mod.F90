@@ -139,10 +139,7 @@ MODULE HCOIO_DataRead_Mod
 !
 ! !REVISION HISTORY:
 !  22 Aug 2013 - C. Keller   - Initial version
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  22 Feb 2016 - C. Keller   - Environment specific routines are now
-!                              in respective modules.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -182,11 +179,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Aug 2013 - C. Keller   - Initial version
-!  27 Aug 2014 - R. Yantosca - Err msg now displays hcoio_dataread_mod.F90
-!  22 Feb 2016 - C. Keller   - Now calls down to model-specific routines.
-!  24 Mar 2016 - C. Keller   - Removed LUN and CloseFile. Not needed any more.
-!  05 Oct 2018 - R. Yantosca - Read files with cycle flag "E" just once.
-!                              Also improve the error trapping.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

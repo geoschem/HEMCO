@@ -116,6 +116,7 @@ MODULE HCO_VertGrid_Mod
 !
 ! !REVISION HISTORY:
 !  28 Sep 2015 - C. Keller   - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -143,6 +144,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Sep 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -200,6 +202,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Sep 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -291,6 +294,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Sep 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

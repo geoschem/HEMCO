@@ -95,35 +95,7 @@ MODULE HCOX_ParaNOx_MOD
 !
 ! !REVISION HISTORY:
 !  06 Aug 2013 - C. Keller   - Initial version
-!  03 Jun 2013 - C. Holmes   - Rewritten to include wind speed in the look-up
-!                              table and to take input from netCDF
-!  15 Oct 2013 - C. Keller   - Now a HEMCO extension
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  06 Jun 2014 - R. Yantosca - Now indended with F90 free-format
-!  25 Jun 2014 - R. Yantosca - Now pass the look-up-table filenames
-!  15 Jul 2014 - C. Holmes   - Make module variables allocatable, since they
-!                              are used only in full chemistry simulations.
-!  22 Jul 2014 - R. Yantosca - Added shadow copy of FAST-JX function FJXFUNC
-!  28 Jul 2014 - C. Keller   - Now pass J-Values through ExtState. This makes
-!                              the FJXFUNC shadow copy obsolete
-!  13 Aug 2014 - C. Keller   - Added manual diagnostics
-!  16 Oct 2014 - C. Keller   - Now store SUNCOSmid values internally over the
-!                              past 5 hours and use these values for SUNCOSmid5.
-!                              This is required for standalone mode.
-!  05 Feb 2015 - C. Keller   - Modified to bring in the updates from Chris
-!                              Holmes (input data in netCDF format, include
-!                              wind speed, calculated dry deposition freq.
-!                              using whole troposheric column mass).
-!  23 Feb 2015 - C. Keller   - Historic j-values can now be provided through
-!                              HEMCO configuration file.
-!  10 Apr 2015 - C. Keller   - Now exchange deposition fluxes via diagnostics.
-!                              Keep units of kg/m2/s for loss rates.
-!  20 Apr 2016 - M. Sulprizio- Get J(OH) directly from FAST-JX and remove all
-!                              references to J(O1D). In FlexChem, adjustment of
-!                              photolysis rates are now done in routine
-!                              PHOTRATE_ADJ (found in GeosCore/fast_jx_mod.F).
-!  14 Oct 2016 - C. Keller   - Now use HCO_EvalFld instead of HCO_GetPtr.
-!  12 Sep 2018 - C. Keller   - Added instance wrapper
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -237,9 +209,7 @@ CONTAINS
 
 ! !REVISION HISTORY:
 !  06 Aug 2013 - C. Keller   - Initial Version
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  06 Jun 2014 - R. Yantosca - Now indended with F90 free-format
-!  28 Jul 2014 - C. Keller   - Now call Hco_CalcEmis instead of Hco_Run.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -358,22 +328,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Aug 2013 - C. Keller   - Initial Version
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  06 Jun 2014 - R. Yantosca - Now indended with F90 free-format
-!  24 Jun 2014 - R. Yantosca - Now pass LUT_FILENAME to READ_PARANOX_LUT
-!  22 Jul 2014 - R. Yantosca - Comment out debug print statements
-!  28 Jul 2014 - C. Keller   - Now get J-values through ExtState
-!  12 Aug 2014 - R. Yantosca - READ_PARANOX_LUT is now called from Init phase
-!  10 Nov 2014 - C. Keller   - Added div-zero error trap for O3 deposition.
-!  25 Nov 2014 - C. Keller   - Now convert NO fluxes to HNO3 and O3 using
-!                              corresponding molecular weight ratios. Safe
-!                              division check for O3 deposition calculation.
-!  08 May 2015 - C. Keller   - Now read/write restart variables from here to
-!                              accomodate replay runs in GEOS-5.
-!  25 May 2015 - C. Keller   - Now calculate SC5 via HCO_GetSUNCOS
-!  29 Mar 2016 - C. Keller   - Bug fix: archive O3 deposition as positive flux.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  12 May 2017 - C. Keller   - Force option ScaleEmis to off.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -875,15 +830,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Aug 2013 - C. Keller   - Initial Version
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTex Headers
-!  06 Jun 2014 - R. Yantosca - Now indented using F90 free-format
-!  13 Aug 2014 - R. Yantosca - Now read the PARANOX look-up tables here
-!  14 Aug 2014 - R. Yantosca - Minor fix, read the PARANOX look-up tables
-!                              after displaying text about PARANOX extension
-!  16 Oct 2014 - C. Keller   - Added error check after READ_PARANOX_LUT
-!  17 Oct 2014 - C. Keller   - Now parse input files via HCO_CharParse
-!  17 Apr 2015 - C. Keller   - Now assign PARANOX_SUNCOS1 to SC5(:,:,1), etc.
-!  25 May 2015 - C. Keller   - Now calculate SC5 via HCO_GetSUNCOS
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1416,8 +1363,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Aug 2013 - C. Keller - Initial Version
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  06 Jun 2014 - R. Yantosca - Now indended with F90 free-format
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1463,10 +1409,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  06 Feb 2012 - M. Payer    - Initial version modified from code provided by
 !                              G.C.M. Vinken
-!  01 Aug 2012 - R. Yantosca - Add reference to findFreeLUN from inqure_mod.F90
-!  03 Aug 2012 - R. Yantosca - Move calls to findFreeLUN out of DEVEL block
-!  03 Jun 2013 - C. Holmes   - Rewritten to include wind speed in the look-up
-!                              table and to take input from netCDF
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1614,10 +1557,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  06 Feb 2012 - M. Payer    - Initial version modified from code provided by
 !                              G.C.M. Vinken
-!  01 Aug 2012 - R. Yantosca - Add reference to findFreeLUN from inqure_mod.F90
-!  03 Aug 2012 - R. Yantosca - Move calls to findFreeLUN out of DEVEL block
-!  03 Jun 2013 - C. Holmes   - Rewritten to include wind speed in the look-up
-!                              table and to take input from netCDF
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1811,6 +1751,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  05 Feb 2015 - C. Keller   - Initial version modified from code provided by
 !                              G.C.M. Vinken and C. Holmes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1909,6 +1850,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  05 Feb 2015 - C. Keller   - Initial version modified from code provided by
 !                              G.C.M. Vinken and C. Holmes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2145,6 +2087,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  05 Feb 2015 - C. Keller   - Initial version modified from code provided by
 !                              G.C.M. Vinken and C. Holmes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2321,6 +2264,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Jun 2013 - C. Holmes      - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2421,21 +2365,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !     Jun 2010 - G.C.M. Vinken - Initial version
-!  03 Jun 2013 - C. Holmes     - Heavily modified and simplified from previous
-!                                LUT interpolation code by G.C.M. Vinken and
-!                                M. Payer. LUT now includes wind speed.
-!  04 Feb 2015 - C. Keller     - Updated for use in HEMCO.
-!  24 Sep 2015 - E. Lundgren   - ExtState vars O3, NO2, and NO now in
-!                                kg/kg dry air (previously kg)
-!  07 Jan 2016 - E. Lundgren   - Update H2O molec wt to match GC value
-!  20 Apr 2016 - M. Sulprizio  - Remove calculation of J(OH). We now get J(OH),
-!                                the effective rate for O3+hv(+H2O)->OH+OH,
-!                                directly from FAST-JX. In FlexChem, adjustment
-!                                of the photolysis rates are done in routine
-!                                PHOTRATE_ADJ (found in GeosCore/fast_jx_mod.F).
-!  20 Sep 2016 - R. Yantosca   - Replace non-standard ASIND function with ASIN,
-!                                and convert to degrees (divide by PI/180)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2842,6 +2772,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2902,7 +2833,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2969,7 +2900,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

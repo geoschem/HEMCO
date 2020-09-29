@@ -38,19 +38,7 @@ MODULE HCO_Unit_Mod
 !
 ! !REVISION HISTORY:
 !  15 May 2012 - C. Keller   - Initialization
-!  08 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  08 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  24 Jul 2014 - C. Keller   - Now define unitless & 'standard' units as
-!                              parameter
-!  13 Aug 2014 - C. Keller   - Interface for sp & dp arrays
-!  13 Mar 2015 - R. Yantosca - Add m and m2 to the "unitless" list
-!  16 Mar 2015 - R. Yantosca - Also allow "kg m-2 s-1" and similar units
-!  16 Mar 2015 - R. Yantosca - Add dobsons and dobsons/day units
-!  16 Jun 2015 - R. Yantosca - Add % and percent to the unitless list
-!  07 Jan 2016 - E. Lundgren - Update Avogadro's # to NIST 2014 value
-!  19 Sep 2016 - R. Yantosca - Make sure all strings are the same length in
-!                              the array constructor or Gfortran will choke
-!  10 Jun 2018 - C. Keller   - Add mol/mol to unitless quantities
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -184,6 +172,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Aug 2014 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -259,6 +248,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Aug 2014 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -387,10 +377,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Oct 2012 - C. Keller - Initial Version
-!  23 May 2013 - C. Keller - Now use additive method
-!  01 Oct 2013 - C. Keller - Now convert to kg/m2/s instead of
-!                            molec/cm2/s
-!  13 Aug 2014 - C. Keller - Split off from subroutine HCO\_UNIT\_CHANGE
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -517,7 +504,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller - Initial version
-!  17 Sep 2014 - C. Keller - Now accept '1' as mass unit (e.g. 1/m3/s)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -784,6 +771,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -877,6 +865,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -969,6 +958,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1042,6 +1032,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Jul 2014 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1075,6 +1066,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Jul 2014 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1114,6 +1106,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Jul 2014 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

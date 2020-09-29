@@ -35,7 +35,7 @@ MODULE HCO_inquireMod
 !
 ! !REVI<SION HISTORY:
 !  14 Jun 2012 - E. Nielsen  - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -69,7 +69,7 @@ MODULE HCO_inquireMod
 !
 ! !REVISION HISTORY:
 !  14 Jun 2012 - E. Nielsen  - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

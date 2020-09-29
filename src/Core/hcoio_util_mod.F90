@@ -51,6 +51,7 @@ MODULE HCOIO_Util_Mod
 ! !REVISION HISTORY:
 !  12 Jun 2020 - E. Lundgren - Initial version, created from subset of
 !                              hcoio_util_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -124,7 +125,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller - Initial version
-!  27 Feb 2015 - C. Keller - Added weigths
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -637,7 +638,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller   - Initial version
-!  11 Apr 2017 - R. Yantosca - Now epsilon-test time stamps for equality
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -706,8 +707,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller   - Initial version
-!  17 Jul 2014 - C. Keller   - Now allow to adjust year, month, or day.
-!  10 Apr 2017 - R. Yantosca - Times are now in YYYYMMDDhhmm format
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -878,8 +878,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller   - Initial version
-!  10 Apr 2017 - R. Yantosca - AvailYMDHm now uses YYYYMMDDhhmm format,
-!                              so divide by 1d4 instead of 1d2
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -945,7 +944,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Mar 2015 - C. Keller   - Initial version
-!  11 Apr 2017 - R. Yantosca - Now epsilon-test time stamps for equality
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1031,9 +1030,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  02 Mar 2015 - C. Keller   - Initial version
-!  11 Apr 2017 - R. Yantosca - Time stamp variables now use YYYYMMDDhhmm
-!                              fprmat and are REAL(dp) instead of INTEGER(8)
-!  11 Apr 2017 - R. Yantosca - Now epsilon-test time stamps for equality
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1211,7 +1208,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Mar 2015 - C. Keller - Initial version
-!  24 Feb 2019 - C. Keller - Now use julian dates via YMDhm2jd
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1274,6 +1271,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Feb 2019 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1326,6 +1324,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Jan 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1369,6 +1368,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1477,11 +1477,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 Oct 2014 - C. Keller - Initial version
-!  23 Feb 2015 - C. Keller - Now check for negative return values in
-!                            HCO_GetPrefTimeAttr
-!  06 Nov 2015 - C. Keller - Bug fix: restrict day to last day of month.
-!  24 Feb 2019 - C. Keller - Change flag FUTURE to Direction so that it works
-!                            in both direction
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1804,6 +1800,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Oct 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1868,6 +1865,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1929,6 +1927,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Sep 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2059,7 +2058,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Dec 2014 - C. Keller: Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2279,7 +2278,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Jul 2014 - C. Keller: Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2421,6 +2420,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2527,7 +2527,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Dec 2014 - C. Keller: Initial version
-!  08 Aug 2018 - C. Keller: Added check for range/exact dataon
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2912,7 +2912,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Dec 2014 - C. Keller - Initial version
-!  19 Nov 2015 - C. Keller - Now support grid point masks
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3052,11 +3052,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
-!  07 Jul 2017 - C. Keller - Parse function before evaluation to allow
-!                            the usage of user-defined tokens within the
-!                            function.
-!  27 Aug 2019 - C. Keller - Add tokens 'ELS' and 'ELH' for elapsed seconds
-!                            and hours, respectively.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

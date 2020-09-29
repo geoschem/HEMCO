@@ -116,16 +116,7 @@ MODULE HCO_Error_Mod
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
-!  12 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  12 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  03 Mar 2015 - C. Keller   - Added HCO_CFLAG_* and HCO_DCTTYPE_*
-!  15 Feb 2016 - C. Keller   - Update to v2.0: error variables now
-!                              organized in derived type HcoErr.
-!  23 Nov 2016 - R. Yantosca - Now rewrite KIND definitions to prevent 4-byte
-!                              and 8-byte variables from being elevated
-!                              when using -r8 (or equivalent flags)
-!  29 Dec 2017 - C. Keller   - Update to v2.1.004
-!  07 Feb 2019 - C. Keller   - Update to v2.1.011
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -180,6 +171,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -243,6 +235,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -296,7 +289,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
-!  26 Mar 2015 - C. Keller - Added warning levels
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -364,7 +357,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
-!  26 Mar 2015 - C. Keller - Added warning levels
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -420,8 +413,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
-!  20 May 2015 - R. Yantosca - Minor formatting fix: use '(a)' instead of *
-!                              to avoid line wrapping around at 80 columns.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -512,8 +504,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
-!  20 May 2015 - R. Yantosca - Minor formatting fix: use '(a)' instead of *
-!                              to avoid line wrapping around at 80 columns.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -563,7 +554,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
-!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -633,6 +624,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -703,7 +695,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
-!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -776,7 +768,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
-!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -822,6 +814,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Mar 2015 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -864,6 +857,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Mar 2015 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -906,9 +900,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
-!  14 Aug 2014 - R. Yantosca - Add FORM='FORMATTED' to the OPEN statement
-!                              so that the HEMCO log will be a text file
-!  22 Jan 2016 - R. Yantosca - Line-buffer the HEMCO log file for pgfortran
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1041,6 +1033,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
