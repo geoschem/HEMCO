@@ -622,7 +622,7 @@ CONTAINS
        TOTAL = TOTAL_IC + TOTAL_CG
 
        ! Convert from molec km-2 s-1 to kg(NO) m-2 s-1
-       TOTAL = TOTAL * ( HcoState%Spc(Inst%IDTNO)%EmMW_g / 1000.0_hp ) / &
+       TOTAL = TOTAL * ( HcoState%Spc(Inst%IDTNO)%MW_g / 1000.0_hp ) / &
                          HcoState%Phys%Avgdr / 1000000.0_hp
 
        !===========================================================

@@ -2534,7 +2534,6 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    REAL(hp)           :: MW_g,  EmMW_g, MolecRatio
     INTEGER            :: HcoID
     INTEGER            :: I, N, NUSE, AS
     INTEGER            :: IDX1, IDX2
@@ -2555,19 +2554,6 @@ CONTAINS
 
     ! Initialize
     FileArr => NULL()
-
-    ! Shadow molecular weights and molec. ratio (needed for
-    ! unit conversion during file read)
-    HcoID = Lct%Dct%HcoID
-    IF ( HcoID > 0 ) THEN
-       MW_g       = HcoState%Spc(HcoID)%MW_g
-       EmMW_g     = HcoState%Spc(HcoID)%EmMW_g
-       MolecRatio = HcoState%Spc(HcoID)%MolecRatio
-    ELSE
-       MW_g       = -999.0_hp
-       EmMW_g     = -999.0_hp
-       MolecRatio = -999.0_hp
-    ENDIF
 
     ! Is this a math expression?
     IsMath = .FALSE.
@@ -2792,9 +2778,6 @@ CONTAINS
        CALL HCO_UNIT_CHANGE( HcoConfig     = HcoState%Config,            &
                              Array         = FileArr,                    &
                              Units         = TRIM(Lct%Dct%Dta%OrigUnit), &
-                             MW_IN         = MW_g,                       &
-                             MW_OUT        = EmMW_g,                     &
-                             MOLEC_RATIO   = MolecRatio,                 &
                              YYYY          = -999,                       &
                              MM            = -999,                       &
                              AreaFlag      = AreaFlag,                   &

@@ -182,7 +182,6 @@ CONTAINS
     INTEGER                       :: ArbIdx
     INTEGER                       :: nlatEdge, nlonEdge
     INTEGER                       :: Direction
-    REAL(hp)                      :: MW_g, EmMW_g, MolecRatio
     REAL(sp)                      :: wgt1,   wgt2
     REAL(sp), POINTER             :: ncArr(:,:,:,:)
     REAL(sp), POINTER             :: ncArr2(:,:,:,:)
@@ -994,24 +993,6 @@ CONTAINS
     ! 2. If srcUnit is set to 'count', no unit conversion is performed
     !    and data will be treated as 'index' data, e.g. regridding will
     !    preserve the absolute values.
-    !
-    ! Special attention needs to be paid to species that are emitted
-    ! in quantities other than species molecules, e.g. molecules
-    ! carbon. For these species, the species MW differs from the
-    ! 'emitted MW', and the molecular ratio determines how many
-    ! molecules are being emitted per molecule species. By default,
-    ! HEMCO will attempt to convert all input data to kg emitted
-    ! species. If a species is emitted as kgC/m2/s and the input data
-    ! is in kg/m2/s, the mass will be adjusted based on the molecular
-    ! ratio and the ratio of emitted MW / species MW. Only input data
-    ! that is already in kgC/m2/s will not be converted!
-    ! This behavior can be avoided by explicitly setting the srcUnit
-    ! to the same value as the input data unit. In this case, HEMCO
-    ! will not convert between species MW and emitted MW.
-    ! This is useful for cases where the input data does not
-    ! contain data of the actual species, e.g. if VOC emissions are
-    ! calculated from scaled CO emissions. The scale factors then
-    ! must include the conversion from CO to the VOC of interest!
     !-----------------------------------------------------------------
 
     ! If OrigUnit is set to wildcard character: use unit from source file
@@ -1074,38 +1055,6 @@ CONTAINS
           ENDIF
        ENDIF
 
-       ! Mirror species properties needed for unit conversion
-       HcoID = Lct%Dct%HcoID
-       IF ( HcoID > 0 ) THEN
-
-          ! Emitted species molecular weight
-          EmMW_g     = HcoState%Spc(HcoID)%EmMW_g
-          MW_g       = HcoState%Spc(HcoID)%MW_g
-          MolecRatio = HcoState%Spc(HcoID)%MolecRatio
-
-          ! Species molecular weight and molecular ratio to be
-          ! applied. Set to 1.0 if source unit matches input units.
-          IF ( TRIM(Lct%Dct%Dta%OrigUnit) == TRIM(thisUnit) ) THEN
-             !MW_g       = EmMW_g
-             !MolecRatio = 1.0_hp
-             KeepSpec    = .TRUE.
-          ELSE
-             !MW_g       = HcoState%Spc(HcoID)%MW_g
-             !MolecRatio = HcoState%Spc(HcoID)%MolecRatio
-             KeepSpec    = .FALSE.
-          ENDIF
-
-       ! If there is no species associated with this container,
-       ! it won't be possible to do unit conversion of mass.
-       ! This will cause an error if the input data is not in
-       ! units of kg already!
-       ELSE
-          KeepSpec   = .TRUE.
-          MW_g       = -999.0_hp
-          EmMW_g     = -999.0_hp
-          MolecRatio = -999.0_hp
-       ENDIF
-
        ! Now convert to HEMCO units. This attempts to convert mass,
        ! area/volume and time to HEMCO standards (kg, m2/m3, s).
        ncYr  = FLOOR( MOD( oYMDhm1, 1.0e12_dp ) / 1.0e8_dp )
@@ -1124,14 +1073,6 @@ CONTAINS
        IF ( HcoState%amIRoot .and. HCO_IsVerb(HcoState%Config%Err,3) ) THEN
           WRITE(MSG,*) 'Unit conversion settings: '
           CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) '- Species MW         : ', MW_g
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) '- emitted compound MW: ', EmMW_g
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) '- molecular ratio    : ', MolecRatio
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) '- keep input species : ', KeepSpec
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,*) '- Year, month        : ', ncYr, ncMt
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -1140,10 +1081,6 @@ CONTAINS
             HcoConfig     = HcoState%Config, &
             Array         = ncArr,           &
             Units         = thisUnit,        &
-            MW_IN         = MW_g,            &
-            MW_OUT        = EmMW_g,          &
-            MOLEC_RATIO   = MolecRatio,      &
-            KeepSpec      = KeepSpec,        &
             YYYY          = ncYr,            &
             MM            = ncMt,            &
             AreaFlag      = AreaFlag,        &

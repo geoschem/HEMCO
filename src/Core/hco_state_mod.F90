@@ -234,8 +234,6 @@ CONTAINS
        HcoState%Spc(I)%ModID      = -1
        HcoState%Spc(I)%SpcName    = ''
        HcoState%Spc(I)%MW_g       = 0.0_dp
-       HcoState%Spc(I)%EmMW_g     = 0.0_dp
-       HcoState%Spc(I)%MolecRatio = 1.0_dp
        HcoState%Spc(I)%HenryK0    = 0.0_dp
        HcoState%Spc(I)%HenryCR    = 0.0_dp
        HcoState%Spc(I)%HenryPKA   = 0.0_dp

@@ -394,9 +394,9 @@ CONTAINS
                        Inst%SpcScalFldNme, RC                               )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
-    ! Add conversion factor from kg S to kg of emitted species
+    ! Add conversion factor from kg S to kg species
     DO N = 1, Inst%nSpc
-       Inst%SpcScl(N) = Inst%SpcScl(N) * HcoState%Spc(Inst%SpcIDs(N))%EmMW_g &
+       Inst%SpcScl(N) = Inst%SpcScl(N) * HcoState%Spc(Inst%SpcIDs(N))%MW_g &
                       * HcoState%Spc(Inst%SpcIDs(N))%MolecRatio / MW_S
     ENDDO
 

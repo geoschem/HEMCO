@@ -81,10 +81,6 @@ CONTAINS
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        write(MSG,*) '--> MW (g/mol)    : ', HcoState%Spc(ID)%MW_g
        CALL HCO_MSG(HcoState%Config%Err,MSG)
-       write(MSG,*) '--> emitted MW    : ', HcoState%Spc(ID)%EmMW_g
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
-       write(MSG,*) '--> Molecule ratio: ', HcoState%Spc(ID)%MolecRatio
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
        write(MSG,*) '--> Henry constant: ', HcoState%Spc(ID)%HenryK0
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        write(MSG,*) '--> Henry temp.   : ', HcoState%Spc(ID)%HenryCR

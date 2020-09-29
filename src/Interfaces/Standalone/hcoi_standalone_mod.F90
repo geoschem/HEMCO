@@ -22,8 +22,7 @@
 ! \item HEMCO\_sa\_Spec: contains the HEMCO species definitions. The first row
 !  must contain the total number of species. For each species, the following
 !  parameter need to be specified (separated by at least one space character):
-!  species ID, name, molecular weight [g/mol], emitted molecular weight
-!  [g/mol], the molecule emission ratio, the liq. over gas Henry constant
+!  species ID, name, molecular weight [g/mol], the liq. over gas Henry constant
 !  [M/atm], the temperature dependency of the Henry constant (K0, in [K]), and
 !  the pKa (for correction of the Henry constant).
 !
@@ -122,8 +121,6 @@ MODULE HCOI_StandAlone_Mod
   CHARACTER(LEN= 31),    POINTER :: ModelSpecNames     (:) => NULL()
   INTEGER,               POINTER :: ModelSpecIDs       (:) => NULL()
   REAL(hp),              POINTER :: ModelSpecMW        (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecEmMW      (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecMolecRatio(:) => NULL()
   REAL(hp),              POINTER :: ModelSpecK0        (:) => NULL()
   REAL(hp),              POINTER :: ModelSpecCR        (:) => NULL()
   REAL(hp),              POINTER :: ModelSpecPKA       (:) => NULL()
@@ -778,7 +775,6 @@ CONTAINS
   SUBROUTINE Model_GetSpecies( HcoConfig,                          &
                                nModelSpec,     ModelSpecNames,     &
                                ModelSpecIDs,   ModelSpecMW,        &
-                               ModelSpecEmMW,  ModelSpecMolecRatio,&
                                ModelSpecK0,    ModelSpecCR,        &
                                ModelSpecPKA,   RC                   )
 !
@@ -794,8 +790,6 @@ CONTAINS
     CHARACTER(LEN= 31), POINTER     :: ModelSpecNames     (:)
     INTEGER,            POINTER     :: ModelSpecIDs       (:)
     REAL(hp),           POINTER     :: ModelSpecMW        (:)
-    REAL(hp),           POINTER     :: ModelSpecEmMW      (:)
-    REAL(hp),           POINTER     :: ModelSpecMolecRatio(:)
     REAL(hp),           POINTER     :: ModelSpecK0        (:)
     REAL(hp),           POINTER     :: ModelSpecCR        (:)
     REAL(hp),           POINTER     :: ModelSpecPKA       (:)
@@ -895,8 +889,6 @@ CONTAINS
     ALLOCATE(ModelSpecNames     (nModelSpec))
     ALLOCATE(ModelSpecIDs       (nModelSpec))
     ALLOCATE(ModelSpecMW        (nModelSpec))
-    ALLOCATE(ModelSpecEmMW      (nModelSpec))
-    ALLOCATE(ModelSpecMolecRatio(nModelSpec))
     ALLOCATE(ModelSpecK0        (nModelSpec))
     ALLOCATE(ModelSpecCR        (nModelSpec))
     ALLOCATE(ModelSpecPKA       (nModelSpec))
@@ -915,9 +907,8 @@ CONTAINS
        LNG = LEN(TRIM(DUM))
        LOW = 0
 
-       ! Read species ID, name, molecular weight, emitted molecular weight,
-       ! molecular coefficient, and Henry coefficients K0, CR, pKa (in this
-       ! order).
+       ! Read species ID, name, molecular weight, and Henry coefficients
+       ! K0, CR, pKa (in this order).
        DO I = 1, 8
 
           ! Get lower and upper index of species ID (first entry in row).
@@ -944,8 +935,8 @@ CONTAINS
              WRITE(MSG,*) 'Error reading species property ', I, &
                           ' on line ', TRIM(DUM), '. Each ', &
                           'species definition line is expected ', &
-                          'to have 8 entries (ID, Name, MW, MWemis, ', &
-                          'MOLECRATIO, K0, CR, PKA, e.g.: ', &
+                          'to have 8 entries (ID, Name, MW, ', &
+                          'K0, CR, PKA, e.g.: ', &
                           '1 CO   28.0 28.0 1.0 0.0 0.0 0.0'
              CALL HCO_Error ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
              RETURN
@@ -959,10 +950,6 @@ CONTAINS
                 READ( DUM(LOW:UPP), * ) ModelSpecNames(N)
              CASE ( 3 )
                 READ( DUM(LOW:UPP), * ) ModelSpecMW(N)
-             CASE ( 4 )
-                READ( DUM(LOW:UPP), * ) ModelSpecEmMW(N)
-             CASE ( 5 )
-                READ( DUM(LOW:UPP), * ) ModelSpecMolecRatio(N)
              CASE ( 6 )
                 READ( DUM(LOW:UPP), * ) ModelSpecK0(N)
              CASE ( 7 )
@@ -1632,7 +1619,6 @@ CONTAINS
     CALL Model_GetSpecies( HcoConfig,                           &
                            nModelSpec,     ModelSpecNames,      &
                            ModelSpecIDs,   ModelSpecMW,         &
-                           ModelSpecEmMW,  ModelSpecMolecRatio, &
                            ModelSpecK0,    ModelSpecCR,         &
                            ModelSpecPKA,   RC                    )
     IF ( RC /= HCO_SUCCESS ) THEN
@@ -1716,12 +1702,8 @@ CONTAINS
        HcoState%Spc(cnt)%SpcName  = HcoSpecNames(I)
        HcoState%Spc(cnt)%ModID    = IDX
 
-       ! Molecular weights of species & emitted species.
+       ! Molecular weights of species
        HcoState%Spc(cnt)%MW_g     = ModelSpecMW(IDX)
-       HcoState%Spc(cnt)%EmMW_g   = ModelSpecEmMW(IDX)
-
-       ! Emitted molecules per molecule of species.
-       HcoState%Spc(cnt)%MolecRatio = ModelSpecMolecRatio(IDX)
 
        ! Set Henry coefficients
        HcoState%Spc(cnt)%HenryK0  = ModelSpecK0(IDX)
@@ -2943,8 +2925,6 @@ CONTAINS
     IF ( ASSOCIATED(ModelSpecNames     ) ) DEALLOCATE(ModelSpecNames     )
     IF ( ASSOCIATED(ModelSpecIDs       ) ) DEALLOCATE(ModelSpecIDs       )
     IF ( ASSOCIATED(ModelSpecMW        ) ) DEALLOCATE(ModelSpecMW        )
-    IF ( ASSOCIATED(ModelSpecEmMW      ) ) DEALLOCATE(ModelSpecEmMW      )
-    IF ( ASSOCIATED(ModelSpecMolecRatio) ) DEALLOCATE(ModelSpecMolecRatio)
     IF ( ASSOCIATED(ModelSpecK0        ) ) DEALLOCATE(ModelSpecK0        )
     IF ( ASSOCIATED(ModelSpecCR        ) ) DEALLOCATE(ModelSpecCR        )
     IF ( ASSOCIATED(ModelSpecPKA       ) ) DEALLOCATE(ModelSpecPKA       )

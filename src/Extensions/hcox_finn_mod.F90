@@ -1020,7 +1020,7 @@ CONTAINS
                       ! Normalize by species' molecular weight.
                       ELSE
                          AdjFact = 1.0_dp / MW_CO2 * &
-                                   HcoState%Spc(Inst%HcoIDs(Inst%nSpc))%EmMW_g
+                                   HcoState%Spc(Inst%HcoIDs(Inst%nSpc))%MW_g
                       ENDIF
                       Inst%FINN_EMFAC(N,:) = AdjFact / EMFAC_IN(M,:)
                       IF ( HcoState%amIRoot ) THEN
@@ -1059,15 +1059,12 @@ CONTAINS
                 ! NMOC_RATIO is [mole X] / [kg NMOC]
                 ! To convert NMOC_RATIO to [kg X] / [kg NMOC], we need to
                 ! multiply by the MW of X (kg/mol this time).
-                ! Most (not all) of these species are carried as atoms C,
-                ! so we also multiply here by the number of carbon atoms/molec.
                 IF ( IS_NMOC ) THEN
                    DO M = 1, N_EMFAC
-                      C_MOLEC              = HcoState%Spc(Inst%HcoIDs(Inst%nSpc))%MolecRatio
-                      AdjFact              = HcoState%Spc(Inst%HcoIDs(Inst%nSpc))%EmMW_g
-                      Inst%FINN_EMFAC(N,M) = NMOC_EMFAC(M)             * &
-                                           ( NMOC_RATIO(M) * C_MOLEC ) * &
-                                           ( AdjFact       * 1e-3_hp )
+                      AdjFact = HcoState%Spc(Inst%HcoIDs(Inst%nSpc))%MW_g
+                      Inst%FINN_EMFAC(N,M) = NMOC_EMFAC(M) * &
+                                             NMOC_RATIO(M) * &
+                                             ( AdjFact * 1e-3_hp )
                    ENDDO
                 ENDIF
              ENDIF
