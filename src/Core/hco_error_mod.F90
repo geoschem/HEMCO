@@ -73,15 +73,15 @@ MODULE HCO_Error_Mod
 ! !MODULE VARIABLES:
 !
   ! Double and single precision definitions
-  INTEGER, PARAMETER, PUBLIC  :: dp = KIND( REAL( 0.0, 8 ) ) ! Double (r8)
-  INTEGER, PARAMETER, PUBLIC  :: sp = KIND( REAL( 0.0, 4 ) ) ! Single (r4)
-#if defined( USE_REAL8 )
-  INTEGER, PARAMETER, PUBLIC  :: hp = KIND( REAL( 0.0, 8 ) ) ! HEMCO prec r8
+  INTEGER, PARAMETER, PUBLIC  :: dp = KIND( 0.0_8 )  ! Double (r8)
+  INTEGER, PARAMETER, PUBLIC  :: sp = KIND( 0.0_4 )  ! Single (r4)
+#ifdef USE_REAL8
+  INTEGER, PARAMETER, PUBLIC  :: hp = dp             ! HEMCO precision = r8
 #else
-  INTEGER, PARAMETER, PUBLIC  :: hp = KIND( REAL( 0.0, 4 ) ) ! HEMCO prec r4
+  INTEGER, PARAMETER, PUBLIC  :: hp = sp             ! HEMCO precision = r4
 #endif
-  INTEGER, PARAMETER, PUBLIC  :: i4 = 4                      ! FourByteInt
-  INTEGER, PARAMETER, PUBLIC  :: i8 = 8                      ! EightByteInt
+  INTEGER, PARAMETER, PUBLIC  :: i4 = 4              ! FourByteInt
+  INTEGER, PARAMETER, PUBLIC  :: i8 = 8              ! EightByteInt
 
   ! Error success/failure definitions
   INTEGER, PARAMETER, PUBLIC  :: HCO_SUCCESS = 0
@@ -1000,15 +1000,23 @@ CONTAINS
     ! Write header on first call
     IF ( Err%FirstOpen ) THEN
        IF ( Err%LUN < 0 ) THEN
-          WRITE(*,'(a)') REPEAT( '-', 79)
-          WRITE(*,'(A12,A12)') 'Using HEMCO ', HCO_VERSION
-          WRITE(*,'(a)') REPEAT( '-', 79)
+          LUN = 6                ! Log gets written to stdout
        ELSE
-          LUN = Err%LUN
-          WRITE(LUN,'(a)') REPEAT( '-', 79)
-          WRITE(LUN,'(A12,A12)') 'Using HEMCO ', HCO_VERSION
-          WRITE(LUN,'(a)') REPEAT( '-', 79)
+          LUN = Err%LUN          ! Log gets written to file
        ENDIF
+
+       ! Write header
+       WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
+       WRITE( LUN, '(a12, a)' ) 'Using HEMCO ', HCO_VERSION
+       WRITE( LUN, '(a)'        )
+#ifdef USE_REAL8
+       WRITE( LUN,  100       )
+ 100   FORMAT('HEMCO precision (hp) is set to is 8-byte real (aka REAL*8)')
+#else
+       WRITE( LUN,  110       )
+ 110   FORMAT('HEMCO precision (hp) is set to is 4-byte real (aka REAL*4)')
+#endif
+       WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
 
        Err%FirstOpen = .FALSE.
     ENDIF
