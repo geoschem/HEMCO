@@ -301,7 +301,7 @@ CONTAINS
     ! Set misc. parameter
     !=====================================================================
 
-    ! Physical constants
+    ! Physical constants (Source: NIST, 2014)
     ALLOCATE ( HcoState%Phys, STAT = AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoConfig%Err, 'HEMCO physical constants', RC )
@@ -310,12 +310,12 @@ CONTAINS
     HcoState%Phys%Avgdr  = 6.022140857e23_dp
     HcoState%Phys%PI     = 3.14159265358979323_dp
     HcoState%Phys%PI_180 = HcoState%Phys%PI / 180.0_dp
-    HcoState%Phys%Re     = 6.375e6_dp
-    HcoState%Phys%AIRMW  = 28.97_dp
+    HcoState%Phys%Re     = 6.3710072e+6_fp                ! Was 6.375e6_dp
+    HcoState%Phys%AIRMW  = 28.9644_dp                     ! Was 28.97_dp
     HcoState%Phys%g0     = 9.80665_dp
     HcoState%Phys%Rd     = 287.0_dp
     HcoState%Phys%Rdg0   = HcoState%Phys%Rd / HcoState%Phys%g0
-    HcoState%Phys%RSTARG = 8.31450_dp
+    HcoState%Phys%RSTARG = 8.3144598_dp                   ! Was 8.31450_dp
 
     ! Timesteps
     HcoState%TS_EMIS = 0.0_sp
