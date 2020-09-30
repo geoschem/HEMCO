@@ -4,6 +4,13 @@ cmake_minimum_required(VERSION 3.5)
 project(HEMCO VERSION 3.0.0 LANGUAGES Fortran)
 
 #-----------------------------------------------------------------------------
+# Print header
+#-----------------------------------------------------------------------------
+message("-----------------------------------------------------------------")
+message("HEMCO ${PROJECT_VERSION}")
+message("-----------------------------------------------------------------")
+
+#-----------------------------------------------------------------------------
 # Set policies
 #-----------------------------------------------------------------------------
 cmake_policy(SET CMP0054 NEW)
@@ -23,25 +30,8 @@ include(HCO-Helpers)
 
 #-----------------------------------------------------------------------------
 # Declare the HEMCOBuildProperties library
-#
-# All HEMCO targets depend on HEMCOBuildProperties. This is used to control
-# the compiler options and definitions for HEMCO targets (via inheritance).
 #-----------------------------------------------------------------------------
 add_library(HEMCOBuildProperties INTERFACE)
-
-#-----------------------------------------------------------------------------
-# Set USE_REAL8 as cache variable to not override the existing definition
-# See https://github.com/geoschem/geos-chem/issues/43.
-#
-# NOTE: This section must go above the setting of the default compiler
-# options, so that USE_REAL8 can be used in generator expressions.
-#-----------------------------------------------------------------------------
-set(USE_REAL8 ON CACHE BOOL
-  "Switch to set HEMCO precision (hp) to 8-byte floating point real"
-)
-if(${USE_REAL8})
-  target_compile_definitions(HEMCOBuildProperties INTERFACE USE_REAL8)
-endif()
 
 #-----------------------------------------------------------------------------
 # Set compiler options for the given release type and precision setting.
@@ -54,7 +44,6 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
     target_compile_options(HEMCOBuildProperties INTERFACE
         -cpp -w -auto -noalign -convert big_endian -fp-model source
         -mcmodel=medium -shared-intel -traceback -DLINUX_IFORT
-        $<$<BOOL:${USE_REAL8}>:-real-size 64>
         $<$<CONFIG:Release>:-O2>
         $<$<CONFIG:RelWithDebInfo>:-O2>
         $<$<CONFIG:Debug>:-g -O0 -check arg_temp_created -debug all -fpe0 -ftrapuv -check,bounds>
@@ -64,7 +53,6 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
         -cpp -w -std=legacy -fautomatic -fno-align-commons
         -fconvert=big-endian -fno-range-check -mcmodel=medium
         -fbacktrace -g -DLINUX_GFORTRAN -ffree-line-length-none
-        $<$<BOOL:${USE_REAL8}>:-fdefault-real-8 -fdefault-double-8>
         $<$<CONFIG:Release>:-O3 -funroll-loops>
         $<$<CONFIG:RelWithDebInfo>:-O3 -funroll-loops>
         $<$<CONFIG:Debug>:-g -gdwarf-2 -gstrict-dwarf -O0 -Wall -Wextra -Wconversion -Warray-temporaries -fcheck=array-temps -ffpe-trap=invalid,zero,overflow -finit-real=snan -fcheck=bounds -fcheck=pointer>
@@ -72,6 +60,17 @@ elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 else()
     message(FATAL_ERROR "Unknown Fortran compiler: ${CMAKE_Fortran_COMPILER_ID}")
 endif()
+
+#-----------------------------------------------------------------------------
+# Set USE_REAL8 as cache variable to not override the existing definition
+# See https://github.com/geoschem/geos-chem/issues/43.
+#-----------------------------------------------------------------------------
+set(USE_REAL8 ON CACHE BOOL
+  "Switch to set HEMCO precision (hp) to 8-byte floating point real"
+)
+target_compile_definitions(HEMCOBuildProperties INTERFACE
+  $<$<BOOL:${USE_REAL8}>:USE_REAL8>
+)
 
 #-----------------------------------------------------------------------------
 # Add OpenMP compile command to the compilation settings
@@ -310,7 +309,7 @@ endif()
 #-----------------------------------------------------------------------------
 # Print output of environment variable settings
 #-----------------------------------------------------------------------------
-hco_pretty_print(SECTION "General settings")
+hco_pretty_print(SECTION "Settings")
 hco_pretty_print(VARIABLE OMP IS_BOOLEAN)
 hco_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
 
