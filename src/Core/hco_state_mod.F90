@@ -310,7 +310,7 @@ CONTAINS
     HcoState%Phys%Avgdr  = 6.022140857e23_dp
     HcoState%Phys%PI     = 3.14159265358979323_dp
     HcoState%Phys%PI_180 = HcoState%Phys%PI / 180.0_dp
-    HcoState%Phys%Re     = 6.3710072e+6_fp                ! Was 6.375e6_dp
+    HcoState%Phys%Re     = 6.3710072e+6_dp                ! Was 6.375e6_dp
     HcoState%Phys%AIRMW  = 28.9644_dp                     ! Was 28.97_dp
     HcoState%Phys%g0     = 9.80665_dp
     HcoState%Phys%Rd     = 287.0_dp
