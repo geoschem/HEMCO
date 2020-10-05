@@ -4,11 +4,19 @@ cmake_minimum_required(VERSION 3.5)
 project(HEMCO VERSION 3.0.0 LANGUAGES Fortran)
 
 #-----------------------------------------------------------------------------
+# Add CMakeScripts/ to the module path
+#-----------------------------------------------------------------------------
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts)
+include(HCO-Helpers)
+
+#-----------------------------------------------------------------------------
 # Print header
 #-----------------------------------------------------------------------------
-message("-----------------------------------------------------------------")
+get_repo_version(HCO_REPO_VERSION ${CMAKE_CURRENT_SOURCE_DIR})
+message("=================================================================")
 message("HEMCO ${PROJECT_VERSION}")
-message("-----------------------------------------------------------------")
+message("Current status: ${HCO_REPO_VERSION}")
+message("=================================================================")
 
 #-----------------------------------------------------------------------------
 # Set policies
@@ -21,12 +29,6 @@ endif()
 if(POLICY CMP0079)
     cmake_policy(SET CMP0079 NEW)
 endif()
-
-#-----------------------------------------------------------------------------
-# Add CMakeScripts/ to the module path
-#-----------------------------------------------------------------------------
-list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts)
-include(HCO-Helpers)
 
 #-----------------------------------------------------------------------------
 # Declare the HEMCOBuildProperties library
