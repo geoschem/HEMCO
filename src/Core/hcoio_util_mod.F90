@@ -2540,6 +2540,7 @@ CONTAINS
     INTEGER            :: AreaFlag, TimeFlag, Check
     INTEGER            :: prefYr, prefMt, prefDy, prefHr, prefMn
     INTEGER            :: cYr,    cMt,    cDy,    cHr
+    REAL(hp)           :: MW_g
     REAL(hp)           :: UnitFactor
     REAL(hp)           :: FileVals(100)
     REAL(hp), POINTER  :: FileArr(:,:,:,:)
@@ -2554,6 +2555,14 @@ CONTAINS
 
     ! Initialize
     FileArr => NULL()
+
+    ! Shadow species properties needed for unit conversion
+    HcoID = Lct%Dct%HcoID
+    IF ( HcoID > 0 ) THEN
+       MW_g = HcoState%Spc(HcoID)%MW_g
+    ELSE
+       MW_g = -999.0_hp
+    ENDIF
 
     ! Is this a math expression?
     IsMath = .FALSE.
@@ -2778,6 +2787,7 @@ CONTAINS
        CALL HCO_UNIT_CHANGE( HcoConfig     = HcoState%Config,            &
                              Array         = FileArr,                    &
                              Units         = TRIM(Lct%Dct%Dta%OrigUnit), &
+                             MW            = MW_g,                       &
                              YYYY          = -999,                       &
                              MM            = -999,                       &
                              AreaFlag      = AreaFlag,                   &

@@ -394,7 +394,7 @@ CONTAINS
     ! Add conversion factor from kg S to kg species
     DO N = 1, Inst%nSpc
        Inst%SpcScl(N) = Inst%SpcScl(N) * HcoState%Spc(Inst%SpcIDs(N))%MW_g &
-                      * HcoState%Spc(Inst%SpcIDs(N))%MolecRatio / MW_S
+                        / MW_S
     ENDDO
 
     ! Get location of volcano table. This must be provided.

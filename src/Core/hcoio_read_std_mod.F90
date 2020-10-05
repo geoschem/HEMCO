@@ -148,6 +148,7 @@ CONTAINS
     INTEGER                       :: ArbIdx
     INTEGER                       :: nlatEdge, nlonEdge
     INTEGER                       :: Direction
+    REAL(hp)                      :: MW_g
     REAL(sp)                      :: wgt1,   wgt2
     REAL(sp), POINTER             :: ncArr(:,:,:,:)
     REAL(sp), POINTER             :: ncArr2(:,:,:,:)
@@ -1021,6 +1022,14 @@ CONTAINS
           ENDIF
        ENDIF
 
+       ! Shadow species properties needed for unit conversion
+       HcoID = Lct%Dct%HcoID
+       IF ( HcoID > 0 ) THEN
+          MW_g = HcoState%Spc(HcoID)%MW_g
+       ELSE
+          MW_g = -999.0_hp
+       ENDIF
+
        ! Now convert to HEMCO units. This attempts to convert mass,
        ! area/volume and time to HEMCO standards (kg, m2/m3, s).
        ncYr  = FLOOR( MOD( oYMDhm1, 1.0e12_dp ) / 1.0e8_dp )
@@ -1047,6 +1056,7 @@ CONTAINS
             HcoConfig     = HcoState%Config, &
             Array         = ncArr,           &
             Units         = thisUnit,        &
+            MW            = MW_g,            &
             YYYY          = ncYr,            &
             MM            = ncMt,            &
             AreaFlag      = AreaFlag,        &
