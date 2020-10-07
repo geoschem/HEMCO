@@ -1678,7 +1678,7 @@ CONTAINS
     END SUBROUTINE GET_SUMCOSZA 
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                  Harmonized Emissions Component (HEMCO)                     !
 !------------------------------------------------------------------------------
 !BOP
 !

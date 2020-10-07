@@ -579,7 +579,7 @@ CONTAINS
   END SUBROUTINE ReadList_Fill
 !EOC
 !------------------------------------------------------------------------------
-!         Harvard-NASA Emissions Component (HEMCO)                   !
+!         Harmonized Emissions Component (HEMCO)                              !
 !------------------------------------------------------------------------------
 !BOP
 !
