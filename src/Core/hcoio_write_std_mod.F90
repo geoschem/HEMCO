@@ -37,14 +37,8 @@ MODULE HCOIO_WRITE_STD_MOD
 !  at a later time.  They will be turned on when debugging & unit testing.
 !
 ! !REVISION HISTORY:
-!  04 May 2014 - C. Keller   - Initial version.
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  11 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  28 Jul 2014 - C. Keller   - Removed GC specific initialization calls and
-!                              moved to HEMCO core.
-!  05 Aug 2014 - C. Keller   - Added dummy interface for ESMF.
-!  03 Apr 2015 - C. Keller   - Added HcoDiagn_Write
-!  22 Feb 2016 - C. Keller   - Split off from hcoio_diagn_mod.F90
+!  04 May 2014 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -126,29 +120,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  11 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  19 Feb 2015 - C. Keller   - Added optional argument OnlyIfFirst
-!  23 Feb 2015 - R. Yantosca - Now make Arr1D REAL(sp) so that we can write
-!                              out lon & lat as float instead of double
-!  06 Nov 2015 - C. Keller   - Output time stamp is now determined from
-!                              variable OutTimeStamp.
-!  14 Jan 2016 - E. Lundgren - Create netcdf title out of filename prefix
-!  20 Jan 2016 - C. Keller   - Added options DiagnRefTime and DiagnNoLevDim.
-!  03 Mar 2016 - M. Sulprizio- Change netCDF format to netCDF-4
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  21 Jan 2017 - C. Holmes   - Write all variable metadata in define mode, then
-!                              switch to data mode just once. Much faster
-!                              writing.
-!  17 Feb 2017 - C. Holmes   - Enable netCDF-4 compression
-!  08 Mar 2017 - R. Yantosca - Use unlimited time dimensions for netCDF files
-!  29 Dec 2017 - C. Keller   - Now accept writing multiple time slices into
-!                              same file.
-!  03 Jan 2018 - R. Yantosca - Added more metadata for COARDS compliance.
-!                              Also make TIME a 8-byte var to avoid roundoffs
-!  05 Jan 2018 - R. Yantosca - Now print out all index variables as REAL*8
-!  19 Oct 2018 - E. Lundgren - Disable writing multiple time slices to file
-!                              until move of restart write from HEMCO to HISTORY
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -850,6 +822,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Nov 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

@@ -171,19 +171,7 @@ MODULE HCO_Diagn_Mod
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller   - Initialization
-!  08 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  08 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  01 Aug 2014 - C. Keller   - Added manual output frequency
-!  12 Aug 2014 - C. Keller   - Added cumulative sum option
-!  09 Jan 2015 - C. Keller   - Added diagnostics collections
-!  03 Apr 2015 - C. Keller   - Now tie output frequency to collection instead
-!                              of individual diagnostic containers.
-!  06 Nov 2015 - C. Keller   - Added argument OutTimeStamp to collection to
-!                              control the file output time stamp (beginning,
-!                              middle, end of diagnostics interval).
-!  25 Jan 2016 - R. Yantosca - Added bug fixes for pgfortran compiler
-!  19 Sep 2016 - R. Yantosca - Add extra overloaded functions to the
-!                              Diagn_Update interface to avoid Gfortran errors
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -241,9 +229,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller   - Initial version
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  11 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -328,12 +314,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Apr 2015 - C. Keller   - Initial version
-!  10 Apr 2015 - C. Keller   - Now create diagnostics based on entries
-!                              in the HEMCO diagnostics definition file.
-!  06 Nov 2015 - C. Keller   - Added OutTimeStamp.
-!  01 Nov 2017 - E. Lundgren - Change default OutTimeStamp from end to start
-!                              for diagnostics collection
-!  29 Dec 2017 - C. Keller   - Added datetime tokens to file prefixes.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-----------------------------------------------------------------------
 !BOC
@@ -554,7 +535,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Apr 2015 - C. Keller   - Initial version
-!  21 Feb 2016 - C. Keller   - Added default diagnostics (optional)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -786,9 +767,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller - Initialization
-!  05 Mar 2015 - C. Keller - container ID can now be set by the user
-!  31 Mar 2015 - C. Keller - added argument OkIfExist
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1197,8 +1176,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Scalar and
-!                              Array3d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1267,8 +1245,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Scalar and
-!                              Array3d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1337,8 +1314,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Scalar and
-!                              Array2d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1407,8 +1383,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller   - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Array2d and
-!                              Array3d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1477,8 +1452,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller   - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Scalar and
-!                              Array3d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1551,8 +1525,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller   - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Scalar and
-!                              Array2d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1678,11 +1651,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller - Initialization
-!  25 Sep 2014 - C. Keller - Now allow updating multiple diagnostics
-!  11 Mar 2015 - C. Keller - Now allow scanning of all diagnostic collections
-!  13 Mar 2015 - C. Keller - Bug fix: only prompt warning if it's a new timestep
-!  17 Jun 2015 - C. Keller - Added argument MinDiagnLev
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2258,7 +2227,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2416,7 +2385,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Mar 2015 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2500,9 +2469,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller   - Initialization
-!  25 Jan 2016 - R. Yantosca - Bug fix for pgfortran compiler: Test if the
-!                              TMPCONT object is associated before deallocating
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2566,7 +2533,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2655,7 +2622,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2740,7 +2707,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2802,6 +2769,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2886,6 +2854,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2942,7 +2911,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3219,9 +3188,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  25 Sep 2014 - C. Keller: Added Resume flag
-!  09 Apr 2015 - C. Keller: Can now search all collections
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3381,6 +3348,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3481,6 +3449,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3586,7 +3555,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 Aug 2014 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3720,7 +3689,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  08 Jan 2015 - C. Keller   - Initial version
-!  06 Nov 2015 - C. Keller   - Added OutTimeStamp.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3826,7 +3795,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  08 Jan 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3899,6 +3868,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 Apr 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4000,8 +3970,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 Apr 2015 - C. Keller   - Initial version
-!  10 Jul 2015 - R. Yantosca - Fixed minor issues in ProTeX header
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4086,6 +4055,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Aug 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4209,9 +4179,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Aug 2015 - C. Keller   - Initial version
-!  30 Sep 2015 - C. Keller   - Bug fix: now set current hour from 0 to 24 to
-!                              make sure that it will be greater than previous
-!                              hour.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4293,6 +4261,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  09 Sep 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4352,6 +4321,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Apr 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4495,7 +4465,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Apr 2015 - C. Keller   - Initial version
-!  23 Feb 2016 - C. Keller   - Added lName and UnitName arguments
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4599,6 +4569,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Apr 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4626,6 +4597,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4661,6 +4633,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

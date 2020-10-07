@@ -36,8 +36,7 @@ MODULE HCO_Driver_Mod
 !
 ! !REVISION HISTORY:
 !  27 May 2012 - C. Keller   - Initialization
-!  11 Jun 2014 - R. Yantosca - Now indended with F90 free-format
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -86,14 +85,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  27 May 2012 - C. Keller   - Initialization
-!  16 Jul 2014 - R. Yantosca - Cosmetic changes
-!  23 Dec 2014 - C. Keller   - ReadList_to_EmisList is now obsolete.
-!                              Containers are added to EmisList within
-!                              routine ReadList_Read.
-!  23 Feb 2015 - R. Yantosca - Now call HcoClock_InitTzPtr on the first
-!                              emissions timestep to initialize the pointer
-!                              to the timezones data (i.e. hours from UTC)
-!  01 Apr 2015 - C. Keller   - Added run phases
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -237,9 +229,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  27 May 2012 - C. Keller   - Initialization
-!  11 Jun 2014 - R. Yantosca - Now indended with F90 free-format
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  16 Jul 2014 - R. Yantosca - Remove reference to gigc_errcode_mdo.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -341,9 +331,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  27 May 2012 - C. Keller   - Initialization
-!  11 Jun 2014 - R. Yantosca - Now indended with F90 free-format
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  16 Jul 2014 - R. Yantosca - Cosmetic changes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

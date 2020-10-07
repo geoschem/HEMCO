@@ -38,12 +38,7 @@ MODULE HCOIO_DIAGN_MOD
 !
 ! !REVISION HISTORY:
 !  04 May 2014 - C. Keller   - Initial version.
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  11 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  28 Jul 2014 - C. Keller   - Removed GC specific initialization calls and
-!                              moved to HEMCO core.
-!  05 Aug 2014 - C. Keller   - Added dummy interface for ESMF.
-!  03 Apr 2015 - C. Keller   - Added HcoDiagn_Write
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -89,11 +84,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Apr 2015 - C. Keller   - Initial version
-!  01 Nov 2016 - C. Keller   - Also write out default diagnostics collection if
-!                              RESTART=.TRUE.
-!  17 Oct 2017 - C. Keller   - Don't pass restart diagnostics to EXPORT state in
-!                              ESMF mode. They are already in the internal
-!                              state!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -219,13 +210,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  11 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  19 Feb 2015 - C. Keller   - Added optional argument OnlyIfFirst
-!  23 Feb 2015 - R. Yantosca - Now make Arr1D REAL(sp) so that we can write
-!                              out lon & lat as float instead of double
-!  06 Nov 2015 - C. Keller   - Output time stamp is now determined from
-!                              variable OutTimeStamp.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

@@ -81,14 +81,7 @@ MODULE HCO_tIdx_Mod
 !
 ! !REVISION HISTORY:
 !  29 Dec 2012 - C. Keller   - Initialization
-!  22 Aug 2013 - C. Keller   - Some time slice updates.
-!  08 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  08 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  03 Dec 2014 - C. Keller   - Major update: now calculate the time slice
-!                              indeces on the fly instead of storing them in
-!                              precalculated vectors.
-!  25 Feb 2015 - R. Yantosca - Comment out WEEKDAY_GRID, it is not used
-!                              anymore.  This avoids seg faults.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -123,7 +116,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Dec 2012 - C. Keller - Initialization
-!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -220,6 +213,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Dec 2012 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -274,6 +268,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Dec 2012 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -345,6 +340,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  02 Dec 2014 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -472,6 +468,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Jan 2014 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -662,6 +659,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -754,8 +752,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Jan 2014 - C. Keller - Initial version
-!  29 Feb 2016 - C. Keller - Added time shift option
-!  03 Mar 2017 - C. Keller - Added option to deal with UTC weekdays
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -964,10 +961,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2013 - C. Keller - Initial version (update)
-!  29 Feb 2016 - C. Keller - Added time shift option
-!  03 Mar 2017 - C. Keller - Added option to deal with UTC weekdays
-!  08 Aug 2018 - C. Keller - Don't set hours to -1 for local time,
-!                            this is obsolete.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

@@ -56,9 +56,7 @@ MODULE HCO_GeoTools_Mod
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller   - Initialization
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  16 Jul 2014 - C. Keller   - Added HCO_ValidateLon
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -94,6 +92,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller - Initialization!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -153,6 +152,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -213,6 +213,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Jul 2014 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -297,6 +298,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Jul 2014 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -382,9 +384,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 May 2015 - C. Keller   - Initial version, based on GEOS-Chem's dao_mod.F.
-!  10 Jul 2015 - R. Yantosca - Corrected issues in ProTeX header
-!  02 Mar 2017 - R. Yantosca - Now compute local time as UTC + Longitude/15,
-!                              so as to avoid using Voronoi TZ's for SUNCOS
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -563,7 +563,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller - Initial version
-!  10 Jul 2015 - R. Yantosca - Corrected issues in ProTeX header
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -639,7 +639,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller - Initial version
-!  10 Jul 2015 - R. Yantosca - Corrected issues in ProTeX header
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -770,7 +770,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Sep 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1293,6 +1293,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Sep 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1421,6 +1422,7 @@ CONTAINS
 !!
 !! !REVISION HISTORY:
 !!  05 May 2016 - C. Keller - Initial version
+!!  See https://github.com/geoschem/hemco for complete history
 !!EOP
 !!------------------------------------------------------------------------------
 !!BOC
@@ -1503,6 +1505,7 @@ CONTAINS
 !!
 !! !REVISION HISTORY:
 !!  05 May 2016 - C. Keller - Initial version
+!!  See https://github.com/geoschem/hemco for complete history
 !!EOP
 !!------------------------------------------------------------------------------
 !!BOC

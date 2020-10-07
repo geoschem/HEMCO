@@ -61,23 +61,7 @@
       PUBLIC :: HCOX_TOMAS_DustDead_GetFluxTun
 !
 ! !REVISION HISTORY:
-!  (1 ) Added parallel DO loop in GET_ORO (bmy, 4/14/04)
-!  (2 ) Now references "directory_mod.f" (bmy, 7/20/04)
-!  (3 ) Fixed typo in ORO_IS_LND for PGI compiler (bmy, 3/1/05)
-!  (4 ) Modified for GEOS-5 and GCAP met fields (swu, bmy, 8/16/05)
-!  (5 ) Now make sure all USE statements are USE, ONLY (bmy, 10/3/05)
-!  (6 ) Now uses GOCART source function (tdf, bmy, 1/25/07)
-!  (7 ) Modifications for 0.5 x 0.667 grid (yxw, dan, bmy, 11/6/08)
-!  (8 ) Updates for nested grids (amv, bmy, 12/18/09)
-!  01 Mar 2012 - R. Yantosca - Now reference new grid_mod.F90
-!  25 Nov 2013 - C. Keller   - Now a HEMCO extension
-!  06 Oct 2014 - C. Keller   - Allow mass flux tuning factor be set in
-!                              configuration file.
-!  07 Jan 2016 - E. Lundgren - Change dry air gas constant and molec wt to
-!                              match GC values and update acc due to gravity
-!                              and universal gas constant to NIST 2014 values
-!  14 Oct 2016 - C. Keller   - Now use HCO_EvalFld instead of HCO_GetPtr.
-!  24 Aug 2017 - M. Sulprizio- Remove support for GEOS-4, GEOS-5, and MERRA
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -220,25 +204,7 @@
 
 ! !REVISION HISTORY:
 !  08 Apr 2004 - T. D. Fairlie - Initial version
-!  (1 ) Added OpenMP parallelization, added comments (bmy, 4/8/04)
-!  (2 ) Bug fix: DSRC needs to be held PRIVATE (bmy, 4/14/04)
-!  (3 ) Now references DATA_DIR from "directory_mod.f" (bmy, 7/20/04)
-!  (4 ) Now make sure all USE statements are USE, ONLY (bmy, 10/3/05)
-!  (5 ) Bug fix: It should be SNOW/1d3 not SNOW*1d3 (tdf, bmy, 11/18/05)
-!  (6 ) Updated output statement (bmy, 1/23/07)
-!  (7 ) Use SNOMAS (m H2O) for GEOS-5 (bmy, 1/24/07)
-!  25 Aug 2010 - R. Yantosca - Treat MERRA in the same way as for GEOS-5
-!  25 Aug 2010 - R. Yantosca - Added ProTeX headers
-!  03 Sep 2010 - R. Yantosca - Bug fix, SNOMAS was mislabled in GEOS-5
-!                              and has units of mm H2O instead of m H2O
-!                              so we need to convert to m H2O.
-!  08 Feb 2012 - R. Yantosca - Treat GEOS-5.7.x in the same way as MERRA
-!  01 Mar 2012 - R. Yantosca - Now use GET_YMID_R(I,J,L) from grid_mod.F90
-!  09 Nov 2012 - M. Payer    - Replaced all met field arrays with State_Met
-!                              derived type object
-!  25 Nov 2013 - C. Keller   - Now a HEMCO extension
-!  06 Oct 2014 - C. Keller   - Now calculate pressure center from edges.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -610,8 +576,7 @@
 
 ! !REVISION HISTORY:
 !  25 Nov 2013 - C. Keller   - Now a HEMCO extension
-!  14 Aug 2014 - R. Yantosca - Now always print out extension info
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -987,8 +952,7 @@
 !
 ! !REVISION HISTORY:
 !  25 Nov 2013 - C. Keller - Now a HEMCO extension
-!
-! !NOTES:
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -5686,6 +5650,7 @@ c Fix up for negative argument, erf, etc.
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -5746,7 +5711,7 @@ c Fix up for negative argument, erf, etc.
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -5820,7 +5785,7 @@ c Fix up for negative argument, erf, etc.
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

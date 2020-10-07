@@ -38,9 +38,7 @@ MODULE HCOX_SeaSalt_Mod
 !
 ! !REVISION HISTORY:
 !  15 Dec 2013 - C. Keller   - Now a HEMCO extension module
-!  09 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  09 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  09 Jul 2015 - E. Lundgren - Add marine organoc aerosols (B.Gantt, M.Johnson)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !
@@ -152,31 +150,7 @@ CONTAINS
 !        doi:10.5194/acp-11-3137-2011.
 !
 ! !REVISION HISTORY:
-!  (1 ) Now references SALA_RREDGE_um and SALC_RREDGE_um from "tracer_mod.f"
-!        (bmy, 7/20/04)
-!  (2 ) Now references GET_FRAC_OF_PBL and GET_PBL_TOP_L from "pbl_mix_mod.f".
-!        Removed reference to header file CMN.  Removed reference to
-!        "pressure_mod.f".  (bmy, 2/22/05)
-!  (3 ) Now also compute alkalinity and number density of SeaSalt emissions.
-!        (bec, bmy, 4/13/05)
-!  (4 ) Now references XNUMOL & XNUMOLAIR from "tracer_mod.f" (bmy, 10/25/05)
-!  (5 ) The source function is for wet aerosol radius (RH=80%, with a radius
-!        twice the size of dry aerosols) so BETHA should be set to 2
-!        instead of 1.  Also now use LOG10 instead of LOG in the expressions
-!        for the SeaSalt base source, since we need the logarithm to the base
-!        10. (jaegle, bec, bmy, 11/23/09)
-!  (6 ) Update to use the Gong (2003) source function (jaegle 5/11/11)
-!  (7 ) Apply an empirical sea surface temperature dependence to Gong (2003)
-!       (jaegle 5/11/11)
-!  22 Dec 2011 - M. Payer    - Added ProTeX headers
-!  01 Mar 2012 - R. Yantosca - Now use GET_AREA_M2(I,J,L) from grid_mod.F90
-!  09 Nov 2012 - M. Payer    - Replaced all met field arrays with State_Met
-!                              derived type object
-!  15 Dec 2013 - C. Keller   - Now a HEMCO extension
-!  09 Jul 2015 - E. Lundgren - Add marine organic aerosols (B.Gantt, M.Johnson)
-!  19 Oct 2015 - C. Keller   - Now pass I and J index to EMIT_SSABr2 to support
-!                              curvilinear grids.
-!  22 Oct 2015 - E. Lundgren - Bug fix: include CHLR in OMP PRIVATE statement
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -558,12 +532,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Dec 2013 - C. Keller   - Initial version
-!  07 Oct 2014 - C. Keller   - Allow wind scale factor be set in config file
-!  09 Jul 2015 - E. Lundgren - Add marine organic aerosols (B.Gantt, M.Johnson)
-!  21 Sep 2016 - R. Yantosca - Bug fix: don't initialize SS_DEN before
-!                              it is allocated.  This causes a segfault.
-!  29 Dec 2017 - C. Keller   - Bug fix: define index location of BrSALA and
-!                              BrSALC based upon # of species ID entries.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1045,6 +1014,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Dec 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1079,6 +1049,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1139,7 +1110,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1217,7 +1188,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

@@ -75,7 +75,6 @@ MODULE HEMCO_GridCompMod
 !
 ! !PRIVATE TYPES:
 !
-
   ! HEMCO state objects for various HEMCO instances 
   TYPE :: Instance
      TYPE(ConfigObj), POINTER             :: HcoConfig 
@@ -87,11 +86,11 @@ MODULE HEMCO_GridCompMod
   ! Linked list holding all active HEMCO instances
   TYPE(Instance), POINTER                 :: Instances => NULL()
 !
-! !MODULE INTERFACES
-!
 !EOP
+!------------------------------------------------------------------------------
+!BOC
 CONTAINS
-
+!EOC
 !------------------------------------------------------------------------------
 !     NASA/GSFC, Global Modeling and Assimilation Office, Code 610.1          !
 !------------------------------------------------------------------------------
@@ -119,6 +118,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -477,9 +477,6 @@ CONTAINS
 !
 !!!#   include "HEMCO_ExportSpec___.h"
 
-!EOP
-!BOC
-
     CALL MAPL_TimerAdd(GC, NAME="INITIALIZE", __RC__ )
     CALL MAPL_TimerAdd(GC, NAME="RUN",        __RC__ )
     CALL MAPL_TimerAdd(GC, NAME="FINALIZE",   __RC__ )
@@ -490,9 +487,9 @@ CONTAINS
    VERIFY_(STATUS)
 
    RETURN_(ESMF_SUCCESS)
-  
-  end subroutine SetServices
 
+  end subroutine SetServices
+!EOC
 !------------------------------------------------------------------------------
 !     NASA/GSFC, Global Modeling and Assimilation Office, Code 610.1          !
 !------------------------------------------------------------------------------
@@ -521,7 +518,8 @@ CONTAINS
     INTEGER,             INTENT(OUT)   :: RC          ! Error return code
 !
 ! !REVISION HISTORY:
-!  22 Feb 2016 - C. Keller   - Initial version 
+!  22 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -590,6 +588,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -650,12 +649,11 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-!
-! LOCAL VARIABLES:
-!  
+
     __Iam__('Run2')
 
     !=======================================================================
@@ -700,6 +698,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -789,6 +788,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -983,6 +983,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1127,6 +1128,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1199,6 +1201,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1539,9 +1542,6 @@ CONTAINS
 ! !INTERFACE:
     SUBROUTINE GET_SUMCOSZA(HcoState,Clock,IM,JM,tsEmis,SUMCOSZA,RC)
 !
-! !USES:
-!
-!
 ! !INPUT PARAMETERS:
 !
     TYPE(HCO_State), POINTER         :: HcoState
@@ -1556,6 +1556,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2018 - C. Keller - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1712,6 +1713,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Sep 2018 - C. Keller   - Adapted from HCO_GetSuncos 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1856,15 +1858,6 @@ CONTAINS
 ! !INTERFACE:
 !
     SUBROUTINE NewInst_ ( Inst, RC ) 
-!
-! !USES:
-!
-!
-! !INPUT PARAMETERS:
-!
-!                                                             
-! !INPUT/OUTPUT PARAMETERS:                                   
-!
 !                                                             
 ! !OUTPUT PARAMETERS:                                   
 !
@@ -1873,6 +1866,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

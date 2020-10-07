@@ -30,9 +30,7 @@ MODULE HCOX_Custom_Mod
 !
 ! !REVISION HISTORY:
 !  13 Dec 2013 - C. Keller   - Initial version
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  06 Jun 2014 - R. Yantosca - Now indented with F90 free-format
-!  12 Sep 2018 - C. Keller   - Wrapped into instance
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -88,10 +86,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Dec 2013 - C. Keller   - Initial version
-!  05 Jun 2014 - R. Yantosca - Now store the results of HCO_LANDTYPE
-!                              in a PRIVATE variable for the !OMP loop
-!  05 Jun 2014 - R. Yantosca - Cosmetic changes
-!  06 Jun 2014 - R. Yantosca - Now indented with F90 free-format
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -243,8 +238,7 @@ CONTAINS
 
 ! !REVISION HISTORY:
 !  13 Dec 2013 - C. Keller   - Now a HEMCO extension
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  06 Jun 2014 - R. Yantosca - Now indented using F90 free-format
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -351,8 +345,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Dec 2013 - C. Keller   - Now a HEMCO extension
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  06 Jun 2014 - R. Yantosca - Now indended with F90 free-format
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -387,6 +380,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -447,7 +441,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -514,7 +508,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
