@@ -2509,8 +2509,10 @@ END FUNCTION GetEmisLUnit
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER    :: L1
-    REAL(hp)   :: h1, h2, lh, dh
+    INTEGER            :: L1
+    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: LOC = 'GetDilFact (hco_geotools_mod.F90)'
+    REAL(hp)           :: h1, h2, lh, dh
 
     !=================================================================
     ! GetDilFact begins here
@@ -2568,11 +2570,12 @@ END FUNCTION GetEmisLUnit
        IF ( h2 > h1 ) THEN
           DilFact = dh / ( h2 - h1 )
        ELSE
-          !write(*,*) 'Warning: GetDilFact h2 not greater than h1!!! ',LowLL,UppLL,L,EmisL1,EmisL2,EmisL1Unit,EmisL2Unit
-          DilFact = 1.0_hp
+          MSG = 'GetDilFact h2 not greater than h1'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
 
-    ! Approxiate dilution factor otherwise
+    ! Approximate dilution factor otherwise
     ELSE
 
        DilFact = 1.0_hp / REAL(UppLL-LowLL+1,hp)

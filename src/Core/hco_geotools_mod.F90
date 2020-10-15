@@ -1058,6 +1058,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    ! If Box height not available make sure it is not associated
+    IF ( .NOT. EVAL_BXHEIGHT .OR. .NOT. FoundBXHEIGHT ) THEN
+       HcoState%Grid%BXHEIGHT_M%Val => NULL()
+    ENDIF
+
     ! ------------------------------------------------------------------
     ! Calculate various quantities: the goal is to have the following
     ! quantities defined: ZSFC, PSFC, PEDGE, BXHEIGHT_M.
