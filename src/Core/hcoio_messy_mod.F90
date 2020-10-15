@@ -155,7 +155,7 @@ MODULE HCOIO_MESSY_MOD
     !=================================================================
 
     ! For error handling
-    LOC = 'HCO_MESSY_REGRID (HCOI_MESSY_MOD.F90)'
+    LOC = 'HCO_MESSY_REGRID (HCOIO_MESSY_MOD.F90)'
     CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -561,7 +561,7 @@ MODULE HCOIO_MESSY_MOD
     !=================================================================
 
     ! For error handling
-    LOC = 'AXIS_CREATE (HCOI_MESSY_MOD.F90)'
+    LOC = 'AXIS_CREATE (HCOIO_MESSY_MOD.F90)'
     CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -874,7 +874,7 @@ MODULE HCOIO_MESSY_MOD
     !=================================================================
 
     ! For error handling
-    LOC = 'HCO2MESSY (HCOI_MESSY_MOD.F90)'
+    LOC = 'HCO2MESSY (HCOIO_MESSY_MOD.F90)'
 
     ! ----------------------------------------------------------------
     ! Number of grid cells

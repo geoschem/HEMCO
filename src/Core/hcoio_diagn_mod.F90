@@ -99,7 +99,7 @@ CONTAINS
     !=================================================================
 
     ! Init
-    LOC = 'HcoDiagn_Write (hcoi_diagn_mod.F90)'
+    LOC = 'HcoDiagn_Write (hcoio_diagn_mod.F90)'
 
     ! To write restart (enforced)
     IF ( RESTART ) THEN

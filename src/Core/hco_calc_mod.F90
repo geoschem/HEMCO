@@ -2380,7 +2380,7 @@ END FUNCTION GetEmisLUnit
     INTEGER                 :: L
     REAL(hp)                :: altb, altt
     CHARACTER(LEN=255)      :: MSG
-    CHARACTER(LEN=255)      :: LOC = 'GetIdx (hco_geotools_mod.F90)'
+    CHARACTER(LEN=255)      :: LOC = 'GetIdx (hco_calc_mod.F90)'
 
     !=================================================================
     ! HCO_GetVertIndx begins here
@@ -2511,7 +2511,7 @@ END FUNCTION GetEmisLUnit
 !
     INTEGER            :: L1
     CHARACTER(LEN=255) :: MSG
-    CHARACTER(LEN=255) :: LOC = 'GetDilFact (hco_geotools_mod.F90)'
+    CHARACTER(LEN=255) :: LOC = 'GetDilFact (hco_calc_mod.F90)'
     REAL(hp)           :: h1, h2, lh, dh
 
     !=================================================================

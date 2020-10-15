@@ -102,7 +102,7 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, &
-                     'EmisList_Add (HCO_EMISLL_MOD.F90)', RC )
+                     'EmisList_Add (hco_emislist_mod.F90)', RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! Set verbose flag

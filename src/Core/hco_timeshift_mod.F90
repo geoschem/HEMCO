@@ -103,7 +103,7 @@ CONTAINS
     CHARACTER(LEN=255)             :: MSG
     CHARACTER(LEN=255)             :: iShift
     CHARACTER(LEN=255)             :: tShift
-    CHARACTER(LEN=255), PARAMETER  :: LOC = 'TimeShift_Set (hco_tShift_mod.F90)'
+    CHARACTER(LEN=255), PARAMETER  :: LOC = 'TimeShift_Set (hco_timeshift_mod.F90)'
 
     !======================================================================
     ! TimeShift_Set begins here!
@@ -239,7 +239,7 @@ CONTAINS
     REAL(dp)                       :: TimeShift, DAY, UTC, JD
 
     CHARACTER(LEN=255)             :: MSG
-    CHARACTER(LEN=255), PARAMETER  :: LOC = 'TimeShift_Apply (hco_tShift_mod.F90)'
+    CHARACTER(LEN=255), PARAMETER  :: LOC = 'TimeShift_Apply (hco_timeshift_mod.F90)'
 
     !======================================================================
     ! TimeShift_Apply begins here!

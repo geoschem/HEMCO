@@ -85,7 +85,7 @@ CONTAINS
     REAL,             POINTER  :: Ptr2D(:,:)
     TYPE(ESMF_State), POINTER  :: IMPORT
     CHARACTER(LEN=255)         :: MSG
-    CHARACTER(LEN=255), PARAMETER :: LOC = 'HCOIO_READ_ESMF (hcoi_read_esmf_mod.F90)'
+    CHARACTER(LEN=255), PARAMETER :: LOC = 'HCOIO_READ_ESMF (hcoio_read_esmf_mod.F90)'
     CHARACTER(LEN=ESMF_MAXSTR) :: Iam
 
     !=================================================================

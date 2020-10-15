@@ -1150,7 +1150,7 @@ CONTAINS
     LOGICAL                 :: VRB
     LOGICAL                 :: Ignore
     CHARACTER(LEN=255)      :: MSG
-    CHARACTER(LEN=255)      :: LOC = 'HCO_AddOpt (hco_chartools_mod.F90)'
+    CHARACTER(LEN=255)      :: LOC = 'HCO_AddOpt (hco_extlist_mod.F90)'
 
     !=================================================================
     ! HCO_AddOpt begins here!
