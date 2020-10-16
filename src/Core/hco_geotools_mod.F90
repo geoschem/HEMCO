@@ -1147,6 +1147,11 @@ CONTAINS
           ERRZSFC = .FALSE.
           ERRBX   = .FALSE.
 
+          ! Make sure box height is initialized if it will be calculated
+          CALL HCO_ArrAssert( HcoState%Grid%BXHEIGHT_M, HcoState%NX, &
+                              HcoState%NY,              HcoState%NZ, RC )
+          IF ( RC /= HCO_SUCCESS ) RETURN
+
 !$OMP PARALLEL DO                                                      &
 !$OMP DEFAULT( SHARED )                                                &
 !$OMP PRIVATE( I, J, L, P1, P2 )                                       &
