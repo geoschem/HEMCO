@@ -3429,7 +3429,7 @@ CONTAINS
     Inst%AEF_BCAR = Inst%AEF_BCAR * FACTOR
     Inst%AEF_OSQT = Inst%AEF_OSQT * FACTOR
     Inst%AEF_ACET = Inst%AEF_ACET * FACTOR
-    Inst%AEF_EOH( = Inst%AEF_EOH  * FACTOR
+    Inst%AEF_EOH  = Inst%AEF_EOH  * FACTOR
     Inst%AEF_ALD2 = Inst%AEF_ALD2 * FACTOR
     Inst%AEF_C2H4 = Inst%AEF_C2H4 * FACTOR
     Inst%AEF_TOLU = Inst%AEF_TOLU * FACTOR
