@@ -2803,14 +2803,6 @@ CONTAINS
                              RC            = RC                           )
        IF ( RC /= HCO_SUCCESS ) RETURN
 
-       ! testing only
-       IF ( UnitFactor /= 1.0_hp ) THEN
-             WRITE(MSG,*) 'Data was in units of ', TRIM(Lct%Dct%Dta%OrigUnit), &
-                          ' - converted to HEMCO units by applying ', &
-                          'scale factor ', UnitFactor
-             write(*,*) TRIM(MSG)
-       ENDIF
-
        ! Verbose mode
        IF ( UnitFactor /= 1.0_hp ) THEN
           IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
