@@ -35,33 +35,76 @@ endif()
 #-----------------------------------------------------------------------------
 add_library(HEMCOBuildProperties INTERFACE)
 
-#-----------------------------------------------------------------------------
-# Set compiler options for the given release type and precision setting.
-# Supported compilers: Intel Fortran and GNU Fortran
+#---------------------------------------------------------------------
+# Default compiler options
 #
-# NOTE: This section must go below the USE_REAL8 definition above, because
-# that definition is used to select the proper compilation flags.
-#-----------------------------------------------------------------------------
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-    target_compile_options(HEMCOBuildProperties INTERFACE
-        -cpp -w -auto -noalign -convert big_endian -fp-model source
-        -mcmodel=medium -shared-intel -traceback -DLINUX_IFORT
-        $<$<CONFIG:Release>:-O2>
-        $<$<CONFIG:RelWithDebInfo>:-O2>
-        $<$<CONFIG:Debug>:-g -O0 -check arg_temp_created -debug all -fpe0 -ftrapuv -check,bounds>
-    )
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(HEMCOBuildProperties INTERFACE
-        -cpp -w -std=legacy -fautomatic -fno-align-commons
-        -fconvert=big-endian -fno-range-check -mcmodel=medium
-        -fbacktrace -g -DLINUX_GFORTRAN -ffree-line-length-none
-        $<$<CONFIG:Release>:-O3 -funroll-loops>
-        $<$<CONFIG:RelWithDebInfo>:-O3 -funroll-loops>
-        $<$<CONFIG:Debug>:-g -gdwarf-2 -gstrict-dwarf -O0 -Wall -Wextra -Wconversion -Warray-temporaries -fcheck=array-temps -ffpe-trap=invalid,zero,overflow -finit-real=snan -fcheck=bounds -fcheck=pointer>
-     )
-else()
-    message(FATAL_ERROR "Unknown Fortran compiler: ${CMAKE_Fortran_COMPILER_ID}")
+# HEMCO_Fortran_FLAGS_<COMPILER_ID> : common flags (all build types) 
+# HEMCO_Fortran_FLAGS_<CONFIG>_<COMPILER_ID> : types-specific flags
+#
+# Valid COMPILER_ID: Intel and GNU
+# Valid CONFIG: RELEASE, DEBUG, RELWITHDEBINFO
+#---------------------------------------------------------------------
+set(HEMCO_Fortran_FLAGS_Intel
+   -cpp -w -auto -noalign "SHELL:-convert big_endian" "SHELL:-fp-model source" -mcmodel=medium
+   -shared-intel -traceback -DLINUX_IFORT
+   CACHE STRING "HEMCO compiler flags for all build types with Intel compilers"
+)
+set(HEMCO_Fortran_FLAGS_RELEASE_Intel
+   -O2
+   CACHE STRING "HEMCO compiler flags for build type release with Intel compilers"
+)
+set(HEMCO_Fortran_FLAGS_RELWITHDEBINFO_Intel
+   -O2
+   CACHE STRING "HEMCO compiler flags for build type relwithdebinfo with Intel compilers"
+)
+set(HEMCO_Fortran_FLAGS_DEBUG_Intel
+   -g -O0 "SHELL:-check arg_temp_created" "SHELL:-debug all" -fpe0 -ftrapuv -check,bounds -DDEBUG
+   CACHE STRING "HEMCO compiler flags for build type debug with Intel compilers"
+)
+
+set(HEMCO_Fortran_FLAGS_GNU
+   -cpp -w -std=legacy -fautomatic -fno-align-commons -fconvert=big-endian
+   -fno-range-check -mcmodel=medium -fbacktrace -g -DLINUX_GFORTRAN
+   -ffree-line-length-none
+   CACHE STRING "HEMCO compiler flags for all build types with GNU compilers"
+)
+set(HEMCO_Fortran_FLAGS_RELEASE_GNU
+   -O3 -funroll-loops
+   CACHE STRING "HEMCO compiler flags for build type release with GNU compilers"
+)
+set(HEMCO_Fortran_FLAGS_RELWITHDEBINFO_GNU
+   -O3 -funroll-loops
+   CACHE STRING "HEMCO compiler flags for build type relwithdebinfo with GNU compilers"
+)
+set(HEMCO_Fortran_FLAGS_DEBUG_GNU
+   -g -gdwarf-2 -gstrict-dwarf -O0 -Wall -Wextra -Wconversion -Warray-temporaries 
+   -fcheck=array-temps -ffpe-trap=invalid,zero,overflow -finit-real=snan -fcheck=bounds -fcheck=pointer
+   CACHE STRING "HEMCO compiler flags for build type debug with GNU compilers"
+)
+
+set(HEMCO_SUPPORTED_COMPILER_IDS "Intel" "GNU")
+if(NOT CMAKE_Fortran_COMPILER_ID IN_LIST HEMCO_SUPPORTED_COMPILER_IDS)
+   message(FATAL_ERROR "HEMCO does not support ${CMAKE_Fortran_COMPILER_ID} compilers")
 endif()
+
+#---------------------------------------------------------------------
+# Assign comiler options to build properties
+#---------------------------------------------------------------------
+target_compile_options(HEMCOBuildProperties
+   INTERFACE
+   $<$<STREQUAL:${CMAKE_Fortran_COMPILER_ID},Intel>:
+      ${HEMCO_Fortran_FLAGS_Intel}
+      $<$<CONFIG:Debug>:${HEMCO_Fortran_FLAGS_DEBUG_Intel}>
+      $<$<CONFIG:RelWithDebInfo>:${HEMCO_Fortran_FLAGS_RELWITHDEBINFO_Intel}>
+      $<$<CONFIG:Release>:${HEMCO_Fortran_FLAGS_RELEASE_Intel}>
+   >
+   $<$<STREQUAL:${CMAKE_Fortran_COMPILER_ID},GNU>:
+      ${HEMCO_Fortran_FLAGS_GNU}
+      $<$<CONFIG:Debug>:${HEMCO_Fortran_FLAGS_DEBUG_GNU}>
+      $<$<CONFIG:RelWithDebInfo>:${HEMCO_Fortran_FLAGS_RELWITHDEBINFO_GNU}>
+      $<$<CONFIG:Release>:${HEMCO_Fortran_FLAGS_RELEASE_GNU}>
+   >
+)
 
 #-----------------------------------------------------------------------------
 # Set USE_REAL8 as cache variable to not override the existing definition
@@ -251,19 +294,27 @@ file(WRITE ${CMAKE_BINARY_DIR}/HEMCOBuildProperties.txt
 if(NOT HEMCO_EXTERNAL_CONFIG AND NOT HEMCO_TRY_RUN_PASSED)
 
     # Format definitions with -D prefix
-    #set(TRY_RUN_DEFINITIONS "")
-    #foreach(DEF ${BT_DEFINITIONS})
-    #    list(APPEND TRY_RUN_DEFINITIONS "-D${DEF}")
-    #endforeach()
+    set(TRY_RUN_LIBRARIES ${NETCDF_LIBRARIES})
+    set(TRY_RUN_INCLUDE_DIRS ${NETCDF_INCLUDE_DIRS})
+    set(TRY_RUN_COMPILER_FLAGS "")
+    set(TRY_RUN_DEFINITIONS "")
+
+    if(OMP)
+        list(APPEND TRY_RUN_LIBRARIES ${OpenMP_Fortran_LIBRARIES})
+        list(APPEND TRY_RUN_COMPILER_FLAGS ${OpenMP_Fortran_FLAGS})
+    else()
+        list(APPEND TRY_RUN_DEFINITIONS -DNO_OMP)
+    endif()
 
     # Try to compile and run try_compile.F90
     try_run(RUN_FAILED COMPILED_OK
         ${CMAKE_CURRENT_BINARY_DIR}/try_compile                  # binary dir
         ${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/try_compile.F90 # test src file
-        LINK_LIBRARIES ${BT_LIBRARIES}	                         # link flags
-        CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${BT_INCLUDES}"       # include dirs
-    	COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT
-    	RUN_OUTPUT_VARIABLE RUN_OUTPUT
+        LINK_LIBRARIES ${TRY_RUN_LIBRARIES}
+        CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${TRY_RUN_INCLUDE_DIRS}" "-DCMAKE_Fortran_FLAGS=${TRY_RUN_COMPILER_FLAGS}"
+        COMPILE_DEFINITIONS ${TRY_RUN_DEFINITIONS}
+        COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT
+        RUN_OUTPUT_VARIABLE RUN_OUTPUT
     )
 
     # Display a warning if its compilation failed
