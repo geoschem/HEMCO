@@ -29,11 +29,13 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts)
 add_library(HEMCOBuildProperties INTERFACE)
 
 #---------------------------------------------------------------------
-#  
-# HEMCO_<LANG>_FLAGS_<COMPILER_ID>
-# HEMCO_<LANG>_FLAGS_<CONFIG>_<COMPILER_ID>
-# 
-# Valid 
+# Default compiler options
+#
+# HEMCO_Fortran_FLAGS_<COMPILER_ID> : common flags (all build types) 
+# HEMCO_Fortran_FLAGS_<CONFIG>_<COMPILER_ID> : types-specific flags
+#
+# Valid COMPILER_ID: Intel and GNU
+# Valid CONFIG: RELEASE, DEBUG, RELWITHDEBINFO
 #---------------------------------------------------------------------
 
 set(HEMCO_Fortran_FLAGS_Intel
@@ -79,7 +81,7 @@ endif()
 
 
 #---------------------------------------------------------------------
-# Set default compiler options
+# Assign comiler options to build properties
 #---------------------------------------------------------------------
 target_compile_options(HEMCOBuildProperties
    INTERFACE
