@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -79,29 +79,7 @@ MODULE HCOX_GFED_MOD
 !
 ! !REVISION HISTORY:
 !  07 Sep 2011 - P. Kasibhatla - Initial version, based on GFED2
-!  07 Sep 2011 - R. Yantosca   - Added ProTeX headers
-!  14 Feb 2012 - M. Payer      - Add modifications for CH4 (K. Wecht)
-!  01 Mar 2012 - R. Yantosca   - Now reference new grid_mod.F90
-!  06 Mar 2012 - P. Kasibhatla - Final version
-!  01 Aug 2012 - R. Yantosca - Add reference to findFreeLUN from inqure_mod.F90
-!  03 Aug 2012 - R. Yantosca - Move calls to findFreeLUN out of DEVEL block
-!  14 Mar 2013 - M. Payer    - Replace NOx emissions with NO emissions as part
-!                              of removal of NOx-Ox partitioning
-!  15 Dec 2013 - C. Keller   - Now a HEMCO extension. Emissions in kg/m2/s,
-!                              emission factors in kg/kgDM.
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  08 Aug 2014 - R. Yantosca - Now avoid ASCII file reads for ESMF
-!  23 Sep 2014 - C. Keller   - Increase N_SPEC to 26 (+Hg0)
-!  12 Mar 2015 - C. Keller / P. Kasibhatla - Added GFED-4.
-!  03 Jun 2015 - C. Keller / P. Kasibhatla - GFED-4 update: now use GFED-4
-!                                            specific emission factors and DM data.
-!  14 Oct 2016 - C. Keller    - Now use HCO_EvalFld instead of HCO_GetPtr.
-!  11 Feb 2017 - S. Farina    - Increase N_SPEC to 27 (+SOAP)
-!  23 Mar 2017 - M. Sulprizio - Increase N_SPEC to 29 (+EOH+MTPA)
-!  29 Mar 2018 - K. Travis    - Update GFED4 emission factors, increase to 34 species
-!  29 Mar 2018 - K. Travis    - Remove GFED3
-!  12 Sep 2018 - C. Keller    - Added instance wrapper
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !
@@ -195,7 +173,7 @@ MODULE HCOX_GFED_MOD
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -223,18 +201,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  07 Sep 2011 - P. Kasibhatla - Initial version, based on GFED2
-!  15 Dec 2013 - C. Keller     - Now a HEMCO extension
-!  03 Apr 2015 - C. Keller     - Humid tropical forest mask is not binary
-!                                any more but fraction (0.0 - 1.0).
-!  21 Sep 2016 - R. Yantosca   - Bug fix: move WHERE statement for HUMTROP
-!                                into the GFED3 block to avoid segfault
-!  10 Mar 2017 - M. Sulprizio  - Add SpcArr3D for emitting 65% of biomass
-!                                burning emissions into the PBL and 35% into the
-!                                free troposphere, following code from E.Fischer
-!  24 Apr 2017 - M. Sulprizio  - Comment out vertical distribution of biomass
-!                                burning emissions for now.
-!  12 May 2017 - M. Sulprizio  - Comment out partitioning of NO directly to PAN
-!                                and HNO3 for now.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -530,7 +497,7 @@ CONTAINS
   END SUBROUTINE HCOX_GFED_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -563,15 +530,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  07 Sep 2011 - P. Kasibhatla - Initial version, based on GFED2
-!  15 Dec 2013 - C. Keller     - Now a HEMCO extension
-!  08 Aug 2014 - R. Yantosca   - Now include hcox_gfed_include.H, which defines
-!                                GFED_SPEC_NAME and GFED_EMFAC arrays
-!  11 Nov 2014 - C. Keller     - Now get hydrophilic fractions via config file
-!  22 Apr 2015 - R. Yantosca   - Now explicitly test for "POA scale factor"
-!                                and "NAP scale factor" to avoid search errors
-!  07 Jan 2016 - M. Sulprizio  - Change 'POA1' to 'POG1' to better reflect that
-!                                SVOC emissions are added to the gas-phase
-!                                species in carbon_mod.F
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -920,7 +879,7 @@ CONTAINS
   END SUBROUTINE HCOX_GFED_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -940,7 +899,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  07 Sep 2011 - P. Kasibhatla - Initial version, based on GFED2
-!  15 Dec 2013 - C. Keller     - Now a HEMCO extension
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -954,7 +913,7 @@ CONTAINS
   END SUBROUTINE HCOX_GFED_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -976,6 +935,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1008,7 +968,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1036,7 +996,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1084,7 +1044,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !BOP
@@ -1104,7 +1064,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

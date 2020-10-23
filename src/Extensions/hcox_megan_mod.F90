@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -122,7 +122,7 @@ MODULE HCOX_MEGAN_MOD
 !  (1 ) Original code (biogen_em_mod.f) by Dorian Abbot (6/2003).  Updated to
 !        latest algorithm and modified for the standard code by May Fu
 !        (11/2004).
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -276,7 +276,7 @@ MODULE HCOX_MEGAN_MOD
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -312,7 +312,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Aug 2013 - C. Keller   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1490,7 +1490,7 @@ CONTAINS
   END SUBROUTINE HCOX_Megan_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1535,7 +1535,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1 ) Original code by Dorian Abbot (9/2003).  Updated to the latest
 !        algorithm and modified for the standard code by May Fu (11/20/04)
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1747,7 +1747,7 @@ CONTAINS
   END SUBROUTINE GET_MEGAN_EMISSIONS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1793,7 +1793,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  (1 ) Created by dbm 07/2012
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1996,7 +1996,7 @@ CONTAINS
   END SUBROUTINE GET_MEGAN_PARAMS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2034,7 +2034,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  (1 ) Created 11/2012 by dbm
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2110,7 +2110,7 @@ CONTAINS
   END SUBROUTINE GET_MEGAN_AEF
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2155,7 +2155,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1 ) Code was taken & adapted directly from the MEGAN v2.1 source code.
 !      (mpb,2009)
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2250,7 +2250,7 @@ CONTAINS
   END FUNCTION GET_GAMMA_PAR_PCEEA
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2285,7 +2285,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  (1 ) This code was taken directly from the MEGAN v2.1 source code.(mpb,2009)
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2308,7 +2308,7 @@ CONTAINS
   END FUNCTION SOLAR_ANGLE
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2353,7 +2353,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  (1 ) Original code by Michael Barkley (2009).
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2372,7 +2372,7 @@ CONTAINS
   END FUNCTION GET_GAMMA_T_LI
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2420,7 +2420,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1 ) Includes the latest MEGAN v2.1 temperature algorithm (mpb, 2009).
 !       Note, this temp-dependence is the same for the PCEEA & hybrid models.
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2458,7 +2458,7 @@ CONTAINS
   END FUNCTION GET_GAMMA_T_LD
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2494,7 +2494,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1 ) Original code by Dorian Abbot (9/2003).  Modified for the standard
 !        code by May Fu (11/2004)
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2527,7 +2527,7 @@ CONTAINS
   END FUNCTION GET_GAMMA_LAI
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2567,7 +2567,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1 ) Original code by Dorian Abbot (9/2003). Modified for the standard
 !        code by May Fu (11/2004)
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2651,7 +2651,7 @@ CONTAINS
   END FUNCTION GET_GAMMA_AGE
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2686,7 +2686,7 @@ CONTAINS
 !  (1 ) Created by dbm (6/2012). We are not currently using a soil moisture
 !       effect for isoprene. For all compounds other than acetaldehyde and
 !       ethanol, gamma_sm =1 presently.
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2721,7 +2721,7 @@ CONTAINS
   END FUNCTION GET_GAMMA_SM
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2771,7 +2771,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  (1 ) Implemented in the standard code by A. Tai (Jun 2012).
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2853,7 +2853,7 @@ CONTAINS
   END FUNCTION GET_GAMMA_CO2
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2893,7 +2893,7 @@ CONTAINS
 !        conifer tree, etc.) then to be correct we should have a
 !        different CCE for each canopy type for each compound class
 !        (which would be 160 slightly different values of CCE)."
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2999,7 +2999,7 @@ CONTAINS
 !EOC
 
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3029,7 +3029,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2014 - C. Keller    - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3074,19 +3074,19 @@ CONTAINS
 
     ! Temperature over last 24 hours
     CALL HCO_RestartGet( HcoState, 'T_PREVDAY', &
-                         Inst%T_LAST24H, RC, DefVal = 288.15 )
+                         Inst%T_LAST24H, RC, DefVal = 288.15_sp )
 
     ! Temperature over last X days
     CALL HCO_RestartGet( HcoState, 'T_DAVG', &
-                         Inst%T_LASTXDAYS, RC, DefVal = 288.15 )
+                         Inst%T_LASTXDAYS, RC, DefVal = 288.15_sp )
 
     ! Direct radiation (PARDR) over last X days
     CALL HCO_RestartGet( HcoState, 'PARDR_DAVG', &
-                         Inst%PARDR_LASTXDAYS, RC, DefVal = 30.0 )
+                         Inst%PARDR_LASTXDAYS, RC, DefVal = 30.0_sp )
 
     ! Diffuse radiation (PARDF) over last X days
     CALL HCO_RestartGet( HcoState, 'PARDF_DAVG', &
-                         Inst%PARDF_LASTXDAYS, RC, DefVal = 48.0 )
+                         Inst%PARDF_LASTXDAYS, RC, DefVal = 48.0_sp )
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -3094,7 +3094,7 @@ CONTAINS
   END SUBROUTINE FILL_RESTART_VARS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3129,7 +3129,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1 ) Original code by Dorian Abbot (9/2003).  Modified for the standard
 !        code by May Fu (11/2004)
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3639,7 +3639,7 @@ CONTAINS
   END SUBROUTINE CALC_AEF
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3672,7 +3672,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Aug 2013 - C. Keller   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4741,7 +4741,7 @@ CONTAINS
   END SUBROUTINE HCOX_Megan_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4769,7 +4769,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Aug 2013 - C. Keller   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4781,7 +4781,7 @@ CONTAINS
   END SUBROUTINE HCOX_MEGAN_FINAL
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4803,7 +4803,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4836,7 +4836,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4866,7 +4866,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4914,7 +4914,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4934,7 +4934,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

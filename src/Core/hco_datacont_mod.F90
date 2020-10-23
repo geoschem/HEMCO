@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -102,8 +102,7 @@ MODULE HCO_DataCont_Mod
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -143,7 +142,7 @@ MODULE HCO_DataCont_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -164,7 +163,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -204,7 +203,7 @@ CONTAINS
   END SUBROUTINE DataCont_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -230,6 +229,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -273,7 +273,7 @@ CONTAINS
   END SUBROUTINE DataCont_Cleanup
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -294,7 +294,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  25 Oct 2016 - R. Yantosca - Do not nullify pointers in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -343,7 +343,7 @@ CONTAINS
   END SUBROUTINE ListCont_Cleanup
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -371,7 +371,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Aug 2012 - C. Keller - Initial Version
-!  25 Oct 2016 - R. Yantosca - Do not nullify pointers in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -467,7 +467,7 @@ CONTAINS
   END SUBROUTINE cIDList_Create
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -490,6 +490,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Aug 2012 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -515,7 +516,7 @@ CONTAINS
   END SUBROUTINE cIDList_Cleanup
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -545,6 +546,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Apr 2012 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -583,7 +585,7 @@ CONTAINS
   END SUBROUTINE Pnt2DataCont
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -616,6 +618,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Apr 2012 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -643,7 +646,7 @@ CONTAINS
   END SUBROUTINE ListCont_NextCont
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -667,7 +670,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Dec 2012 - C. Keller: Initialization
-!  25 Oct 2016 - R. Yantosca - Do not nullify pointers in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -717,7 +720,7 @@ CONTAINS
   END SUBROUTINE ListCont_Find_Name
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -746,7 +749,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Dec 2012 - C. Keller: Initialization
-!  25 Oct 2016 - R. Yantosca - Do not nullify pointers in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -803,7 +806,7 @@ CONTAINS
   END SUBROUTINE ListCont_Find_ID
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -824,7 +827,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Feb 2016 - C. Keller: Initial version
-!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -212,25 +212,7 @@ MODULE HCOX_STATE_MOD
 !
 ! !REVISION HISTORY:
 !  02 Oct 2013 - C. Keller   - Initial version
-!  23 Jun 2014 - R. Yantosca - Now add DATA_DIR to Ext_State declaration
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  27 Jun 2014 - C. Keller   - Added FINN biomass burning extension
-!  07 Jul 2014 - R. Yantosca - Modified for GEOS-Chem Rn-Pb-Be simulation
-!  28 Jul 2014 - C. Keller   - Added J-Values for NO2 and O3 to state obj.
-!  20 Aug 2014 - M. Sulprizio- Modified for GEOS-Chem POPs emissions module
-!  01 Oct 2014 - R. Yantosca - Modified for TOMAS sea salt emissions module
-!  11 Dec 2014 - M. Yannetti - Updated DRYCOEFF to REAL(hp)
-!  10 Mar 2015 - C. Keller   - Fields can now be in HEMCO precision or single
-!                              precision. Single precision is useful for
-!                              fields used in ESMF setting.
-!  03 Apr 2015 - C. Keller   - Added ExtDat_Set.
-!  21 Feb 2016 - C. Keller   - Update to HEMCO v2.0
-!  03 Mar 2016 - C. Keller   - Added CNV_FRC
-!  20 Apr 2016 - M. Sulprizio- Change JO1D pointer to JOH to reflect that it now
-!                              points to the effective O3 + hv -> 2OH rates
-!  01 Nov 2016 - M. Sulprizio- Rename TOMAS sea salt to TOMAS Jeagle (J. Kodros)
-!  17 Oct 2017 - C. Keller   - Add lightning flash rate
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-----------------------------------------------------------------------------
 !BOC
@@ -264,7 +246,7 @@ MODULE HCOX_STATE_MOD
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -287,8 +269,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Dec 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -499,7 +480,7 @@ CONTAINS
   END SUBROUTINE ExtStateInit
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -520,9 +501,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Oct 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  09 Jul 2015 - E. Lundgren - Add chlorophyll-a (CHLR)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -592,7 +571,7 @@ CONTAINS
   END SUBROUTINE ExtStateFinal
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -612,8 +591,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -639,7 +617,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Init_2R
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -659,8 +637,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -686,7 +663,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Init_2S
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -706,8 +683,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -733,7 +709,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Init_2I
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -753,8 +729,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -779,7 +754,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Init_3R
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -799,8 +774,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -825,7 +799,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Init_3S
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -844,8 +818,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -861,7 +834,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Cleanup_2R
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -880,8 +853,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -897,7 +869,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Cleanup_2S
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -916,8 +888,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -933,7 +904,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Cleanup_2I
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -952,8 +923,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -969,7 +939,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Cleanup_3R
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -988,8 +958,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  23 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1005,7 +974,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Cleanup_3S
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1040,9 +1009,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Apr 2015 - C. Keller - Initial version
-!  11 May 2015 - C. Keller - Now use HCO_EvalFld instead of HCO_GetPtr. This
-!                            allows the application of scale factors to
-!                            ExtState fields read through the HEMCO interface.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1200,7 +1167,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Set_2R
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1235,9 +1202,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Apr 2015 - C. Keller - Initial version
-!  11 May 2015 - C. Keller - Now use HCO_EvalFld instead of HCO_GetPtr. This
-!                            allows the application of scale factors to
-!                            ExtState fields read through the HEMCO interface.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1395,7 +1360,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Set_2S
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1430,9 +1395,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Apr 2015 - C. Keller - Initial version
-!  11 May 2015 - C. Keller - Now use HCO_EvalFld instead of HCO_GetPtr. This
-!                            allows the application of scale factors to
-!                            ExtState fields read through the HEMCO interface.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1594,7 +1557,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Set_2I
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1630,9 +1593,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Apr 2015 - C. Keller - Initial version
-!  11 May 2015 - C. Keller - Now use HCO_EvalFld instead of HCO_GetPtr. This
-!                            allows the application of scale factors to
-!                            ExtState fields read through the HEMCO interface.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1807,7 +1768,7 @@ CONTAINS
   END SUBROUTINE ExtDat_Set_3R
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1843,9 +1804,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Apr 2015 - C. Keller - Initial version
-!  11 May 2015 - C. Keller - Now use HCO_EvalFld instead of HCO_GetPtr. This
-!                            allows the application of scale factors to
-!                            ExtState fields read through the HEMCO interface.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

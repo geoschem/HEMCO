@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -39,17 +39,14 @@ MODULE DryDep_ToolBox_Mod
 !
 ! !REVISION HISTORY:
 !  14 Nov 2013 - C. Keller   - Created from BIOFIT.F and SUNPARAM.F
-!  09 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  09 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  11 Dec 2014 - M. Yannetti - Split BIOFIT into R4 and R8 versions
-!                              Split SUNPARAM into R4 and R8 versions
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -86,8 +83,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Dec 2012 - R. Yantosca - Added ProTeX headers
-!  09 Dec 2014 - R. Yantosca - Now use BIO_FIT as the return value
-!  11 Dec 2014 - M. Yannetti - Split from BIO_FIT
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -149,7 +145,7 @@ CONTAINS
   END FUNCTION BIOFIT_R4
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -186,8 +182,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Dec 2012 - R. Yantosca - Added ProTeX headers
-!  09 Dec 2014 - R. Yantosca - Now use BIO_FIT as the return value
-!  11 Dec 2014 - M. Yannetti - Split from BIO_FIT
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -249,7 +244,7 @@ CONTAINS
   END FUNCTION BIOFIT_R8
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -282,7 +277,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Dec 2012 - R. Yantosca - Added ProTeX headers
-!  11 Dec 2014 - M. Yannetti - Split into R4 and R8 versions.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -317,7 +312,7 @@ CONTAINS
 
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -350,7 +345,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Dec 2012 - R. Yantosca - Added ProTeX headers
-!  11 Dec 2014 - M. Yannetti - Split into R4 and R8 versions.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

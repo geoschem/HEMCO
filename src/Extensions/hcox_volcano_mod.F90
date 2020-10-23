@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -79,10 +79,7 @@ MODULE HCOX_Volcano_Mod
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller   - Initial version
-!  28 Mar 2018 - M. Sulprizio- Update to allow for OMI-based volcanic emissions;
-!                              Added Volcano_Source option to specify AeroCom
-!                              or OMI emissions because the latter are only
-!                              currently available for 2005-2012
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -121,7 +118,7 @@ MODULE HCOX_Volcano_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -150,8 +147,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  20 Mar 2019 - R. Yantosca - Remove MinDiagLev=2 from calls to HCO_EmisAdd
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -297,7 +293,7 @@ CONTAINS
   END SUBROUTINE HCOX_Volcano_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -330,6 +326,7 @@ CONTAINS
 
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -462,7 +459,7 @@ CONTAINS
   END SUBROUTINE HCOX_Volcano_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -482,6 +479,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -493,7 +491,7 @@ CONTAINS
   END SUBROUTINE HCOX_Volcano_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -528,9 +526,7 @@ CONTAINS
 
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller   - Initial version
-!  28 Mar 2018 - M. Sulprizio- Add check for OMI-based emissions and use closest
-!                              available year if simulation year is outside
-!                              2005-2012
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -762,7 +758,7 @@ CONTAINS
   END SUBROUTINE ReadVolcTable
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -797,8 +793,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller   - Initial version
-!  20 Jun 2019 - M. Sulprizio- Update to accommodate beginning and start time
-!                              entries for some volcanoes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -973,7 +968,7 @@ CONTAINS
   END SUBROUTINE EmitVolc
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -995,6 +990,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1027,7 +1023,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1055,7 +1051,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1103,7 +1099,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1122,7 +1118,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -28,13 +28,14 @@ MODULE HCO_LOGFILE_MOD
 !
 ! !REVISION HISTORY:
 !  27 May 2014 - C. Keller   - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -60,6 +61,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  27 May 2014 - C. Keller   - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -96,7 +98,7 @@ CONTAINS
   END SUBROUTINE HCO_Spec2Log
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -122,7 +124,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -150,7 +152,7 @@ CONTAINS
       END SUBROUTINE HCO_PrintList
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -177,7 +179,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  16 Mar 2015 - M. Sulprizio- Now print min and max values for debugging
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

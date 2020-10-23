@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -86,14 +86,8 @@ MODULE HCOI_StandAlone_Mod
   PRIVATE :: ExtState_UpdateFields
 !
 ! !REVISION HISTORY:
-!  20 Aug 2013 - C. Keller   - Initial version.
-!  14 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  14 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  09 Apr 2015 - C. Keller   - Now accept comments and empty lines in
-!                              all input files.
-!  15 Feb 2015 - C. Keller   - Update to v2.0
-!  18 Jan 2019 - R. Yantosca - Improve error trapping.  Also now made
-!                              compatible w/ met field names for FlexGrid
+!  20 Aug 2013 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -149,7 +143,7 @@ MODULE HCOI_StandAlone_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -174,7 +168,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -220,7 +214,7 @@ CONTAINS
   END SUBROUTINE HCOI_StandAlone_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -254,8 +248,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
-!  29 Jan 2019 - R. Yantosca - Now flush errmsgs to logfile before exiting
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -468,7 +461,7 @@ CONTAINS
   END SUBROUTINE HCOI_SA_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -496,10 +489,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
-!  29 Jan 2019 - R. Yantosca - Bug fix: Call HCO_RUN twice, once with phase=1
-!                              and again with phase=2.  This is necessary
-!                              for emissions to be computed.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -682,7 +672,7 @@ CONTAINS
   END SUBROUTINE HCOI_SA_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -703,7 +693,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -763,7 +753,7 @@ CONTAINS
   END SUBROUTINE HCOI_SA_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -803,6 +793,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1012,7 +1003,7 @@ CONTAINS
   END SUBROUTINE Model_GetSpecies
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1042,9 +1033,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
-!  11 May 2015 - C. Keller - Now provide lon/lat edges instead of assuming
-!                            global grid.
-!  10 Sep 2015 - C. Keller - Allow to provide mid-points instead of edges.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1566,7 +1555,7 @@ CONTAINS
   END SUBROUTINE Set_Grid
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1597,7 +1586,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller   - Initial Version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1664,7 +1653,7 @@ CONTAINS
   END SUBROUTINE Get_nnMatch
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1689,6 +1678,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1741,7 +1731,7 @@ CONTAINS
   END SUBROUTINE Register_Species
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1770,7 +1760,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
-!  05 Feb 2015 - C. Keller - Added SetDefault flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1935,7 +1925,7 @@ CONTAINS
   END SUBROUTINE Define_Diagnostics
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1964,6 +1954,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2084,7 +2075,7 @@ CONTAINS
   END SUBROUTINE Read_Time
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2114,12 +2105,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Jul 2014 - C. Keller   - Initial Version
-!  06 Oct 2014 - M. Sulprizio- Remove PCENTER. Now calculate from pressure edges
-!  09 Jul 2015 - E. Lundgren - Add MODIS Chlorophyll-a (CHLR)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  15 Jan 2019 - R. Yantosca - Update met field names to be consistent with
-!                              those used for the FlexGrid update
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2796,7 +2782,7 @@ CONTAINS
   END SUBROUTINE ExtState_SetFields
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2821,6 +2807,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Jul 2014 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2838,7 +2825,7 @@ CONTAINS
   END SUBROUTINE ExtState_UpdateFields
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2870,8 +2857,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  08 Sep 2014 - C. Keller - Initial Version
-!  13 Jul 2015 - C. Keller - Bug fix: now save YYYYMMDD and hhmmss in different
-!                            variables to avoid integer truncation errors.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2910,7 +2896,7 @@ CONTAINS
   END FUNCTION IsEndOfSimulation
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2929,6 +2915,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Feb 2016 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2957,7 +2944,7 @@ CONTAINS
   END SUBROUTINE HCOI_SA_InitCleanup
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2993,7 +2980,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Nov 2019 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3057,7 +3044,7 @@ CONTAINS
   END SUBROUTINE Init_Dry_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3078,7 +3065,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Nov 2019 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3119,7 +3106,7 @@ CONTAINS
   END SUBROUTINE Cleanup_Dry_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3135,7 +3122,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Jan 2015 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

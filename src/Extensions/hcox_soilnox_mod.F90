@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -88,23 +88,7 @@ MODULE HCOX_SoilNOx_Mod
 !        doi:10.5194/acp-12-7779-2012, 2012.
 !
 ! !REVISION HISTORY:
-!
-!  17 Aug 2009 - R. Yantosca     - Columnized and cleaned up
-!  17 Aug 2009 - R. Yantosca     - Added ProTeX headers
-!  31 Jan 2011 - R. Hudman       - Added new code12259.perceus-ucb0
-!  31 Jan 2011 - R. Hudman       - Updated headers
-!  29 Aug 2012 - J.D. Maasakkers - Implemented Jacob and Bakwin CRF
-!  29 Aug 2012 - J.D. Maasakkers - Adapted code to work with new (online
-!                                  regridded) landfraction, climate and
-!                                  fertilizer data
-!  29 Aug 2012 - J.D. Maasakkers - Removed all unused Wang et al. code
-!                                  (comments)
-!  04 Nov 2013 - C. Keller       - Moved all soil NOx routines into one
-!                                  module. Now a HEMCO extension.
-!  28 Jul 2014 - C. Keller       - Now allow DRYCOEFF to be read through
-!                                  configuration file (as setting)
-!  11 Dec 2014 - M. Yannetti     - Changed REAL*8 to REAL(hp)
-!  14 Oct 2016 - C. Keller       - Now use HCO_EvalFld instead of HCO_GetPtr.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -154,6 +138,9 @@ MODULE HCOX_SoilNOx_Mod
      ! 'Scaling_NO'
      REAL(sp),          ALLOCATABLE :: SpcScalVal(:)
      CHARACTER(LEN=61), ALLOCATABLE :: SpcScalFldNme(:)
+
+     ! Diagnostics
+     REAL(sp), POINTER              :: FertNO_Diag(:,:)
 
      TYPE(MyInst), POINTER          :: NextInst => NULL()
   END TYPE MyInst
@@ -250,7 +237,7 @@ MODULE HCOX_SoilNOx_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -290,12 +277,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Nov 2013 - C. Keller - Initial Version
-!  08 May 2015 - C. Keller - Now read/write restart variables from here to
-!                            accomodate replay runs in GEOS-5.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  29 Mar 2017 - M. Sulprizio- Read DEP_RESERVOIR_DEFAULT field from file for
-!                              use when when DEP_RESERVOIR is not found in the
-!                              HEMCO restart file
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -304,7 +286,6 @@ CONTAINS
 !
     INTEGER                  :: I, J, N
     REAL(hp), TARGET         :: FLUX_2D(HcoState%NX,HcoState%NY)
-    REAL(hp), TARGET         :: DIAG   (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: Tmp2D  (HcoState%NX,HcoState%NY)
     REAL(sp)                 :: Def2D  (HcoState%NX,HcoState%NY)
     REAL(hp)                 :: FERTDIAG, DEP_FERT, SOILFRT
@@ -316,10 +297,6 @@ CONTAINS
     CHARACTER(LEN= 31)       :: DiagnName
     CHARACTER(LEN=255)       :: MSG, DMY
     TYPE(MyInst),    POINTER :: Inst
-
-    ! For manual diagnostics
-    LOGICAL, SAVE            :: DoDiagn = .FALSE.
-    TYPE(DiagnCont), POINTER :: TmpCnt
 
     !=================================================================
     ! HCOX_SoilNOx_RUN begins here!
@@ -334,7 +311,6 @@ CONTAINS
 
     ! Nullify
     Inst   => NULL()
-    TmpCnt => NULL()
 
     ! Get Instance
     CALL InstGet ( ExtState%SoilNox, Inst, RC )
@@ -427,12 +403,6 @@ CONTAINS
           ExtState%DRYCOEFF => Inst%DRYCOEFF
           DEALLOCATE(VecDp)
        ENDIF
-
-       ! Check if we need to write manual fertilizer NO diagnostics
-       DiagnName = 'EmisNO_Fert'
-       CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
-                             DiagnName, 0, DoDiagn, TmpCnt )
-       TmpCnt => NULL()
     ENDIF
 
     !---------------------------------------------------------------
@@ -507,7 +477,6 @@ CONTAINS
     ! Init
     TSEMIS  = HcoState%TS_EMIS
     FLUX_2D = 0e+0_hp
-    IF(DoDiagn) DIAG = 0e+0_hp
 
     ! Loop over each land grid-box, removed loop over landpoints
 !$OMP PARALLEL DO                                               &
@@ -548,7 +517,9 @@ CONTAINS
 
        ! Write out
        FLUX_2D(I,J) = MAX(IJFLUX,0.0_hp)
-       IF (DoDiagn) DIAG(I,J) = FERTDIAG
+
+       ! Update diagnostics
+       Inst%FertNO_Diag(I,J) = FERTDIAG
 
     ENDDO !J
     ENDDO !I
@@ -579,17 +550,6 @@ CONTAINS
        RETURN
     ENDIF
 
-    ! 'EmisNO_Fert' is the fertilizer NO emissions.
-    ! This is a manual diagnostic created in GeosCore/hcoi_gc_diagn_mod.F90.
-    ! If an empty pointer (i.e. not associated) is passed to Diagn_Update,
-    ! diagnostics are treated as zeros!
-    IF ( DoDiagn ) THEN
-       DiagnName = 'EmisNO_Fert'
-       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                          cName=TRIM(DiagnName), Array2D=DIAG, RC=RC)
-       IF ( RC /= HCO_SUCCESS ) RETURN
-    ENDIF
-
     ! ----------------------------------------------------------------
     ! Eventually copy internal values to ESMF internal state object
     ! ----------------------------------------------------------------
@@ -617,7 +577,7 @@ CONTAINS
   END SUBROUTINE HCOX_SoilNox_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -649,8 +609,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Nov 2013 - C. Keller   - Initial Version
-!  12 May 2015 - R. Yantosca - Cosmetic changes
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -742,35 +701,47 @@ CONTAINS
     I = HcoState%NX
     J = HcoState%NY
 
+    ALLOCATE( Inst%FertNO_Diag( I, J ), STAT=AS )
+    IF ( AS /= 0 ) THEN
+       CALL HCO_ERROR( HcoState%Config%Err, 'FertNO_Diag', RC )
+       RETURN
+    ENDIF
+    Inst%FertNO_Diag = 0.0_sp
+
     ALLOCATE( Inst%DRYPERIOD( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'DRYPERIOD', RC )
        RETURN
     ENDIF
+    Inst%DRYPERIOD     = 0.0_sp
 
     ALLOCATE( Inst%PFACTOR( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'PFACTOR', RC )
        RETURN
     ENDIF
+    Inst%PFACTOR       = 0.0_sp
 
     ALLOCATE( Inst%GWET_PREV( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'GWET_PREV', RC )
        RETURN
     ENDIF
+    Inst%GWET_PREV     = 0.0_sp
 
     ALLOCATE( Inst%DEP_RESERVOIR( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'DEP_RESERVOIR', RC )
        RETURN
     ENDIF
+    Inst%DEP_RESERVOIR = 0.0_sp
 
     ALLOCATE( Inst%CANOPYNOX( I, J, NBIOM ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'CANOPYNOX', RC )
        RETURN
     ENDIF
+    Inst%CANOPYNOX     = 0e+0_hp
 
     ! Reserve 24 pointers for land fractions for each Koppen category
     ALLOCATE ( Inst%LANDTYPE(NBIOM), STAT=AS )
@@ -798,21 +769,22 @@ CONTAINS
     Inst%CLIMARID  = 0.0_hp
     Inst%CLIMNARID = 0.0_hp
 
-    ! Zero arrays
-    Inst%DRYPERIOD     = 0.0_sp
-    Inst%PFACTOR       = 0.0_sp
-    Inst%GWET_PREV     = 0.0_sp
-    Inst%DEP_RESERVOIR = 0.0_sp
-    Inst%CANOPYNOX     = 0e+0_hp
-
-    ! Initialize pointers
-    !Inst%CLIMARID  => NULL()
-    !Inst%CLIMNARID => NULL()
-    !Inst%SOILFERT  => NULL()
-
     ! ----------------------------------------------------------------------
     ! Set diagnostics
     ! ----------------------------------------------------------------------
+    CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'EmisNO_Fert',         &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FertNO_Diag,      &
+                       RC        = RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
     CALL HCO_RestartDefine( HcoState, 'PFACTOR', &
                             Inst%PFACTOR, '1',  RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
@@ -857,7 +829,7 @@ CONTAINS
   END SUBROUTINE HCOX_SoilNOx_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -885,8 +857,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Nov 2013 - C. Keller - Initial Version
-!
-! !NOTES:
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -902,7 +873,7 @@ CONTAINS
   END SUBROUTINE HCOX_SoilNox_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -924,8 +895,8 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Dec 2013 - C. Keller   - Initial version
-!  12 May 2015 - R. Yantosca - Bug fix: PGI expects routine name to end w/ ()
-!!EOP
+!  See https://github.com/geoschem/hemco for complete history
+!EOP
 !------------------------------------------------------------------------------
 !BOC
 !
@@ -943,7 +914,7 @@ CONTAINS
   END FUNCTION HCOX_SoilNOx_GetFertScale
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -996,11 +967,8 @@ CONTAINS
 !  dry deposition code (J.D. Maasakkers)
 !
 ! !REVISION HISTORY:
-!  17 Aug 2009 - R. Yantosca - Columnized and cleaned up
-!  17 Aug 2009 - R. Yantosca - Added ProTeX headers
 !  31 Jan 2011 - R. Hudman   - New Model added
-!  23 Oct 2012 - M. Payer    - Now reference Headers/gigc_errcode_mod.F90
-!  12 May 2015 - R. Yantosca - Cosmetic changes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1090,7 +1058,7 @@ CONTAINS
   END SUBROUTINE Soil_NOx_Emission
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1125,15 +1093,9 @@ CONTAINS
 !  NOx routines.
 !
 ! !REVISION HISTORY:
-!  22 Jun 2009 - R. Yantosca     - Split off from "drydep_mod.f"
 !  14 Jun 2012 - J.D. Maasakkers - Rewritten as a function of the
 !                                     MODIS/Koppen biometype
-!  09 Nov 2012 - M. Payer        - Replaced all met field arrays with State_Met
-!                                   derived type object
-!  13 Dec 2012 - R. Yantosca     - Removed ref to obsolete CMN_DEP_mod.F
-!  28 Jul 2014 - C. Keller       - Added error trap for DRYCOEFF
-!  11 Dec 2014 - M. Yannetti     - Added BIO_RESULT
-!  12 May 2015 - R. Yantosca     - Cosmetic changes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1369,7 +1331,7 @@ CONTAINS
   END SUBROUTINE Get_Canopy_NOx
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1404,8 +1366,8 @@ CONTAINS
 !  as long as molecule is not too big.
 !
 ! !REVISION HISTORY:
-!     22 Jun 2009 - R. Yantosca - Copied from "drydep_mod.f"
-!     07 Jan 2016 - E. Lundgren - Update Avogadro's # to NIST 2014 value
+!  22 Jun 2009 - R. Yantosca - Copied from "drydep_mod.f"
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1448,7 +1410,7 @@ CONTAINS
   END FUNCTION DiffG
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1477,7 +1439,7 @@ CONTAINS
     REAL(hp) ,  INTENT(INOUT) :: DEP_FERT
 !
 ! !REVISION HISTORY:
-!  23 Oct 2012 - M. Payer    - Added ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1533,7 +1495,7 @@ CONTAINS
   END SUBROUTINE Get_Dep_N
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1560,7 +1522,7 @@ CONTAINS
     REAL(hp)                      :: DRYN       ! Dry dep. N since prev timestep
 !
 ! !REVISION HISTORY:
-!  23 Oct 2012 - M. Payer    - Added ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1582,7 +1544,7 @@ CONTAINS
   END FUNCTION Source_DryN
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1608,7 +1570,7 @@ CONTAINS
     REAL(hp)                      :: WETN       ! Dry dep. N since prev timestep
 !
 ! !REVISION HISTORY:
-!  23 Oct 2012 - M. Payer    - Added ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1630,7 +1592,7 @@ CONTAINS
   END FUNCTION Source_WetN
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1684,10 +1646,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Aug 2009 - R. Yantosca - Initial Version
-!  17 Aug 2009 - R. Yantosca - Added ProTeX headers
-!  31 Jan 2011 - R. Hudman   - Added new soil T dependance
-!  31 Jan 2011 - R. Hudman   - Updated headers
-!  12 May 2015 - R. Yantosca - Cosmetic changes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1743,7 +1702,7 @@ CONTAINS
   END FUNCTION SoilTemp
 !EOC
 !----------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1824,10 +1783,8 @@ CONTAINS
 !        Grasslands, CAB Int., Wallingford, UK, 1997, 67-71.
 !
 ! !REVISION HISTORY:
-!  17 Aug 2009 - R. Yantosca - Columnized and cleaned up
-!  17 Aug 2009 - R. Yantosca - Added ProTeX headers
 !  31 Jan 2011 - R. Hudman   - Rewrote scaling scheme
-!  31 Jan 2011 - R.Hudman    - Updated ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1844,7 +1801,7 @@ CONTAINS
   END FUNCTION SoilWet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1878,6 +1835,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Aug 2009 - R. Yantosca - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1922,7 +1880,7 @@ CONTAINS
   END FUNCTION SoilCrf
 !EOC
 !-----------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1985,10 +1943,8 @@ CONTAINS
 !        (2006), 74:207-228 DOI 10.1007/s10705-006-9000-7.
 !
 ! !REVISION HISTORY:
-!  17 Aug 2009 - R. Yantosca - Columnized and cleaned up
-!  17 Aug 2009 - R. Yantosca - Added ProTeX headers
 !  31 Jan 2011 - R. Hudman   - Rewrote pulsing scheme
-!  31 Jan 2011 - R. Hudman   - Updated ProTex headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2007,7 +1963,7 @@ CONTAINS
   END FUNCTION FERTADD
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2068,13 +2024,8 @@ CONTAINS
 !        doi:10.1029/2004GB002276.Section 2.3.3
 !
 ! !REVISION HISTORY:
-!  17 Aug 2009 - R. Yantosca - Columnized and cleaned up
-!  17 Aug 2009 - R. Yantosca - Added ProTeX headers
 !  31 Jan 2011 - R. Hudman   - Rewrote pulsing scheme
-!  31 Jan 2011 - R. Hudman   - Updated ProTex header
-!  29 May 2013 - R. Yantosca - Bug fix: prevent log(0) from happening
-!  21 Oct 2014 - C. Keller   - Limit PFACTOR to 1.
-!  12 May 2015 - R. Yantosca - Cosmetic changes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2143,7 +2094,7 @@ CONTAINS
   END FUNCTION Pulsing
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2165,6 +2116,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2197,7 +2149,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2227,7 +2179,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2282,7 +2234,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2302,7 +2254,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2324,13 +2276,12 @@ CONTAINS
     IF ( ASSOCIATED(Inst) ) THEN
 
        ! Deallocate arrays
-       IF ( ALLOCATED  ( Inst%DRYPERIOD     ) ) DEALLOCATE ( Inst%DRYPERIOD     )
-       IF ( ALLOCATED  ( Inst%PFACTOR       ) ) DEALLOCATE ( Inst%PFACTOR       )
-       IF ( ALLOCATED  ( Inst%GWET_PREV     ) ) DEALLOCATE ( Inst%GWET_PREV     )
-       IF ( ALLOCATED  ( Inst%CANOPYNOX     ) ) DEALLOCATE ( Inst%CANOPYNOX     )
-       IF ( ALLOCATED  ( Inst%DEP_RESERVOIR ) ) DEALLOCATE ( Inst%DEP_RESERVOIR )
-       IF ( ALLOCATED  ( Inst%SpcScalVal    ) ) DEALLOCATE ( Inst%SpcScalVal    )
-       IF ( ALLOCATED  ( Inst%SpcScalFldNme ) ) DEALLOCATE ( Inst%SpcScalFldNme )
+       IF ( ALLOCATED( Inst%PFACTOR       ) ) DEALLOCATE( Inst%PFACTOR       )
+       IF ( ALLOCATED( Inst%GWET_PREV     ) ) DEALLOCATE( Inst%GWET_PREV     )
+       IF ( ALLOCATED( Inst%CANOPYNOX     ) ) DEALLOCATE( Inst%CANOPYNOX     )
+       IF ( ALLOCATED( Inst%DEP_RESERVOIR ) ) DEALLOCATE( Inst%DEP_RESERVOIR )
+       IF ( ALLOCATED( Inst%SpcScalVal    ) ) DEALLOCATE( Inst%SpcScalVal    )
+       IF ( ALLOCATED( Inst%SpcScalFldNme ) ) DEALLOCATE( Inst%SpcScalFldNme )
 
        ! Deallocate LANDTYPE vector
        IF ( ASSOCIATED(Inst%LANDTYPE) ) THEN
@@ -2349,9 +2300,10 @@ CONTAINS
        ENDIF
 
        ! Free pointers
-       IF ( ASSOCIATED( Inst%CLIMARID  ) ) DEALLOCATE ( Inst%CLIMARID  )
-       IF ( ASSOCIATED( Inst%CLIMNARID ) ) DEALLOCATE ( Inst%CLIMNARID )
-       IF ( ASSOCIATED( Inst%SOILFERT  ) ) DEALLOCATE ( Inst%SOILFERT  )
+       IF ( ASSOCIATED( Inst%FertNO_Diag ) ) DEALLOCATE( Inst%FertNO_Diag )
+       IF ( ASSOCIATED( Inst%CLIMARID    ) ) DEALLOCATE( Inst%CLIMARID    )
+       IF ( ASSOCIATED( Inst%CLIMNARID   ) ) DEALLOCATE( Inst%CLIMNARID   )
+       IF ( ASSOCIATED( Inst%SOILFERT    ) ) DEALLOCATE( Inst%SOILFERT    )
 
        ! ----------------------------------------------------------------
        ! Pop off instance from list

@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -26,7 +26,7 @@ PROGRAM HEMCO_StandAlone
 !
 ! !REVISION HISTORY:
 !  16 Jul 2014 - R. Yantosca - Initial version
-!  21 Jul 2013 - C. Keller   - Now pass configuration file name as argument
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

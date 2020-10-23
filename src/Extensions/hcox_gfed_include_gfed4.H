@@ -1,6 +1,6 @@
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                  Harmonized Emissions Component (HEMCO)                     !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -29,6 +29,7 @@
 !
 !  DATA:
 !  -----
+
 !  The Inst%GFED4_EMFAC array contains emission factors in kg/kgDM or kgC/kgDM
 !  Inst%GFED4_EMFAC(N,1) = Savanna, grassland, and shrubland fires Emission Factor
 !  Inst%GFED4_EMFAC(N,2) = Boreal forest fires Emission Factor
@@ -39,18 +40,14 @@
 
 ! !REVISION HISTORY:
 !  08 Aug 2014 - R. Yantosca - Initial version
-!  10 Jul 2015 - R. Yantosca - Fixed minor issues in ProTeX header
-!  08 Mar 2017 - M. Sulprizio- Added the following updates from E. Fischer:
-!                              - Added EOH and MTPA for PAN updates
-!  29 Mar 2018 - K. Travis   - Updated to latest GFED4 emission factors from
-!                           https://www.geo.vu.nl/~gwerf/GFED/GFED4/ancill/
-!                            - Added HAC, GLYX, Hg0
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 
 ! CO
 GFED4_SPEC_NAME(1)="CO"
+
 Inst%GFED4_EMFAC(1,1)=6.30E-02_hp
 Inst%GFED4_EMFAC(1,2)=1.27E-01_hp
 Inst%GFED4_EMFAC(1,3)=8.80E-02_hp
@@ -354,4 +351,15 @@ Inst%GFED4_EMFAC(34,3)=9.95E-04_hp
 Inst%GFED4_EMFAC(34,4)=9.95E-04_hp
 Inst%GFED4_EMFAC(34,5)=9.95E-04_hp
 Inst%GFED4_EMFAC(34,6)=9.95E-04_hp
+
+! HCl
+GFED4_SPEC_NAME(35)="HCl"
+Inst%GFED4_EMFAC(35,1)=1.3E-04_hp
+Inst%GFED4_EMFAC(35,2)=1.3E-04_hp
+Inst%GFED4_EMFAC(35,3)=3.9E-05_hp
+Inst%GFED4_EMFAC(35,4)=1.3E-04_hp
+Inst%GFED4_EMFAC(35,5)=8.0E-06_hp
+Inst%GFED4_EMFAC(35,6)=1.8E-04_hp
+
+
 !EOC

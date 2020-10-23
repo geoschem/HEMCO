@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -46,6 +46,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  24 Jun 2014 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -55,7 +56,7 @@ MODULE HCOIO_MESSY_MOD
   CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -120,7 +121,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  27 Jun 2014 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -154,7 +155,7 @@ MODULE HCOIO_MESSY_MOD
     !=================================================================
 
     ! For error handling
-    LOC = 'HCO_MESSY_REGRID (HCOI_MESSY_MOD.F90)'
+    LOC = 'HCO_MESSY_REGRID (HCOIO_MESSY_MOD.F90)'
     CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -506,7 +507,7 @@ MODULE HCOIO_MESSY_MOD
   END SUBROUTINE HCO_MESSY_REGRID
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -540,6 +541,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  22 Jun 2014 - C. Keller - Initial version (from messy_ncregrid_geohyb.f90)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -559,7 +561,7 @@ MODULE HCOIO_MESSY_MOD
     !=================================================================
 
     ! For error handling
-    LOC = 'AXIS_CREATE (HCOI_MESSY_MOD.F90)'
+    LOC = 'AXIS_CREATE (HCOIO_MESSY_MOD.F90)'
     CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -773,7 +775,7 @@ MODULE HCOIO_MESSY_MOD
   END SUBROUTINE AXIS_CREATE
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -799,6 +801,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  28 Aug 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -826,7 +829,7 @@ MODULE HCOIO_MESSY_MOD
   END SUBROUTINE AXIS_DELETE
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -853,6 +856,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  27 Jun 2014 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -870,7 +874,7 @@ MODULE HCOIO_MESSY_MOD
     !=================================================================
 
     ! For error handling
-    LOC = 'HCO2MESSY (HCOI_MESSY_MOD.F90)'
+    LOC = 'HCO2MESSY (HCOIO_MESSY_MOD.F90)'
 
     ! ----------------------------------------------------------------
     ! Number of grid cells
@@ -949,7 +953,7 @@ MODULE HCOIO_MESSY_MOD
   END SUBROUTINE HCO2MESSY
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -978,6 +982,7 @@ MODULE HCOIO_MESSY_MOD
 !
 ! !REVISION HISTORY:
 !  27 Jun 2014 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

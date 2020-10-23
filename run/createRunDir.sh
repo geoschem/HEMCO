@@ -248,7 +248,7 @@ ln -s ${hemcodir}                            ${rundir}/CodeDir
 sed -i -e "s|{DATA_ROOT}|${GC_DATA_ROOT}|"   ${rundir}/HEMCO_sa_Config.rc
 sed -i -e "s|{GRID_FILE}|${grid_file}|"      ${rundir}/HEMCO_sa_Config.rc
 sed -i -e "s|{MET_NAME}|${met_name}|"        ${rundir}/HEMCO_sa_Config.rc
-sed -i -e "s|{MET_RES}|${grid_res}|"         ${rundir}/HEMCO_sa_Config.rc
+sed -i -e "s|{MET_RES}|${grid_name}|"        ${rundir}/HEMCO_sa_Config.rc
 
 # HEMCO_Config.rc (copied from GEOS-Chem)
 sed -i -e "s|{DATA_ROOT}|${GC_DATA_ROOT}|"   ${rundir}/HEMCO_Config.rc

@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -123,24 +123,15 @@ MODULE HCO_State_Mod
   END TYPE HCO_State
 !
 ! !REVISION HISTORY:
-!  20 Aug 2013 - C. Keller   - Initial version, adapted from
-!                              gigc_state_chm_mod.F90
-!  07 Jul 2014 - R. Yantosca - Cosmetic changes
-!  30 Sep 2014 - R. Yantosca - Add HcoMicroPhys derived type to HcoState
-!  08 Apr 2015 - C. Keller   - Added MaskFractions to HcoState options.
-!  13 Jul 2015 - C. Keller   - Added option 'Field2Diagn'.
-!  15 Feb 2016 - C. Keller   - Update to v2.0
-!  02 Nov 2019 - H.P. Lin    - Add a HEMCO isDryRun option which is intended to flag
-!                              that all "meaningful" IO is skipped and files should
-!                              only be checked. If file does not exist DO NOT STOP
-!                              THE RUN. (This is for GC Classic for now)
+!  20 Aug 2013 - C. Keller   - Initial version, adapted from state_chm_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -178,11 +169,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Aug 2013 - C. Keller - Adapted from gigc_state_chm_mod.F90
-!  07 Jan 2016 - E. Lundgren - Add physical constant RSTARG and updated
-!                              Avgdr and g0 to NIST 2014 values
-!  15 Feb 2016 - C. Keller - Now pass HcoConfig object
-!  01 Nov 2016 - C. Keller - Now nullify all pointers
-!  12 May 2017 - C. Keller - Added option ScaleEmis
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -301,7 +288,7 @@ CONTAINS
     ! Set misc. parameter
     !=====================================================================
 
-    ! Physical constants
+    ! Physical constants (Source: NIST, 2014)
     ALLOCATE ( HcoState%Phys, STAT = AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoConfig%Err, 'HEMCO physical constants', RC )
@@ -310,12 +297,12 @@ CONTAINS
     HcoState%Phys%Avgdr  = 6.022140857e23_dp
     HcoState%Phys%PI     = 3.14159265358979323_dp
     HcoState%Phys%PI_180 = HcoState%Phys%PI / 180.0_dp
-    HcoState%Phys%Re     = 6.375e6_dp
-    HcoState%Phys%AIRMW  = 28.97_dp
+    HcoState%Phys%Re     = 6.3710072e+6_dp                ! Was 6.375e6_dp
+    HcoState%Phys%AIRMW  = 28.9644_dp                     ! Was 28.97_dp
     HcoState%Phys%g0     = 9.80665_dp
     HcoState%Phys%Rd     = 287.0_dp
     HcoState%Phys%Rdg0   = HcoState%Phys%Rd / HcoState%Phys%g0
-    HcoState%Phys%RSTARG = 8.31450_dp
+    HcoState%Phys%RSTARG = 8.3144598_dp                   ! Was 8.31450_dp
 
     ! Timesteps
     HcoState%TS_EMIS = 0.0_sp
@@ -458,7 +445,7 @@ CONTAINS
   END SUBROUTINE HcoState_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -477,8 +464,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Aug 2013 - C. Keller   - Adapted from gigc_state_chm_mod.F90
-!  24 Sep 2014 - R. Yantosca - Add an extra safety check when deallocating
-!                              the pointer field HcoState%Spc
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -544,7 +530,7 @@ CONTAINS
   END SUBROUTINE HcoState_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -577,6 +563,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Aug 2013 - C. Keller - Adapted from gigc_state_chm_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -608,7 +595,7 @@ CONTAINS
   END FUNCTION HCO_GetModSpcID
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -638,6 +625,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Aug 2013 - C. Keller - Adapted from gigc_state_chm_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -668,7 +656,7 @@ CONTAINS
   END FUNCTION HCO_GetHcoID
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -707,8 +695,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  29 Sep 2014 - C. Keller: Now allows species lists up to 2047 instead of 255
-!                           characters.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

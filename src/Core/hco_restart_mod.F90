@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -95,13 +95,14 @@ MODULE HCO_RESTART_MOD
 !
 ! !REVISION HISTORY:
 !  10 Mar 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -138,6 +139,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -169,7 +171,7 @@ CONTAINS
   END SUBROUTINE HCO_RestartDefine_3D
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -206,6 +208,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -237,7 +240,7 @@ CONTAINS
   END SUBROUTINE HCO_RestartDefine_2D
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -284,7 +287,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -391,7 +394,7 @@ CONTAINS
   END SUBROUTINE HCO_RestartGet_3D
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -438,7 +441,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -556,7 +559,7 @@ CONTAINS
   END SUBROUTINE HCO_RestartGet_2D
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -592,6 +595,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -623,7 +627,7 @@ CONTAINS
   END SUBROUTINE HCO_RestartWrite_3D
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -659,6 +663,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -691,7 +696,7 @@ CONTAINS
 !EOC
 #if defined(ESMF_)
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -725,7 +730,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Mar 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -743,7 +748,7 @@ CONTAINS
     ! ================================================================
 
     ! For MAPL/ESMF error handling (defines Iam and STATUS)
-    __Iam__('HCO_CopyFromIntnal_ESMF (HCOI_ESMF_MOD.F90)')
+    __Iam__('HCO_CopyFromIntnal_ESMF (hco_restart_mod.F90)')
 
     ! Init
     Ptr2D => NULL()
