@@ -11,7 +11,7 @@
 ! in list DiagnList. Each diagnostics container contains information
 ! about the diagnostics type (extension number, emission category /
 ! hierarchy, species ID), data structure (Scalar, 2D, 3D), and output
-! units (mass, area, time).
+! units (area, time).
 !\\
 !\\
 ! The HEMCO diagnostics module can store multiple, independent
@@ -683,8 +683,7 @@ CONTAINS
 !      module (see HCO\_UNITS\_Mod.F90). No unit conversions will be
 !      performed if the argument OutOper is set (see below).
 !\item HcoState: HEMCO state object. Used to determine the species
-!      properties if any of arguments MW\_g, EmMW\_g or MolecRatio
-!      is missing.
+!      properties.
 !\item OutOper: output operation for non-standard units. If this
 !      argument is used, the specified operation is performed and all
 !      unit specifications are ignored. Can be one of 'Mean', 'Sum',
@@ -698,18 +697,6 @@ CONTAINS
 !      unit conversions, etc., and the data will be written to disk
 !      as is.
 !\item Trgt3D: as Trgt2D, but for 3D data.
-!\item MW\_g: species molecular weight. Used to determine unit
-!      conversion factors. Not needed for target containers or if
-!      argument OutOper is specified. Can be omitted if HcoState is
-!      given.
-!\item EmMW\_g: Molecular weight of emitted species. Used to determine
-!      unit conversion factors. Not needed for target containers or if
-!      argument OutOper is specified. Can be omitted if HcoState is
-!      given.
-!\item MolecRatio: Molecules of species per emitted molecule. Used to
-!      determine unit conversion factors. Not needed for target
-!      containers or if argument OutOper is specified. Can be omitted
-!      if HcoState is given.
 !\item ScaleFact: constant scale factor. If provided, the diagnostics
 !      are scaled uniformly by this value before outputting. Will be
 !      applied on top of any other unit conversions. Does not work on
@@ -725,15 +712,13 @@ CONTAINS
                            ExtNr,     Cat,        Hier,       &
                            HcoID,     SpaceDim,   OutUnit,    &
                            OutOper,   LevIdx,     AutoFill,   &
-                           Trgt2D,    Trgt3D,     MW_g,       &
-                           EmMW_g,    MolecRatio, ScaleFact,  &
+                           Trgt2D,    Trgt3D,     ScaleFact,  &
                            cID,       RC,    COL, OkIfExist,  &
                            long_name                           )
 !
 ! !USES:
 !
     USE HCO_State_Mod, ONLY : HCO_State
-    USE HCO_Unit_Mod,  ONLY : HCO_Unit_GetMassScal
     USE HCO_Unit_Mod,  ONLY : HCO_Unit_GetAreaScal
     USE HCO_Unit_Mod,  ONLY : HCO_Unit_GetTimeScal
 !
@@ -752,9 +737,6 @@ CONTAINS
     INTEGER,          INTENT(IN   ), OPTIONAL :: AutoFill      ! 1=fill auto.;0=don't
     REAL(sp),         INTENT(IN   ), OPTIONAL :: Trgt2D(:,:)   ! 2D target data
     REAL(sp),         INTENT(IN   ), OPTIONAL :: Trgt3D(:,:,:) ! 3D target data
-    REAL(hp),         INTENT(IN   ), OPTIONAL :: MW_g          ! species MW (g/mol)
-    REAL(hp),         INTENT(IN   ), OPTIONAL :: EmMW_g        ! emission MW (g/mol)
-    REAL(hp),         INTENT(IN   ), OPTIONAL :: MolecRatio    ! molec. emission ratio
     REAL(hp),         INTENT(IN   ), OPTIONAL :: ScaleFact     ! uniform scale factor
     INTEGER,          INTENT(IN   ), OPTIONAL :: COL           ! Collection number
     INTEGER,          INTENT(IN   ), OPTIONAL :: cID           ! Container ID
@@ -783,7 +765,6 @@ CONTAINS
     CHARACTER(LEN=255)             :: LOC, MSG
     INTEGER                        :: PS, Flag
     REAL(hp)                       :: Scal
-    REAL(hp)                       :: MWg, EmMWg, MolR
     LOGICAL                        :: ForceMean, FOUND
 
     !======================================================================
@@ -970,37 +951,6 @@ CONTAINS
 
           ! Will calculate the mean
           ThisDiagn%AvgName = 'mean'
-
-          !----------------------------------------------------------------
-          ! Scale factor for mass. This determines the scale factor from
-          ! HEMCO mass unit (kg) to the desired output unit.
-          ! HCO_UNIT_MassCal returns the mass scale factor from OutUnit to
-          ! HEMCO unit, hence need to invert this value!
-          !----------------------------------------------------------------
-          IF ( .NOT. PRESENT(MW_g)       .OR. &
-               .NOT. PRESENT(EmMW_g)     .OR. &
-               .NOT. PRESENT(MolecRatio)       ) THEN
-             MWg   = HcoState%Spc(HcoID)%MW_g
-             EmMWg = HcoState%Spc(HcoID)%EmMW_g
-             MolR  = HcoState%Spc(HcoID)%MolecRatio
-          ELSE
-                MWg   = MW_g
-                EmMWg = EmMW_g
-                MolR  = MolecRatio
-          ENDIF
-
-          CALL HCO_UNIT_GetMassScal( HcoState%Config,             &
-                    unt         = OutUnit,                        &
-                    MW_IN       = MWg,                            &
-                    MW_OUT      = EmMWg,                          &
-                    MOLEC_RATIO = MolR,                           &
-                    Scal        = Scal                             )
-          IF ( Scal <= 0.0_hp ) THEN
-             MSG = 'Cannot find mass scale factor for unit '//TRIM(OutUnit)
-             CALL HCO_ERROR( HcoState%config%Err, MSG, RC, THISLOC=LOC )
-             RETURN
-          ENDIF
-          ThisDiagn%MassScal = 1.0_hp / Scal
 
           !----------------------------------------------------------------
           ! Scale factor for area. This determines the scale factor from
@@ -2798,7 +2748,6 @@ CONTAINS
     DgnCont%SpaceDim =  2
 
     ! Default values for unit conversion factors
-    DgnCont%MassScal  = 1.0_hp
     DgnCont%AreaScal  = 1.0_hp
     DgnCont%ScaleFact = 1.0_hp
     DgnCont%AreaFlag  = 2
@@ -2989,15 +2938,15 @@ CONTAINS
 
     !-----------------------------------------------------------------------
     ! Output data is calculated as:
-    ! out = saved / norm1 * mult1 * MassScal * AreaScal
+    ! out = saved / norm1 * mult1 * * AreaScal
     ! The normalization factor norm1 and multiplication factor mult1
     ! are used to average to the desired time interval, i.e. per
     ! second, per day, etc.
     ! Since all diagnostics are internally stored in units of [kg/m2]
     ! first convert to [kg/m2/s] and then multiply by the desired time
     ! averaging interval (e.g. seconds/hour to get kg/m2/s). Factors
-    ! MassScal and AreaScal convert mass and area to desired units, as
-    ! determined during initialization of the diagnostics.
+    ! AreaScal convert area to desired units, as determined during
+    ! initialization of the diagnostics.
     !-----------------------------------------------------------------------
 
     ! If the averaging is forced to the sum:
@@ -3069,7 +3018,6 @@ CONTAINS
     ! totscal is the combined scale factor
     totscal = mult1             &
             / norm1             &
-            * DgnCont%MassScal  &
             * DgnCont%AreaScal  &
             * DgnCont%ScaleFact
 

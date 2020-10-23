@@ -391,10 +391,10 @@ CONTAINS
                        Inst%SpcScalFldNme, RC                               )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
-    ! Add conversion factor from kg S to kg of emitted species
+    ! Add conversion factor from kg S to kg species
     DO N = 1, Inst%nSpc
-       Inst%SpcScl(N) = Inst%SpcScl(N) * HcoState%Spc(Inst%SpcIDs(N))%EmMW_g &
-                      * HcoState%Spc(Inst%SpcIDs(N))%MolecRatio / MW_S
+       Inst%SpcScl(N) = Inst%SpcScl(N) * HcoState%Spc(Inst%SpcIDs(N))%MW_g &
+                        / MW_S
     ENDDO
 
     ! Get location of volcano table. This must be provided.
