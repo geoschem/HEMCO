@@ -1007,7 +1007,7 @@ CONTAINS
     ! Create diagnostics for lightning flash rates and convective cloud height
     !=======================================================================
     CALL Diagn_Create( HcoState  = HcoState,                        &
-                       cName     = 'LightningFlashRate_Total' ,     &
+                       cName     = 'HcoLightningFlashRate_Total',   &
                        ExtNr     = ExtNr,                           &
                        Cat       = -1,                              &
                        Hier      = -1,                              &
@@ -1020,7 +1020,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     CALL Diagn_Create( HcoState  = HcoState,                        &
-                       cName     = 'LightningFlashRate_IntraCloud', &
+                       cName     = 'HcoLightningFlashRate_IntraCld', &
                        ExtNr     = ExtNr,                           &
                        Cat       = -1,                              &
                        Hier      = -1,                              &
@@ -1033,7 +1033,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     CALL Diagn_Create( HcoState  = HcoState,                         &
-                       cName     = 'LightningFlashRate_CloudGround', &
+                       cName     = 'HcoLightningFlashRate_CldGround', &
                        ExtNr     = ExtNr,                            &
                        Cat       = -1,                               &
                        Hier      = -1,                               &
@@ -1046,7 +1046,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     CALL Diagn_Create( HcoState  = HcoState,                         &
-                       cName     = 'ConvectiveCloudTopHeight',       &
+                       cName     = 'HcoConvectiveCloudTopHeight',       &
                        ExtNr     = ExtNr,                            &
                        Cat       = -1,                               &
                        Hier      = -1,                               &
