@@ -134,7 +134,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     CHARACTER(LEN=255)            :: thisUnit, LevUnit, LevName
-    CHARACTER(LEN=512)            :: MSG
+    CHARACTER(LEN=1023)           :: MSG
     CHARACTER(LEN=1023)           :: srcFile, srcFile2
     INTEGER                       :: NX, NY
     INTEGER                       :: NCRC, Flag, AS

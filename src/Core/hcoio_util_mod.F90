@@ -1489,7 +1489,7 @@ CONTAINS
     INTEGER :: origYr,  origMt, origDy, origHr
     LOGICAL :: hasFile, hasYr,  hasMt,  hasDy, hasHr
     LOGICAL :: nextTyp
-    CHARACTER(LEN=512)  :: MSG
+    CHARACTER(LEN=1023)  :: MSG
     CHARACTER(LEN=1023) :: srcFileOrig
 
     ! maximum # of iterations for file search
