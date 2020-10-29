@@ -29,7 +29,7 @@
 !
 !  DATA:
 !  -----
-!  The GFED3_EMFAC array contains emission factors in kg/kgDM or kgC/kgDM
+!  The GFED3_EMFAC array contains emission factors in kg/kgDM
 !  GFED3_EMFAC(N,1) = Agricultural Waste   Emission Factor for species N
 !  GFED3_EMFAC(N,1) = Deforestation        Emission Factor for species N
 !  GFED3_EMFAC(N,1) = Extratropical Forest Emission Factor for species N

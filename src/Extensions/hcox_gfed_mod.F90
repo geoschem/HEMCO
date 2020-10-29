@@ -333,8 +333,7 @@ CONTAINS
 
           ! Calculate emissions for this type. The emission factors
           ! per type are in kgDM/m2/s, and the GFED_EMFAC scale factors
-          ! are in kg/kgDM (or kgC/kgDM for VOCs). This gives us TypArr
-          ! in kg/m2/s.
+          ! are in kg/kgDM. This gives us TypArr in kg/m2/s.
           ! Use woodland emission factors for 'deforestation' outside
           ! humid tropical forest.
           ! Deforestation emissions now use the weighted sum of
