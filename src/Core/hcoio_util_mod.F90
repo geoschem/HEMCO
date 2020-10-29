@@ -3202,15 +3202,6 @@ CONTAINS
        all_variablesvalues(NVAL) = ELS
     ENDIF
 
-    ! Need at least one expression
-    IF ( NVAL == 0 ) THEN
-       MSG = 'No valid time expression found - '//&
-             'the function should contain at least one of '//&
-             'YYYY,MM,DD,HH,NN,SS,DOY,WD,ELH,ELS; '//TRIM(func)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
-       RETURN
-    ENDIF
-
     ! Error trap: cannot have local hour and local weekday in
     ! same expression
     IF ( LHIDX > 0 .AND. LWDIDX > 0 ) THEN
