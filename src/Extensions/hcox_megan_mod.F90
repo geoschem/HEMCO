@@ -198,9 +198,7 @@ MODULE HCOX_MEGAN_MOD
      ! Emission arrays (kg/m2/s)
      REAL(hp), POINTER       :: FLUXISOP(:,:)
      REAL(hp), POINTER       :: FLUXMONO(:,:)
-     REAL(hp), POINTER       :: FLUXACETmo(:,:)
-     REAL(hp), POINTER       :: FLUXACETmb(:,:)
-     REAL(hp), POINTER       :: FLUXACETbg(:,:)
+     REAL(hp), POINTER       :: FLUXACET(:,:)
      REAL(hp), POINTER       :: FLUXPRPE(:,:)
      REAL(hp), POINTER       :: FLUXC2H4(:,:)
      REAL(hp), POINTER       :: FLUXLIMO(:,:)
@@ -213,20 +211,23 @@ MODULE HCOX_MEGAN_MOD
      REAL(hp), POINTER       :: FLUXMOH(:,:)
      REAL(hp), POINTER       :: FLUXEOH(:,:)
          
-     ! Emission arrays for use in diagnostics only (kg/m2/s)
-     REAL(hp), POINTER       :: FLUXAPIN(:,:)
-     REAL(hp), POINTER       :: FLUXBPIN(:,:)
-     REAL(hp), POINTER       :: FLUXSABI(:,:)
-     REAL(hp), POINTER       :: FLUXMYRC(:,:)
-     REAL(hp), POINTER       :: FLUXCARE(:,:)
-     REAL(hp), POINTER       :: FLUXOCIM(:,:)
-     REAL(hp), POINTER       :: FLUXOMON(:,:)
-     REAL(hp), POINTER       :: FLUXFARN(:,:)
-     REAL(hp), POINTER       :: FLUXBCAR(:,:)
-     REAL(hp), POINTER       :: FLUXOSQT(:,:)
-     REAL(hp), POINTER       :: FLUXMBOX(:,:)
-     REAL(hp), POINTER       :: FLUXFAXX(:,:)
-     REAL(hp), POINTER       :: FLUXAAXX(:,:)
+     ! Emission arrays for use in diagnostics (kg/m2/s)
+     REAL(sp), POINTER       :: FLUXACETmo(:,:)
+     REAL(sp), POINTER       :: FLUXACETmb(:,:)
+     REAL(sp), POINTER       :: FLUXACETbg(:,:)
+     REAL(sp), POINTER       :: FLUXAPIN(:,:)
+     REAL(sp), POINTER       :: FLUXBPIN(:,:)
+     REAL(sp), POINTER       :: FLUXSABI(:,:)
+     REAL(sp), POINTER       :: FLUXMYRC(:,:)
+     REAL(sp), POINTER       :: FLUXCARE(:,:)
+     REAL(sp), POINTER       :: FLUXOCIM(:,:)
+     REAL(sp), POINTER       :: FLUXOMON(:,:)
+     REAL(sp), POINTER       :: FLUXFARN(:,:)
+     REAL(sp), POINTER       :: FLUXBCAR(:,:)
+     REAL(sp), POINTER       :: FLUXOSQT(:,:)
+     REAL(sp), POINTER       :: FLUXMBOX(:,:)
+     REAL(sp), POINTER       :: FLUXFAXX(:,:)
+     REAL(sp), POINTER       :: FLUXAAXX(:,:)
 
      ! Normalization factor
      REAL(hp), POINTER       :: NORM_FAC(:)
@@ -322,7 +323,7 @@ CONTAINS
     REAL(hp)            :: EMIS_ACET, EMIS_PRPE, EMIS_C2H4
     REAL(hp)            :: EMIS_FARN, EMIS_BCAR, EMIS_OSQT
     REAL(hp)            :: EMIS_OTHR
-    REAL(hp)            :: X, Y
+    REAL(hp)            :: X, Y, TMP
     REAL(hp)            :: TS_EMIS
     REAL(hp)            :: DNEWFRAC
     REAL(hp)            :: DOLDFRAC
@@ -341,6 +342,10 @@ CONTAINS
     REAL(hp), PARAMETER   :: MONO_SCALE = 0.89_hp
     REAL(hp), PARAMETER   :: MB_SCALE1  = 0.6_hp
     REAL(hp), PARAMETER   :: MB_SCALE2  = 0.76_hp
+    REAL(hp), PARAMETER   :: MBOX_MW_g  = 86.13_hp
+
+    ! Conversion facor for SOAP/SOAS calculations
+    REAL(hp), PARAMETER   :: MONOtoC    = ( 12.0 * 10 ) / 136.26
 
     TYPE(MyInst), POINTER :: Inst
 
@@ -382,25 +387,26 @@ CONTAINS
     Inst%FLUXOCIM   = 0.0_hp
     Inst%FLUXOMON   = 0.0_hp
     Inst%FLUXMONO   = 0.0_hp
+    Inst%FLUXACET   = 0.0_hp
     Inst%FLUXALD2   = 0.0_hp
     Inst%FLUXMOH    = 0.0_hp
     Inst%FLUXEOH    = 0.0_hp
     Inst%FLUXFAXX   = 0.0_hp
     Inst%FLUXAAXX   = 0.0_hp
-    Inst%FLUXACETmo = 0.0_hp
-    Inst%FLUXACETmb = 0.0_hp
-    Inst%FLUXACETbg = 0.0_hp
-    Inst%FLUXPRPE   = 0.0_hp
-    Inst%FLUXC2H4   = 0.0_hp
-    Inst%FLUXLIMO   = 0.0_hp
-    Inst%FLUXMTPA   = 0.0_hp
-    Inst%FLUXMTPO   = 0.0_hp
-    Inst%FLUXFARN   = 0.0_hp
-    Inst%FLUXBCAR   = 0.0_hp
-    Inst%FLUXOSQT   = 0.0_hp
-    Inst%FLUXSESQ   = 0.0_hp
-    Inst%FLUXSOAP   = 0.0_hp
-    Inst%FLUXSOAS   = 0.0_hp
+    Inst%FLUXACETmo = 0.0_sp
+    Inst%FLUXACETmb = 0.0_sp
+    Inst%FLUXACETbg = 0.0_sp
+    Inst%FLUXPRPE   = 0.0_sp
+    Inst%FLUXC2H4   = 0.0_sp
+    Inst%FLUXLIMO   = 0.0_sp
+    Inst%FLUXMTPA   = 0.0_sp
+    Inst%FLUXMTPO   = 0.0_sp
+    Inst%FLUXFARN   = 0.0_sp
+    Inst%FLUXBCAR   = 0.0_sp
+    Inst%FLUXOSQT   = 0.0_sp
+    Inst%FLUXSESQ   = 0.0_sp
+    Inst%FLUXSOAP   = 0.0_sp
+    Inst%FLUXSOAS   = 0.0_sp
 
 #if defined( ESMF_ ) || defined( MODEL_GEOS )
 
@@ -487,7 +493,7 @@ CONTAINS
     !$OMP PRIVATE( I, J,      EMIS_ISOP, EMIS_MBOX, EMIS_APIN, EMIS_BPIN   ) &
     !$OMP PRIVATE( EMIS_LIMO, EMIS_SABI, EMIS_MYRC, EMIS_CARE, EMIS_OCIM   ) &
     !$OMP PRIVATE( EMIS_OMON, EMIS_MONO, EMIS_MOH,  EMIS_EOH,  EMIS_FAXX   ) &
-    !$OMP PRIVATE( EMIS_AAXX, EMIS_ACET, EMIS_PRPE, EMIS_C2H4              ) &
+    !$OMP PRIVATE( EMIS_AAXX, EMIS_ACET, EMIS_PRPE, EMIS_C2H4, TMP         ) &
     !$OMP PRIVATE( EMIS_FARN, EMIS_BCAR, EMIS_OSQT, EMIS_ALD2, EMIS_OTHR   ) &
     !$OMP PRIVATE( X, Y, RC )
 
@@ -555,11 +561,15 @@ CONTAINS
        ENDIF
 
        ! Biogenic emissions of SOA and SOA-Precursor from isopene
+       ! NOTE: These emission factors appear to be based on emissions
+       !  in kgC/m2/s. Convert from kg/m2/s to kgC/m2/s.
        IF ( (Inst%IDTISOP>0) .AND. (Inst%IDTSOAP>0) ) THEN
-          Inst%FLUXSOAP(I,J) = Inst%FLUXSOAP(I,J) + EMIS_ISOP * Inst%ISOPTOSOAP
+          Inst%FLUXSOAP(I,J) = Inst%FLUXSOAP(I,J) + &
+               ( EMIS_ISOP * MONOtoC ) * Inst%ISOPTOSOAP
        ENDIF
        IF ( (Inst%IDTISOP>0) .AND. (Inst%IDTSOAS>0) ) THEN
-          Inst%FLUXSOAS(I,J) = Inst%FLUXSOAS(I,J) + EMIS_ISOP * Inst%ISOPTOSOAS
+          Inst%FLUXSOAS(I,J) = Inst%FLUXSOAS(I,J) + &
+               ( EMIS_ISOP * MONOtoC ) * Inst%ISOPTOSOAS
        ENDIF
 
        !--------------------------------------------------------------------
@@ -773,8 +783,17 @@ CONTAINS
           !
           ! The yield for monoterpenes is .12 mol/mol from Reisell et.al.
           ! 1999 (this does not includes direct acetone emissions)
+
+          ! Apply yield from monoterpenes to get [kg ACET/m2/s]
+          TMP = EMIS_MONO * YIELD_MO
+          TMP = TMP * HcoState%Spc(Inst%IDTACET)%MW_g / &
+                      HcoState%Spc(Inst%IDTMTPA)%MW_g
+
           ! Scale to a posteriori source from Jacob et al 2001 (bdf, 9/5/01)
-          Inst%FLUXACETmo(I,J) = EMIS_MONO * YIELD_MO * MONO_SCALE
+          TMP = TMP * MONO_SCALE
+
+          ! Add to total biogenic acetone emissions [kg ACET/m2/s]
+          Inst%FLUXACETmo(I,J) = TMP
 
           !-----------------------------------------------------------------
           ! (2) BIOGENIC ACETONE FROM METHYL BUTENOL -- NORTH AMERICA
@@ -784,7 +803,7 @@ CONTAINS
           ! to be restricted to North America.  According to Guenther (1999)
           ! North america emits 3.2Tg-C of MBO, producing 1.15 Tg-C of
           ! Acetone in North America.
-          ! Scale to a posteriori source from Jacob et al 2001 (bdf, 9/5/01)
+          ! 
           !
           ! Lon and lat of grid box (I,J) in degrees
           X = HcoState%Grid%XMID%Val( I, J )
@@ -795,7 +814,12 @@ CONTAINS
           ! ( -167.5 <= lon <= -52.5 ) and ( 16.0 <= lat <= 72.0 )
           IF ( ( X >= -167.5_hp .and. X <= -52.5_hp ) .AND. &
                ( Y >=   16.0_hp .and. Y <=  72.0_hp ) ) THEN
-             Inst%FLUXACETmb(I,J) = EMIS_MBOX * MB_SCALE1 * MB_SCALE2
+             !  Apply yield from MBO to get [kg ACET/m2/s]
+             TMP = EMIS_MBOX * MB_SCALE1 
+             TMP = TMP * HcoState%Spc(Inst%IDTACET)%MW_g / MBOX_MW_g
+
+             ! Scale to a posteriori source from Jacob et al 2001 (bdf, 9/5/01)
+             Inst%FLUXACETmb(I,J) = TMP * MB_SCALE2
           ENDIF
 
           !-----------------------------------------------------------------
@@ -819,12 +843,17 @@ CONTAINS
 
        !--------------------------------------------------------------------
        ! Biogenic emissions of SOA and SOA-Precursor from monoterpenes
+       !
+       ! NOTE: These emission factors appear to be based on emissions
+       !  in kgC/m2/s. Convert from kg/m2/s to kgC/m2/s.
        !--------------------------------------------------------------------
        IF ( Inst%IDTSOAP>0 ) THEN
-          Inst%FLUXSOAP(I,J) = Inst%FLUXSOAP(I,J) + EMIS_MONO * Inst%MONOTOSOAP
+          Inst%FLUXSOAP(I,J) = Inst%FLUXSOAP(I,J) + &
+               ( EMIS_MONO * MONOtoC ) * Inst%MONOTOSOAP
        ENDIF
        IF ( Inst%IDTSOAS>0 ) THEN
-          Inst%FLUXSOAS(I,J) = Inst%FLUXSOAS(I,J) + EMIS_MONO * Inst%MONOTOSOAS
+          Inst%FLUXSOAS(I,J) = Inst%FLUXSOAS(I,J) + &
+               ( EMIS_MONO * MONOtoC ) * Inst%MONOTOSOAS
        ENDIF
 
        !--------------------------------------------------------------------
@@ -972,12 +1001,17 @@ CONTAINS
 
        !--------------------------------------------------------------------
        ! Biogenic emissions of SOA and SOA-Precursor from Other terpenes
+       !
+       ! NOTE: These emission factors appear to be based on emissions
+       !  in kgC/m2/s. Convert from kg/m2/s to kgC/m2/s.
        !--------------------------------------------------------------------
        IF ( Inst%IDTSOAP>0 ) THEN
-          Inst%FLUXSOAP(I,J) = Inst%FLUXSOAP(I,J) + EMIS_OTHR * Inst%OTHRTOSOAP
+          Inst%FLUXSOAP(I,J) = Inst%FLUXSOAP(I,J) + &
+               ( EMIS_OTHR * MONOtoC ) * Inst%OTHRTOSOAP
        ENDIF
        IF ( Inst%IDTSOAS>0 ) THEN
-          Inst%FLUXSOAS(I,J) = Inst%FLUXSOAS(I,J) + EMIS_OTHR * Inst%OTHRTOSOAS
+          Inst%FLUXSOAS(I,J) = Inst%FLUXSOAS(I,J) + &
+               ( EMIS_OTHR * MONOtoC ) * Inst%OTHRTOSOAS
        ENDIF
 
        !-----------------------------------------------------------------
@@ -1086,31 +1120,13 @@ CONTAINS
     ! ACETONE
     IF ( Inst%IDTACET > 0 ) THEN
 
-       ! Eventually add individual diagnostics. These are assumed to
-       ! have names MEGAN_ACET_MONO, MEGAN_ACET_MBO, and
-       ! MEGAN_ACET_DIRECT
-       DiagnName =  'InvMEGAN_ACET_MONO'
-       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                          cName=TRIM(DiagnName), Array2D=Inst%FLUXACETmo, RC=RC)
-       IF ( RC /= HCO_SUCCESS ) RETURN
-
-       DiagnName =  'InvMEGAN_ACET_MBOX'
-       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                          cName=TRIM(DiagnName), Array2D=Inst%FLUXACETmb, RC=RC)
-       IF ( RC /= HCO_SUCCESS ) RETURN
-
-       DiagnName =  'InvMEGAN_ACET_DIRECT'
-       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                          cName=TRIM(DiagnName), Array2D=Inst%FLUXACETbg, RC=RC)
-       IF ( RC /= HCO_SUCCESS ) RETURN
-
        ! Add flux to emission array
-       Inst%FLUXACETbg = Inst%FLUXACETbg + Inst%FLUXACETmo + Inst%FLUXACETmb
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXACETbg, Inst%IDTACET, &
+       Inst%FLUXACET = Inst%FLUXACETbg + Inst%FLUXACETmo + Inst%FLUXACETmb
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXACET, Inst%IDTACET, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
           CALL HCO_ERROR( HcoState%Config%Err, &
-                          'HCO_EmisAdd error: FLUXACETbg', RC )
+                          'HCO_EmisAdd error: FLUXACET', RC )
           RETURN
        ENDIF
     ENDIF
@@ -1234,108 +1250,6 @@ CONTAINS
        ENDIF
 
     ENDIF
-
-    !=================================================================
-    ! Manual diagnostics
-    !=================================================================
-
-    ! -------------------------------------------------------------
-    ! Alpha Pinene
-    DiagnName =  'InvMEGAN_APIN'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXAPIN, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! Beta Pinene
-    DiagnName =  'InvMEGAN_BPIN'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXBPIN, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! Sabinene
-    DiagnName =  'InvMEGAN_SABI'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXSABI, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! Mycrene
-    DiagnName =  'InvMEGAN_MYRC'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXMYRC, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! 3-Carene
-    DiagnName =  'InvMEGAN_CARE'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXCARE, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! Ocimene
-    DiagnName =  'InvMEGAN_OCIM'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXOCIM, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! Other monoterpenes
-    DiagnName =  'InvMEGAN_OMON'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXOMON, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! Total monoterpenes
-    DiagnName =  'InvMEGAN_MONX'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXMONO, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! a-Farnesene
-    DiagnName =  'InvMEGAN_FARN'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXFARN, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! b_Caryophyllene
-    DiagnName =  'InvMEGAN_BCAR'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXBCAR, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! Other sesquiterpenes
-    DiagnName =  'InvMEGAN_OSQT'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXOSQT, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! Methyl butenol
-    DiagnName =  'InvMEGAN_MBOX'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXMBOX, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! -------------------------------------------------------------
-    ! Formic acid
-    DiagnName =  'InvMEGAN_FAXX'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXFAXX, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! ----------------------------------------------------------------
-    ! Acetic acid
-    DiagnName =  'InvMEGAN_AAXX'
-    CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                       cName=TRIM(DiagnName), Array2D=Inst%FLUXAAXX, RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
 
     ! ----------------------------------------------------------------
     ! Eventually copy internal values to ESMF internal state object
@@ -4029,26 +3943,33 @@ CONTAINS
     ENDIF
     Inst%FLUXMONO = 0.0_hp
 
+    ALLOCATE( Inst%FLUXACET( NX, NY ), STAT=AS )
+    IF ( AS /= 0 ) THEN
+       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXACET', RC )
+       RETURN
+    ENDIF
+    Inst%FLUXACETmo = 0.0_hp
+
     ALLOCATE( Inst%FLUXACETmo( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXACETmo', RC )
        RETURN
     ENDIF
-    Inst%FLUXACETmo = 0.0_hp
+    Inst%FLUXACETmo = 0.0_sp
 
     ALLOCATE( Inst%FLUXACETmb( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err,'FLUXACETmb', RC )
        RETURN
     ENDIF
-    Inst%FLUXACETmb = 0.0_hp
+    Inst%FLUXACETmb = 0.0_sp
 
     ALLOCATE( Inst%FLUXACETbg( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err,'FLUXACETbg', RC )
        RETURN
     ENDIF
-    Inst%FLUXACETbg = 0.0_hp
+    Inst%FLUXACETbg = 0.0_sp
 
     ALLOCATE( Inst%FLUXPRPE( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
@@ -4132,98 +4053,98 @@ CONTAINS
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXAPIN', RC )
        RETURN
     ENDIF
-    Inst%FLUXAPIN = 0.0_hp
+    Inst%FLUXAPIN = 0.0_sp
 
     ALLOCATE( Inst%FLUXBPIN( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXBPIN', RC )
        RETURN
     ENDIF
-    Inst%FLUXBPIN = 0.0_hp
+    Inst%FLUXBPIN = 0.0_sp
 
     ALLOCATE( Inst%FLUXSABI( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXBPIN', RC )
        RETURN
     ENDIF
-    Inst%FLUXBPIN = 0.0_hp
+    Inst%FLUXBPIN = 0.0_sp
 
     ALLOCATE( Inst%FLUXSABI( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXSABI', RC )
        RETURN
     ENDIF
-    Inst%FLUXSABI = 0.0_hp
+    Inst%FLUXSABI = 0.0_sp
 
     ALLOCATE( Inst%FLUXMYRC( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXMYRC', RC )
        RETURN
     ENDIF
-    Inst%FLUXMYRC = 0.0_hp
+    Inst%FLUXMYRC = 0.0_sp
 
     ALLOCATE( Inst%FLUXCARE( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXCARE', RC )
        RETURN
     ENDIF
-    Inst%FLUXCARE = 0.0_hp
+    Inst%FLUXCARE = 0.0_sp
 
     ALLOCATE( Inst%FLUXOCIM( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXOCIM', RC )
        RETURN
     ENDIF
-    Inst%FLUXOCIM = 0.0_hp
+    Inst%FLUXOCIM = 0.0_sp
 
     ALLOCATE( Inst%FLUXOMON( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err,  'FLUXOMON', RC )
        RETURN
     ENDIF
-    Inst%FLUXOMON = 0.0_hp
+    Inst%FLUXOMON = 0.0_sp
 
     ALLOCATE( Inst%FLUXFARN( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXFARN', RC )
        RETURN
     ENDIF
-    Inst%FLUXFARN = 0.0_hp
+    Inst%FLUXFARN = 0.0_sp
 
     ALLOCATE( Inst%FLUXBCAR( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXBCAR', RC )
        RETURN
     ENDIF
-    Inst%FLUXBCAR = 0.0_hp
+    Inst%FLUXBCAR = 0.0_sp
 
     ALLOCATE( Inst%FLUXOSQT( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXOSQT', RC )
        RETURN
     ENDIF
-    Inst%FLUXOSQT = 0.0_hp
+    Inst%FLUXOSQT = 0.0_sp
 
     ALLOCATE( Inst%FLUXMBOX( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXMBOX', RC )
        RETURN
     ENDIF
-    Inst%FLUXMBOX = 0.0_hp
+    Inst%FLUXMBOX = 0.0_sp
 
     ALLOCATE( Inst%FLUXFAXX( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXFAXX', RC )
        RETURN
     ENDIF
-    Inst%FLUXFAXX = 0.0_hp
+    Inst%FLUXFAXX = 0.0_sp
 
     ALLOCATE( Inst%FLUXAAXX( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXAAXX', RC )
        RETURN
     ENDIF
-    Inst%FLUXAAXX = 0.0_hp
+    Inst%FLUXAAXX = 0.0_sp
 
     ALLOCATE( Inst%ARRAY_16( NX, NY, 16 ), STAT=AS )
     IF ( AS /= 0 ) THEN
@@ -4262,9 +4183,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXACETmo,       &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4276,9 +4196,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXACETmb,       &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4290,9 +4209,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXACETbg,       &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4304,9 +4222,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXAPIN,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4318,9 +4235,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXBPIN,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4332,9 +4248,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXSABI,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4346,9 +4261,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXMYRC,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4360,9 +4274,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXCARE,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4374,9 +4287,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXOCIM,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4388,23 +4300,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
-                       RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    CALL Diagn_Create( HcoState  = HcoState,              &
-                       cName     = 'InvMEGAN_MONX',       &
-                       ExtNr     = ExtNr,                 &
-                       Cat       = -1,                    &
-                       Hier      = -1,                    &
-                       HcoID     = -1,                    &
-                       SpaceDim  = 2,                     &
-                       OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXOMON,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4416,9 +4313,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXFARN,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4430,9 +4326,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXBCAR,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4444,9 +4339,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXOSQT,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4458,9 +4352,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXMBOX,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4472,9 +4365,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXFAXX,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4486,9 +4378,8 @@ CONTAINS
                        HcoID     = -1,                    &
                        SpaceDim  = 2,                     &
                        OutUnit   = 'kg/m2/s',             &
-                       OutOper   = 'Mean',                &
-                       AutoFill  = 1,                     &
-                       COL       = HcoState%Diagn%HcoDiagnIDManual, &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXAAXX,         &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
@@ -4787,6 +4678,7 @@ CONTAINS
        IF ( ASSOCIATED( Inst%AEF_OSQT    ) ) DEALLOCATE( Inst%AEF_OSQT    )
        IF ( ASSOCIATED( Inst%FLUXISOP    ) ) DEALLOCATE( Inst%FLUXISOP    )
        IF ( ASSOCIATED( Inst%FLUXMONO    ) ) DEALLOCATE( Inst%FLUXMONO    )
+       IF ( ASSOCIATED( Inst%FLUXACET    ) ) DEALLOCATE( Inst%FLUXACET    )
        IF ( ASSOCIATED( Inst%FLUXACETmo  ) ) DEALLOCATE( Inst%FLUXACETmo  )
        IF ( ASSOCIATED( Inst%FLUXACETmb  ) ) DEALLOCATE( Inst%FLUXACETmb  )
        IF ( ASSOCIATED( Inst%FLUXACETbg  ) ) DEALLOCATE( Inst%FLUXACETbg  )
