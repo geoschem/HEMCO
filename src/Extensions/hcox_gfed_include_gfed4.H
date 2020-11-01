@@ -93,12 +93,12 @@ Inst%GFED4_EMFAC(5,6)=1.24E-03_hp
 
 ! PRPE (C3H6 + Higher_Alkenes)
 GFED4_SPEC_NAME(6)="PRPE"
-Inst%GFED4_EMFAC(6,1)=7.90E-04_hp
-Inst%GFED4_EMFAC(6,2)=1.13E-03_hp
-Inst%GFED4_EMFAC(6,3)=6.10E-04_hp
-Inst%GFED4_EMFAC(6,4)=6.40E-04_hp
-Inst%GFED4_EMFAC(6,5)=3.05E-03_hp
-Inst%GFED4_EMFAC(6,6)=6.80E-04_hp
+Inst%GFED4_EMFAC(6,1)=7.90E-04_hp + 1.33E-04_hp * 42.08_hp/(3.0_hp*12.0_hp)
+Inst%GFED4_EMFAC(6,2)=1.13E-03_hp + 3.85E-04_hp * 42.08_hp/(3.0_hp*12.0_hp)
+Inst%GFED4_EMFAC(6,3)=6.10E-04_hp + 3.69E-04_hp * 42.08_hp/(3.0_hp*12.0_hp)
+Inst%GFED4_EMFAC(6,4)=6.40E-04_hp + 2.67E-04_hp * 42.08_hp/(3.0_hp*12.0_hp)
+Inst%GFED4_EMFAC(6,5)=3.05E-03_hp + 2.27E-04_hp * 42.08_hp/(3.0_hp*12.0_hp)
+Inst%GFED4_EMFAC(6,6)=6.80E-04_hp + 3.33E-04_hp * 42.08_hp/(3.0_hp*12.0_hp)
 
 ! C3H8
 GFED4_SPEC_NAME(7)="C3H8"
