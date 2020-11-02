@@ -400,6 +400,13 @@ CONTAINS
              IF ( Inst%IDTBe10Strat > 0 ) THEN 
                 Inst%EmissBe10Strat(I,J,L) = Add_Be10
              ENDIF
+          ELSE
+             IF ( Inst%IDTBe7Strat > 0 ) THEN
+                Inst%EmissBe7Strat (I,J,L) = 0d0
+             ENDIF
+             IF ( Inst%IDTBe10Strat > 0 ) THEN
+                Inst%EmissBe10Strat(I,J,L) = 0d0
+             ENDIF
           ENDIF
 
        ENDDO
