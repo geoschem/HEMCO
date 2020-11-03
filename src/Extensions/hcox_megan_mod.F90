@@ -3948,7 +3948,7 @@ CONTAINS
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXACET', RC )
        RETURN
     ENDIF
-    Inst%FLUXACETmo = 0.0_hp
+    Inst%FLUXACET = 0.0_hp
 
     ALLOCATE( Inst%FLUXACETmo( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
