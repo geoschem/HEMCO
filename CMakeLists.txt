@@ -257,7 +257,10 @@ endif()
 #-----------------------------------------------------------------------------
 if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
     target_link_libraries(HEMCOBuildProperties
-        INTERFACE MAPL.base
+        INTERFACE $<LINK_ONLY:MAPL.base>
+    )
+    target_include_directories(HEMCOBuildProperties 
+        INTERFACE $<TARGET_PROPERTY:MAPL.base,INTERFACE_INCLUDE_DIRECTORIES>
     )
     target_compile_definitions(HEMCOBuildProperties
         INTERFACE ESMF_
@@ -362,9 +365,11 @@ endif()
 #-----------------------------------------------------------------------------
 # Print output of environment variable settings
 #-----------------------------------------------------------------------------
-hco_pretty_print(SECTION "Settings")
-hco_pretty_print(VARIABLE OMP IS_BOOLEAN)
-hco_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
+if(NOT HEMCO_EXTERNAL_CONFIG)
+    hco_pretty_print(SECTION "Settings")
+    hco_pretty_print(VARIABLE OMP IS_BOOLEAN)
+    hco_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
+endif()
 
 #-----------------------------------------------------------------------------
 # Add source code directory
