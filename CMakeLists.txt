@@ -362,9 +362,11 @@ endif()
 #-----------------------------------------------------------------------------
 # Print output of environment variable settings
 #-----------------------------------------------------------------------------
-hco_pretty_print(SECTION "Settings")
-hco_pretty_print(VARIABLE OMP IS_BOOLEAN)
-hco_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
+if(NOT HEMCO_EXTERNAL_CONFIG)
+    hco_pretty_print(SECTION "Settings")
+    hco_pretty_print(VARIABLE OMP IS_BOOLEAN)
+    hco_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
+endif()
 
 #-----------------------------------------------------------------------------
 # Add source code directory
