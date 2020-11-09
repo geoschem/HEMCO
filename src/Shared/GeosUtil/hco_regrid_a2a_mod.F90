@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -51,7 +51,7 @@ MODULE HCO_Regrid_A2A_Mod
 !
 ! !REVISION HISTORY:
 !  13 Mar 2012 - M. Cooper   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -94,7 +94,7 @@ MODULE HCO_Regrid_A2A_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -151,7 +151,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1) Original subroutine by S-J Lin.  Converted to F90 freeform format
 !      and inserted into "Geos3RegridModule" by Bob Yantosca (9/21/00)
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -227,7 +227,7 @@ CONTAINS
   END SUBROUTINE Map_A2A_r8r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -283,7 +283,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1) Original subroutine by S-J Lin.  Converted to F90 freeform format
 !      and inserted into "Geos3RegridModule" by Bob Yantosca (9/21/00)
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -359,7 +359,7 @@ CONTAINS
   END SUBROUTINE Map_A2A_r4r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -416,7 +416,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1) Original subroutine by S-J Lin.  Converted to F90 freeform format
 !      and inserted into "Geos3RegridModule" by Bob Yantosca (9/21/00)
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -492,7 +492,7 @@ CONTAINS
   END SUBROUTINE Map_A2A_r4r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -549,7 +549,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1) Original subroutine by S-J Lin.  Converted to F90 freeform format
 !      and inserted into "Geos3RegridModule" by Bob Yantosca (9/21/00)
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -625,7 +625,7 @@ CONTAINS
   END SUBROUTINE Map_A2A_r8r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -690,7 +690,7 @@ CONTAINS
 !
 ! !REVISION HISTORY
 !  06 Mar 2012 - P. Kasibhatla - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -821,7 +821,7 @@ CONTAINS
    END SUBROUTINE ymap_r8r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -888,7 +888,7 @@ CONTAINS
 !
 ! !REVISION HISTORY
 !  06 Mar 2012 - P. Kasibhatla - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1018,7 +1018,7 @@ CONTAINS
    END SUBROUTINE ymap_r4r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1085,7 +1085,7 @@ CONTAINS
 !
 ! !REVISION HISTORY
 !  06 Mar 2012 - P. Kasibhatla - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1216,7 +1216,7 @@ CONTAINS
    END SUBROUTINE ymap_r8r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1283,7 +1283,7 @@ CONTAINS
 !
 ! !REVISION HISTORY
 !  06 Mar 2012 - P. Kasibhatla - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1415,7 +1415,7 @@ CONTAINS
    END SUBROUTINE ymap_r4r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1474,7 +1474,7 @@ CONTAINS
 !
 ! !REVISION HISTORY
 !  06 Mar 2012 - P. Kasibhatla - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1709,7 +1709,7 @@ CONTAINS
   END SUBROUTINE xmap_r8r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1768,7 +1768,7 @@ CONTAINS
 !
 ! !REVISION HISTORY
 !  06 Mar 2012 - P. Kasibhatla - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2005,7 +2005,7 @@ CONTAINS
   END SUBROUTINE xmap_r4r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2063,7 +2063,7 @@ CONTAINS
 !
 ! !REVISION HISTORY
 !  06 Mar 2012 - P. Kasibhatla - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2289,7 +2289,7 @@ CONTAINS
   END SUBROUTINE xmap_r4r8
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2347,7 +2347,7 @@ CONTAINS
 !
 ! !REVISION HISTORY
 !  06 Mar 2012 - P. Kasibhatla - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2573,7 +2573,7 @@ CONTAINS
   END SUBROUTINE xmap_r8r4
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2601,7 +2601,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  14 Jul 2014 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2650,7 +2650,7 @@ CONTAINS
   END SUBROUTINE Init_Map_A2A
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2665,7 +2665,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  14 Jul 2014 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

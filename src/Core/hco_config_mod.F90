@@ -81,15 +81,7 @@ MODULE HCO_Config_Mod
 !
 ! !REVISION HISTORY:
 !  18 Jun 2013 - C. Keller   -  Initialization
-!  08 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  08 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  15 Feb 2015 - C. Keller   - Added BracketCheck, AddZeroScal, AddShadowFields
-!  15 Feb 2016 - C. Keller   - Update to v2.0: ConfigList now sits in HcoConfig
-!  23 Oct 2018 - M. Sulprizio- Make routine ConfigInit public to allow for
-!                              initialization of HcoConfig%ModelSpc from the
-!                              external model. Also add routine Hco_GetTagInfo
-!                              to get information for wildcard strings (e.g.
-!                              ?ALL?) used in HEMCO_Config.rc.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -104,7 +96,7 @@ MODULE HCO_Config_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -151,14 +143,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Sep 2012 - C. Keller   - Initialization
-!  03 Jan 2014 - C. Keller   - Now use Config_ReadCont calls.
-!  30 Sep 2014 - R. Yantosca - Now declare LINE w/ 2047 characters.  This lets
-!                              us handle extra-long species lists
-!  13 Feb 2015 - C. Keller   - Removed section extension data: these are now
-!                              listed in section base emissions.
-!  11 Dec 2015 - C. Keller   - Read settings and extension switches even for
-!                              nested configuration files.
-!  15 Feb 2016 - C. Keller   - Now pass HcoConfig argument.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -420,7 +405,7 @@ CONTAINS
   END SUBROUTINE Config_ReadFile
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -450,7 +435,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Jun 2013 - C. Keller: Initialization
-!  17 Sep 2013 - C. Keller: Now get data from buffer
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -542,7 +527,7 @@ CONTAINS
   END SUBROUTINE SetReadList
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -584,30 +569,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Jan 2014 - C. Keller - Initial version
-!  29 Dec 2014 - C. Keller - Added optional 11th element for scale factors. This
-!                            value will be interpreted as mask field (applied to
-!                            this scale factor only).
-!  27 Feb 2015 - C. Keller - Added CycleFlag 'I' (interpolation)
-!  13 Mar 2015 - C. Keller - Added include files (nested configuration files)
-!                            and CFDIR argument.
-!  23 Sep 2015 - C. Keller - Added cycle flags 'A' and 'RA' (for averaging).
-!  06 Oct 2015 - C. Keller - Added cycle flags 'EF' and 'RF' (fields must be
-!                            found).
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  20 Jul 2018 - C. Keller   - Return error if duplicate container name
-!  05 Oct 2018 - R. Yantosca - Cycle flag "E" now will read the target file
-!                              only once (e.g. use for restart files).
-!                              Cycle flag "EC" will now continously attempt
-!                              to read/query from the target file.
-!  23 Oct 2018 - M. Sulprizio- Add option to use wildcard (e.g. ?ALL?) in
-!                              variable name to simplify reading all species
-!                              concentration fields from the GEOS-Chem restart
-!                              file, but may be expanded for other purposes
-!  02 Nov 2018 - M. Sulprizio- Add cycle flag "CS" to skip fields not found
-!  08 Mar 2019 - M. Sulprizio- Add "*Y" options to TmCycle to force always using
-!                              simulation year (eg, instead of emissions year)
-!  23 Oct 2019 - M. Sulprizio- Added cycle flag "ID" to denote when dataset is
-!                              discontinous and needs to be interpolated
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -962,6 +924,7 @@ CONTAINS
                 ! - "RY" : range, always use simulation year
                 ! - "E"  : exact (read file once)
                 ! - "EF" : exact, forced (error if not exist, read/query once)
+                ! - "EFY": exact, always use simulation year
                 ! - "EC" : exact (read/query continuously, e.g. for ESMF interface)
                 ! - "ECF": exact, forced (error if not exist, read/query continuously)
                 ! - "EY" : exact, always use simulation year
@@ -1011,6 +974,10 @@ CONTAINS
                    Dta%CycleFlag = HCO_CFLAG_EXACT
                    Dta%UpdtFlag  = HCO_UFLAG_ONCE
                    Dta%MustFind  = .TRUE.
+                ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
+                   Dta%CycleFlag = HCO_CFLAG_EXACT
+                   Dta%MustFind  = .TRUE.
+                   Dta%UseSimYear= .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_EXACT
                 ELSEIF ( TRIM(TmCycle) == "ECF" ) THEN
@@ -1019,7 +986,7 @@ CONTAINS
                 ELSEIF ( TRIM(TmCycle) == "EY" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_EXACT
                    Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                   Dta%UseSimYear=.TRUE.
+                   Dta%UseSimYear= .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "A" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_AVERG
                 ELSEIF ( TRIM(TmCycle) == "I" ) THEN
@@ -1262,11 +1229,13 @@ CONTAINS
              ! - "RY" : range, always use simulation year
              ! - "E"  : exact (read file once)
              ! - "EF" : exact, forced (error if not exist, read/query once)
+             ! - "EFY": exact, always use simulation year
              ! - "EC" : exact (read/query continuously, e.g. for ESMF interface)
              ! - "ECF": exact, forced (error if not exist, read/query continuously)
              ! - "EY" : exact, always use simulation year
              ! - "A"  : average
              ! - "I"  : interpolate
+             ! - "ID" : interpolate, discontinuous dataset
              Dta%MustFind  = .FALSE.
              Dta%UseSimYear= .FALSE.
              IF ( TRIM(TmCycle) == "C" ) THEN
@@ -1309,6 +1278,10 @@ CONTAINS
                 Dta%CycleFlag = HCO_CFLAG_EXACT
                 Dta%UpdtFlag  = HCO_UFLAG_ONCE
                 Dta%MustFind  = .TRUE.
+             ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
+                Dta%CycleFlag = HCO_CFLAG_EXACT
+                Dta%MustFind  = .TRUE.
+                Dta%UseSimYear= .TRUE.
              ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_EXACT
              ELSEIF ( TRIM(TmCycle) == "ECF" ) THEN
@@ -1317,11 +1290,14 @@ CONTAINS
              ELSEIF ( TRIM(TmCycle) == "EY" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_EXACT
                 Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                Dta%UseSimYear=.TRUE.
+                Dta%UseSimYear= .TRUE.
              ELSEIF ( TRIM(TmCycle) == "A" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_AVERG
              ELSEIF ( TRIM(TmCycle) == "I" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_INTER
+             ELSEIF ( TRIM(TmCycle) == "ID" ) THEN
+                Dta%CycleFlag = HCO_CFLAG_INTER
+                Dta%Discontinuous = .TRUE.
              ELSEIF ( TRIM(TmCycle) == "-" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_CYCLE
              ELSE
@@ -1433,7 +1409,7 @@ CONTAINS
   END SUBROUTINE Config_ReadCont
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1482,7 +1458,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Feb 2015 - C. Keller   - Initial version.
-!  12 Mar 2015 - C. Keller   - Added 'mirror' option.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1679,7 +1655,7 @@ CONTAINS
   END SUBROUTINE BracketCheck
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1713,7 +1689,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Feb 2015 - C. Keller   - Initial version.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1814,7 +1790,7 @@ CONTAINS
   END SUBROUTINE AddShadowFields
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1848,7 +1824,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Feb 2015 - C. Keller   - Initial version.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1917,7 +1893,7 @@ CONTAINS
   END SUBROUTINE AddZeroScal
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1949,14 +1925,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Sep 2013 - C. Keller   - Initialization (update)
-!  30 Sep 2014 - R. Yantosca - Declare SUBSTR and SPECS w/ 2047 characters,
-!                              which lets us handle extra-long species lists
-!  21 Apr 2015 - R. Yantosca - Bug fix: now look for END_SECTION before
-!                              testing if the line is a comment.  This will
-!                              allow for tags labeled "### END SECTION".
-!  12 Dec 2015 - C. Keller   - Added argument IgnoreIfExist to AddExtOpt to
-!                              make sure that nested configuration files do
-!                              use the settings set at highest level.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2087,7 +2056,7 @@ CONTAINS
   END SUBROUTINE ExtSwitch2Buffer
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2121,12 +2090,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Sep 2013 - C. Keller   - Initialization (update)
-!  21 Apr 2015 - R. Yantosca - Bug fix: now look for END_SECTION before
-!                              testing if the line is a comment.  This will
-!                              allow for tags labeled "### END SECTION".
-!  12 Dec 2015 - C. Keller   - Added argument IgnoreIfExist to AddExtOpt to
-!                              make sure that nested configuration files do
-!                              use the settings set at highest level.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2185,6 +2149,52 @@ CONTAINS
 
     ENDDO
 
+#ifndef MODEL_GEOS
+#ifndef MODEL_WRF
+#ifndef MODEL_CESM
+#ifndef ESMF_
+    !=======================================================================
+    ! Look for met field and grid resolution.  When running the HEMCO
+    ! standalone these will need to be read from the configuration file.
+    ! Otherwise, HEMCO will inherit the met field and grid resolution
+    ! of the parent model (GC-Classic, GCHP, etc.)
+    !
+    ! NOTE: Only do this check if not using GEOS-Chem in an external ESM!
+    !=======================================================================
+
+    ! Look for met field
+    CALL GetExtOpt( HcoConfig, CoreNr, 'MET', &
+                    OptValChar=MetField, FOUND=FOUND, RC=RC )
+    IF ( FOUND ) THEN
+       HcoConfig%MetField = TRIM( MetField )
+    ENDIF
+
+    ! Look for grid resolution
+    ! Make sure resolution string is in the proper FlexGrid format
+    CALL GetExtOpt( HcoConfig, CoreNr, 'RES', &
+                    OptValChar=GridRes, FOUND=FOUND, RC=RC )
+    IF ( FOUND ) THEN
+       SELECT CASE( TRIM( GridRes ) )
+          CASE( '4x5' )
+             GridRes = '4.0x5.0'
+          CASE( '2x25', '2x2.5' )
+             GridRes = '2.0x2.5'
+          CASE( '05x0625', '0.5x0.625' )
+             GridRes = '0.5x0.625'
+          CASE( '025x03125', '0.25x0.3125' )
+             GridRes = '0.25x0.3125'
+          CASE DEFAULT
+             Msg = 'Improperly formatted grid resolution: ' // TRIM( GridRes )
+             CALL HCO_Error( HcoConfig%Err, Msg, RC, Loc )
+             RETURN
+       END SELECT
+       HcoConfig%GridRes = TRIM( GridRes )
+    ENDIF
+#endif
+#endif
+#endif
+#endif
+
     !-----------------------------------------------------------------------
     ! Initialize error object if needed.
     ! Extract values to initialize error module and set some further
@@ -2237,59 +2247,13 @@ CONTAINS
 
     ENDIF
 
-#ifndef MODEL_GEOS
-#ifndef MODEL_WRF
-#ifndef MODEL_CESM
-#ifndef ESMF_
-    !=======================================================================
-    ! Look for met field and grid resolution.  When running the HEMCO
-    ! standalone these will need to be read from the configuration file.
-    ! Otherwise, HEMCO will inherit the met field and grid resolution
-    ! of the parent model (GC-Classic, GCHP, etc.)
-    !
-    ! NOTE: Only do this check if not using GEOS-Chem in an external ESM!
-    !=======================================================================
-
-    ! Look for met field
-    CALL GetExtOpt( HcoConfig, CoreNr, 'MET', &
-                    OptValChar=MetField, FOUND=FOUND, RC=RC )
-    IF ( FOUND ) THEN
-       HcoConfig%MetField = TRIM( MetField )
-    ENDIF
-
-    ! Look for grid resolution
-    ! Make sure resolution string is in the proper FlexGrid format
-    CALL GetExtOpt( HcoConfig, CoreNr, 'RES', &
-                    OptValChar=GridRes, FOUND=FOUND, RC=RC )
-    IF ( FOUND ) THEN
-       SELECT CASE( TRIM( GridRes ) )
-          CASE( '4x5' )
-             GridRes = '4.0x5.0'
-          CASE( '2x25', '2x2.5' )
-             GridRes = '2.0x2.5'
-          CASE( '05x0625' )
-             GridRes = '0.5x0.625'
-          CASE( '025x03125' )
-             GridRes = '0.25x0.3125'
-          CASE DEFAULT
-             Msg = 'Improperly formatted grid resolution: ' // TRIM( GridRes )
-             CALL HCO_Error( HcoConfig%Err, Msg, RC, Loc )
-             RETURN
-       END SELECT
-       HcoConfig%GridRes = TRIM( GridRes )
-    ENDIF
-#endif
-#endif
-#endif
-#endif
-
     ! Leave w/ success
     RC = HCO_SUCCESS
 
   END SUBROUTINE ReadSettings
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2329,7 +2293,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2013 - C. Keller - Initial version (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2472,7 +2436,7 @@ CONTAINS
   END SUBROUTINE RegisterPrepare
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2502,7 +2466,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Jun 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2670,7 +2634,7 @@ CONTAINS
   END SUBROUTINE Register_Base
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2699,8 +2663,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Jun 2013 - C. Keller - Initialization
-!  29 Dec 2014 - C. Keller - Now check for masks assigned to scale factors.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2803,7 +2766,7 @@ CONTAINS
   END SUBROUTINE Register_Scal
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2853,9 +2816,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Apr 2013 - C. Keller - Initialization
-!  07 Dec 2015 - C. Keller - Make sure emissions with limited time range do
-!                            never erase lower hierarchy base emissions.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3192,7 +3153,7 @@ CONTAINS
   END SUBROUTINE Get_targetID
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3226,6 +3187,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Apr 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3251,7 +3213,7 @@ CONTAINS
   END FUNCTION Calc_Coverage
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3335,10 +3297,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Aug 2013 - C. Keller - Initial version
-!  11 Dec 2013 - C. Keller - Added optional arguments inLine and outLine
-!  29 Dec 2014 - C. Keller - Added optional argument optcl. Now use wrapper
-!                            routines READCHAR and READINT.
-!  13 Mar 2015 - C. Keller - Added check for include files.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3477,7 +3436,7 @@ CONTAINS
   END SUBROUTINE ReadAndSplit_Line
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3506,6 +3465,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Dec 2014 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3528,7 +3488,7 @@ CONTAINS
   END SUBROUTINE READCHAR
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3562,6 +3522,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Dec 2014 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3588,7 +3549,7 @@ CONTAINS
   END SUBROUTINE READINT
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3617,7 +3578,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2013 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3673,7 +3634,7 @@ CONTAINS
   END SUBROUTINE Get_cID
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3699,7 +3660,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Sep 2013 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3737,7 +3698,7 @@ CONTAINS
   END SUBROUTINE ConfigList_AddCont
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3762,8 +3723,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  29 Dec 2014 - C. Keller: Now add new container to end of list to allow
-!                           list being updated while calling Register_Scal.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3835,7 +3795,7 @@ CONTAINS
   END SUBROUTINE ScalID_Register
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3860,9 +3820,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  29 Dec 2014 - C. Keller: Now add new container to end of list to allow
-!                           list being updated while calling Register_Scal.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3926,7 +3884,7 @@ CONTAINS
   END SUBROUTINE ScalID2List
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3946,7 +3904,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3981,7 +3939,7 @@ CONTAINS
   END SUBROUTINE ScalID_Cleanup
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4010,7 +3968,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4064,7 +4022,7 @@ CONTAINS
   END SUBROUTINE SpecName_Register
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4084,7 +4042,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4122,7 +4080,7 @@ CONTAINS
   END SUBROUTINE SpecName_Cleanup
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4146,6 +4104,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4163,7 +4122,7 @@ CONTAINS
   END FUNCTION Config_GetnSpecies
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4192,6 +4151,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4204,7 +4164,7 @@ CONTAINS
   END SUBROUTINE Config_GetSpecNames
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4239,7 +4199,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4302,7 +4262,7 @@ CONTAINS
   END SUBROUTINE Config_GetSpecAttr
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4330,6 +4290,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4370,7 +4331,7 @@ CONTAINS
   END FUNCTION Check_ContNames
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4408,9 +4369,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 May 2015 - C. Keller   - Initial version
-!  22 Jan 2016 - R. Yantosca - Bug fix, removed & in the middle of the line
-!                              since the PGI compiler chokes on it.
-!  26 Jan 2018 - C. Keller   - Add L1 & L2
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4573,7 +4532,7 @@ CONTAINS
   END SUBROUTINE ExtractSrcDim
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4598,8 +4557,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Feb 2016 - C. Keller: Initialization (update)
-!  23 Oct 2018 - M. Sulprizio- Add nModelSpecies to represent all species from
-!                              external model (i.e. advected+chemical species)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4648,7 +4606,7 @@ CONTAINS
   END SUBROUTINE ConfigInit
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4673,6 +4631,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  09 May 2016 - C. Keller: Intial version.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4718,7 +4677,7 @@ CONTAINS
   END SUBROUTINE ParseEmisL
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4744,6 +4703,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Jul 2018 - C. Keller: Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4830,6 +4790,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  23 Oct 2018 - M. Sulprizio- Initial version based on routine Get_TagInfo in
 !                              GEOS-Chem's Headers/state_diag_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

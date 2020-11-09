@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -47,8 +47,7 @@ MODULE HCOX_Driver_Mod
 !
 ! !REVISION HISTORY:
 !  15 Dec 2013 - C. Keller   - Initial version
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -80,7 +79,7 @@ MODULE HCOX_Driver_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -134,10 +133,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  07 Jul 2014 - R. Yantosca - Now init GEOS-Chem Rn-Pb-Be emissions module
-!  20 Aug 2014 - M. Sulprizio- Now init GEOS-Chem POPs emissions module
-!  01 Oct 2014 - R. Yantosca - Now init TOMAS sea salt emissions module
-!  01 Nov 2016 - M. Sulprizio- Rename TOMAS sea salt to TOMAS Jeagle (J. Kodros)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -401,7 +397,7 @@ CONTAINS
   END SUBROUTINE HCOX_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -455,10 +451,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Dec 2013 - C. Keller   - Initial version
-!  07 Jul 2014 - R. Yantosca - Now Run GEOS-Chem Rn-Pb-Be emissions module
-!  20 Aug 2014 - M. Sulprizio- Now run GEOS-Chem POPs emissions module
-!  01 Oct 2014 - R. Yantosca - Now run TOMAS sea salt emissions module
-!  01 Nov 2016 - M. Sulprizio- Rename TOMAS sea salt to TOMAS Jeagle (J. Kodros)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -756,7 +749,7 @@ CONTAINS
   END SUBROUTINE HCOX_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -801,12 +794,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  07 Jul 2014 - R. Yantosca - Now finalize GEOS-Chem Rn-Pb-Be emissions pkg
-!  20 Aug 2014 - M. Sulprizio- Now finalize GEOS-Chen POPs emissions module
-!  01 Oct 2014 - R. Yantosca - Now finalize TOMAS sea salt emissions module
-!  09 Mar 2015 - C. Keller   - Now pass HcoState since it is needed by some
-!                              finalization calls.
-!  01 Nov 2016 - M. Sulprizio- Rename TOMAS sea salt to TOMAS Jeagle (J. Kodros)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -936,7 +924,7 @@ CONTAINS
   END SUBROUTINE HCOX_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -958,6 +946,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Feb 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !
@@ -1083,7 +1072,7 @@ CONTAINS
   END SUBROUTINE HCOX_DiagnDefine
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1109,6 +1098,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Feb 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 
@@ -1132,7 +1122,7 @@ CONTAINS
   END SUBROUTINE DgnDefine
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1153,6 +1143,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Feb 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 

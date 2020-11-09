@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -45,7 +45,7 @@ MODULE HCO_Charpak_Mod
 !  made for GEOS-CHEM by Bob Yantosca (1998, 2002, 2004).
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -58,7 +58,7 @@ MODULE HCO_Charpak_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -88,7 +88,7 @@ CONTAINS
 !     COMMENTS: Revised slightly (2-5-1996) so that trailing
 !               blanks in str1 are ignored.  Revised again
 !               on 3-6-1996.
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -130,7 +130,7 @@ CONTAINS
   END SUBROUTINE CntMat
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -160,7 +160,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !     DATE:   DEC. 24, 1993
 !     AUTHOR: R.D. STEWART
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -187,7 +187,7 @@ CONTAINS
   END SUBROUTINE CopyTxt
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -216,7 +216,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !      AUTHOR: Robert D. Stewart
 !        DATE: May 19, 1992
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -257,7 +257,7 @@ CONTAINS
   END SUBROUTINE CStrip
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -285,7 +285,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !     DATE:   NOV. 11, 1993
 !     AUTHOR: R.D. STEWART
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -303,7 +303,7 @@ CONTAINS
   END FUNCTION IsDigit
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -331,7 +331,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  25 Jun 2002 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -361,7 +361,7 @@ CONTAINS
   END SUBROUTINE StrRepl
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -388,7 +388,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Jul 2002 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -426,7 +426,7 @@ CONTAINS
   END SUBROUTINE StrSplit
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -448,7 +448,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Jul 2002 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -461,7 +461,7 @@ CONTAINS
   END SUBROUTINE StrSqueeze
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -485,7 +485,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !      AUTHOR: Robert D. Stewart
 !        DATE: May 19, 1992
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -505,7 +505,7 @@ CONTAINS
   END SUBROUTINE TRANLC
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -529,7 +529,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !      AUTHOR: Robert D. Stewart
 !        DATE: May 19, 1992
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -549,7 +549,7 @@ CONTAINS
   END SUBROUTINE TRANUC
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -609,7 +609,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !      AUTHOR: Robert D. Stewart
 !        DATE: Jan. 1st, 1995
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -706,7 +706,7 @@ CONTAINS
   END SUBROUTINE TxtExt
 !EOC
 !------------------------------------------------------------------------------
-!          Harvard University Atmospheric Chemistry Modeling Group            !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -738,7 +738,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 May 2016 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -773,7 +773,7 @@ CONTAINS
   END FUNCTION Str2Hash14
 !EOC
 !------------------------------------------------------------------------------
-!          Harvard University Atmospheric Chemistry Modeling Group            !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -805,7 +805,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Jun 2017 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -857,7 +857,7 @@ CONTAINS
   END FUNCTION Str2Hash31
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -884,7 +884,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Jun 2017 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -916,7 +916,7 @@ CONTAINS
   END FUNCTION To_UpperCase
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -952,7 +952,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Jun 2017 - R. Yantosca - Initial version, based on GEOS-Chem
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -987,7 +987,7 @@ CONTAINS
   END FUNCTION ReadOneLine
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1013,7 +1013,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Jan 2015 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1034,7 +1034,7 @@ CONTAINS
   END FUNCTION CleanText
 !EOC
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1059,7 +1059,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Dec 2015 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

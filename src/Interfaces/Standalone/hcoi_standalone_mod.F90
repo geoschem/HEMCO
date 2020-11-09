@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -22,8 +22,7 @@
 ! \item HEMCO\_sa\_Spec: contains the HEMCO species definitions. The first row
 !  must contain the total number of species. For each species, the following
 !  parameter need to be specified (separated by at least one space character):
-!  species ID, name, molecular weight [g/mol], emitted molecular weight
-!  [g/mol], the molecule emission ratio, the liq. over gas Henry constant
+!  species ID, name, molecular weight [g/mol], the liq. over gas Henry constant
 !  [M/atm], the temperature dependency of the Henry constant (K0, in [K]), and
 !  the pKa (for correction of the Henry constant).
 !
@@ -86,14 +85,8 @@ MODULE HCOI_StandAlone_Mod
   PRIVATE :: ExtState_UpdateFields
 !
 ! !REVISION HISTORY:
-!  20 Aug 2013 - C. Keller   - Initial version.
-!  14 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  14 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  09 Apr 2015 - C. Keller   - Now accept comments and empty lines in
-!                              all input files.
-!  15 Feb 2015 - C. Keller   - Update to v2.0
-!  18 Jan 2019 - R. Yantosca - Improve error trapping.  Also now made
-!                              compatible w/ met field names for FlexGrid
+!  20 Aug 2013 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -122,8 +115,6 @@ MODULE HCOI_StandAlone_Mod
   CHARACTER(LEN= 31),    POINTER :: ModelSpecNames     (:) => NULL()
   INTEGER,               POINTER :: ModelSpecIDs       (:) => NULL()
   REAL(hp),              POINTER :: ModelSpecMW        (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecEmMW      (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecMolecRatio(:) => NULL()
   REAL(hp),              POINTER :: ModelSpecK0        (:) => NULL()
   REAL(hp),              POINTER :: ModelSpecCR        (:) => NULL()
   REAL(hp),              POINTER :: ModelSpecPKA       (:) => NULL()
@@ -149,7 +140,7 @@ MODULE HCOI_StandAlone_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -174,7 +165,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -220,7 +211,7 @@ CONTAINS
   END SUBROUTINE HCOI_StandAlone_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -254,8 +245,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
-!  29 Jan 2019 - R. Yantosca - Now flush errmsgs to logfile before exiting
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -468,7 +458,7 @@ CONTAINS
   END SUBROUTINE HCOI_SA_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -496,10 +486,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
-!  29 Jan 2019 - R. Yantosca - Bug fix: Call HCO_RUN twice, once with phase=1
-!                              and again with phase=2.  This is necessary
-!                              for emissions to be computed.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -682,7 +669,7 @@ CONTAINS
   END SUBROUTINE HCOI_SA_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -703,7 +690,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -763,7 +750,7 @@ CONTAINS
   END SUBROUTINE HCOI_SA_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -778,7 +765,6 @@ CONTAINS
   SUBROUTINE Model_GetSpecies( HcoConfig,                          &
                                nModelSpec,     ModelSpecNames,     &
                                ModelSpecIDs,   ModelSpecMW,        &
-                               ModelSpecEmMW,  ModelSpecMolecRatio,&
                                ModelSpecK0,    ModelSpecCR,        &
                                ModelSpecPKA,   RC                   )
 !
@@ -794,8 +780,6 @@ CONTAINS
     CHARACTER(LEN= 31), POINTER     :: ModelSpecNames     (:)
     INTEGER,            POINTER     :: ModelSpecIDs       (:)
     REAL(hp),           POINTER     :: ModelSpecMW        (:)
-    REAL(hp),           POINTER     :: ModelSpecEmMW      (:)
-    REAL(hp),           POINTER     :: ModelSpecMolecRatio(:)
     REAL(hp),           POINTER     :: ModelSpecK0        (:)
     REAL(hp),           POINTER     :: ModelSpecCR        (:)
     REAL(hp),           POINTER     :: ModelSpecPKA       (:)
@@ -803,6 +787,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -895,8 +880,6 @@ CONTAINS
     ALLOCATE(ModelSpecNames     (nModelSpec))
     ALLOCATE(ModelSpecIDs       (nModelSpec))
     ALLOCATE(ModelSpecMW        (nModelSpec))
-    ALLOCATE(ModelSpecEmMW      (nModelSpec))
-    ALLOCATE(ModelSpecMolecRatio(nModelSpec))
     ALLOCATE(ModelSpecK0        (nModelSpec))
     ALLOCATE(ModelSpecCR        (nModelSpec))
     ALLOCATE(ModelSpecPKA       (nModelSpec))
@@ -915,9 +898,8 @@ CONTAINS
        LNG = LEN(TRIM(DUM))
        LOW = 0
 
-       ! Read species ID, name, molecular weight, emitted molecular weight,
-       ! molecular coefficient, and Henry coefficients K0, CR, pKa (in this
-       ! order).
+       ! Read species ID, name, molecular weight, and Henry coefficients
+       ! K0, CR, pKa (in this order).
        DO I = 1, 8
 
           ! Get lower and upper index of species ID (first entry in row).
@@ -944,8 +926,8 @@ CONTAINS
              WRITE(MSG,*) 'Error reading species property ', I, &
                           ' on line ', TRIM(DUM), '. Each ', &
                           'species definition line is expected ', &
-                          'to have 8 entries (ID, Name, MW, MWemis, ', &
-                          'MOLECRATIO, K0, CR, PKA, e.g.: ', &
+                          'to have 8 entries (ID, Name, MW, ', &
+                          'K0, CR, PKA, e.g.: ', &
                           '1 CO   28.0 28.0 1.0 0.0 0.0 0.0'
              CALL HCO_Error ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
              RETURN
@@ -959,10 +941,6 @@ CONTAINS
                 READ( DUM(LOW:UPP), * ) ModelSpecNames(N)
              CASE ( 3 )
                 READ( DUM(LOW:UPP), * ) ModelSpecMW(N)
-             CASE ( 4 )
-                READ( DUM(LOW:UPP), * ) ModelSpecEmMW(N)
-             CASE ( 5 )
-                READ( DUM(LOW:UPP), * ) ModelSpecMolecRatio(N)
              CASE ( 6 )
                 READ( DUM(LOW:UPP), * ) ModelSpecK0(N)
              CASE ( 7 )
@@ -1012,7 +990,7 @@ CONTAINS
   END SUBROUTINE Model_GetSpecies
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1042,9 +1020,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
-!  11 May 2015 - C. Keller - Now provide lon/lat edges instead of assuming
-!                            global grid.
-!  10 Sep 2015 - C. Keller - Allow to provide mid-points instead of edges.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1566,7 +1542,7 @@ CONTAINS
   END SUBROUTINE Set_Grid
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1597,7 +1573,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller   - Initial Version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1632,7 +1608,6 @@ CONTAINS
     CALL Model_GetSpecies( HcoConfig,                           &
                            nModelSpec,     ModelSpecNames,      &
                            ModelSpecIDs,   ModelSpecMW,         &
-                           ModelSpecEmMW,  ModelSpecMolecRatio, &
                            ModelSpecK0,    ModelSpecCR,         &
                            ModelSpecPKA,   RC                    )
     IF ( RC /= HCO_SUCCESS ) THEN
@@ -1664,7 +1639,7 @@ CONTAINS
   END SUBROUTINE Get_nnMatch
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1689,6 +1664,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1716,12 +1692,8 @@ CONTAINS
        HcoState%Spc(cnt)%SpcName  = HcoSpecNames(I)
        HcoState%Spc(cnt)%ModID    = IDX
 
-       ! Molecular weights of species & emitted species.
+       ! Molecular weights of species
        HcoState%Spc(cnt)%MW_g     = ModelSpecMW(IDX)
-       HcoState%Spc(cnt)%EmMW_g   = ModelSpecEmMW(IDX)
-
-       ! Emitted molecules per molecule of species.
-       HcoState%Spc(cnt)%MolecRatio = ModelSpecMolecRatio(IDX)
 
        ! Set Henry coefficients
        HcoState%Spc(cnt)%HenryK0  = ModelSpecK0(IDX)
@@ -1741,7 +1713,7 @@ CONTAINS
   END SUBROUTINE Register_Species
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1770,7 +1742,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
-!  05 Feb 2015 - C. Keller - Added SetDefault flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1935,7 +1907,7 @@ CONTAINS
   END SUBROUTINE Define_Diagnostics
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1964,6 +1936,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2084,7 +2057,7 @@ CONTAINS
   END SUBROUTINE Read_Time
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2114,12 +2087,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Jul 2014 - C. Keller   - Initial Version
-!  06 Oct 2014 - M. Sulprizio- Remove PCENTER. Now calculate from pressure edges
-!  09 Jul 2015 - E. Lundgren - Add MODIS Chlorophyll-a (CHLR)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  15 Jan 2019 - R. Yantosca - Update met field names to be consistent with
-!                              those used for the FlexGrid update
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2575,7 +2543,7 @@ CONTAINS
 
     !%%%%% Specific humidity %%%%%
     IF ( ExtState%SPHU%DoUse ) THEN
-       Name = 'SPHU1'
+       Name = 'SPHU'
        CALL ExtDat_Set( HcoState,     ExtState%SPHU,                         &
                         TRIM( Name ), RC,       FIRST=FIRST                 )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -2589,7 +2557,7 @@ CONTAINS
 
     !%%%%% Temperature %%%%%
     IF ( ExtState%TK%DoUse ) THEN
-       Name = 'TMPU1'
+       Name = 'TMPU'
        CALL ExtDat_Set( HcoState,     ExtState%TK,                           &
                         TRIM( Name ), RC,       FIRST=FIRST                 )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -2796,7 +2764,7 @@ CONTAINS
   END SUBROUTINE ExtState_SetFields
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2821,6 +2789,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Jul 2014 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2838,7 +2807,7 @@ CONTAINS
   END SUBROUTINE ExtState_UpdateFields
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2870,8 +2839,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  08 Sep 2014 - C. Keller - Initial Version
-!  13 Jul 2015 - C. Keller - Bug fix: now save YYYYMMDD and hhmmss in different
-!                            variables to avoid integer truncation errors.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2910,7 +2878,7 @@ CONTAINS
   END FUNCTION IsEndOfSimulation
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2929,6 +2897,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Feb 2016 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2943,8 +2912,6 @@ CONTAINS
     IF ( ASSOCIATED(ModelSpecNames     ) ) DEALLOCATE(ModelSpecNames     )
     IF ( ASSOCIATED(ModelSpecIDs       ) ) DEALLOCATE(ModelSpecIDs       )
     IF ( ASSOCIATED(ModelSpecMW        ) ) DEALLOCATE(ModelSpecMW        )
-    IF ( ASSOCIATED(ModelSpecEmMW      ) ) DEALLOCATE(ModelSpecEmMW      )
-    IF ( ASSOCIATED(ModelSpecMolecRatio) ) DEALLOCATE(ModelSpecMolecRatio)
     IF ( ASSOCIATED(ModelSpecK0        ) ) DEALLOCATE(ModelSpecK0        )
     IF ( ASSOCIATED(ModelSpecCR        ) ) DEALLOCATE(ModelSpecCR        )
     IF ( ASSOCIATED(ModelSpecPKA       ) ) DEALLOCATE(ModelSpecPKA       )
@@ -2957,7 +2924,7 @@ CONTAINS
   END SUBROUTINE HCOI_SA_InitCleanup
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2993,7 +2960,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Nov 2019 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3057,7 +3024,7 @@ CONTAINS
   END SUBROUTINE Init_Dry_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3078,7 +3045,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Nov 2019 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3119,7 +3086,7 @@ CONTAINS
   END SUBROUTINE Cleanup_Dry_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3135,7 +3102,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Jan 2015 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

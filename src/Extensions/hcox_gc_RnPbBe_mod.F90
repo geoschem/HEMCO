@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -60,16 +60,7 @@ MODULE HCOX_GC_RnPbBe_Mod
 !
 ! !REVISION HISTORY:
 !  07 Jul 2014 - R. Yantosca - Initial version
-!  15 Aug 2014 - C. Keller   - Targets now in hp precision. Cosmetic changes
-!  21 Aug 2014 - R. Yantosca - Add Pb as a species
-!  21 Aug 2014 - R. Yantosca - Add HEMCO species indices as module variables
-!  04 Sep 2014 - R. Yantosca - Remove IDTPb; Pb210 only has a chemical source
-!  04 Sep 2014 - R. Yantosca - Modified for GCAP simulation
-!  05 Nov 2014 - C. Keller   - Now allow Rn or Pb to be not specified.
-!  07 Jan 2016 - E. Lundgren - Update Avogadro's # to NIST 2014 value
-!  24 Aug 2017 - M. Sulprizio- Remove support for GCAP
-!  07 Dec 2018 - M. Sulprizio- Add Be10, Be7Strat, and Be10Strat emissions
-!  25 Jan 2019 - M. Sulprizio- Add instance wrapper
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -115,7 +106,7 @@ MODULE HCOX_GC_RnPbBe_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -148,11 +139,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  07 Jul 2014 - R. Yantosca - Initial version
-!  03 Sep 2014 - R. Yantosca - Bug fix: Prevent div-by-zero errors
-!  06 Oct 2014 - C. Keller   - Now calculate pressure centers from edges.
-!  29 Oct 2014 - R. Yantosca - Use latitude centers of the grid box to
-!                              facilitate running in ESMF/MPI environment
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -413,6 +400,13 @@ CONTAINS
              IF ( Inst%IDTBe10Strat > 0 ) THEN 
                 Inst%EmissBe10Strat(I,J,L) = Add_Be10
              ENDIF
+          ELSE
+             IF ( Inst%IDTBe7Strat > 0 ) THEN
+                Inst%EmissBe7Strat (I,J,L) = 0d0
+             ENDIF
+             IF ( Inst%IDTBe10Strat > 0 ) THEN
+                Inst%EmissBe10Strat(I,J,L) = 0d0
+             ENDIF
           ENDIF
 
        ENDDO
@@ -491,7 +485,7 @@ CONTAINS
   END SUBROUTINE HCOX_Gc_RnPbBe_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -522,8 +516,7 @@ CONTAINS
 
 ! !REVISION HISTORY:
 !  07 Jul 2014 - R. Yantosca - Initial version
-!  21 Aug 2014 - R. Yantosca - Now define HEMCO indices as well
-!  04 Sep 2014 - R. Yantosca - Activate ExtState%TROPP for GCAP simulation
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -687,7 +680,7 @@ CONTAINS
                            'Cannot allocate EmissBe7Strat', RC )
           RETURN
        ENDIF
-       IF ( RC /= 0 ) RETURN
+       Inst%EmissBe7Strat = 0.0_hp
     ENDIF
 
     IF ( Inst%IDTBe10 > 0 ) THEN
@@ -698,7 +691,6 @@ CONTAINS
                            'Cannot allocate EmissBe10', RC )
           RETURN
        ENDIF
-       IF ( RC /= 0 ) RETURN
     ENDIF
 
     IF ( Inst%IDTBe10Strat > 0 ) THEN
@@ -709,7 +701,7 @@ CONTAINS
                            'Cannot allocate EmissBe10Strat', RC )
           RETURN
        ENDIF
-       IF ( RC /= 0 ) RETURN
+       Inst%EmissBe10Strat = 0.0_hp
     ENDIF
 
     !=======================================================================
@@ -726,7 +718,7 @@ CONTAINS
   END SUBROUTINE HCOX_Gc_RnPbBe_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -747,8 +739,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Dec 2013 - C. Keller   - Now a HEMCO extension
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  06 Jun 2014 - R. Yantosca - Now indended with F90 free-format
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -762,7 +753,7 @@ CONTAINS
   END SUBROUTINE HCOX_Gc_RnPbBe_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -803,22 +794,7 @@ CONTAINS
 !                                                                             .
 ! !REVISION HISTORY:
 !  07 Aug 2002 - H. Liu - Initial version
-!  (1 ) This code was split off from routine EMISSRnPbBe below. (bmy, 8/7/02)
-!  (2 ) Now reference DATA_DIR from "directory_mod.f" (bmy, 7/19/04)
-!  08 Dec 2009 - R. Yantosca - Added ProTeX headers
-!  01 Aug 2012 - R. Yantosca - Add reference to findFreeLUN from inqure_mod.F90
-!  02 Jul 2014 - R. Yantosca - Now hardwire the data instead of reading it
-!                              from an ASCII file.  This facilitates ESMF I/O.
-!  07 Jul 2014 - R. Yantosca - Now renamed to INIT_7Be_Emissions and added
-!                              as a HEMCO extension
-!  07 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!   8 Aug 2014 - R. Yantosca - Now split off into hcox_gc_RnPbBe_include.H
-!  05 Nov 2014 - C. Keller   - Converted from double-precision to flexible
-!                              (HEMCO) precision hp.
-!  26 Feb 2015 - R. Yantosca - Now inline the code that used to be in the
-!                              include file hcox_gc_RnPbBe_include.H.  This
-!                              will result in faster compilation.
-!  08 Jan 2016 - R. Yantosca - Change 54_hp to 54.0_hp to avoid error
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -985,7 +961,7 @@ CONTAINS
   END SUBROUTINE Init_7Be_Emissions
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1018,11 +994,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Mar 1998 - H. Liu      - Initial version
-!  (1 ) Added to "RnPbBe_mod.f" (bmy, 7/16/01)
-!  (2 ) Removed duplicate definition of IQ.  Added comments. (bmy, 11/15/01)
-!  08 Dec 2009 - R. Yantosca - Added ProTeX headers
-!   7 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  04 Dec 2014 - M. Yannetti - Added PRECISION_MOD
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1113,7 +1085,7 @@ CONTAINS
   END SUBROUTINE SLQ
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1135,6 +1107,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1167,7 +1140,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1195,7 +1168,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1243,7 +1216,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !BOP
@@ -1263,7 +1236,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -59,21 +59,7 @@ MODULE HCOX_DustGinoux_Mod
 !
 ! !REVISION HISTORY:
 !  08 Apr 2004 - T. D. Fairlie - Initial version
-!  (1 ) Added OpenMP parallelization (bmy, 4/8/04)
-!  (2 ) Now references DATA_DIR from "directory_mod.f" (bmy, 7/20/04)
-!  25 Aug 2010 - R. Yantosca - Added ProTeX headers
-!  01 Mar 2012 - R. Yantosca - Now use GET_AREA_M2(I,J,L) from grid_mod.F90
-!  01 Aug 2012 - R. Yantosca - Add reference to findFreeLUN from inqure_mod.F90
-!  03 Aug 2012 - R. Yantosca - Move calls to findFreeLUN out of DEVEL block
-!  09 Nov 2012 - M. Payer    - Replaced all met field arrays with State_Met
-!                              derived type object
-!  26 Feb 2013 - R. Yantosca - Now accept Input_Opt via the arg list
-!  11 Dec 2013 - C. Keller   - Now a HEMCO extension.
-!  29 Sep 2014 - R. Yantosca - Now make NBINS a variable and not a parameter
-!  29 Sep 2014 - R. Yantosca - Now use F90 free-format indentation
-!  08 Jul 2015 - M. Sulprizio- Now include dust alkalinity source (tdf 04/10/08)
-!  14 Oct 2016 - C. Keller   - Now use HCO_EvalFld instead of HCO_GetPtr.
-!  25 Jan 2019 - M. Sulprizio- Add instance wrapper
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -113,7 +99,7 @@ MODULE HCOX_DustGinoux_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -162,23 +148,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  08 Apr 2004 - T. D. Fairlie - Initial version
-!  (1 ) Added OpenMP parallelization (bmy, 4/8/04)
-!  (2 ) Now references DATA_DIR from "directory_mod.f" (bmy, 7/20/04)
-!  25 Aug 2010 - R. Yantosca - Added ProTeX headers
-!  01 Mar 2012 - R. Yantosca - Now use GET_AREA_M2(I,J,L) from grid_mod.F90
-!  01 Aug 2012 - R. Yantosca - Add reference to findFreeLUN from inqure_mod.F90
-!  03 Aug 2012 - R. Yantosca - Move calls to findFreeLUN out of DEVEL block
-!  09 Nov 2012 - M. Payer    - Replaced all met field arrays with State_Met
-!                              derived type object
-!  26 Feb 2013 - R. Yantosca - Now accept Input_Opt via the arg list
-!  11 Dec 2013 - C. Keller   - Now a HEMCO extension
-!  29 Sep 2014 - R. Yantosca - Bug fix: SRCE_CLAY should have been picked when
-!                              M=3 but was picked when M=2.  Now corrected.
-!  26 Jun 2015 - E. Lundgren - Add L. Zhang new dust size distribution scheme
-!  08 Jul 2015 - M. Sulprizio- Now include dust alkalinity source (tdf 04/10/08)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  07 Jul 2017 - R. Yantosca - Bug fix: Skip DustAlk IF block unless that
-!                              extension has been turned on in the config file
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -442,7 +412,7 @@ CONTAINS
   END SUBROUTINE HcoX_DustGinoux_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -473,8 +443,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Dec 2013 - C. Keller   - Now a HEMCO extension
-!  26 Sep 2014 - R. Yantosca - Updated for TOMAS
-!  29 Sep 2014 - R. Yantosca - Now initialize NBINS from HcoState%N_DUST_BINS
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -790,7 +759,7 @@ CONTAINS
   END SUBROUTINE HcoX_DustGinoux_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -810,6 +779,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Dec 2013 - C. Keller - Now a HEMCO extension
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -825,7 +795,7 @@ CONTAINS
   END SUBROUTINE HcoX_DustGinoux_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -854,8 +824,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Dec 2013 - C. Keller   - Initial version
-!  25 Sep 2014 - R. Yantosca - Updated for TOMAS
-!  24 Aug 2017 - M. Sulprizio- Remove support for GRID1x1
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -892,7 +861,7 @@ CONTAINS
   END FUNCTION HCOX_DustGinoux_GetChDust
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -914,6 +883,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -946,7 +916,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -974,7 +944,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1022,7 +992,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !BOP
@@ -1042,7 +1012,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

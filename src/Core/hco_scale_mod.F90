@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -41,10 +41,6 @@ MODULE HCO_Scale_Mod
 !
   REAL(hp), ALLOCATABLE :: SpcScal(:)
 !
-! !REVISION HISTORY:
-!  11 May 2017 - C. Keller   - Initial version
-!EOP
-!
 ! !INTERFACES:
 !
   INTERFACE HCO_ScaleArr
@@ -56,12 +52,16 @@ MODULE HCO_Scale_Mod
      MODULE PROCEDURE HCO_ScaleArr1D_sp
   END INTERFACE
 !
+! !REVISION HISTORY:
+!  11 May 2017 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
+!EOP
 !------------------------------------------------------------------------------
 !BOC
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -92,6 +92,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -138,7 +139,7 @@ CONTAINS
   END SUBROUTINE HCO_ScaleInit
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -167,6 +168,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -185,7 +187,7 @@ CONTAINS
   END FUNCTION HCO_ScaleGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -219,6 +221,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -248,7 +251,7 @@ CONTAINS
   END SUBROUTINE HCO_ScaleArr3D_sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -282,6 +285,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -311,7 +315,7 @@ CONTAINS
   END SUBROUTINE HCO_ScaleArr3D_dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -344,6 +348,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -373,7 +378,7 @@ CONTAINS
   END SUBROUTINE HCO_ScaleArr2D_sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -406,6 +411,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -435,7 +441,7 @@ CONTAINS
   END SUBROUTINE HCO_ScaleArr2D_dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -467,6 +473,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -496,7 +503,7 @@ CONTAINS
   END SUBROUTINE HCO_ScaleArr1D_sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -528,6 +535,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -557,7 +565,7 @@ CONTAINS
   END SUBROUTINE HCO_ScaleArr1D_dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -580,6 +588,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

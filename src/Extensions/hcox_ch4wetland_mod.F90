@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -83,15 +83,7 @@ MODULE HCOX_CH4WETLAND_Mod
 !
 ! !REVISION HISTORY:
 !  11 Sep 2014 - C. Keller   - Initial version
-!  01 Oct 2013 - C. Keller   - Now a HEMCO extension module
-!  11 Dec 2013 - C. Keller   - Now define container name during initialization
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  11 Jun 2015 - C. Keller   - Update to support multiple species with individual
-!                              scale factors and mask regions.
-!  14 Oct 2016 - C. Keller   - Now use HCO_EvalFld instead of HCO_GetPtr.
-!  24 Aug 2017 - M. Sulprizio- Remove support for GEOS-4, GEOS-5, MERRA
-!  30 Apr 2018 - C. Keller   - Add categories for wetlands and rice
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !
@@ -130,7 +122,7 @@ MODULE HCOX_CH4WETLAND_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -163,8 +155,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Sep 2014 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  30 Apr 2018 - C. Keller   - Rice and wetland emissions now have separate categories
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -329,7 +320,7 @@ CONTAINS
   END SUBROUTINE HCOX_CH4WETLAND_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -361,27 +352,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1 ) Adapted by Jérôme Drevet (3/06) from the BIOME-TG Wetland-Methane
 !       scheme provided by Jed O. Kaplan.
-!  (2 ) CH4 Emissions from Wetland depend on:
-!               a - Soil Carbon content.
-!               b - Vegetation type
-!               c - Wetland area (%)
-!               d - Soil moisture.
-!       a, b, c are taken from the LPJ, a vegetation model. Data are provided
-!       by J.O.Kaplan. Soil moisture is read from GEOS Met input files.
-!  (3 ) Corrected order of DO loops (bmy, 10/1/09)
-!  08 Feb 2012 - R. Yantosca - Treat GEOS-5.7.x in the same way as MERRA
-!  01 Mar 2012 - R. Yantosca - Now use GET_AREA_M2(I,J,L) from grid_mod.F90
-!  07 Mar 2012 - M. Payer    - Added ProTeX headers
-!  09 Nov 2012 - M. Payer    - Replaced all met field arrays with State_Met
-!                              derived type object
-!  26 Sep 2013 - R. Yantosca - Renamed GEOS_57 Cpp switch to GEOS_FP
-!  23 Jan 2014 - M. Sulprizio- Now zero wetland emissions if snow covers the
-!                              ground. Also updated MOIST_SCALE and EMIT_FACT.
-!                              (K. Wecht, C. Pickett-Heaps)
-!  12 Feb 2014 - K. Wecht    - Updated for 0.25 x 0.3125 NA grid
-!  09 Apr 2014 - R. Yantosca - Bug fix, extend #ifdef for MERRA met fields
-!  11 Sep 2014 - C. Keller   - Now a HEMCO extension
-!  12 Aug 2015 - R. Yantosca - Extend #ifdef for MERRA2 met fields
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -598,7 +569,7 @@ CONTAINS
   END SUBROUTINE WETLAND_EMIS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -636,11 +607,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  (1 ) CH4 emissions from rice calculated with a routine created by Jerome
 !       Drevet.  Adapted as its own subroutine by Kevin Wecht (6/03/09)
-!  (2 ) Corrected ordering of DO loops (bmy, 10/1/09)
-!  07 Mar 2012 - M. Payer    - Added ProTeX headers
-!  25 Mar 2013 - R. Yantosca - Now accept am_I_Root, Input_Opt, State_Chm, RC
-!  09 Apr 2014 - R. Yantosca - Bug fix, extend #ifdef for MERRA met fields
-!  11 Sep 2014 - C. Keller   - Now a HEMCO extension
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -683,7 +650,7 @@ CONTAINS
   END SUBROUTINE RICE_EMIS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -716,8 +683,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Sep 2014 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  30 Apr 2018 - C. Keller   - Rice and wetland emissions now have separate categories
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -860,7 +826,7 @@ CONTAINS
   END SUBROUTINE HCOX_CH4WETLAND_INIT
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -880,6 +846,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Sep 2014 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -892,7 +859,7 @@ CONTAINS
   END SUBROUTINE HCOX_CH4WETLAND_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -914,6 +881,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -946,7 +914,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -974,7 +942,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1036,7 +1004,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1055,6 +1023,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

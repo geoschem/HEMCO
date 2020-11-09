@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -44,7 +44,7 @@ MODULE HCO_Interp_Mod
 !
 ! !REVISION HISTORY:
 !  30 Dec 2014 - C. Keller - Initialization
-!  03 Feb 2015 - C. Keller   - Added REGRID_MAPA2A (from hcoio_dataread_mod.F90).
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -100,7 +100,7 @@ MODULE HCO_Interp_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -140,7 +140,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Feb 2015 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -447,7 +447,7 @@ CONTAINS
   END SUBROUTINE REGRID_MAPA2A
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -477,8 +477,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Sep 2015 - C. Keller   - Initial version
-!  22 May 2017 - R. Yantosca - Bug fix: Add MERRA2 to the #elif statement
-
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -526,7 +525,7 @@ CONTAINS
   END SUBROUTINE ModelLev_Check
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -595,10 +594,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  30 Dec 2014 - C. Keller   - Initial version
-!  24 Feb 2015 - R. Yantosca - Now exit if vertical interpolation isn't needed
-!  12 Aug 2015 - R. Yantosca - Vertically remap MERRA2 as we do for GEOS-FP
-!  24 Sep 2015 - C. Keller   - Added interpolation on edges.
-!  06 Dec 2015 - C. Keller   - Pass # of GEOS-5 levels to be mapped onto GEOS-4
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -875,7 +871,7 @@ CONTAINS
   END SUBROUTINE ModelLev_Interpolate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -926,8 +922,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  07 Jan 2015 - C. Keller   - Initial version.
-!  24 Sep 2015 - C. Keller   - Added option to interpolate edges.
-!  06 Dec 2015 - C. Keller   - Added input argument NZ
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1098,7 +1093,7 @@ CONTAINS
   END SUBROUTINE GEOS5_TO_GEOS4_LOWLEV
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1130,7 +1125,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  30 Dec 2014 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1189,7 +1184,7 @@ CONTAINS
   END SUBROUTINE COLLAPSE
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1218,6 +1213,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  30 Dec 2014 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

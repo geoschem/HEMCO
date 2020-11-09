@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -57,7 +57,7 @@ MODULE HCO_PRECISION_MOD
 !
 ! !REVISION HISTORY:
 !  04 Nov 2014 - M. Yannetti - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-----------------------------------------------------------------------------
 !BOC

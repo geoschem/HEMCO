@@ -8,11 +8,17 @@ assignees: ''
 ---
 
 # Ask a question about HEMCO
-
-To report a GEOS HEMCO bug or technical issue, please use [this issue template](https://github.com/geoschem/hemco/issues/new?assignees=&labels=&template=report-a-bug-or-technical-issue.md&title=%5BBUG%2FISSUE%5D) instead.
-
-Please keep in mind that the [GEOS-Chem Support Team](http://wiki.geos-chem.org/GEOS-Chem_Support_Team) focuses primarily on software development and user support rather than on scientific research. If your question is more scientific in nature (e.g. "What happens if I change this reaction rate from X to Y?", or "Is emissions inventory A better than inventory B?", etc.), then we recommend that you contact the relevant [GEOS-Chem Working Group(s)](http://www.geos-chem.org/geos_working_groups.html) for assistance. 
-
------- YOU CAN DELETE ALL OF THE TEXT ABOVE THIS LINE IF YOU WISH ------
-
-## Type your question:
+<!--- STOP!  BEFORE YOU SUBMIT THIS ISSUE, PLEASE READ THE FOLLOWING: -->
+<!--- -->
+<!--- 1. If this is the first time you are submitting a HEMCO issue via Github, we recommend that you first view -->
+<!--- our tutorial videos at this link: https://www.youtube.com/c/geoschem -->
+<!--- --->
+<!--- 2. Only post general HEMCO questions in this issue.
+<!--- To report a bug, start a discussion, or add a feature request, please use this link: -->
+<!--- https://github.com/geoschem/HEMCO/issues/new/choose -->
+<!--- --->
+<!--- 3. Contact the GEOS-Chem Working Groups directly for assistance with scientific questions --->
+<!--- Please keep in mind that the GEOS-Chem Support Team] focuses primarily on software development and user support -->
+<!--- rather than on scientific research. If your question is more scientific in nature (e.g. "What happens if I change -->
+<!--- this reaction rate from X to Y?", or "Is emissions inventory A better than inventory B?", etc.), then we recommend -->
+<!--- that you contact the relevant GEOS-Chem Working Group for assistance. -->

@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -56,16 +56,14 @@ MODULE HCO_GeoTools_Mod
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller   - Initialization
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  16 Jul 2014 - C. Keller   - Added HCO_ValidateLon
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -94,6 +92,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller - Initialization!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -124,7 +123,7 @@ CONTAINS
   END FUNCTION HCO_LandType_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -153,6 +152,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -183,7 +183,7 @@ CONTAINS
   END FUNCTION HCO_LandType_Dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -213,6 +213,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Jul 2014 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -266,7 +267,7 @@ CONTAINS
   END SUBROUTINE HCO_ValidateLon_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -297,6 +298,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Jul 2014 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -347,7 +349,7 @@ CONTAINS
   END SUBROUTINE HCO_ValidateLon_Dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -382,9 +384,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 May 2015 - C. Keller   - Initial version, based on GEOS-Chem's dao_mod.F.
-!  10 Jul 2015 - R. Yantosca - Corrected issues in ProTeX header
-!  02 Mar 2017 - R. Yantosca - Now compute local time as UTC + Longitude/15,
-!                              so as to avoid using Voronoi TZ's for SUNCOS
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -525,7 +525,7 @@ CONTAINS
 !EOC
 #if defined(ESMF_)
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -563,7 +563,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller - Initial version
-!  10 Jul 2015 - R. Yantosca - Corrected issues in ProTeX header
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -604,7 +604,7 @@ CONTAINS
 !EOC
 #else
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -639,7 +639,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller - Initial version
-!  10 Jul 2015 - R. Yantosca - Corrected issues in ProTeX header
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -724,7 +724,7 @@ CONTAINS
 !EOC
 #endif
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -770,7 +770,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Sep 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1058,6 +1058,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    ! If Box height not available make sure it is not associated
+    IF ( .NOT. EVAL_BXHEIGHT .OR. .NOT. FoundBXHEIGHT ) THEN
+       HcoState%Grid%BXHEIGHT_M%Val => NULL()
+    ENDIF
+
     ! ------------------------------------------------------------------
     ! Calculate various quantities: the goal is to have the following
     ! quantities defined: ZSFC, PSFC, PEDGE, BXHEIGHT_M.
@@ -1141,6 +1146,11 @@ CONTAINS
           ! Initialize error flags
           ERRZSFC = .FALSE.
           ERRBX   = .FALSE.
+
+          ! Make sure box height is initialized if it will be calculated
+          CALL HCO_ArrAssert( HcoState%Grid%BXHEIGHT_M, HcoState%NX, &
+                              HcoState%NY,              HcoState%NZ, RC )
+          IF ( RC /= HCO_SUCCESS ) RETURN
 
 !$OMP PARALLEL DO                                                      &
 !$OMP DEFAULT( SHARED )                                                &
@@ -1258,7 +1268,7 @@ CONTAINS
   END SUBROUTINE HCO_CalcVertGrid
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1293,6 +1303,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Sep 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1392,7 +1403,7 @@ CONTAINS
   END SUBROUTINE HCO_SetPBLm
 !EOC
 !!------------------------------------------------------------------------------
-!!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!!                   Harmonized Emissions Component (HEMCO)                    !
 !!------------------------------------------------------------------------------
 !!BOP
 !!
@@ -1421,6 +1432,7 @@ CONTAINS
 !!
 !! !REVISION HISTORY:
 !!  05 May 2016 - C. Keller - Initial version
+!!  See https://github.com/geoschem/hemco for complete history
 !!EOP
 !!------------------------------------------------------------------------------
 !!BOC
@@ -1474,7 +1486,7 @@ CONTAINS
 !  END SUBROUTINE HCO_CalcPBLlev3D
 !!EOC
 !!------------------------------------------------------------------------------
-!!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!!                   Harmonized Emissions Component (HEMCO)                    !
 !!------------------------------------------------------------------------------
 !!BOP
 !!
@@ -1503,6 +1515,7 @@ CONTAINS
 !!
 !! !REVISION HISTORY:
 !!  05 May 2016 - C. Keller - Initial version
+!!  See https://github.com/geoschem/hemco for complete history
 !!EOP
 !!------------------------------------------------------------------------------
 !!BOC

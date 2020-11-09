@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -72,24 +72,12 @@ MODULE HCO_TYPES_MOD
 !
   !=========================================================================
   ! HcoSpc: Derived type for HEMCO species
-  !
-  ! Notes:
-  ! **1 The emission molecular weight is the molecular weight of the
-  !     emitted compound. This value is only different to MW_g if the
-  !     emitted compound does not correspond to the transported species,
-  !     e.g. if emissions are in kg C4H10 but the corresponding species
-  !     is transported as mass Carbon.
-  ! **2 MolecRatio is the ratio between # of species molecules per emitted
-  !       molecule, e.g. 4 if emissions are kg C4H10 but model species
-  !       are kg C.
   !=========================================================================
   TYPE :: HcoSpc
      INTEGER                 :: HcoID      ! HEMCO species ID
      INTEGER                 :: ModID      ! Model species ID
      CHARACTER(LEN= 31)      :: SpcName    ! species names
-     REAL(hp)                :: MW_g       ! species molecular wt.     (g/mol)
-     REAL(hp)                :: EmMW_g     ! emission molecular wt.**1 (g/mol)
-     REAL(hp)                :: MolecRatio ! molecule emission ratio**2 (-)
+     REAL(hp)                :: MW_g       ! species molecular weight [g/mol]
      REAL(hp)                :: HenryK0    ! liq. over gas Henry const [M/atm]
      REAL(hp)                :: HenryCR    ! K0 temp. dependency [K]
      REAL(hp)                :: HenryPKA   ! pKa for Henry const. correction
@@ -539,12 +527,7 @@ MODULE HCO_TYPES_MOD
 !
 ! !REVISION HISTORY:
 !  15 Feb 2016 - C. Keller   - Initial version (collected from various modules)
-!  12 May 2017 - C. Keller   - Added option ScaleEmis
-!  05 Oct 2018 - R. Yantosca - Added HCO_UFLAG_ONCE parameter
-!  23 Oct 2018 - M. Sulprizio- Added derived type for external model species
-!                              to ConfigObj to facilitate reading GEOS-Chem
-!                              restart file via HEMCO.
-!  07 Feb 2019 - C. Keller   - Added ReadList read counter.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

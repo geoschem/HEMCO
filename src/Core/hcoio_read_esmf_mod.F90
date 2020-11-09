@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -29,16 +29,14 @@ MODULE HCOIO_Read_ESMF_mod
 !
 ! !REVISION HISTORY:
 !  22 Aug 2013 - C. Keller   - Initial version
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  22 Feb 2016 - C. Keller   - Split off from hcoio_dataread_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -73,7 +71,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Aug 2013 - C. Keller   - Initial version
-!  27 Aug 2014 - R. Yantosca - Err msg now displays hcoio_dataread_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -87,7 +85,7 @@ CONTAINS
     REAL,             POINTER  :: Ptr2D(:,:)
     TYPE(ESMF_State), POINTER  :: IMPORT
     CHARACTER(LEN=255)         :: MSG
-    CHARACTER(LEN=255), PARAMETER :: LOC = 'HCOIO_READ_ESMF (hcoi_read_esmf_mod.F90)'
+    CHARACTER(LEN=255), PARAMETER :: LOC = 'HCOIO_READ_ESMF (hcoio_read_esmf_mod.F90)'
     CHARACTER(LEN=ESMF_MAXSTR) :: Iam
 
     !=================================================================

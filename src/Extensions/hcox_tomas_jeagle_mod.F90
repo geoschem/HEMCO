@@ -1,6 +1,6 @@
 #if defined( TOMAS )
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -46,9 +46,7 @@ MODULE HCOX_TOMAS_Jeagle_Mod
 !
 ! !REVISION HISTORY:
 !  01 Oct 2014 - R. Yantosca - Initial version, based on TOMAS code
-!  20 May 2015 - J. Kodros   - Added fixes to integrate TOMAS with HEMCO
-!  02 JUL 2015 - J. Kodros   - Updating to use scale factors from Jeagle
-!                              et al. (2011)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !
@@ -77,7 +75,7 @@ MODULE HCOX_TOMAS_Jeagle_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -112,11 +110,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 Oct 2014 - R. Yantosca - Initial version, based on TOMAS SRCSALT30 code
-!  20 May 2015 - J. Kodros   - Add seasalt number & mass to HEMCO state
-!  20 May 2015 - R. Yantosca - Pass am_I_Root to HCO_EMISADD routine
-!  22 May 2015 - R. Yantosca - Extend up to 40 size bins
-!  10 Jul 2015 - R. Yantosca - Fixed minor issues in the ProTeX headers
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -315,7 +309,7 @@ CONTAINS
   END SUBROUTINE HCOX_TOMAS_Jeagle_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -347,8 +341,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Dec 2013 - C. Keller   - Initial version
-!  10 Jul 2015 - R. Yantosca - Fixed minor issues in ProTeX header
-!  24 Aug 2017 - M. Sulprizio- Remove support for GRID1x1
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -575,7 +568,7 @@ CONTAINS
   END SUBROUTINE HCOX_TOMAS_Jeagle_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -595,7 +588,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Dec 2013 - C. Keller   - Initial version
-!  20 May 2015 - J. Kodros   - Deallocate HcoIDs, TC1, TC2 arrays
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -605,7 +598,7 @@ CONTAINS
   END SUBROUTINE HCOX_TOMAS_Jeagle_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -627,6 +620,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -659,7 +653,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -687,7 +681,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -735,7 +729,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !BOP
@@ -755,7 +749,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

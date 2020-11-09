@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -103,12 +103,7 @@ MODULE HCO_Calc_Mod
 !
 ! !REVISION HISTORY:
 !  25 Aug 2012 - C. Keller   - Initial version.
-!  06 Jun 2014 - R. Yantosca - Add cosmetic changes in ProTeX headers
-!  08 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  29 Dec 2014 - C. Keller   - Added MASK_THRESHOLD parameter. Added option to
-!                              apply scale factors only over masked area.
-!  08 Apr 2015 - C. Keller   - Added option for fractional masks.
-!  11 May 2015 - C. Keller   - Added HCO_EvalFld interface.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -120,7 +115,7 @@ MODULE HCO_Calc_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -154,14 +149,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  25 Aug 2012 - C. Keller   - Initial Version
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX header
-!  03 Aug 2014 - C. Keller   - Bug fix for adding data to diagnostics. Now
-!                              explicitly check for new species OR category.
-!  21 Aug 2014 - C. Keller   - Added concentration.
-!  14 Apr 2016 - C. Keller   - Bug fix: avoid double-counting if multiple
-!                              regional inventories have the same hierarchy.
-!  19 Sep 2016 - R. Yantosca - Use .neqv. for LOGICAL comparisons
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -653,7 +641,7 @@ CONTAINS
   END SUBROUTINE HCO_CalcEmis
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -684,6 +672,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Mar 2015 - C. Keller   - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -704,7 +693,7 @@ CONTAINS
   END SUBROUTINE HCO_CheckDepv
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -757,18 +746,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  25 Aug 2012 - C. Keller   - Initial Version
-!  09 Nov 2012 - C. Keller   - MASK update. Masks are now treated
-!                              separately so that multiple masks can be
-!                              added.
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  07 Sep 2014 - C. Keller   - Mask update. Now set mask to zero as soon as
-!                              on of the applied masks is zero.
-!  03 Dec 2014 - C. Keller   - Now calculate time slice index on-the-fly.
-!  29 Dec 2014 - C. Keller   - Added scale factor masks.
-!  02 Mar 2015 - C. Keller   - Now check for missing values. Missing values are
-!                              excluded from emission calculation.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  11 May 2017 - C. Keller   - Added universal scaling
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1244,7 +1222,7 @@ CONTAINS
   END SUBROUTINE Get_Current_Emissions
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1290,14 +1268,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  25 Aug 2012 - C. Keller   - Initial Version
-!  09 Nov 2012 - C. Keller   - MASK update. Masks are now treated
-!                              separately so that multiple masks can be
-!                              added.
-!  06 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX header
-!  07 Sep 2014 - C. Keller   - Mask update. Now set mask to zero as soon as
-!                              on of the applied masks is zero.
-!  02 Mar 2015 - C. Keller   - Now check for missing values
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1664,7 +1635,7 @@ CONTAINS
   END SUBROUTINE Get_Current_Emissions_B
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1704,7 +1675,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2015 - C. Keller   - Initial Version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1783,7 +1754,7 @@ CONTAINS
   END SUBROUTINE HCO_EvalFld_3D
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1824,8 +1795,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2015 - C. Keller   - Initial Version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  01 Nov 2016 - C. Keller   - Added error trap for UseLL
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1921,7 +1891,7 @@ CONTAINS
   END SUBROUTINE HCO_EvalFld_2D
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1952,6 +1922,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  09 Apr 2015 - C. Keller   - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1998,7 +1969,7 @@ CONTAINS
   END SUBROUTINE GetMaskVal
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2036,7 +2007,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Jun 2015 - C. Keller   - Initial Version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2131,7 +2102,7 @@ CONTAINS
   END SUBROUTINE HCO_MaskFld
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2167,6 +2138,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 May 2016 - C. Keller   - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2242,7 +2214,7 @@ CONTAINS
   END SUBROUTINE GetVertIndx
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2273,6 +2245,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Jan 2018 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2305,7 +2278,7 @@ CONTAINS
 END FUNCTION GetEmisL
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2334,6 +2307,7 @@ END FUNCTION GetEmisL
 !
 ! !REVISION HISTORY:
 !  26 Jan 2018 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2359,7 +2333,7 @@ END FUNCTION GetEmisL
 END FUNCTION GetEmisLUnit
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2396,6 +2370,7 @@ END FUNCTION GetEmisLUnit
 !
 ! !REVISION HISTORY:
 !  09 May 2016 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2405,7 +2380,7 @@ END FUNCTION GetEmisLUnit
     INTEGER                 :: L
     REAL(hp)                :: altb, altt
     CHARACTER(LEN=255)      :: MSG
-    CHARACTER(LEN=255)      :: LOC = 'GetIdx (hco_geotools_mod.F90)'
+    CHARACTER(LEN=255)      :: LOC = 'GetIdx (hco_calc_mod.F90)'
 
     !=================================================================
     ! HCO_GetVertIndx begins here
@@ -2476,7 +2451,7 @@ END FUNCTION GetEmisLUnit
   END SUBROUTINE GetIdx
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2527,16 +2502,17 @@ END FUNCTION GetEmisLUnit
 !
 ! !REVISION HISTORY:
 !  06 May 2016 - C. Keller   - Initial Version
-!  16 Jul 2018 - C. Keller   - Bug fix: get PBL height in m, properly compute
-!                              fractions in lowest / highest level.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER    :: L1
-    REAL(hp)   :: h1, h2, lh, dh
+    INTEGER            :: L1
+    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: LOC = 'GetDilFact (hco_calc_mod.F90)'
+    REAL(hp)           :: h1, h2, lh, dh
 
     !=================================================================
     ! GetDilFact begins here
@@ -2594,11 +2570,12 @@ END FUNCTION GetEmisLUnit
        IF ( h2 > h1 ) THEN
           DilFact = dh / ( h2 - h1 )
        ELSE
-          !write(*,*) 'Warning: GetDilFact h2 not greater than h1!!! ',LowLL,UppLL,L,EmisL1,EmisL2,EmisL1Unit,EmisL2Unit
-          DilFact = 1.0_hp
+          MSG = 'GetDilFact h2 not greater than h1'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
 
-    ! Approxiate dilution factor otherwise
+    ! Approximate dilution factor otherwise
     ELSE
 
        DilFact = 1.0_hp / REAL(UppLL-LowLL+1,hp)

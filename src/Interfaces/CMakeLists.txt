@@ -9,5 +9,11 @@ add_subdirectory(Standalone)
 # if GCHP CTM:
 if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
     add_subdirectory(MAPL_ESMF)
-    add_subdirectory(GCHPctm)
+endif()
+
+# if org GEOS:
+# option (BUILD_GEOS_INTERFACE FALSE)
+
+if (BUILD_GEOS_INTERFACE)
+    add_subdirectory(GEOS)
 endif()

@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -167,16 +167,14 @@ MODULE HCO_Arr_Mod
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller   - Initialization
-!  01 Jul 2014 - R. Yantosca - Corrected errors in ProTeX headers
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Oct 2014 - C. Keller   - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -204,7 +202,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -224,7 +222,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrInit_2D_Hp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -252,7 +250,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -272,7 +270,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrInit_2D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -300,7 +298,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -320,7 +318,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrInit_2D_I
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -349,7 +347,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -368,7 +366,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrInit_3D_Hp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -397,7 +395,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -416,7 +414,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrInit_3D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -445,7 +443,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -475,7 +473,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrVecInit_2D_Hp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -504,7 +502,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -534,7 +532,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrVecInit_2D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -564,7 +562,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -594,7 +592,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrVecInit_3D_Hp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -624,7 +622,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -654,7 +652,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrVecInit_3D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -683,7 +681,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -716,7 +714,7 @@ CONTAINS
   END SUBROUTINE HCO_ValInit_2D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -745,7 +743,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -777,7 +775,7 @@ CONTAINS
   END SUBROUTINE HCO_ValInit_2D_Dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -806,7 +804,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -838,7 +836,7 @@ CONTAINS
   END SUBROUTINE HCO_ValInit_2D_I
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -868,7 +866,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -900,7 +898,7 @@ CONTAINS
   END SUBROUTINE HCO_ValInit_3D_Dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -930,7 +928,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -962,7 +960,7 @@ CONTAINS
   END SUBROUTINE HCO_ValInit_3D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -990,7 +988,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 May 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1014,7 +1012,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrAssert_3D_Hp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1042,7 +1040,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 May 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1066,7 +1064,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrAssert_3D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1093,7 +1091,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 May 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1117,7 +1115,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrAssert_2D_Hp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1144,7 +1142,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 May 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1168,7 +1166,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrAssert_2D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1195,7 +1193,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 May 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1219,7 +1217,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrAssert_2D_I
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1240,7 +1238,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1267,7 +1265,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrCleanup_2D_Hp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1288,7 +1286,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1315,7 +1313,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrCleanup_2D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1336,7 +1334,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1363,7 +1361,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrCleanup_2D_I
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1384,7 +1382,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1411,7 +1409,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrCleanup_3D_Hp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1432,7 +1430,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1459,7 +1457,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrCleanup_3D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1480,7 +1478,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1511,7 +1509,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrVecCleanup_2D_Hp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1532,7 +1530,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1563,7 +1561,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrVecCleanup_2D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1584,7 +1582,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1615,7 +1613,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrVecCleanup_3D_Hp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1636,7 +1634,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1667,7 +1665,7 @@ CONTAINS
   END SUBROUTINE HCO_ArrVecCleanup_3D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1691,7 +1689,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1703,7 +1701,7 @@ CONTAINS
   END SUBROUTINE HCO_ValCleanup_2D_Dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1727,7 +1725,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1739,7 +1737,7 @@ CONTAINS
   END SUBROUTINE HCO_ValCleanup_2D_Sp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1763,7 +1761,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1778,7 +1776,7 @@ CONTAINS
   END SUBROUTINE HCO_ValCleanup_2D_I
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1802,7 +1800,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1814,7 +1812,7 @@ CONTAINS
   END SUBROUTINE HCO_ValCleanup_3D_Dp
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1838,7 +1836,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  01 Oct 2014 - C. Keller - Added Alloc flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
