@@ -928,7 +928,7 @@ CONTAINS
                           'species definition line is expected ', &
                           'to have 8 entries (ID, Name, MW, ', &
                           'K0, CR, PKA, e.g.: ', &
-                          '1 CO   28.0 28.0 1.0 0.0 0.0 0.0'
+                          '1 CO   28.0 0.0 0.0 0.0'
              CALL HCO_Error ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
@@ -941,11 +941,11 @@ CONTAINS
                 READ( DUM(LOW:UPP), * ) ModelSpecNames(N)
              CASE ( 3 )
                 READ( DUM(LOW:UPP), * ) ModelSpecMW(N)
-             CASE ( 6 )
+             CASE ( 4 )
                 READ( DUM(LOW:UPP), * ) ModelSpecK0(N)
-             CASE ( 7 )
+             CASE ( 5 )
                 READ( DUM(LOW:UPP), * ) ModelSpecCR(N)
-             CASE ( 8 )
+             CASE ( 6 )
                 READ( DUM(LOW:UPP), * ) ModelSpecPKA(N)
           END SELECT
 
