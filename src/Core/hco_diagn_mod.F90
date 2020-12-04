@@ -113,6 +113,7 @@ MODULE HCO_Diagn_Mod
   USE HCO_Arr_Mod
   USE HCO_Clock_Mod
   USE HCO_State_Mod, ONLY : HCO_State
+  USE MAPL_CommsMod, ONLY : MAPL_am_I_Root
 
   IMPLICIT NONE
   PRIVATE
@@ -449,6 +450,71 @@ CONTAINS
     ! Pass this collection ID to fixed variable for easy further
     ! reference to this collection
     HcoState%Diagn%HcoDiagnIDRestart = CollectionID
+#ifdef ADJOINT
+    IF ( HcoState%isAdjoint ) THEN
+    ! ------------------------------------------------------------------
+    ! Default diagnostics
+    ! ------------------------------------------------------------------
+    CALL DiagnCollection_GetDefaultDelta ( HcoState, &
+                                           deltaYMD,  deltaHMS, RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Try to get prefix from configuration file
+    CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnPrefix', &
+                     OptValChar=DiagnPrefix, FOUND=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( .NOT. FOUND ) THEN
+#if defined( MODEL_GEOS )
+       DiagnPrefix = 'HEMCO_Diagnostics.$YYYY$MM$DD$HH$MN.nc'
+#else
+       DiagnPrefix = 'HEMCO_diagnostics'
+#endif
+    ENDIF
+
+    ! Output time stamp location
+    CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnTimeStamp', &
+                     OptValChar=OutTimeStampChar, FOUND=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( .NOT. FOUND ) THEN
+       OutTimeStamp = HcoDiagnStart
+    ELSE
+       CALL TRANLC( OutTimeStampChar )
+       IF (     TRIM(OutTimeStampChar) == 'start' ) THEN
+          OutTimeStamp = HcoDiagnStart
+
+       ELSEIF ( TRIM(OutTimeStampChar) == 'mid'   ) THEN
+          OutTimeStamp = HcoDiagnMid
+
+       ELSEIF ( TRIM(OutTimeStampChar) == 'end'   ) THEN
+          OutTimeStamp = HcoDiagnEnd
+
+       ELSE
+          WRITE(MSG,*) 'Unrecognized output time stamp location: ', &
+             TRIM(OutTimeStampChar), ' - will use default (start)'
+          CALL HCO_WARNING(HcoState%Config%Err,MSG,RC,THISLOC=LOC,WARNLEV=1)
+          OutTimeStamp = HcoDiagnStart
+       ENDIF 
+    ENDIF
+
+    CALL DiagnCollection_Create( HcoState%Diagn,                           &
+                                 NX           = HcoState%NX,               &
+                                 NY           = HcoState%NY,               &
+                                 NZ           = HcoState%NZ,               &
+                                 TS           = HcoState%TS_EMIS,          &
+                                 AM2          = HcoState%Grid%AREA_M2%Val, &
+                                 COL          = CollectionID,              & 
+                                 PREFIX       = TRIM(DiagnPrefix),         &
+                                 deltaYMD     = deltaYMD,                  & 
+                                 deltaHMS     = deltaHMS,                  & 
+                                 OutTimeStamp = OutTimeStamp,              & 
+                                 RC           = RC                          )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Pass this collection ID to fixed variable for easy further 
+    ! reference to this collection
+    HcoState%Diagn%HcoDiagnIDAdjoint = CollectionID
+    endif
+#endif
 
     ! ------------------------------------------------------------------
     ! Manual diagnostics
@@ -600,6 +666,26 @@ CONTAINS
           HcoID = HCO_GetHcoID( TRIM(SpcName), HcoState )
           IF ( HcoID <= 0 ) CYCLE
 
+#ifdef ADJOINT
+          if ( cName(1:6) == 'SFEmis' ) then
+          ! ------------------------------------------------------------------
+          ! Add it to the HEMCO diagnostics collection
+          ! ------------------------------------------------------------------
+          CALL Diagn_Create( HcoState,                      &
+                             cName     = cName,             &
+                             long_name = lName,             &
+                             HcoID     = HcoID,             &  
+                             ExtNr     = ExtNr,             &  
+                             Cat       = Cat,               &  
+                             Hier      = Hier,              &  
+                             SpaceDim  = SpaceDim,          &  
+                             OutUnit   = OutUnit,           &
+                             OutOper   = 'CumulSum',        &
+                             AutoFill  = 1,                 &  
+                             COL       = HcoState%Diagn%HcoDiagnIDAdjoint, &
+                             RC        = RC                  )
+          else
+#endif
           ! ------------------------------------------------------------------
           ! Add it to the HEMCO diagnostics collection
           ! ------------------------------------------------------------------
@@ -615,6 +701,9 @@ CONTAINS
                              AutoFill  = 1,                 &
                              COL       = HcoState%Diagn%HcoDiagnIDDefault, &
                              RC        = RC                  )
+#ifdef ADJOINT
+          endif
+#endif
           IF ( RC /= HCO_SUCCESS ) RETURN
 
        ENDDO
@@ -1035,6 +1124,12 @@ CONTAINS
              ThisDiagn%AreaScal = 1.0_hp / Scal
           ENDIF
 
+          IF (HCO_IsVerb(HcoState%Config%Err,3)) THEN
+             WRITE(MSG, *) '  ThisDiagn%AreaScal = ', ThisDiagn%AreaScal
+             CALL HCO_MSG( HcoState%Config%Err, MSG)
+             WRITE(MSG, *) '  ThisDiagn%MassScal = ', ThisDiagn%MassScal
+             CALL HCO_MSG( HcoState%Config%Err, MSG)
+          ENDIF
           !----------------------------------------------------------------
           ! Determine the normalization factors applied to the diagnostics
           ! before they are written out. Diagnostics are always stored
@@ -1861,6 +1956,15 @@ CONTAINS
              CYCLE
           ENDIF
 
+          IF (HCO_IsVerb(HcoState%Config%Err, 3)) THEN
+             WRITE(MSG,*) 'ThisDiagn%cName:    ', trim(ThisDiagn%cName)
+             CALL HCO_MSG(HcoState%Config%Err, MSG)
+             WRITE(MSG,*) 'ThisDiagn%AvgFlag:  ', ThisDiagn%AvgFlag
+             CALL HCO_MSG(HcoState%Config%Err, MSG)
+             WRITE(MSG,*) 'ThisDiagn%SpaceDim: ', ThisDiagn%SpaceDim
+             CALL HCO_MSG(HcoState%Config%Err, MSG)
+          ENDIF
+
           ! Increase counter
           CNT = CNT + 1
 
@@ -1909,6 +2013,7 @@ CONTAINS
                 IF ( AS /= 0 ) THEN
                    CALL HCO_ERROR( HcoState%Config%Err,&
                                    'Allocation error Arr3D', RC, THISLOC=LOC )
+                   if (MAPL_am_I_Root()) WRITE(*,*) 'Allocation error Arr3D_HP'
                    RETURN
                 ENDIF
                 Arr3D = Array3D_HP
@@ -1917,6 +2022,7 @@ CONTAINS
                 IF ( AS /= 0 ) THEN
                    CALL HCO_ERROR( HcoState%Config%Err,&
                                    'Allocation error Arr3D', RC, THISLOC=LOC )
+                   if (MAPL_am_I_Root()) WRITE(*,*) 'Allocation error Arr3D'
                    RETURN
                 ENDIF
                 Arr3D = Array3D
@@ -1930,6 +2036,7 @@ CONTAINS
                 IF ( AS /= 0 ) THEN
                    CALL HCO_ERROR( HcoState%Config%Err,&
                                    'Allocation error Arr2D', RC, THISLOC=LOC )
+                   if (MAPL_am_I_Root()) WRITE(*,*) 'Allocation error Arr2D_HP'
                    RETURN
                 ENDIF
                 Arr2D = Array2D_HP
@@ -1938,6 +2045,7 @@ CONTAINS
                 IF ( AS /= 0 ) THEN
                    CALL HCO_ERROR( HcoState%Config%Err,&
                                    'Allocation error Arr2D', RC, THISLOC=LOC )
+                   if (MAPL_am_I_Root()) WRITE(*,*) 'Allocation error Arr2D'
                    RETURN
                 ENDIF
                 Arr2D = Array2D
@@ -2034,6 +2142,7 @@ CONTAINS
                    ENDIF
                 ELSE
                    MSG = 'No array passed for updating ' // TRIM(ThisDiagn%cName)
+                   if (MAPL_am_I_Root()) WRITE(*,*) MSG
                    CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
@@ -2284,6 +2393,7 @@ CONTAINS
     ! Get collection number
     CALL DiagnCollection_DefineID( HcoState%Diagn, PS, RC, COL=COL, &
                                    ThisColl=ThisColl, HcoState=HcoState )
+    IF ( RC /= HCO_SUCCESS .and. MAPL_am_I_Root()) WRITE(*,*) 'Failed to get collection number ', col
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     ! Set AutoFill flag
@@ -2366,6 +2476,7 @@ CONTAINS
     ! Before returning container, make sure its data is ready for output.
     IF ( ASSOCIATED (DgnCont ) ) THEN
        CALL DiagnCont_PrepareOutput ( HcoState, DgnCont, RC )
+       IF ( RC /= HCO_SUCCESS .and. MAPL_am_I_Root() ) WRITE(*,*) 'DiagnCont_PrepareOutput returned RC: ', RC, ' for Col: ', DgnCont%CollectionID
        IF ( RC /= HCO_SUCCESS ) RETURN
        FLAG = HCO_SUCCESS
 
@@ -2978,12 +3089,14 @@ CONTAINS
     !-----------------------------------------------------------------------
     CALL DiagnCollection_Find( HcoState%Diagn, DgnCont%CollectionID, &
                                FOUND, RC, ThisColl=ThisColl )
+    IF ( RC /= HCO_SUCCESS .and. MAPL_am_I_Root() ) WRITE(*,*) 'DiagnCollection_Find failed'
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     ! This should never happen
     IF ( .NOT. FOUND .OR. .NOT. ASSOCIATED(ThisColl) ) THEN
        WRITE(MSG,*) 'Diagnostics ', TRIM(DgnCont%cName), ' has invalid ', &
                     'collection ID of ', DgnCont%CollectionID
+       if (MAPL_am_I_Root()) WRITE(*,*) MSG
        CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
@@ -2997,6 +3110,7 @@ CONTAINS
        IF ( DgnCont%SpaceDim == 2 ) THEN
           CALL HCO_ArrAssert( DgnCont%Arr2D, ThisColl%NX, &
                               ThisColl%NY,   RC            )
+          IF ( RC /= HCO_SUCCESS .and. MAPL_am_I_Root() ) WRITE(*,*) 'HCO_ArrAssert 2d failed'
           IF ( RC /= HCO_SUCCESS ) RETURN
 
           ! Make sure it's zero
@@ -3005,6 +3119,7 @@ CONTAINS
        ELSEIF ( DgnCont%SpaceDim == 3 ) THEN
           CALL HCO_ArrAssert( DgnCont%Arr3D, ThisColl%NX, &
                               ThisColl%NY,   ThisColl%NZ, RC )
+          IF ( RC /= HCO_SUCCESS .and. MAPL_am_I_Root() ) WRITE(*,*) 'HCO_ArrAssert 3d failed'
           IF ( RC /= HCO_SUCCESS ) RETURN
 
           ! Make sure it's zero
@@ -3051,6 +3166,7 @@ CONTAINS
 
        ! Get current month and year
        CALL HcoClock_Get( HcoState%Clock, cYYYY=YYYY, cMM=MM, RC=RC )
+       IF ( RC /= HCO_SUCCESS .and. MAPL_am_I_Root() ) WRITE(*,*) 'HcoClock_Get failed'
        IF ( RC /= HCO_SUCCESS ) RETURN
 
        ! Days per year
@@ -3084,6 +3200,7 @@ CONTAINS
        ELSE
           WRITE(MSG,*) 'Illegal time averaging of ', DgnCont%TimeAvg, &
                        ' for diagnostics ', TRIM(DgnCont%cName)
+          if (MAPL_am_I_Root()) WRITE(*,*) TRIM(MSG)
           CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
@@ -3093,6 +3210,7 @@ CONTAINS
     ! Error trap
     IF ( norm1 <= 0.0_hp ) THEN
        MSG = 'Illegal normalization factor: ' // TRIM(DgnCont%cName)
+       if (MAPL_am_I_Root()) WRITE(*,*) TRIM(MSG)
        CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
@@ -3106,6 +3224,16 @@ CONTAINS
 
     ! For 3D:
     IF ( DgnCont%SpaceDim == 3 ) THEN
+       IF (MAPL_am_I_Root()) THEN
+          WRITE(*,*) '  ', TRIM(DgnCont%cName), ' 3D', &
+               ' Scaling: ', totScal
+          IF ( DgnCont%AreaFlag == 0) THEN
+             IF ( ASSOCIATED(DgnCont%Arr2D) ) THEN
+                WRITE(*,*) '  ', TRIM(DgnCont%cName), &
+                     ' Appying area scaling factor '
+             ENDIF
+          ENDIF
+       ENDIF
        DO J = 1, ThisColl%NY
        DO I = 1, ThisColl%NX
 
@@ -3127,6 +3255,16 @@ CONTAINS
 
     ! For 2D:
     ELSEIF ( DgnCont%SpaceDim == 2 ) THEN
+       IF (MAPL_am_I_Root()) THEN
+          WRITE(*,*) '  ', TRIM(DgnCont%cName), ' 2D', &
+               ' Scaling: ', totScal
+          IF ( DgnCont%AreaFlag == 0) THEN
+             IF ( ASSOCIATED(DgnCont%Arr2D) ) THEN
+                WRITE(*,*) '  ', TRIM(DgnCont%cName), &
+                     ' Appying area scaling factor '
+             ENDIF
+          ENDIF
+       ENDIF
        DO J = 1, ThisColl%NY
        DO I = 1, ThisColl%NX
 
@@ -3149,6 +3287,10 @@ CONTAINS
 
     ! For 1D:
     ELSE
+       IF (MAPL_am_I_Root()) THEN
+          WRITE(*,*) '  ', TRIM(DgnCont%cName), ' 1D', &
+               ' Scaling: ', totScal
+       ENDIF
        DgnCont%Scalar = DgnCont%Scalar * totscal
 
     ENDIF
@@ -4636,6 +4778,9 @@ CONTAINS
        Diagn%HcoDiagnIDDefault = -999
        Diagn%HcoDiagnIDRestart = -999
        Diagn%HcoDiagnIDManual  = -999
+#ifdef ADJOINT
+       Diagn%HcoDiagnIDAdjoint = -999
+#endif
        Diagn%nnCollections     = 0
     ENDIF
 

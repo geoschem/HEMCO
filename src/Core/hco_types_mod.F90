@@ -534,6 +534,9 @@ MODULE HCO_TYPES_MOD
      INTEGER                        :: HcoDiagnIDDefault = -999
      INTEGER                        :: HcoDiagnIDRestart = -999
      INTEGER                        :: HcoDiagnIDManual  = -999
+#ifdef ADJOINT
+     INTEGER                        :: HcoDiagnIDAdjoint = -999
+#endif
      INTEGER                        :: nnCollections     = 0
   END TYPE DiagnBundle
 !
