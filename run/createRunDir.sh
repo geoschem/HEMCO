@@ -225,7 +225,7 @@ if [ -z "$1" ]; then
     
     read -e rundir_name
     if [[ -z "${rundir_name}" ]]; then
-	rundir_name=hemco_${grid_name}_"${met_name,,}"
+	rundir_name=hemco_${grid_res}_"${met_name,,}"
 	printf "  -- Using default directory name ${rundir_name}\n"
     fi
 else
