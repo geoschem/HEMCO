@@ -1,46 +1,123 @@
 
-Creating a run directory
+Creating a Run Directory
 ========================
 
-First, make a high-level directory to contain all the run directories associated with this version
-of GCHP. This should be somewhere with plenty of space, as all run output will be in subdirectories
-of this directory. You can optionally create one or more build directories here for storage and easy
-access to GCHP builds specific to a certain version (see previous section on building GCHP).
+.. note::
+   Another useful resource for HEMCO run directory creation instructions is our `YouTube tutorial <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`_.
+
+HEMCO run directories are created from within the source code.
+A new run directory should be created for each different version of HEMCO you use. 
+Git version information is logged to file :file:`rundir.version` within the run directory upon creation.
+
+To create a run directory, navigate to the :file:`run/` subdirectory of the source code and execute shell script :file:`createRunDir.sh`.
 
 .. code-block:: console
 
-   $ mkdir /scratch/testruns/GCHP/13.0.0
-
-Next, enter the :file:`run/` subdirectory in :file:`Code.GCHP`. Do not edit this directory - this is the template for
-all other run directories! Instead, use the script there to create a new run directory, following
-the instructions printed to the screen.
-
-
-.. code-block:: console
-
-   $ cd Code.GCHP
-   $ cd run
+   $ cd HEMCO/run
    $ ./createRunDir.sh
 
-For example, to create a standard (full-chemistry) run directory, choose (actual responses in brackets):
+During the course of script execution you will be asked a series of questions:
 
-* Standard simulation (2)
-* MERRA2 meteorology (2)
-* The directory you just created in step 1 (:file:`/scratch/rundirs/GCHP/13.0.0`)
-* A distinctive run directory name (fullchem_first_test)
-* Use git to track run directory changes (y)
+Enter ExtData path
+------------------
 
-This will create and set up a full-chemistry, MERRA-2, GCHP run directory in
-:file:`/scratch/testruns/GCHP/13.0.0/fullchem_first_test`. Note that these options only affect the run
-directory contents, and NOT the build process - the same GCHP executable is usable for almost all
-simulation types and supported met data options.
+The first time you create a HEMCO run directory on your system you will be prompted for a path to GEOS-Chem shared data directories,
+which are also used by HEMCO.
+The path should include the name of your :file:`ExtData/` directory and should not contain symbolic links. 
+The path you enter will be stored in file :file:`~/.geoschem/config` in your home directory as environment variable :envvar:`GC_DATA_ROOT`. 
+If that file does not already exist it will be created for you. 
+When creating additional run directories you will only be prompted again if the file is missing or if the path within it is not valid.
 
-Navigate to your new run directory, and set it up for the first run:
+.. code-block:: none
 
-.. code-block:: console
+   -----------------------------------------------------------
+   Enter path for ExtData:
+   -----------------------------------------------------------
 
-   $ cd /scratch/testruns/GCHP/13.0.0/fullchem_first_test
-   $ ./setEnvironment /home/envs/gchpctm_ifort18.0.5_openmpi4.0.1.env # This sets up the gchp.env symlink
-   $ source gchp.env # Set up build environment, if not already done
-   $ cp runScriptSamples/gchp.run . # Set up run script - your system is likely to be different! See also gchp.local.run.
-   $ cp CodeDir/build/bin/geos . # Get the compiled executable
+Choose meteorology source
+-------------------------
+
+Enter the integer number that is next to the input meteorology source you would like to use.
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Choose meteorology source:
+   -----------------------------------------------------------
+     1. MERRA-2 (Recommended)
+     2. GEOS-FP
+
+Choose horizontal resolution
+----------------------------
+
+Enter the integer number that is next to the horizontal resolution you would like to use.
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Choose horizontal resolution:
+   -----------------------------------------------------------
+     1. 4.0 x 5.0
+     2. 2.0 x 2.5
+     3. 0.5 x 0.625
+     4. 0.25 x 0.3125
+     5. Custom
+
+
+Enter HEMCO_Config.rc path
+--------------------------
+
+Provide the path to a HEMCO_Config.rc file with your emissions settings. This is typically
+obtained from another model (e.g. :file:`~/GEOS-Chem/run/HEMCO_Config.rc.templates/HEMCO_Config.rc.fullchem`)
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Enter path to the HEMCO_Config.rc file with your emissions settings.
+   
+   NOTE: This may be a HEMCO_Config.rc file from a GEOS-Chem run directory
+   or a HEMCO_Config.template file from the GEOS-Chem source code repository.
+   -----------------------------------------------------------
+
+Enter run directory path
+------------------------
+
+Enter the target path where the run directory will be stored. You will be prompted to enter a new path if the one you enter does not exist.
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Enter path where the run directory will be created:
+   -----------------------------------------------------------
+
+Enter run directory name
+------------------------
+
+Enter the run directory name, or accept the default. You will be prompted for a new name if a run directory of the same name already exists at the target path.
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Enter run directory name, or press return to use default:
+   
+   NOTE: This will be a subfolder of the path you entered above.
+   -----------------------------------------------------------
+
+Enable version control (optional)
+---------------------------------
+
+Enter whether you would like your run directory tracked with git version control. 
+With version control you can keep track of exactly what you changed relative to the original settings. 
+This is useful for trouble-shooting as well as tracking run directory feature changes you wish to migrate back to the standard model.
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Do you want to track run directory changes with git? (y/n)
+   -----------------------------------------------------------
+
+If a run directory has successfully been created, you should see something like:
+
+.. code-block:: none
+
+   Created /scratch/rundirs/hemco_4x5_merra2
