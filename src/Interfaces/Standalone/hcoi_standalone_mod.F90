@@ -609,21 +609,7 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! Phase 2: Compute emissions (skip for dry-run)
        IF ( notDryRun ) THEN
-          CALL HCO_Run( HcoState, 2, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-             ErrMsg = 'Error encountered in routine "Hco_Run", phase 2!'
-             CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
-             RETURN
-          ENDIF
-       ENDIF
-
-       ! ================================================================
-       ! Run HCO extensions
-       ! ================================================================
-       IF ( notDryRun ) THEN
-
           ! Set ExtState fields (skip for dry-run)
           CALL ExtState_SetFields ( HcoState, ExtState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
@@ -639,7 +625,19 @@ CONTAINS
              CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
+
+          ! Phase 2: Compute emissions (skip for dry-run)
+          CALL HCO_Run( HcoState, 2, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in routine "Hco_Run", phase 2!'
+             CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
        ENDIF
+
+       ! ================================================================
+       ! Run HCO extensions
+       ! ================================================================
 
        ! Execute all enabled emission extensions. Emissions will be
        ! added to corresponding flux arrays in HcoState.
