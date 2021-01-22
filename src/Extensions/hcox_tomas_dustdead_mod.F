@@ -136,11 +136,16 @@
       TYPE(MyInst), POINTER :: AllInst => NULL()
 
       !---------------------------------------
+      ! Number of TOMAS dust bins
+      ! This is now defined in HcoState
+      !---------------------------------------
+      INTEGER               :: NBINS
+
+      !---------------------------------------
       ! MODULE PARAMETER
       !---------------------------------------
       ! JKodros - want to change number of bins, but cant reference
       ! HcoState%MicroPhys?
-      INTEGER, PARAMETER   :: NBINS = 15      ! # of dust bins
       INTEGER, PARAMETER   :: NN_SFCTYP = 28
 
       ! Fundamental physical constants
@@ -617,6 +622,9 @@
       I = HcoState%NX
       J = HcoState%NY
 
+      ! Set the global NBINS variable with the # of bins from HcoState
+      NBINS = HcoState%MicroPhys%nBins
+
       !-----------------------------------------------------------------
       ! Get species IDs
       !-----------------------------------------------------------------
@@ -627,7 +635,7 @@
 
       ! Sanity check
       IF ( nSpc /= NBINS ) THEN
-         MSG = 'Dust DEAD model does not have four species!'
+         MSG = 'Number of dust species do not match number of bins!'
          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
          RETURN
       ENDIF
