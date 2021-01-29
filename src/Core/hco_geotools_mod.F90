@@ -167,12 +167,24 @@ CONTAINS
     ! HCO_LANDTYPE begins here
     !--------------------------
 
+    ! Kludge: Override albedo over boxes at night as otherwise ALBD is forcefully set to 1 by CESM
+    ! (hplin with feedback from tmmf, 1/29/21)
+
     ! Water:
+#if !defined( HEMCO_CESM )
     IF ( NINT(WLI) == 0 .AND. Albedo < albd_ice ) THEN
+#else
+    IF ( NINT(WLI) == 0 ) THEN
+#endif
        LandType = 0
 
     ! Land:
+
+#if !defined( HEMCO_CESM )
     ELSEIF ( NINT(WLI) == 1 .AND. Albedo < albd_ice ) THEN
+#else
+    ELSEIF ( NINT(WLI) == 1 ) THEN
+#endif
        LandType = 1
 
     ! Ice:
