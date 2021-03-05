@@ -707,8 +707,8 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE Get_Current_Emissions( HcoState,   BaseDct,   &
-                                    nI, nJ, nL, OUTARR_3D, MASK, RC, UseLL )
+  SUBROUTINE Get_Current_Emissions( HcoState, BaseDct,   nI,   nJ,           &
+                                    nL,       OUTARR_3D, MASK, RC, UseLL    )
 !
 ! !USES:
 !
@@ -881,11 +881,11 @@ CONTAINS
        ENDIF
     ENDIF
 
-    ! Throw an error if boxheight is missing and the units are in meters
+    ! Throw an error if boxheight is missing and the units are in PBL frac
     IF ( LevDct1_Unit == HCO_EMISL_PBL  .or.                                &
          LevDct2_Unit == HCO_EMISL_PBL ) THEN
        IF ( .NOT. ASSOCIATED(HcoState%Grid%PBLHEIGHT%Val) ) THEN
-          MSG = 'Boxheight (in meters) is missing in HEMCO state'
+          MSG = 'Boundary layer height is missing in HEMCO state'
           CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
@@ -1061,10 +1061,10 @@ CONTAINS
        ERROR = 0
 
        ! Loop over all latitudes and longitudes
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale ) &
-!$OMP SCHEDULE( DYNAMIC, 1 )
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale )&
+       !$OMP SCHEDULE( DYNAMIC, 1                                           )
        DO J = 1, nJ
        DO I = 1, nI
 
@@ -1241,7 +1241,7 @@ CONTAINS
 
        ENDDO !I
        ENDDO !J
-!$OMP END PARALLEL DO
+       !$OMP END PARALLEL DO
 
        ! error check
        IF ( ERROR > 0 ) THEN
@@ -2136,10 +2136,10 @@ CONTAINS
        ENDIF
 
        ! Do for every grid box
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J                                                  ) &
-!$OMP SCHEDULE( DYNAMIC )
+       !$OMP PARALLEL DO            &
+       !$OMP DEFAULT( SHARED      ) &
+       !$OMP PRIVATE( I, J        ) &
+       !$OMP SCHEDULE( DYNAMIC, 1 )
        DO J = 1, HcoState%NY
        DO I = 1, HcoState%NX
           CALL GetMaskVal( MaskLct%Dct, I, J, Mask(I,J), Fractions, RC )
@@ -2149,7 +2149,7 @@ CONTAINS
           ENDIF
        ENDDO
        ENDDO
-!$OMP END PARALLEL DO
+       !$OMP END PARALLEL DO
 
        ! Error check
        IF ( ERR ) THEN
@@ -2196,8 +2196,8 @@ CONTAINS
     LOGICAL,         INTENT(IN)    :: isLevDct1     ! Is LevDct1 not null?
     TYPE(DataCont),  POINTER       :: LevDct1       ! Level index 1 container
     INTEGER,         INTENT(IN)    :: LevDct1_Unit  ! LevDct1 unit code
-    TYPE(DataCont),  POINTER       :: LevDct2       ! Level index 2 container
     LOGICAL,         INTENT(IN)    :: isLevDct2     ! Is LevDct2 not null?
+    TYPE(DataCont),  POINTER       :: LevDct2       ! Level index 2 container
     INTEGER,         INTENT(IN)    :: LevDct2_Unit  ! LevDct2 unit code
     INTEGER,         INTENT(IN)    :: I             ! lon index
     INTEGER,         INTENT(IN)    :: J             ! lat index
