@@ -773,6 +773,7 @@ CONTAINS
     LOGICAL                 :: MaskFractions
     LOGICAL                 :: isLevDct1
     LOGICAL                 :: isLevDct2
+    LOGICAL                 :: isMaskDct
     LOGICAL                 :: isPblHt
     LOGICAL                 :: isBoxHt
     INTEGER                 :: LevDct1_Unit
@@ -1058,6 +1059,10 @@ CONTAINS
           ENDIF
        ENDIF
 
+       ! Set a flag to denote whether MaskDct is associated
+       ! This can be done outside of the parallel loops below
+       isMaskDct = ASSOCIATED( MaskDct )
+
        ! Reinitialize error flag. Will be set to 1 or 2 if error occurs,
        ! and to -1 if negative scale factor is ignored.
        ERROR = 0
@@ -1087,7 +1092,7 @@ CONTAINS
           MaskScale = 1.0_sp
 
           ! If there is a mask applied to this scale factor ...
-          IF ( ASSOCIATED(MaskDct) ) THEN
+          IF ( isMaskDct ) THEN
              CALL GetMaskVal ( MaskDct, I, J, MaskScale, MaskFractions, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
                 ERROR = 4
