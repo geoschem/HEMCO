@@ -1130,10 +1130,9 @@ CONTAINS
 
     ! Set PEDGE
     IF ( .NOT. FoundPEDGE ) THEN
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, L )                                               &
-!$OMP SCHEDULE( DYNAMIC )
+       !$OMP PARALLEL DO        &
+       !$OMP DEFAULT( SHARED  ) &
+       !$OMP PRIVATE( I, J, L )
        DO L = 1, HcoState%NZ+1
        DO J = 1, HcoState%NY
        DO I = 1, HcoState%NX
@@ -1144,7 +1143,7 @@ CONTAINS
        ENDDO
        ENDDO
        ENDDO
-!$OMP END PARALLEL DO
+       !$OMP END PARALLEL DO
        FoundPEDGE = .TRUE.
 
        ! Verbose
@@ -1168,10 +1167,9 @@ CONTAINS
                               HcoState%NY,              HcoState%NZ, RC )
           IF ( RC /= HCO_SUCCESS ) RETURN
 
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, L, P1, P2 )                                       &
-!$OMP SCHEDULE( DYNAMIC )
+          !$OMP PARALLEL DO                &
+          !$OMP DEFAULT( SHARED          ) &
+          !$OMP PRIVATE( I, J, L, P1, P2 )
           DO L = 1, HcoState%NZ
           DO J = 1, HcoState%NY
           DO I = 1, HcoState%NX
@@ -1204,7 +1202,7 @@ CONTAINS
           ENDDO
           ENDDO
           ENDDO
-!$OMP END PARALLEL DO
+          !$OMP END PARALLEL DO
 
           IF ( ERRZSFC ) THEN
              MSG = 'Cannot calculate surface geopotential heights - at least one ' // &

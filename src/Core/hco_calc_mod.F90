@@ -893,11 +893,13 @@ CONTAINS
 
     !------------------------------------------------------------------------
     ! Loop over all latitudes and longitudes
+    !
+    ! NOTE: It is OK to exit from the "I" loop, because only
+    !       the "J" loop is being parallelized (bmy, 3/8/21)
     !------------------------------------------------------------------------
     !$OMP PARALLEL DO                                                        &
     !$OMP DEFAULT( SHARED )                                                  &
-    !$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL             )&
-    !$OMP SCHEDULE( DYNAMIC, 1                                              )
+    !$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL             )
     DO J = 1, nJ
     DO I = 1, nI
 
@@ -1060,11 +1062,15 @@ CONTAINS
        ! and to -1 if negative scale factor is ignored.
        ERROR = 0
 
+       !--------------------------------------------------------------------
        ! Loop over all latitudes and longitudes
+       !
+       ! NOTE: It is OK to CYCLE or EXIT from the "I" loop, because
+       !       only the "J" loop is being parallelized (bmy, 3/8/21)
+       !--------------------------------------------------------------------
        !$OMP PARALLEL DO                                                     &
        !$OMP DEFAULT( SHARED                                                )&
-       !$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale )&
-       !$OMP SCHEDULE( DYNAMIC, 1                                           )
+       !$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale )
        DO J = 1, nJ
        DO I = 1, nI
 
@@ -1396,11 +1402,10 @@ CONTAINS
     ERROR = 0
 
     ! Loop over all grid boxes
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, LowLL, UppLL, tIdx, IJFILLED, L                 ) &
-!$OMP PRIVATE( TMPVAL, N, IDX, ScalDct, ScalLL, tmpLL, MaskScale     ) &
-!$OMP SCHEDULE( DYNAMIC )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                  ) &
+    !$OMP PRIVATE( I, J, LowLL, UppLL, tIdx, IJFILLED, L                   ) &
+    !$OMP PRIVATE( TMPVAL, N, IDX, ScalDct, ScalLL, tmpLL, MaskScale       )
     DO J = 1, nJ
     DO I = 1, nI
 
@@ -2138,8 +2143,7 @@ CONTAINS
        ! Do for every grid box
        !$OMP PARALLEL DO            &
        !$OMP DEFAULT( SHARED      ) &
-       !$OMP PRIVATE( I, J        ) &
-       !$OMP SCHEDULE( DYNAMIC, 1 )
+       !$OMP PRIVATE( I, J        )
        DO J = 1, HcoState%NY
        DO I = 1, HcoState%NX
           CALL GetMaskVal( MaskLct%Dct, I, J, Mask(I,J), Fractions, RC )
@@ -2221,57 +2225,64 @@ CONTAINS
     INTEGER  :: EmisLUnit
     REAL(hp) :: EmisL
 
-    !=================================================================
+    !=======================================================================
     ! GetVertIndx begins here
-    !=================================================================
+    !=======================================================================
 
+    !-----------------------------------------------------------------------
     ! Get vertical extension of base emission array.
+    !
     ! Unlike the output array OUTARR_3D, the data containers do not
     ! necessarily extent over the entire troposphere but only cover
     ! the effectively filled vertical levels. For most inventories,
     ! this is only the first model level.
+    !-----------------------------------------------------------------------
     IF ( Dct%Dta%SpaceDim==3 ) THEN
        LowLL = 1
        UppLL = SIZE(Dct%Dta%V3(1)%Val,3)
+       RC    = HCO_SUCCESS
+       RETURN
+    ENDIF
 
+    !-----------------------------------------------------------------------
     ! For 2D field, check if it shall be spread out over multiple
     ! levels. Possible to go from PBL to max. specified level.
+    !-----------------------------------------------------------------------
+
+    ! Lower level
+    ! --> Check if scale factor is used to determine lower and/or
+    !     upper level
+    IF ( isLevDct1 ) THEN
+       EmisL = GetEmisL( HcoState, LevDct1, I, J )
+       IF ( EmisL < 0.0_hp ) THEN
+          RC = HCO_FAIL
+          RETURN
+       ENDIF
+       EmisLUnit = LevDct1_Unit
     ELSE
-       ! Lower level
-       ! --> Check if scale factor is used to determine lower and/or
-       !     upper level
-       IF ( isLevDct1 ) THEN
-          EmisL = GetEmisL( HcoState, LevDct1, I, J )
-          IF ( EmisL < 0.0_hp ) THEN
-             RC = HCO_FAIL
-             RETURN
-          ENDIF
-          EmisLUnit = LevDct1_Unit
-       ELSE
-          EmisL     = Dct%Dta%EmisL1
-          EmisLUnit = Dct%Dta%EmisL1Unit
-       ENDIF
-       CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, LowLL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
-
-       ! Upper level
-       IF ( isLevDct2 ) THEN
-          EmisL = GetEmisL( HcoState, LevDct2, I, J )
-          IF ( EmisL < 0.0_hp ) THEN
-             RC = HCO_FAIL
-             RETURN
-          ENDIF
-          EmisLUnit = LevDct2_Unit
-       ELSE
-          EmisL     = Dct%Dta%EmisL2
-          EmisLUnit = Dct%Dta%EmisL2Unit
-       ENDIF
-       CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, UppLL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
-
-       ! Upper level must not be lower than lower level
-       UppLL = MAX(LowLL, UppLL)
+       EmisL     = Dct%Dta%EmisL1
+       EmisLUnit = Dct%Dta%EmisL1Unit
     ENDIF
+    CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, LowLL, RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Upper level
+    IF ( isLevDct2 ) THEN
+       EmisL = GetEmisL( HcoState, LevDct2, I, J )
+       IF ( EmisL < 0.0_hp ) THEN
+          RC = HCO_FAIL
+          RETURN
+       ENDIF
+       EmisLUnit = LevDct2_Unit
+    ELSE
+       EmisL     = Dct%Dta%EmisL2
+       EmisLUnit = Dct%Dta%EmisL2Unit
+    ENDIF
+    CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, UppLL, RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Upper level must not be lower than lower level
+    UppLL = MAX(LowLL, UppLL)
 
     ! Return w/ success
     RC = HCO_SUCCESS
