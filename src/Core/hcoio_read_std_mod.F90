@@ -577,11 +577,19 @@ CONTAINS
              RETURN
           ENDIF
        ENDIF
+       IF ( nlev == 0 ) THEN
+          LevName = 'level'
+          CALL NC_READ_VAR ( ncLun, LevName, nlev, LevUnit, LevMid, NCRC )
+          IF ( NCRC /= 0 ) THEN
+             CALL HCO_ERROR( 'NC_READ_VAR: level', RC )
+             RETURN
+          ENDIF
+       ENDIF
 
        ! Error check
        IF ( nlev == 0 ) THEN
           MSG = 'Cannot find vertical coordinate variable in ' // &
-                 TRIM(SrcFile) // ' - Must be one of `lat`, `height`.'
+                 TRIM(SrcFile) // ' - Must be one of `lev`, `level`, `height`.'
           CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
           RETURN
        ENDIF

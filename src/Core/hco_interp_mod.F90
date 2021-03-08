@@ -97,6 +97,27 @@ MODULE HCO_Interp_Mod
                     0.066000_hp,   0.047585_hp,   0.032700_hp, &
                     0.020000_hp,   0.010000_hp /)
 
+  ! AP parameter of native 102-layer GISS grid
+  REAL(hp), TARGET :: E102_EDGE_NATIVE(103) = (/                                            &
+                0.0000000,   2.7871507,   5.5743014,   8.3614521,  11.1486028, 13.9357536,  &
+               16.7229043,  19.5100550,  22.2972057,  25.0843564,  27.8715071, 30.6586578,  &
+               33.4458085,  36.2329593,  39.0201100,  41.8087123,  44.6089278, 47.4534183,  &
+               50.4082336,  53.5662786,  57.0095710,  60.7533531,  64.7323011, 68.8549615,  &
+               73.0567364,  77.2969797,  81.5364973,  85.7346430,  89.8565776, 93.8754457,  &
+               97.7709243, 101.5277712, 105.1350991, 108.5878272, 111.8859556, 115.0302100, &
+              118.0249453, 120.8854039, 123.6326345, 126.2811535, 128.8360417, 131.2987506, &
+              133.6736353, 135.9708571, 138.2013035, 140.3700552, 142.4814670, 144.5457005, &
+              146.5692881, 148.5464231, 150.4712991, 152.3497225, 154.1875000, 144.5468750, &
+              135.1875000, 126.0781250, 117.1914062, 108.5859375, 100.3671875, 92.5898438,  &
+               85.2265625,  78.2226562,  71.5546875,  65.2226562,  59.2226562, 53.5546875,  &
+               48.2226562,  43.2226562,  38.5546875,  34.2226562,  30.2226562, 26.5507812,  &
+               23.1875000,  20.0781250,  17.1896562,  14.5684375,  12.2865742, 10.3573086,  &
+                8.7353750,   7.3664922,   6.2100156,   5.2343633,   4.4119297, 3.7186797,   &
+                3.1341479,   2.6404328,   2.2207877,   1.8587369,   1.5477125, 1.2782115,   &
+                1.0427319,   0.8367716,   0.6514691,   0.4772511,   0.3168814, 0.1785988,   &
+                0.1000000,   0.0560000,   0.0320000,   0.0180000,   0.0100000, 0.0050000,   &
+                0.0020000 /)
+
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
@@ -520,6 +541,26 @@ CONTAINS
             nlev <= 47       ) THEN
           IsModelLev = .TRUE.
        ENDIF
+
+    ! Full GISS 102-layer grid
+    ELSEIF ( nz == 102 ) THEN
+       IF ( nlev <= 103 ) THEN
+          IsModelLev = .TRUE.
+       ENDIF
+
+    ! Full GISS 40-layer grid
+    ELSEIF ( nz == 40 ) THEN
+       IF ( nlev <= 41 ) THEN
+          IsModelLev = .TRUE.
+       ENDIF
+
+    ! Reduced GISS 74-layer grid
+    ELSEIF ( nz == 74 ) THEN
+       IF ( nlev == 102 .OR. &
+            nlev == 103 .OR. &
+            nlev <= 74       ) THEN
+                    IsModelLev = .TRUE.
+       ENDIF
     ENDIF
 
   END SUBROUTINE ModelLev_Check
@@ -821,6 +862,78 @@ CONTAINS
 
           ! Done!
           DONE = .TRUE.
+
+       !----------------------------------------------------------------
+       ! Reduced GISS levels
+       !----------------------------------------------------------------
+       ELSEIF ( nz == 74 ) THEN
+
+          ! Determine number of output levels. If input data is on the
+          ! native grid, we collapse them onto the reduced GISS grid.
+          ! In all other cases, we assume the input data is already on
+          ! the reduced levels and mappings occurs 1:1.
+          IF ( nlev == 102 ) THEN
+             nout = nz
+             NL   = 60
+          ELSEIF ( nlev == 103 ) THEN
+             nz   = nz + 1
+             nout = nz
+             NL   = 61
+          ELSE
+             nout = nlev
+             NL   = nout
+          ENDIF
+
+          ! Make sure output array is allocated
+          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
+
+          ! Do for every time slice
+          DO T = 1, nt
+
+             ! Levels that are passed level-by-level.
+             DO L = 1, NL
+                Lct%Dct%Dta%V3(T)%Val(:,:,L) = REGR_4D(:,:,L,T)
+             ENDDO !L
+
+             ! If needed, collapse from native GEOS-5 onto reduced GEOS-5
+             IF ( nlev == 102 .OR. nlev == 103 ) THEN
+
+                ! Add one level offset if these are edges
+                IF ( nlev == 103 ) THEN
+                   OS = 1
+                ELSE
+                   OS = 0
+                ENDIF
+
+                ! Collapse two levels (e.g. levels 61-62 into level 61):
+                CALL COLLAPSE( Lct, REGR_4D, 61+OS, 61+OS, 2, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 62+OS, 63+OS, 2, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 63+OS, 65+OS, 2, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 64+OS, 67+OS, 2, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 65+OS, 69+OS, 2, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 66+OS, 71+OS, 2, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 67+OS, 73+OS, 2, T, 22 )
+                ! Collapse four levels:
+                CALL COLLAPSE( Lct, REGR_4D, 68+OS, 75+OS, 4, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 69+OS, 79+OS, 4, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 70+OS, 83+OS, 4, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 71+OS, 87+OS, 4, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 72+OS, 91+OS, 4, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 73+OS, 95+OS, 4, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 74+OS, 99+OS, 4, T, 22 )
+
+             ENDIF
+          ENDDO ! T
+
+          ! Verbose
+          IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
+             WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GISS levels.'
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
+          ENDIF
+
+          ! Done!
+          DONE = .TRUE.
+
        ENDIF
 
     ENDIF ! Vertical regridding required
@@ -1117,7 +1230,7 @@ CONTAINS
     INTEGER,          INTENT(IN)     :: InLev1
     INTEGER,          INTENT(IN)     :: NLEV
     INTEGER,          INTENT(IN)     :: T
-    INTEGER,          INTENT(IN)     :: MET               ! 4=GEOS-4, else GEOS-5
+    INTEGER,          INTENT(IN)     :: MET               ! 4=GEOS-4, 22=GISS E2.2, else GEOS-5
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -1154,6 +1267,8 @@ CONTAINS
     ! Get pointer to grid edges on the native input grid
     IF ( Met == 4 ) THEN
        EDG => G4_EDGE_NATIVE(InLev1:TOPLEV)
+    ELSE IF ( Met == 22 ) THEN
+       EDG => E102_EDGE_NATIVE(InLev1:TOPLEV)
     ELSE
        EDG => G5_EDGE_NATIVE(InLev1:TOPLEV)
     ENDIF
