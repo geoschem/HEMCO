@@ -392,13 +392,13 @@ CONTAINS
 
           ! REGR_4D are the remapped fractions.
           DO T  = 1, NTIME
-          DO L  = 1, NLEV
+          DO L  = 1, HcoState%NZ
           DO J  = 1, HcoState%NY
           DO I2 = 1, HcoState%NX
              IF ( REGFRACS(I2,J,L,T) > MAXFRACS(I2,J,L,T) ) THEN
                 MAXFRACS(I2,J,L,T) = REGR_4D(I2,J,L,T)
                 INDECES (I2,J,L,T) = IVAL
-             ENDIf
+             ENDIF
           ENDDO
           ENDDO
           ENDDO
