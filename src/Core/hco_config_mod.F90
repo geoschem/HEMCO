@@ -922,12 +922,12 @@ CONTAINS
                 ! - "RFY": range, forced, always use simulation year
                 ! - "RFY3: range, forced, always use simulation year, 3-hourly
                 ! - "RY" : range, always use simulation year
-                ! - "E"  : exact (read file once)
-                ! - "EF" : exact, forced (error if not exist, read/query once)
-                ! - "EFY": exact, always use simulation year
-                ! - "EC" : exact (read/query continuously, e.g. for ESMF interface)
-                ! - "ECF": exact, forced (error if not exist, read/query continuously)
-                ! - "EY" : exact, always use simulation year
+                ! - "E"  : exact, read/query once
+                ! - "EF" : exact, forced (error if not exist), read/query once
+                ! - "EFY": exact, forced, always use simulation year, read/query once
+                ! - "EC" : exact, read/query continuously (e.g. for ESMF interface)
+                ! - "ECF": exact, forced, read/query continuously
+                ! - "EY" : exact, always use simulation year, read/query once
                 ! - "A"  : average
                 ! - "I"  : interpolate
                 ! - "ID" : interpolate, discontinuous dataset
@@ -976,6 +976,7 @@ CONTAINS
                    Dta%MustFind  = .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_EXACT
+                   Dta%UpdtFlag  = HCO_UFLAG_ONCE
                    Dta%MustFind  = .TRUE.
                    Dta%UseSimYear= .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
@@ -1227,12 +1228,12 @@ CONTAINS
              ! - "RFY": range, forced, always use simulation year
              ! - "RFY3: range, forced, always use simulation year, 3-hourly
              ! - "RY" : range, always use simulation year
-             ! - "E"  : exact (read file once)
-             ! - "EF" : exact, forced (error if not exist, read/query once)
-             ! - "EFY": exact, always use simulation year
-             ! - "EC" : exact (read/query continuously, e.g. for ESMF interface)
-             ! - "ECF": exact, forced (error if not exist, read/query continuously)
-             ! - "EY" : exact, always use simulation year
+             ! - "E"  : exact, read/query once
+             ! - "EF" : exact, forced (error if not exist), read/query once
+             ! - "EFY": exact, forced, always use simulation year, read/query once
+             ! - "EC" : exact, read/query continuousl (e.g. for ESMF interface)
+             ! - "ECF": exact, forced, read/query continuously
+             ! - "EY" : exact, always use simulation year, read/query once
              ! - "A"  : average
              ! - "I"  : interpolate
              ! - "ID" : interpolate, discontinuous dataset
@@ -1280,6 +1281,7 @@ CONTAINS
                 Dta%MustFind  = .TRUE.
              ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_EXACT
+                Dta%UpdtFlag  = HCO_UFLAG_ONCE
                 Dta%MustFind  = .TRUE.
                 Dta%UseSimYear= .TRUE.
              ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
