@@ -4064,13 +4064,6 @@ CONTAINS
 
     ALLOCATE( Inst%FLUXSABI( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXBPIN', RC )
-       RETURN
-    ENDIF
-    Inst%FLUXBPIN = 0.0_sp
-
-    ALLOCATE( Inst%FLUXSABI( NX, NY ), STAT=AS )
-    IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'FLUXSABI', RC )
        RETURN
     ENDIF
