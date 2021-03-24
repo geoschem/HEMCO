@@ -707,8 +707,8 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE Get_Current_Emissions( HcoState,   BaseDct,   &
-                                    nI, nJ, nL, OUTARR_3D, MASK, RC, UseLL )
+  SUBROUTINE Get_Current_Emissions( HcoState, BaseDct,   nI,   nJ,           &
+                                    nL,       OUTARR_3D, MASK, RC, UseLL    )
 !
 ! !USES:
 !
@@ -771,9 +771,16 @@ CONTAINS
     CHARACTER(LEN=255)      :: MSG, LOC
     LOGICAL                 :: NegScalExist
     LOGICAL                 :: MaskFractions
+    LOGICAL                 :: isLevDct1
+    LOGICAL                 :: isLevDct2
+    LOGICAL                 :: isMaskDct
+    LOGICAL                 :: isPblHt
+    LOGICAL                 :: isBoxHt
+    INTEGER                 :: LevDct1_Unit
+    INTEGER                 :: LevDct2_Unit
 
     ! testing only
-    INTEGER                 :: IX, IY
+    INTEGER, PARAMETER      :: IX=25, IY=25
 
     !=================================================================
     ! GET_CURRENT_EMISSIONS begins here
@@ -782,14 +789,11 @@ CONTAINS
     ! Initialize
     ScalDct => NULL()
     MaskDct => NULL()
+    LOC     = 'GET_CURRENT_EMISSIONS (hco_calc_mod.F90)'
 
     ! Enter
     CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS', RC )
     IF(RC /= HCO_SUCCESS) RETURN
-
-    ! testing only:
-    IX = 25 !-1
-    IY = 25 !-1
 
     ! Check if container contains data
     IF ( .NOT. FileData_ArrIsDefined(BaseDct%Dta) ) THEN
@@ -808,6 +812,13 @@ CONTAINS
        CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1=' ')
     ENDIF
 
+    ! Put check for PBLHEIGHT here (bmy, 3/4/21)
+    IF ( .NOT. ASSOCIATED(HcoState%Grid%PBLHEIGHT%Val) ) THEN
+       MSG = 'PBLHEIGHT (in meters) is missing in HEMCO state'
+       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       RETURN
+    ENDIF
+
     ! ----------------------------------------------------------------
     ! Set base emissions
     ! ----------------------------------------------------------------
@@ -819,7 +830,10 @@ CONTAINS
     totLL = 0
     nnLL  = 0
 
+    !-----------------------------------------------------------------
     ! Check for level index containers
+    ! Move error checks here, outside of the parallel DO loop
+    !-----------------------------------------------------------------
     IF ( BaseDct%levScalID1 > 0 ) THEN
        CALL Pnt2DataCont( HcoState, BaseDct%levScalID1, LevDct1, RC )
        IF ( RC /= HCO_SUCCESS ) RETURN
@@ -833,11 +847,60 @@ CONTAINS
        LevDct2 => NULL()
     ENDIF
 
+    ! Test whether LevDct1 and LevDct2 are associated
+    isLevDct1 = ASSOCIATED( LevDct1 )
+    isLevDct2 = ASSOCIATED( LevDct2 )
+
+    ! Get the units of LevDct1 (if it exists)
+    IF ( isLevDct1 ) THEN
+       LevDct1_Unit = GetEmisLUnit( HcoState, LevDct1 )
+       IF ( LevDct1_Unit < 0 ) THEN
+          MSG = 'LevDct1 units are not defined!'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RC = HCO_FAIL
+          RETURN
+       ENDIF
+    ENDIF
+
+    ! Get the units of LevDct2 (if it exists)
+    IF ( isLevDct2 ) THEN
+       LevDct2_Unit = GetEmisLUnit( HcoState, LevDct2 )
+       IF ( LevDct2_Unit < 0 ) THEN
+          MSG = 'LevDct2_Units are not defined!'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    ! Throw an error if boxheight is missing and the units are in meters
+    IF ( LevDct1_Unit == HCO_EMISL_M  .or.                                  &
+         LevDct2_Unit == HCO_EMISL_M ) THEN
+       IF ( .NOT. ASSOCIATED(HcoState%Grid%BXHEIGHT_M%Val) ) THEN
+          MSG = 'Boxheight (in meters) is missing in HEMCO state'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    ! Throw an error if boxheight is missing and the units are in PBL frac
+    IF ( LevDct1_Unit == HCO_EMISL_PBL  .or.                                &
+         LevDct2_Unit == HCO_EMISL_PBL ) THEN
+       IF ( .NOT. ASSOCIATED(HcoState%Grid%PBLHEIGHT%Val) ) THEN
+          MSG = 'Boundary layer height is missing in HEMCO state'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !------------------------------------------------------------------------
     ! Loop over all latitudes and longitudes
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL          ) &
-!$OMP SCHEDULE( DYNAMIC )
+    !
+    ! NOTE: It is OK to exit from the "I" loop, because only
+    !       the "J" loop is being parallelized (bmy, 3/8/21)
+    !------------------------------------------------------------------------
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED )                                                  &
+    !$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL             )
     DO J = 1, nJ
     DO I = 1, nI
 
@@ -851,8 +914,10 @@ CONTAINS
        ENDIF
 
        ! Get lower and upper vertical index
-       CALL GetVertIndx ( HcoState, BaseDct, LevDct1, LevDct2, &
-                          I, J, LowLL, UppLL, RC )
+       CALL GetVertIndx( HcoState,     BaseDct,   isLevDct1, LevDct1,        &
+                         LevDct1_Unit, isLevDct2, LevDct2,   LevDct2_Unit,   &
+                         I,            J,         LowLL,     UppLL,          &
+                         RC                                                 )
        IF ( RC /= HCO_SUCCESS ) THEN
           WRITE(MSG,*) 'Error getting vertical index at location ',I,J,&
                        ': ', TRIM(BaseDct%cName)
@@ -897,10 +962,13 @@ CONTAINS
 
              ! 2D dilution factor
              ELSE
-                CALL GetDilFact ( HcoState,    BaseDct%Dta%EmisL1, &
-                                  BaseDct%Dta%EmisL1Unit, BaseDct%Dta%EmisL2,  &
-                                  BaseDct%Dta%EmisL2Unit, I, J, L, LowLL,  &
-                                  UppLL, DilFact, RC )
+                CALL GetDilFact(                                             &
+                     HcoState,               BaseDct%Dta%EmisL1,             &
+                     BaseDct%Dta%EmisL1Unit, BaseDct%Dta%EmisL2,             &
+                     BaseDct%Dta%EmisL2Unit, I,                              &
+                     J,                      L,                              &
+                     LowLL,                  UppLL,                          &
+                     DilFact,                RC                             )
                 IF ( RC /= HCO_SUCCESS ) THEN
                    WRITE(MSG,*) 'Error getting dilution factor at ',I,J,&
                                 ': ', TRIM(BaseDct%cName)
@@ -916,7 +984,7 @@ CONTAINS
 
     ENDDO !I
     ENDDO !J
-!$OMP END PARALLEL DO
+    !$OMP END PARALLEL DO
 
     ! Check for error
     IF ( ERROR == 1 ) THEN
@@ -991,15 +1059,23 @@ CONTAINS
           ENDIF
        ENDIF
 
+       ! Set a flag to denote whether MaskDct is associated
+       ! This can be done outside of the parallel loops below
+       isMaskDct = ASSOCIATED( MaskDct )
+
        ! Reinitialize error flag. Will be set to 1 or 2 if error occurs,
        ! and to -1 if negative scale factor is ignored.
        ERROR = 0
 
+       !--------------------------------------------------------------------
        ! Loop over all latitudes and longitudes
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale ) &
-!$OMP SCHEDULE( DYNAMIC )
+       !
+       ! NOTE: It is OK to CYCLE or EXIT from the "I" loop, because
+       !       only the "J" loop is being parallelized (bmy, 3/8/21)
+       !--------------------------------------------------------------------
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale )
        DO J = 1, nJ
        DO I = 1, nI
 
@@ -1016,7 +1092,7 @@ CONTAINS
           MaskScale = 1.0_sp
 
           ! If there is a mask applied to this scale factor ...
-          IF ( ASSOCIATED(MaskDct) ) THEN
+          IF ( isMaskDct ) THEN
              CALL GetMaskVal ( MaskDct, I, J, MaskScale, MaskFractions, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
                 ERROR = 4
@@ -1045,7 +1121,7 @@ CONTAINS
           IF ( ScalDct%DctType == HCO_DCTTYPE_MASK ) THEN
 
              ! Get mask value
-             CALL GetMaskVal ( ScalDct, I, J, TMPVAL, MaskFractions, RC )
+             CALL GetMaskVal( ScalDct, I, J, TMPVAL, MaskFractions, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
                 ERROR = 4
                 EXIT
@@ -1074,8 +1150,10 @@ CONTAINS
           ! ------------------------------------------------------------
 
           ! Get lower and upper vertical index
-          CALL GetVertIndx ( HcoState, BaseDct, &
-                             LevDct1, LevDct2, I, J, LowLL, UppLL, RC )
+          CALL GetVertIndx( HcoState, BaseDct,       isLevDct1,              &
+                            LevDct1,  LevDct1_Unit,  isLevDct2,              &
+                            LevDct2,  LevDct2_Unit,  I,                      &
+                            J,        LowLL,         UppLL,      RC         )
           IF ( RC /= HCO_SUCCESS ) THEN
              ERROR = 1 ! Will cause error
              EXIT
@@ -1174,7 +1252,7 @@ CONTAINS
 
        ENDDO !I
        ENDDO !J
-!$OMP END PARALLEL DO
+       !$OMP END PARALLEL DO
 
        ! error check
        IF ( ERROR > 0 ) THEN
@@ -1329,11 +1407,10 @@ CONTAINS
     ERROR = 0
 
     ! Loop over all grid boxes
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, LowLL, UppLL, tIdx, IJFILLED, L                 ) &
-!$OMP PRIVATE( TMPVAL, N, IDX, ScalDct, ScalLL, tmpLL, MaskScale     ) &
-!$OMP SCHEDULE( DYNAMIC )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                  ) &
+    !$OMP PRIVATE( I, J, LowLL, UppLL, tIdx, IJFILLED, L                   ) &
+    !$OMP PRIVATE( TMPVAL, N, IDX, ScalDct, ScalLL, tmpLL, MaskScale       )
     DO J = 1, nJ
     DO I = 1, nI
 
@@ -2069,10 +2146,9 @@ CONTAINS
        ENDIF
 
        ! Do for every grid box
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J                                                  ) &
-!$OMP SCHEDULE( DYNAMIC )
+       !$OMP PARALLEL DO            &
+       !$OMP DEFAULT( SHARED      ) &
+       !$OMP PRIVATE( I, J        )
        DO J = 1, HcoState%NY
        DO I = 1, HcoState%NX
           CALL GetMaskVal( MaskLct%Dct, I, J, Mask(I,J), Fractions, RC )
@@ -2082,7 +2158,7 @@ CONTAINS
           ENDIF
        ENDDO
        ENDDO
-!$OMP END PARALLEL DO
+       !$OMP END PARALLEL DO
 
        ! Error check
        IF ( ERR ) THEN
@@ -2114,27 +2190,33 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE GetVertIndx ( HcoState, Dct, &
-                           LevDct1, LevDct2, I, J, LowLL, UppLL, RC )
+  SUBROUTINE GetVertIndx( HcoState, Dct,           isLevDct1,                &
+                          LevDct1,  LevDct1_Unit,  isLevDct2,                &
+                          LevDct2,  LevDct2_Unit,  I,                        &
+                          J,        LowLL,         UppLL,     RC            )
 !
 ! !USES:
 !
-    USE HCO_STATE_MOD,    ONLY : HCO_State
+    USE HCO_State_Mod, ONLY : HCO_State
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(HCO_State), POINTER          :: HcoState    ! HEMCO state object
-    TYPE(DataCont),  POINTER          :: LevDct1     ! Level index 1 container
-    TYPE(DataCont),  POINTER          :: LevDct2     ! Level index 2 container
-    INTEGER,  INTENT(IN   )           :: I           ! lon index
-    INTEGER,  INTENT(IN   )           :: J           ! lat index
+    TYPE(HCO_State), POINTER       :: HcoState      ! HEMCO state object
+    LOGICAL,         INTENT(IN)    :: isLevDct1     ! Is LevDct1 not null?
+    TYPE(DataCont),  POINTER       :: LevDct1       ! Level index 1 container
+    INTEGER,         INTENT(IN)    :: LevDct1_Unit  ! LevDct1 unit code
+    LOGICAL,         INTENT(IN)    :: isLevDct2     ! Is LevDct2 not null?
+    TYPE(DataCont),  POINTER       :: LevDct2       ! Level index 2 container
+    INTEGER,         INTENT(IN)    :: LevDct2_Unit  ! LevDct2 unit code
+    INTEGER,         INTENT(IN)    :: I             ! lon index
+    INTEGER,         INTENT(IN)    :: J             ! lat index
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    TYPE(DataCont),  POINTER          :: Dct         ! Mask container
-    INTEGER,  INTENT(INOUT)           :: LowLL       ! lower level index
-    INTEGER,  INTENT(INOUT)           :: UppLL       ! upper level index
-    INTEGER,  INTENT(INOUT)           :: RC
+    TYPE(DataCont),  POINTER       :: Dct           ! Mask container
+    INTEGER,         INTENT(INOUT) :: LowLL         ! lower level index
+    INTEGER,         INTENT(INOUT) :: UppLL         ! upper level index
+    INTEGER,         INTENT(INOUT) :: RC
 !
 ! !REVISION HISTORY:
 !  06 May 2016 - C. Keller   - Initial Version
@@ -2148,65 +2230,64 @@ CONTAINS
     INTEGER  :: EmisLUnit
     REAL(hp) :: EmisL
 
-    !=================================================================
+    !=======================================================================
     ! GetVertIndx begins here
-    !=================================================================
+    !=======================================================================
 
+    !-----------------------------------------------------------------------
     ! Get vertical extension of base emission array.
+    !
     ! Unlike the output array OUTARR_3D, the data containers do not
     ! necessarily extent over the entire troposphere but only cover
     ! the effectively filled vertical levels. For most inventories,
     ! this is only the first model level.
+    !-----------------------------------------------------------------------
     IF ( Dct%Dta%SpaceDim==3 ) THEN
        LowLL = 1
        UppLL = SIZE(Dct%Dta%V3(1)%Val,3)
+       RC    = HCO_SUCCESS
+       RETURN
+    ENDIF
 
+    !-----------------------------------------------------------------------
     ! For 2D field, check if it shall be spread out over multiple
     ! levels. Possible to go from PBL to max. specified level.
+    !-----------------------------------------------------------------------
+
+    ! Lower level
+    ! --> Check if scale factor is used to determine lower and/or
+    !     upper level
+    IF ( isLevDct1 ) THEN
+       EmisL = GetEmisL( HcoState, LevDct1, I, J )
+       IF ( EmisL < 0.0_hp ) THEN
+          RC = HCO_FAIL
+          RETURN
+       ENDIF
+       EmisLUnit = LevDct1_Unit
     ELSE
-       ! Lower level
-       ! --> Check if scale factor is used to determine lower and/or
-       !     upper level
-       IF ( ASSOCIATED(LevDct1) ) THEN
-          EmisL = GetEmisL( HcoState, LevDct1, I, J )
-          IF ( EmisL < 0.0_hp ) THEN
-             RC = HCO_FAIL
-             RETURN
-          ENDIF
-          EmisLUnit = GetEmisLUnit( HcoState, LevDct1 )
-          IF ( EmisLUnit < 0 ) THEN
-             RC = HCO_FAIL
-             RETURN
-          ENDIF
-       ELSE
-          EmisL     = Dct%Dta%EmisL1
-          EmisLUnit = Dct%Dta%EmisL1Unit
-       ENDIF
-       CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, LowLL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
-
-       ! Upper level
-       IF ( ASSOCIATED(LevDct2) ) THEN
-          EmisL = GetEmisL( HcoState, LevDct2, I, J )
-          IF ( EmisL < 0.0_hp ) THEN
-             RC = HCO_FAIL
-             RETURN
-          ENDIF
-          EmisLUnit = GetEmisLUnit( HcoState, LevDct2 )
-          IF ( EmisLUnit < 0 ) THEN
-             RC = HCO_FAIL
-             RETURN
-          ENDIF
-       ELSE
-          EmisL     = Dct%Dta%EmisL2
-          EmisLUnit = Dct%Dta%EmisL2Unit
-       ENDIF
-       CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, UppLL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
-
-       ! Upper level must not be lower than lower level
-       UppLL = MAX(LowLL, UppLL)
+       EmisL     = Dct%Dta%EmisL1
+       EmisLUnit = Dct%Dta%EmisL1Unit
     ENDIF
+    CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, LowLL, RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Upper level
+    IF ( isLevDct2 ) THEN
+       EmisL = GetEmisL( HcoState, LevDct2, I, J )
+       IF ( EmisL < 0.0_hp ) THEN
+          RC = HCO_FAIL
+          RETURN
+       ENDIF
+       EmisLUnit = LevDct2_Unit
+    ELSE
+       EmisL     = Dct%Dta%EmisL2
+       EmisLUnit = Dct%Dta%EmisL2Unit
+    ENDIF
+    CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, UppLL, RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Upper level must not be lower than lower level
+    UppLL = MAX(LowLL, UppLL)
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -2225,7 +2306,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  FUNCTION GetEmisL ( HcoState, LevDct, I, J ) RESULT ( EmisL )
+  FUNCTION GetEmisL( HcoState, LevDct, I, J ) RESULT ( EmisL )
 !
 ! !USES:
 !
@@ -2289,12 +2370,12 @@ END FUNCTION GetEmisL
 !\\
 ! !INTERFACE:
 !
-  FUNCTION GetEmisLUnit ( HcoState, LevDct ) RESULT( EmisLUnit )
+  FUNCTION GetEmisLUnit( HcoState, LevDct ) RESULT( EmisLUnit )
 !
 ! !USES:
 !
     USE HCO_TYPES_MOD
-    USE HCO_STATE_MOD,    ONLY : HCO_State
+    USE HCO_STATE_MOD, ONLY : HCO_State
 !
 ! !INPUT PARAMETERS:
 !
@@ -2397,11 +2478,6 @@ END FUNCTION GetEmisLUnit
 
        ! Eventually get altitude from PBL height
        IF ( altu == HCO_EMISL_PBL ) THEN
-          IF ( .NOT. ASSOCIATED(HcoState%Grid%PBLHEIGHT%Val) ) THEN
-             MSG = 'PBL field missing in HEMCO state'
-             CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
-             RETURN
-          ENDIF
           alt = HcoState%Grid%PBLHEIGHT%Val(I,J)
        ENDIF
 
@@ -2411,14 +2487,8 @@ END FUNCTION GetEmisLUnit
           RETURN
        ENDIF
 
-       ! Error check
-       IF ( .NOT. ASSOCIATED(HcoState%Grid%BXHEIGHT_M%Val) ) THEN
-          MSG = 'Boxheight missing in HEMCO state'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
-          RETURN
-       ENDIF
-
        ! Loop over data until we are within desired level
+       ! NOTE: This can be rewritten more efficiently (bmy, 3/5/21)
        altt = 0.0_hp
        altb = 0.0_hp
        lidx = -1
@@ -2471,9 +2541,9 @@ END FUNCTION GetEmisLUnit
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE GetDilFact ( HcoState, EmisL1, EmisL1Unit, &
-                          EmisL2, EmisL2Unit, I, J, L, LowLL, UppLL, &
-                          DilFact, RC )
+  SUBROUTINE GetDilFact( HcoState,   EmisL1, EmisL1Unit, EmisL2,             &
+                         EmisL2Unit, I,      J,          L,                  &
+                         LowLL,      UppLL,  DilFact,    RC                 )
 !
 ! !USES:
 !
@@ -2481,24 +2551,24 @@ END FUNCTION GetEmisLUnit
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(HCO_State), POINTER          :: HcoState    ! HEMCO state object
-    INTEGER,  INTENT(IN   )           :: I           ! lon index
-    INTEGER,  INTENT(IN   )           :: J           ! lat index
-    INTEGER,  INTENT(IN   )           :: L           ! lev index
-    INTEGER,  INTENT(IN   )           :: LowLL       ! lower level index
-    INTEGER,  INTENT(IN   )           :: UppLL       ! upper level index
+    TYPE(HCO_State), POINTER       :: HcoState    ! HEMCO state object
+    INTEGER,         INTENT(IN)    :: I           ! lon index
+    INTEGER,         INTENT(IN)    :: J           ! lat index
+    INTEGER,         INTENT(IN)    :: L           ! lev index
+    INTEGER,         INTENT(IN)    :: LowLL       ! lower level index
+    INTEGER,         INTENT(IN)    :: UppLL       ! upper level index
 !
 ! !OUTPUT PARAMETERS:
 !
-    REAL(hp), INTENT(  OUT)           :: DilFact     ! Dilution factor
+    REAL(hp),        INTENT(OUT)   :: DilFact     ! Dilution factor
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    REAL(hp), INTENT(INOUT)           :: EmisL1
-    INTEGER,  INTENT(INOUT)           :: EmisL1Unit
-    REAL(hp), INTENT(INOUT)           :: EmisL2
-    INTEGER,  INTENT(INOUT)           :: EmisL2Unit
-    INTEGER,  INTENT(INOUT)           :: RC
+    REAL(hp),        INTENT(INOUT) :: EmisL1
+    INTEGER,         INTENT(INOUT) :: EmisL1Unit
+    REAL(hp),        INTENT(INOUT) :: EmisL2
+    INTEGER,         INTENT(INOUT) :: EmisL2Unit
+    INTEGER,         INTENT(INOUT) :: RC
 !
 ! !REVISION HISTORY:
 !  06 May 2016 - C. Keller   - Initial Version

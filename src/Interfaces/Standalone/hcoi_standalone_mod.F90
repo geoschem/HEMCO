@@ -100,25 +100,25 @@ MODULE HCOI_StandAlone_Mod
   CHARACTER(LEN=255)             :: TimeFile  = 'HEMCO_sa_Time'
 
   ! HEMCO state
-  TYPE(HCO_State),       POINTER :: HcoState  => NULL()
+  TYPE(HCO_State),       POINTER :: HcoState          => NULL()
 
   ! HEMCO extensions state
-  TYPE(Ext_State),       POINTER :: ExtState  => NULL()
+  TYPE(Ext_State),       POINTER :: ExtState          => NULL()
 
   ! HEMCO config object
-  TYPE(ConfigObj),       POINTER :: HcoConfig => NULL()
+  TYPE(ConfigObj),       POINTER :: HcoConfig         => NULL()
 
   ! Pointers used during initialization (for species matching)
   INTEGER                        :: nHcoSpec
-  CHARACTER(LEN= 31),    POINTER :: HcoSpecNames       (:) => NULL()
+  CHARACTER(LEN= 31),    POINTER :: HcoSpecNames  (:) => NULL()
   INTEGER                        :: nModelSpec
-  CHARACTER(LEN= 31),    POINTER :: ModelSpecNames     (:) => NULL()
-  INTEGER,               POINTER :: ModelSpecIDs       (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecMW        (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecK0        (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecCR        (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecPKA       (:) => NULL()
-  INTEGER,               POINTER :: matchidx           (:) => NULL()
+  CHARACTER(LEN= 31),    POINTER :: ModelSpecNames(:) => NULL()
+  INTEGER,               POINTER :: ModelSpecIDs  (:) => NULL()
+  REAL(hp),              POINTER :: ModelSpecMW   (:) => NULL()
+  REAL(hp),              POINTER :: ModelSpecK0   (:) => NULL()
+  REAL(hp),              POINTER :: ModelSpecCR   (:) => NULL()
+  REAL(hp),              POINTER :: ModelSpecPKA  (:) => NULL()
+  INTEGER,               POINTER :: matchidx      (:) => NULL()
 
   ! Start and end time of simulation
   INTEGER                        :: YRS(2), MTS(2), DYS(2)
@@ -131,6 +131,7 @@ MODULE HCOI_StandAlone_Mod
   REAL(hp), ALLOCATABLE, TARGET  :: YEDGE  (:,:,:)
   REAL(hp), ALLOCATABLE, TARGET  :: YSIN   (:,:,:)
   REAL(hp), ALLOCATABLE, TARGET  :: AREA_M2(:,:,:)
+  REAL(hp), ALLOCATABLE, TARGET  :: PBL_M  (:,:  )
 
   ! MAXIT is the maximum number of run calls allowed
   INTEGER, PARAMETER             :: MAXIT = 100000
@@ -227,11 +228,11 @@ CONTAINS
 !
 ! !USES:
 !
-    USE HCO_Config_Mod,    ONLY : Config_ReadFile
-    USE HCO_State_Mod,     ONLY : HcoState_Init
-    USE HCO_Driver_Mod,    ONLY : HCO_Init
-    USE HCOX_Driver_Mod,   ONLY : HCOX_Init
-    USE HCO_EXTLIST_Mod,   ONLY : GetExtOpt, CoreNr
+    USE HCO_Config_Mod,   ONLY : Config_ReadFile
+    USE HCO_State_Mod,    ONLY : HcoState_Init
+    USE HCO_Driver_Mod,   ONLY : HCO_Init
+    USE HCOX_Driver_Mod,  ONLY : HCOX_Init
+    USE HCO_ExtList_Mod,  ONLY : GetExtOpt, CoreNr
 !
 ! !INPUT PARAMETERS:
 !
@@ -574,7 +575,7 @@ CONTAINS
           ENDIF
        ENDIF
 
-       ! ================================================================
+       ! ===============================================================
        ! Set HCO options and define all arrays needed by core module
        ! and the extensions
        ! ================================================================
@@ -610,8 +611,9 @@ CONTAINS
        ENDIF
 
        IF ( notDryRun ) THEN
+
           ! Set ExtState fields (skip for dry-run)
-          CALL ExtState_SetFields ( HcoState, ExtState, RC )
+          CALL ExtState_SetFields( HcoState, ExtState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in routine "ExtState_SetFields"!'
              CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
@@ -735,12 +737,13 @@ CONTAINS
     ENDIF
 
     ! Deallocate module arrays/pointers
-    IF ( ALLOCATED( XMID    ) ) DEALLOCATE ( XMID    )
-    IF ( ALLOCATED( YMID    ) ) DEALLOCATE ( YMID    )
-    IF ( ALLOCATED( XEDGE   ) ) DEALLOCATE ( XEDGE   )
-    IF ( ALLOCATED( YEDGE   ) ) DEALLOCATE ( YEDGE   )
-    IF ( ALLOCATED( YSIN    ) ) DEALLOCATE ( YSIN    )
-    IF ( ALLOCATED( AREA_M2 ) ) DEALLOCATE ( AREA_M2 )
+    IF ( ALLOCATED ( XMID     ) ) DEALLOCATE( XMID     )
+    IF ( ALLOCATED ( YMID     ) ) DEALLOCATE( YMID     )
+    IF ( ALLOCATED ( XEDGE    ) ) DEALLOCATE( XEDGE    )
+    IF ( ALLOCATED ( YEDGE    ) ) DEALLOCATE( YEDGE    )
+    IF ( ALLOCATED ( YSIN     ) ) DEALLOCATE( YSIN     )
+    IF ( ALLOCATED ( AREA_M2  ) ) DEALLOCATE( AREA_M2  )
+    IF ( ALLOCATED ( PBL_M    ) ) DEALLOCATE( PBL_M    )
 
     ! Cleanup HcoState object
     CALL HcoState_Final( HcoState )
@@ -1003,13 +1006,14 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE SET_Grid( HcoState, RC )
+  SUBROUTINE Set_Grid( HcoState, RC )
 !
 ! !USES:
 !
-    USE HCO_inquireMod,   ONLY  : findFreeLUN
-    USE HCO_ExtList_Mod,  ONLY  : HCO_GetOpt, GetExtOpt, CoreNr
-    USE HCO_VertGrid_Mod, ONLY  : HCO_VertGrid_Define
+    USE HCO_inquireMod,   ONLY : findFreeLUN
+    USE HCO_ExtList_Mod,  ONLY : HCO_GetOpt, GetExtOpt, CoreNr
+    USE HCO_VertGrid_Mod, ONLY : HCO_VertGrid_Define
+    USE HCO_GeoTools_Mod, ONLY : HCO_SetPBLm
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -1189,22 +1193,24 @@ CONTAINS
     ! ------------------------------------------------------------------
     ! Now that sizes are known, allocate all arrays
     ! ------------------------------------------------------------------
-    ALLOCATE ( XMID     (NX,  NY,  1   ) )
-    ALLOCATE ( YMID     (NX,  NY,  1   ) )
-    ALLOCATE ( XEDGE    (NX+1,NY,  1   ) )
-    ALLOCATE ( YEDGE    (NX,  NY+1,1   ) )
-    ALLOCATE ( YSIN     (NX,  NY+1,1   ) )
-    ALLOCATE ( AREA_M2  (NX,  NY,  1   ) )
-    ALLOCATE ( AP       (          NZ+1) )
-    ALLOCATE ( BP       (          NZ+1) )
-    YSIN      = HCO_MISSVAL
-    AREA_M2   = HCO_MISSVAL
-    XMID      = HCO_MISSVAL
-    YMID      = HCO_MISSVAL
-    XEDGE     = HCO_MISSVAL
-    YEDGE     = HCO_MISSVAL
-    AP        = HCO_MISSVAL
-    BP        = HCO_MISSVAL
+    ALLOCATE( XMID   ( NX,  NY,  1    ), STAT=RC )
+    ALLOCATE( YMID   ( NX,  NY,  1    ), STAT=RC )
+    ALLOCATE( XEDGE  ( NX+1,NY,  1    ), STAT=RC )
+    ALLOCATE( YEDGE  ( NX,  NY+1,1    ), STAT=RC )
+    ALLOCATE( YSIN   ( NX,  NY+1,1    ), STAT=RC )
+    ALLOCATE( AREA_M2( NX,  NY,  1    ), STAT=RC )
+    ALLOCATE( AP     (           NZ+1 ), STAT=RC )
+    ALLOCATE( BP     (           NZ+1 ), STAT=RC )
+    ALLOCATE( PBL_M  ( NX,  NY        ), STAT=RC )
+    YSIN    = HCO_MISSVAL
+    AREA_M2 = HCO_MISSVAL
+    XMID    = HCO_MISSVAL
+    YMID    = HCO_MISSVAL
+    XEDGE   = HCO_MISSVAL
+    YEDGE   = HCO_MISSVAL
+    AP      = HCO_MISSVAL
+    BP      = HCO_MISSVAL
+    PBL_M   = HCO_MISSVAL
 
     ! ------------------------------------------------------------------
     ! Check if grid box edges and/or midpoints are explicitly given.
@@ -1501,15 +1507,23 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     ! Set pointers to grid variables
-    HcoState%Grid%XMID%Val       => XMID   (:,:,1)
-    HcoState%Grid%YMID%Val       => YMID   (:,:,1)
-    HcoState%Grid%XEDGE%Val      => XEDGE  (:,:,1)
-    HcoState%Grid%YEDGE%Val      => YEDGE  (:,:,1)
-    HcoState%Grid%YSIN%Val       => YSIN   (:,:,1)
-    HcoState%Grid%AREA_M2%Val    => AREA_M2(:,:,1)
+    HcoState%Grid%XMID%Val      => XMID   (:,:,1)
+    HcoState%Grid%YMID%Val      => YMID   (:,:,1)
+    HcoState%Grid%XEDGE%Val     => XEDGE  (:,:,1)
+    HcoState%Grid%YEDGE%Val     => YEDGE  (:,:,1)
+    HcoState%Grid%YSIN%Val      => YSIN   (:,:,1)
+    HcoState%Grid%AREA_M2%Val   => AREA_M2(:,:,1)
+    HcoState%Grid%PBLHEIGHT%Val => PBL_M
 
-    ! The pressure edges and grid box heights are obtained from
-    ! an external file in ExtState_SetFields
+    ! Define a default PBL height
+    CALL HCO_SetPBLm( HcoState = HcoState,                                   &
+                      FldName  ='PBL_HEIGHT',                                &
+                      PBLM     = HcoState%Grid%PBLHEIGHT%Val,                &
+                      DefVal   = 1000.0_hp,                                  &
+                      RC       = RC                                         )
+
+    ! The pressure edges and grid box heights will be obtained
+    ! by routine HCO_CalcVertGrid (called from HCO_Run).
     HcoState%Grid%PEDGE%Val      => NULL()
     HcoState%Grid%BXHEIGHT_M%Val => NULL()
     HcoState%Grid%ZSFC%Val       => NULL()
@@ -1775,7 +1789,7 @@ CONTAINS
        RETURN
     ENDIF
 
-    print*, '### Define_Diagnostics: NNDIAGN: ', N
+    !print*, '### Define_Diagnostics: NNDIAGN: ', N
 
     ! If there are no diagnostics defined yet, define some default
     ! diagnostics below. These are simply the overall emissions
@@ -2712,8 +2726,7 @@ CONTAINS
     ! quantities read from disk.
     !-----------------------------------------------------------------
 
-    ! Eventually get temperature from disk
-    IF ( ExtState%TK%DoUse ) TK => ExtState%TK%Arr%Val
+
 
     ! Attempt to calculate vertical grid quantities
     CALL HCO_CalcVertGrid( HcoState, PSFC, ZSFC, TK, BXHEIGHT, PEDGE, RC )
