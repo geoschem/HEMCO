@@ -409,7 +409,7 @@ CONTAINS
     DO I = 1, HcoState%NX
 
        ! Make sure we have no negative seawater concentrations
-       IF ( SeaConc(I,J) < 0.0_sp ) SeaConc(I,J) = 0.0_sp
+       IF ( SeaConc(I,J) < 0.0_hp ) SeaConc(I,J) = 0.0_hp
 
        ! Assume no air-sea exchange over snow/ice (ALBEDO > 0.4)
        IF ( ExtState%ALBD%Arr%Val(I,J) > 0.4_hp ) CYCLE
