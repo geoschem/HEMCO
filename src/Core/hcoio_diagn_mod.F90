@@ -23,7 +23,6 @@ MODULE HCOIO_DIAGN_MOD
 ! !USES:
 !
   USE HCO_ERROR_MOD
-  USE MAPL_CommsMod, ONLY : MAPL_am_I_Root
 
   IMPLICIT NONE
   PRIVATE
@@ -116,7 +115,6 @@ CONTAINS
 
     ! To write restart (enforced)
     IF ( RESTART ) THEN
-       IF (MAPL_am_I_Root()) WRITE(*,*) "Doing HCOIO_DIAGN_WRITEOUT for restart" 
        CALL HCOIO_DIAGN_WRITEOUT ( HcoState,                               &
                                    ForceWrite  = .TRUE.,                   &
                                    UsePrevTime = .FALSE.,                  &
@@ -124,12 +122,10 @@ CONTAINS
                                    RC          = RC                         )
        IF( RC /= HCO_SUCCESS) RETURN
 
-       IF (MAPL_am_I_Root()) WRITE(*,*) "HcoClock_SetLast"
        ! Set last flag for use below
        CALL HcoClock_SetLast ( HcoState%Clock, .TRUE., RC )
        IF( RC /= HCO_SUCCESS) RETURN
 
-       IF (MAPL_am_I_Root()) WRITE(*,*) "Doing HCOIO_DIAGN_WRITEOUT default column"
        CALL HCOIO_DIAGN_WRITEOUT ( HcoState,                               &
                                    ForceWrite  = .FALSE.,                  &
                                    UsePrevTime = .FALSE.,                  &
@@ -139,7 +135,6 @@ CONTAINS
 
 #ifdef ADJOINT
        IF (HcoState%isAdjoint) THEN
-       if (MAPL_am_I_Root()) WRITE(*,*) "Doing HCOIO_DIAGN_WRITEOUT adjoint"
        CALL HCOIO_DIAGN_WRITEOUT ( HcoState,                               &
                                    ForceWrite  = .FALSE.,                  &
                                    UsePrevTime = .FALSE.,                  &
@@ -149,7 +144,6 @@ CONTAINS
        ENDIF
 #endif
 
-       if (MAPL_am_I_Root()) WRITE(*,*) "HcoClock_SetLast"
        ! Reset IsLast flag. This is to ensure that the last flag is not
        ! carried over (ckeller, 11/1/16).
        CALL HcoClock_SetLast ( HcoState%Clock, .FALSE., RC )
@@ -193,7 +187,6 @@ CONTAINS
           ! HCO_RestartWrite. (ckeller, 10/9/17)
           IF ( I == 2 ) CYCLE
 #endif
-          if (MAPL_am_I_Root()) WRITE(*,*) "Doing HCOIO_DIAGN_WRITEOUT, I = ", I
 
           ! Restart file
           CALL HCOIO_DIAGN_WRITEOUT ( HcoState,                        &
@@ -201,7 +194,6 @@ CONTAINS
                                       UsePrevTime = .FALSE.,           &
                                       COL         = COL,               &
                                       RC          = RC                  )
-          if (MAPL_am_I_Root()) WRITE(*,*) "Back from HCOIO_DIAGN_WRITEOUT, RC = ", RC
           IF(RC /= HCO_SUCCESS) RETURN
        ENDDO
     ENDIF
