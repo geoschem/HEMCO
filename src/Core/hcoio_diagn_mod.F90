@@ -188,11 +188,7 @@ CONTAINS
 ! !USES:
 !
     USE HCO_State_Mod,        ONLY : HCO_State
-#if defined(ESMF_)
-    USE HCOIO_WRITE_ESMF_MOD, ONLY : HCOIO_WRITE_ESMF
-#else
-    USE HCOIO_WRITE_STD_MOD,  ONLY : HCOIO_WRITE_STD
-#endif
+    USE HCOIO_Write_Mod,      ONLY : HCOIO_Write
 !
 ! !INPUT PARAMETERS:
 !
@@ -205,7 +201,6 @@ CONTAINS
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-
     INTEGER,          INTENT(INOUT) :: RC          ! Failure or success
 !
 ! !REVISION HISTORY:
@@ -223,21 +218,21 @@ CONTAINS
     ! HCOIO_DIAGN_WRITEOUT begins here!
     !=================================================================
 
+#if defined(ESMF_)
     !-----------------------------------------------------------------
     ! ESMF environment: call ESMF output routines
     !-----------------------------------------------------------------
-#if defined(ESMF_)
-    CALL HCOIO_WRITE_ESMF ( HcoState,                &
-                            RC,                      &
-                            OnlyIfFirst=OnlyIfFirst, &
-                            COL=COL                   )
+    CALL HCOIO_Write     ( HcoState,                &
+                           RC,                      &
+                           OnlyIfFirst=OnlyIfFirst, &
+                           COL=COL                   )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
+#else
     !-----------------------------------------------------------------
     ! Standard environment: call default output routines
     !-----------------------------------------------------------------
-#else
-    CALL HCOIO_WRITE_STD( HcoState,                 &
+    CALL HCOIO_Write    ( HcoState,                 &
                           ForceWrite,               &
                           RC,                       &
                           PREFIX      =PREFIX,      &

@@ -1,3 +1,11 @@
+!BOC
+#if defined ( MODEL_CLASSIC ) || defined( MODEL_WRF ) || defined( MODEL_CESM ) || defined( HEMCO_STANDALONE )
+! The 'standard' HEMCO I/O module is used for:
+! - HEMCO Standalone (HEMCO_STANDALONE)
+! - GEOS-Chem 'Classic' (MODEL_CLASSIC)
+! - WRF-GC (MODEL_WRF)
+! - CESM-GC and CAM-Chem / HEMCO-CESM (MODEL_CESM)
+!EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -5,14 +13,16 @@
 !
 ! !MODULE: hcoio_read_std_mod.F90
 !
-! !DESCRIPTION: Module HCOIO\_read\_std\_mod controls data processing
+! !DESCRIPTION: Module HCOIO\_read\_mod controls data processing
 ! (file reading, unit conversion, regridding) for HEMCO in the
 ! 'standard' environment (i.e. non-ESMF).
+!
+! This module implements the 'standard' environment (i.e. non-ESMF).
 !\\
 !\\
 ! !INTERFACE:
 !
-MODULE HCOIO_read_std_mod
+MODULE HCOIO_Read_Mod
 !
 ! !USES:
 !
@@ -27,11 +37,17 @@ MODULE HCOIO_read_std_mod
 !
 ! !PUBLIC MEMBER FUNCTIONS:
 !
-  PUBLIC  :: HCOIO_ReadOther
+  PUBLIC  :: HCOIO_Read
   PUBLIC  :: HCOIO_CloseAll
-#if !defined(ESMF_)
-  PUBLIC  :: HCOIO_read_std
-#endif
+!
+! !REMARKS:
+!  Beginning with HEMCO 3.0.0, all I/O modules use the same module names,
+!  and their compilation depends on pre-processor flags defined at the top
+!  of the file.
+!
+!  This is to streamline the implementation of one unified Data Input Layer,
+!  that can be switched in and out at compile time, and reduce branching of
+!  code paths elsewhere.
 !
 ! !REVISION HISTORY:
 !  22 Aug 2013 - C. Keller   - Initial version
@@ -47,7 +63,6 @@ MODULE HCOIO_read_std_mod
 
 CONTAINS
 !EOC
-#if !defined( ESMF_ )
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -83,7 +98,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOIO_read_std( HcoState, Lct, RC )
+  SUBROUTINE HCOIO_Read( HcoState, Lct, RC )
 !
 ! !USES:
 !
@@ -174,6 +189,9 @@ CONTAINS
     ! Use MESSy regridding routines?
     LOGICAL                       :: UseMESSy
 
+    ! SAVEd scalars
+    LOGICAL, SAVE                 :: doPrintWarning = .TRUE.
+
     !=================================================================
     ! HCOIO_READ_STD begins here
     !=================================================================
@@ -205,6 +223,29 @@ CONTAINS
     IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
        WRITE(MSG,*) 'Processing container: ', TRIM(Lct%Dct%cName)
        CALL HCO_MSG( HcoState%Config%Err, MSG, SEP1='-' )
+    ENDIF
+
+    ! If the file has cycle flag "E" (e.g. it's a restart file), then we will
+    ! read it only once and then never again.  If the file has already been
+    ! read on a previous call, then don't call HCOIO_READ_STD. (bmy, 10/4/18)
+    !
+    ! Moved this handling from hcoio_dataread_mod, as it is non-MAPL specific
+    ! (hplin, 4/5/21)
+    IF ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_EXACT .and.                      &
+         Lct%Dct%Dta%UpdtFlag  == HCO_UFLAG_ONCE  .and.                      &
+         Lct%Dct%Dta%isTouched                          ) THEN
+
+       ! Print a warning message only once
+       IF ( doPrintWarning ) THEN
+          doPrintWarning = .FALSE.
+          MSG = 'No further attempts will be made to read file: ' //         &
+                TRIM( Lct%Dct%Dta%NcFile )
+          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+       ENDIF
+
+       ! Return without reading
+       CALL HCO_LEAVE( HcoState%Config%Err, RC )
+       RETURN
     ENDIF
 
     ! ----------------------------------------------------------------
@@ -1329,80 +1370,7 @@ CONTAINS
     ! Return w/ success
     CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
 
-  END SUBROUTINE HCOIO_read_std
-
-#endif
-!------------------------------------------------------------------------------
-!                   Harmonized Emissions Component (HEMCO)                    !
-!------------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: HCOIO_ReadOther
-!
-! !DESCRIPTION: Subroutine HCOIO\_ReadOther is a wrapper routine to
-! read data from sources other than netCDF.
-!\\
-!\\
-! If a file name is given (ending with '.txt'), the data are assumed
-! to hold country-specific values (e.g. diurnal scale factors). In all
-! other cases, the data is directly read from the configuration file
-! (scalars).
-!\\
-!\\
-! !INTERFACE:
-!
-  SUBROUTINE HCOIO_ReadOther( HcoState, Lct, RC )
-!
-! !USES:
-!
-!
-! !INPUT PARAMTERS:
-!
-    TYPE(HCO_State), POINTER          :: HcoState    ! HEMCO state
-!
-! !INPUT/OUTPUT PARAMETERS:
-!
-    TYPE(ListCont),   POINTER         :: Lct
-    INTEGER,          INTENT(INOUT)   :: RC
-!
-! !REVISION HISTORY:
-!  22 Dec 2014 - C. Keller: Initial version
-!  See https://github.com/geoschem/hemco for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-!
-! !LOCAL VARIABLES:
-!
-    CHARACTER(LEN=255) :: MSG
-
-    !======================================================================
-    ! HCOIO_ReadOther begins here
-    !======================================================================
-
-    ! Error check: data must be in local time
-    IF ( .NOT. Lct%Dct%Dta%IsLocTime ) THEN
-       MSG = 'Cannot read data from file that is not in local time: ' // &
-             TRIM(Lct%Dct%cName)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC='HCOIO_ReadOther (hcoio_dataread_mod.F90)' )
-       RETURN
-    ENDIF
-
-    ! Read an ASCII file as country values
-    IF ( INDEX( TRIM(Lct%Dct%Dta%ncFile), '.txt' ) > 0 ) THEN
-       CALL HCOIO_ReadCountryValues( HcoState, Lct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! Directly read from configuration file otherwise
-    ELSE
-       CALL HCOIO_ReadFromConfig( HcoState, Lct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
-    ENDIF
-
-    ! Return w/ success
-    RC = HCO_SUCCESS
-
-  END SUBROUTINE HCOIO_ReadOther
+  END SUBROUTINE HCOIO_Read
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -1421,9 +1389,7 @@ CONTAINS
 !
 ! !USES:
 !
-#if !defined(ESMF_)
     USE HCO_Ncdf_Mod,   ONLY : NC_CLOSE
-#endif
 !
 ! !INPUT PARAMTERS:
 !
@@ -1445,16 +1411,15 @@ CONTAINS
     !======================================================================
     ! HCOIO_CloseAll begins here
     !======================================================================
-#if !defined(ESMF_)
     IF ( HcoState%ReadLists%FileLun > 0 ) THEN
        CALL NC_CLOSE( HcoState%ReadLists%FileLun )
        HcoState%ReadLists%FileLun = -1
     ENDIF
-#endif
 
     ! Return w/ success
     RC = HCO_SUCCESS
 
   END SUBROUTINE HCOIO_CloseAll
 !EOC
-END MODULE HCOIO_read_std_mod
+END MODULE HCOIO_Read_Mod
+#endif
