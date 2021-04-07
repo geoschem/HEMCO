@@ -319,5 +319,6 @@ CONTAINS
     RC = HCO_SUCCESS
 
   END SUBROUTINE GetHcoDiagn
+
 !EOC
 END MODULE HCO_Interface_Common

@@ -430,6 +430,71 @@ CONTAINS
     ! Pass this collection ID to fixed variable for easy further
     ! reference to this collection
     HcoState%Diagn%HcoDiagnIDRestart = CollectionID
+#ifdef ADJOINT
+    IF ( HcoState%isAdjoint ) THEN
+    ! ------------------------------------------------------------------
+    ! Default diagnostics
+    ! ------------------------------------------------------------------
+    CALL DiagnCollection_GetDefaultDelta ( HcoState, &
+                                           deltaYMD,  deltaHMS, RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Try to get prefix from configuration file
+    CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnPrefix', &
+                     OptValChar=DiagnPrefix, FOUND=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( .NOT. FOUND ) THEN
+#if defined( MODEL_GEOS )
+       DiagnPrefix = 'HEMCO_Diagnostics.$YYYY$MM$DD$HH$MN.nc'
+#else
+       DiagnPrefix = 'HEMCO_diagnostics'
+#endif
+    ENDIF
+
+    ! Output time stamp location
+    CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnTimeStamp', &
+                     OptValChar=OutTimeStampChar, FOUND=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( .NOT. FOUND ) THEN
+       OutTimeStamp = HcoDiagnStart
+    ELSE
+       CALL TRANLC( OutTimeStampChar )
+       IF (     TRIM(OutTimeStampChar) == 'start' ) THEN
+          OutTimeStamp = HcoDiagnStart
+
+       ELSEIF ( TRIM(OutTimeStampChar) == 'mid'   ) THEN
+          OutTimeStamp = HcoDiagnMid
+
+       ELSEIF ( TRIM(OutTimeStampChar) == 'end'   ) THEN
+          OutTimeStamp = HcoDiagnEnd
+
+       ELSE
+          WRITE(MSG,*) 'Unrecognized output time stamp location: ', &
+             TRIM(OutTimeStampChar), ' - will use default (start)'
+          CALL HCO_WARNING(HcoState%Config%Err,MSG,RC,THISLOC=LOC,WARNLEV=1)
+          OutTimeStamp = HcoDiagnStart
+       ENDIF 
+    ENDIF
+
+    CALL DiagnCollection_Create( HcoState%Diagn,                           &
+                                 NX           = HcoState%NX,               &
+                                 NY           = HcoState%NY,               &
+                                 NZ           = HcoState%NZ,               &
+                                 TS           = HcoState%TS_EMIS,          &
+                                 AM2          = HcoState%Grid%AREA_M2%Val, &
+                                 COL          = CollectionID,              & 
+                                 PREFIX       = TRIM(DiagnPrefix),         &
+                                 deltaYMD     = deltaYMD,                  & 
+                                 deltaHMS     = deltaHMS,                  & 
+                                 OutTimeStamp = OutTimeStamp,              & 
+                                 RC           = RC                          )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Pass this collection ID to fixed variable for easy further 
+    ! reference to this collection
+    HcoState%Diagn%HcoDiagnIDAdjoint = CollectionID
+    endif
+#endif
 
     ! ------------------------------------------------------------------
     ! Manual diagnostics
@@ -581,6 +646,26 @@ CONTAINS
           HcoID = HCO_GetHcoID( TRIM(SpcName), HcoState )
           IF ( HcoID <= 0 ) CYCLE
 
+#ifdef ADJOINT
+          if ( cName(1:6) == 'SFEmis' ) then
+          ! ------------------------------------------------------------------
+          ! Add it to the HEMCO diagnostics collection
+          ! ------------------------------------------------------------------
+          CALL Diagn_Create( HcoState,                      &
+                             cName     = cName,             &
+                             long_name = lName,             &
+                             HcoID     = HcoID,             &  
+                             ExtNr     = ExtNr,             &  
+                             Cat       = Cat,               &  
+                             Hier      = Hier,              &  
+                             SpaceDim  = SpaceDim,          &  
+                             OutUnit   = OutUnit,           &
+                             OutOper   = 'CumulSum',        &
+                             AutoFill  = 1,                 &  
+                             COL       = HcoState%Diagn%HcoDiagnIDAdjoint, &
+                             RC        = RC                  )
+          else
+#endif
           ! ------------------------------------------------------------------
           ! Add it to the HEMCO diagnostics collection
           ! ------------------------------------------------------------------
@@ -596,6 +681,9 @@ CONTAINS
                              AutoFill  = 1,                 &
                              COL       = HcoState%Diagn%HcoDiagnIDDefault, &
                              RC        = RC                  )
+#ifdef ADJOINT
+          endif
+#endif
           IF ( RC /= HCO_SUCCESS ) RETURN
 
        ENDDO
@@ -964,6 +1052,12 @@ CONTAINS
              ThisDiagn%AreaScal = 1.0_hp / Scal
           ENDIF
 
+          IF (HCO_IsVerb(HcoState%Config%Err,3)) THEN
+             WRITE(MSG, *) '  ThisDiagn%AreaScal = ', ThisDiagn%AreaScal
+             CALL HCO_MSG( HcoState%Config%Err, MSG)
+             WRITE(MSG, *) '  ThisDiagn%MassScal = ', ThisDiagn%MassScal
+             CALL HCO_MSG( HcoState%Config%Err, MSG)
+          ENDIF
           !----------------------------------------------------------------
           ! Determine the normalization factors applied to the diagnostics
           ! before they are written out. Diagnostics are always stored
@@ -1778,6 +1872,15 @@ CONTAINS
                   TRIM(ThisDiagn%cName)
              CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
              CYCLE
+          ENDIF
+
+          IF (HCO_IsVerb(HcoState%Config%Err, 3)) THEN
+             WRITE(MSG,*) 'ThisDiagn%cName:    ', trim(ThisDiagn%cName)
+             CALL HCO_MSG(HcoState%Config%Err, MSG)
+             WRITE(MSG,*) 'ThisDiagn%AvgFlag:  ', ThisDiagn%AvgFlag
+             CALL HCO_MSG(HcoState%Config%Err, MSG)
+             WRITE(MSG,*) 'ThisDiagn%SpaceDim: ', ThisDiagn%SpaceDim
+             CALL HCO_MSG(HcoState%Config%Err, MSG)
           ENDIF
 
           ! Increase counter
@@ -4556,6 +4659,9 @@ CONTAINS
        Diagn%HcoDiagnIDDefault = -999
        Diagn%HcoDiagnIDRestart = -999
        Diagn%HcoDiagnIDManual  = -999
+#ifdef ADJOINT
+       Diagn%HcoDiagnIDAdjoint = -999
+#endif
        Diagn%nnCollections     = 0
     ENDIF
 

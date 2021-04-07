@@ -93,6 +93,9 @@ CONTAINS
 !
     INTEGER            :: I, COL
     CHARACTER(LEN=255) :: MSG, LOC
+#ifdef ADJOINT
+    INTEGER            :: MaxIdx
+#endif
 
     !=================================================================
     ! HcoDiagn_Write begins here!
@@ -121,6 +124,17 @@ CONTAINS
                                    RC          = RC                         )
        IF( RC /= HCO_SUCCESS) RETURN
 
+#ifdef ADJOINT
+       IF (HcoState%isAdjoint) THEN
+       CALL HCOIO_DIAGN_WRITEOUT ( HcoState,                               &
+                                   ForceWrite  = .FALSE.,                  &
+                                   UsePrevTime = .FALSE.,                  &
+                                   COL = HcoState%Diagn%HcoDiagnIDAdjoint, &
+                                   RC          = RC                         )
+       IF( RC /= HCO_SUCCESS) RETURN 
+       ENDIF
+#endif
+
        ! Reset IsLast flag. This is to ensure that the last flag is not
        ! carried over (ckeller, 11/1/16).
        CALL HcoClock_SetLast ( HcoState%Clock, .FALSE., RC )
@@ -131,7 +145,13 @@ CONTAINS
        ! Loop over all collections that shall be written out.
        ! HCOIO_DIAGN_WRITEOUT will determine whether it is time to
        ! write a collection or not.
+#ifndef ADJOINT
        DO I = 1, 3
+#else
+       MaxIdx = 3
+       IF (HcoState%isAdjoint) MaxIdx = 4
+       DO I = 1, MaxIdx
+#endif
 
           ! Define collection ID
           SELECT CASE ( I )
@@ -141,6 +161,10 @@ CONTAINS
                 COL = HcoState%Diagn%HcoDiagnIDRestart
              CASE ( 3 )
                 COL = HcoState%Diagn%HcoDiagnIDManual
+#ifdef ADJOINT
+             CASE ( 4 )
+                COL = HcoState%Diagn%HcoDiagnIDAdjoint
+#endif
           END SELECT
 
 #if       !defined ( ESMF_ )
