@@ -151,17 +151,17 @@ CONTAINS
     ThisDiagn => NULL()
     DO WHILE ( .TRUE. )
 
-       IF (MAPL_am_I_Root()) WRITE(*,*) "Getting next diagnostic in list"
+       ! IF (MAPL_am_I_Root()) WRITE(*,*) "Getting next diagnostic in list"
 
        ! Get next diagnostics in list. This will return the next
        ! diagnostics container that contains content to be written
        ! out on this time step.
        CALL Diagn_Get ( HcoState, EOI, ThisDiagn, FLAG, RC, COL=PS )
 
-       IF (MAPL_am_I_Root()) THEN
-          IF ( RC == HCO_SUCCESS .and. FLAG == HCO_SUCCESS ) WRITE(*,*) "Got it! Name: ", TRIM(ThisDiagn%cName)
-          IF ( RC /= HCO_SUCCESS) WRITE(*,*) "Fail! RC: ", RC, "   Flag: ", FLAG
-       ENDIF
+       ! IF (MAPL_am_I_Root()) THEN
+       !    IF ( RC == HCO_SUCCESS .and. FLAG == HCO_SUCCESS ) WRITE(*,*) "Got it! Name: ", TRIM(ThisDiagn%cName)
+       !    IF ( RC /= HCO_SUCCESS) WRITE(*,*) "Fail! RC: ", RC, "   Flag: ", FLAG
+       ! ENDIF
 
        IF ( RC /= HCO_SUCCESS ) RETURN
        IF ( FLAG /= HCO_SUCCESS ) EXIT
