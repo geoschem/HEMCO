@@ -924,8 +924,8 @@ CONTAINS
                 ! - "RY"  : range, always use simulation year
                 ! - "E"   : exact, read/query once
                 ! - "EF"  : exact, forced (error if not exist), read/query once
-                ! - "EFY" : exact, forced, always use simulation year, read/query once
-                ! - "EFYK": exact, always use simulation year, keep reading
+                ! - "EFY" : exact, forced, always use sim year
+                ! - "EFYO": exact, forced, always use sim year, read once
                 ! - "EC"  : exact, read/query continuously (e.g. for ESMF interface)
                 ! - "ECF" : exact, forced, read/query continuously
                 ! - "EY"  : exact, always use simulation year, read/query once
@@ -977,12 +977,11 @@ CONTAINS
                    Dta%MustFind  = .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_EXACT
-                   Dta%UpdtFlag  = HCO_UFLAG_ONCE
                    Dta%MustFind  = .TRUE.
                    Dta%UseSimYear= .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "EFYK" ) THEN
+                ELSEIF ( TRIM(TmCycle) == "EFYO" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_EXACT
-                   Dta%UpdtFlag  = HCO_UFLAG_ALWAYS
+                   Dta%UpdtFlag  = HCO_UFLAG_ONCE
                    Dta%MustFind  = .TRUE.
                    Dta%UseSimYear= .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
@@ -1236,8 +1235,8 @@ CONTAINS
              ! - "RY"  : range, always use simulation year
              ! - "E"   : exact, read/query once
              ! - "EF"  : exact, forced (error if not exist), read/query once
-             ! - "EFY" : exact, forced, always use sim year, read/query once
-             ! - "EFYK": exact, always use simulation year, keep reading
+             ! - "EFY" : exact, forced, always use sim year
+             ! - "EFYO": exact, forced, always use sim year, read once
              ! - "EC"  : exact, read/query continuousl (e.g. for ESMF interface)
              ! - "ECF" : exact, forced, read/query continuously
              ! - "EY"  : exact, always use simulation year, read/query once
@@ -1288,12 +1287,11 @@ CONTAINS
                 Dta%MustFind  = .TRUE.
              ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_EXACT
-                Dta%UpdtFlag  = HCO_UFLAG_ONCE
                 Dta%MustFind  = .TRUE.
                 Dta%UseSimYear= .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "EFYK" ) THEN
+             ELSEIF ( TRIM(TmCycle) == "EFYO" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_EXACT
-                Dta%UpdtFlag  = HCO_UFLAG_ALWAYS
+                Dta%UpdtFlag  = HCO_UFLAG_ONCE
                 Dta%MustFind  = .TRUE.
                 Dta%UseSimYear= .TRUE.
              ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
