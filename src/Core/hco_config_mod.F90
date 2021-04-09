@@ -912,25 +912,26 @@ CONTAINS
 #endif
 
                 ! Set time cycling behaviour. Possible values are:
-                ! - "C"  : cycling <-- DEFAULT
-                ! - "CS" : cycling, skip if not exist
-                ! - "CY" : cycling, always use simulation year
-                ! - "CYS": cycling, always use simulation yr, skip if not exist
-                ! - "R"  : range
-                ! - "RA" : range, average outside
-                ! - "RF" : range, forced (error if not in range)
-                ! - "RFY": range, forced, always use simulation year
-                ! - "RFY3: range, forced, always use simulation year, 3-hourly
-                ! - "RY" : range, always use simulation year
-                ! - "E"  : exact, read/query once
-                ! - "EF" : exact, forced (error if not exist), read/query once
-                ! - "EFY": exact, forced, always use simulation year, read/query once
-                ! - "EC" : exact, read/query continuously (e.g. for ESMF interface)
-                ! - "ECF": exact, forced, read/query continuously
-                ! - "EY" : exact, always use simulation year, read/query once
-                ! - "A"  : average
-                ! - "I"  : interpolate
-                ! - "ID" : interpolate, discontinuous dataset
+                ! - "C"   : cycling <-- DEFAULT
+                ! - "CS"  : cycling, skip if not exist
+                ! - "CY"  : cycling, always use simulation year
+                ! - "CYS" : cycling, always use simulation yr, skip if not exist
+                ! - "R"   : range
+                ! - "RA"  : range, average outside
+                ! - "RF"  : range, forced (error if not in range)
+                ! - "RFY" : range, forced, always use simulation year
+                ! - "RFY3 : range, forced, always use simulation year, 3-hourly
+                ! - "RY"  : range, always use simulation year
+                ! - "E"   : exact, read/query once
+                ! - "EF"  : exact, forced (error if not exist), read/query once
+                ! - "EFY" : exact, forced, always use simulation year, read/query once
+                ! - "EFYK": exact, always use simulation year, keep reading
+                ! - "EC"  : exact, read/query continuously (e.g. for ESMF interface)
+                ! - "ECF" : exact, forced, read/query continuously
+                ! - "EY"  : exact, always use simulation year, read/query once
+                ! - "A"   : average
+                ! - "I"   : interpolate
+                ! - "ID"  : interpolate, discontinuous dataset
                 Dta%MustFind  = .FALSE.
                 Dta%UseSimYear= .FALSE.
                 Dta%Discontinuous = .FALSE.
@@ -977,6 +978,11 @@ CONTAINS
                 ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_EXACT
                    Dta%UpdtFlag  = HCO_UFLAG_ONCE
+                   Dta%MustFind  = .TRUE.
+                   Dta%UseSimYear= .TRUE.
+                ELSEIF ( TRIM(TmCycle) == "EFYK" ) THEN
+                   Dta%CycleFlag = HCO_CFLAG_EXACT
+                   Dta%UpdtFlag  = HCO_UFLAG_ALWAYS
                    Dta%MustFind  = .TRUE.
                    Dta%UseSimYear= .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
