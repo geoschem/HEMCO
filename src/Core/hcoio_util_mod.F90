@@ -6,7 +6,7 @@
 ! !MODULE: hcoio_util_mod.F90
 !
 ! !DESCRIPTION: Module HCOIO\_Util\_Mod contains utility functions
-! for use in data processing including file reading, unit conversions, 
+! for use in data processing including file reading, unit conversions,
 ! and regridding.
 !\\
 !\\
@@ -208,7 +208,16 @@ CONTAINS
     ! ----------------------------------------------------------------
     CALL HCO_GetPrefTimeAttr ( HcoState, Lct, &
                                prefYr, prefMt, prefDy, prefHr, prefMn, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = &
+         'Error encountered in HCO_GetPrefTimeAttr for ' // TRIM(Lct%Dct%cName)
+       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       IF ( ASSOCIATED(availYMDhm) ) THEN
+          DEALLOCATE(availYMDhm)
+          availYMDhm => NULL()
+       ENDIF
+       RETURN
+    ENDIF
 
     ! Eventually force preferred year to passed value
     IF ( PRESENT(Year) ) prefYr = Year
@@ -220,6 +229,10 @@ CONTAINS
        IF ( Lct%Dct%Dta%CycleFlag /= HCO_CFLAG_RANGE ) THEN
           MSG = 'Cannot get preferred datetime for ' // TRIM(Lct%Dct%cName)
           CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          IF ( ASSOCIATED(availYMDhm) ) THEN
+             DEALLOCATE(availYMDhm)
+             availYMDhm => NULL()
+          ENDIF
           RETURN
        ENDIF
 
@@ -433,6 +446,10 @@ CONTAINS
              MSG = 'Data must have exactly 7 time slices '// &
                    'if you set day attribute to WD: '//TRIM(Lct%Dct%cName)
              CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             IF ( ASSOCIATED(availYMDhm) ) THEN
+                DEALLOCATE(availYMDhm)
+                availYMDhm => NULL()
+             ENDIF
              RETURN
           ENDIF
 
@@ -452,6 +469,10 @@ CONTAINS
                 WRITE(MSG,*) 'Cannot get weekday slices for: ', &
                    TRIM(Lct%Dct%cName), '. Cannot find first time slice.'
                 CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                IF ( ASSOCIATED(availYMDhm) ) THEN
+                   DEALLOCATE(availYMDhm)
+                   availYMDhm => NULL()
+                ENDIF
                 RETURN
              ENDIF
 
@@ -460,6 +481,10 @@ CONTAINS
                    '. There are less than 6 additional time slices after ',  &
                    'selected start date ', availYMDhm(tidx1)
                 CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                IF ( ASSOCIATED(availYMDhm) ) THEN
+                   DEALLOCATE(availYMDhm)
+                   availYMDhm => NULL()
+                ENDIF
                 RETURN
              ENDIF
              tidx2 = tidx1 + 6
@@ -494,7 +519,16 @@ CONTAINS
                                    availYMDhm, prefYMDhm, origYMDhm,  &
                                    tidx1,      tidx2,     wgt1,       &
                                    wgt2,       RC                   )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                MSG = 'Error encountered in GetIndex2Interp for: '        // &
+                     TRIM(Lct%Dct%Cname)
+                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                IF ( ASSOCIATED(availYMDhm) ) THEN
+                   DEALLOCATE(availYMDhm)
+                   availYMDhm => NULL()
+                ENDIF
+                RETURN
+             ENDIF
 
           ! Check for multiple hourly data
           ELSEIF ( tidx1 > 0 .AND. prefHr < 0 ) THEN
@@ -519,6 +553,10 @@ CONTAINS
                 'be set to `C` in the HEMCO configuration file:'    // &
                 TRIM(Lct%Dct%cName)
           CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          IF ( ASSOCIATED(availYMDhm) ) THEN
+             DEALLOCATE(availYMDhm)
+             availYMDhm => NULL()
+          ENDIF
           RETURN
        ENDIF
 
@@ -602,7 +640,11 @@ CONTAINS
        oYMDhm = origYMDhm
     ENDIF
 
-    IF ( ASSOCIATED(availYMDhm) ) DEALLOCATE(availYMDhm)
+    ! Deallocate and nullify the pointer
+    IF ( ASSOCIATED(availYMDhm) ) THEN
+       DEALLOCATE(availYMDhm)
+       availYMDhm => NULL()
+    ENDIF
 
     ! Return w/ success
     CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
@@ -658,7 +700,8 @@ CONTAINS
     IF ( prefYMDhm < availYMDhm(1) .OR. prefYMDhm > availYMDhm(N) ) RETURN
 
     ! get closest index that is not in the future
-    DO I = 1, N
+    ! NOTE: Avoid out-of-bounds error, upper loop should be N-1
+    DO I = 1, N-1
 
        ! NOTE: Epsilon test is more robust than an equality test
        ! for double-precision variables (bmy, 4/11/17)
