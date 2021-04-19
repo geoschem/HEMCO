@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -128,7 +128,7 @@ MODULE HCO_CLOCK_MOD
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -270,7 +270,7 @@ CONTAINS
   END SUBROUTINE HcoClock_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -343,7 +343,7 @@ CONTAINS
   END SUBROUTINE HcoClock_InitTzPtr
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -400,7 +400,7 @@ CONTAINS
     REAL(sp)                 :: UTC
     INTEGER                  :: DUM, DOY
     INTEGER                  :: UseYr, UseMt, UseDy, UseHr
-    CHARACTER(LEN=255)       :: MSG
+    CHARACTER(LEN=255)       :: MSG, ErrMsg
     LOGICAL                  :: FND, NewStep, EmisTime, WasEmisTime
 
     !======================================================================
@@ -421,7 +421,11 @@ CONTAINS
     IF ( Clock%nSteps == 0 ) THEN
        CALL GetExtOpt( CF, CoreNr, 'Emission year', OptValInt=DUM, &
                        FOUND=FND, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error getting emission year'
+          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          RETURN
+       ENDIF
        IF ( FND ) THEN
           Clock%FixYY = DUM
           WRITE(MSG,*) 'Emission year will be fixed to day ', Clock%FixYY
@@ -430,7 +434,12 @@ CONTAINS
 
        CALL GetExtOpt( CF, CoreNr, 'Emission month', OptValInt=DUM, &
                        FOUND=FND, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error getting emission month'
+          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          RETURN
+       ENDIF
+
        IF ( FND ) THEN
           Clock%FixMM = DUM
           WRITE(MSG,*) 'Emission month will be fixed to day ', Clock%FixMM
@@ -439,7 +448,12 @@ CONTAINS
 
        CALL GetExtOpt( CF, CoreNr, 'Emission day', OptValInt=DUM, &
                        FOUND=FND, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error getting emission day'
+          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          RETURN
+       ENDIF
+
        IF ( FND ) THEN
           Clock%Fixdd = DUM
           WRITE(MSG,*) 'Emission day will be fixed to day ', Clock%Fixdd
@@ -448,7 +462,12 @@ CONTAINS
 
        CALL GetExtOpt( CF, CoreNr, 'Emission hour', OptValInt=DUM, &
                        FOUND=FND, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error getting emission hour'
+          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          RETURN
+       ENDIF
+
        IF ( FND ) THEN
           Clock%Fixhh = DUM
           WRITE(MSG,*) 'Emission hour will be fixed to day ', Clock%Fixhh
@@ -532,7 +551,12 @@ CONTAINS
        ! Set local times
        ! ----------------------------------------------------------------
        CALL Set_LocalTime ( HcoState, Clock, UTC, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error setting local time'
+          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          RETURN
+       ENDIF
+
 
        ! ----------------------------------------------------------------
        ! Update counter
@@ -620,7 +644,7 @@ CONTAINS
   END SUBROUTINE HcoClock_Set
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -785,7 +809,7 @@ CONTAINS
   END SUBROUTINE HcoClock_Get
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -934,7 +958,7 @@ CONTAINS
   END SUBROUTINE HcoClock_GetLocal
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -977,7 +1001,7 @@ CONTAINS
   END FUNCTION HcoClock_First
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1055,7 +1079,7 @@ CONTAINS
   END FUNCTION HcoClock_Rewind
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1095,7 +1119,7 @@ CONTAINS
   END FUNCTION HcoClock_NewYear
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1135,7 +1159,7 @@ CONTAINS
   END FUNCTION HcoClock_NewMonth
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1175,7 +1199,7 @@ CONTAINS
   END FUNCTION HcoClock_NewDay
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1215,7 +1239,7 @@ CONTAINS
   END FUNCTION HcoClock_NewHour
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1257,7 +1281,7 @@ CONTAINS
   END FUNCTION HcoClock_New3Hour
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1302,7 +1326,7 @@ CONTAINS
   END SUBROUTINE HcoClock_Cleanup
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1359,7 +1383,7 @@ CONTAINS
   END FUNCTION HCO_GetWeekday
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1422,7 +1446,7 @@ CONTAINS
   END FUNCTION Get_LastDayOfMonth
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1562,7 +1586,7 @@ CONTAINS
   END SUBROUTINE Set_LocalTime
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1616,7 +1640,7 @@ CONTAINS
   END FUNCTION HcoClock_CalcDOY
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1700,7 +1724,7 @@ CONTAINS
   END SUBROUTINE HcoClock_Increase
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1739,7 +1763,7 @@ CONTAINS
   END SUBROUTINE HcoClock_EmissionsDone
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !

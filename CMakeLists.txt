@@ -3,9 +3,16 @@
 cmake_minimum_required(VERSION 3.5)
 project(HEMCO VERSION 3.0.0 LANGUAGES Fortran)
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+# Print header
+#-----------------------------------------------------------------------------
+message("-----------------------------------------------------------------")
+message("HEMCO ${PROJECT_VERSION}")
+message("-----------------------------------------------------------------")
+
+#-----------------------------------------------------------------------------
 # Set policies
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0057 NEW)
 if(POLICY CMP0074)
@@ -15,92 +22,118 @@ if(POLICY CMP0079)
     cmake_policy(SET CMP0079 NEW)
 endif()
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # Add CMakeScripts/ to the module path
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts)
+include(HCO-Helpers)
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # Declare the HEMCOBuildProperties library
-#---------------------------------------------------------------------
-# All HEMCO targets depend on HEMCOBuildProperties. This is used to
-# control the compiler options and definitions for HEMCO targets
-# (via inheritance).
+#-----------------------------------------------------------------------------
 add_library(HEMCOBuildProperties INTERFACE)
 
-#---------------------------------------------------------------------
-# Set default compiler options
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+# Set compiler options for the given release type and precision setting.
+# Supported compilers: Intel Fortran and GNU Fortran
+#
+# NOTE: This section must go below the USE_REAL8 definition above, because
+# that definition is used to select the proper compilation flags.
+#-----------------------------------------------------------------------------
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-    target_compile_options(HEMCOBuildProperties
-	INTERFACE
-        -cpp -w -auto -noalign -convert big_endian -fp-model source -mcmodel=medium
-        -shared-intel -traceback -DLINUX_IFORT
+    target_compile_options(HEMCOBuildProperties INTERFACE
+        -cpp -w -auto -noalign -convert big_endian -fp-model source
+        -mcmodel=medium -shared-intel -traceback -DLINUX_IFORT
+        $<$<CONFIG:Release>:-O2>
+        $<$<CONFIG:RelWithDebInfo>:-O2>
+        $<$<CONFIG:Debug>:-g -O0 -check arg_temp_created -debug all -fpe0 -ftrapuv -check,bounds>
     )
-    set(CMAKE_Fortran_FLAGS_RELEASE "-O2")
-    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O2")
-    set(CMAKE_Fortran_FLAGS_DEBUG "-g -O0 -check arg_temp_created -debug all -DDEBUG")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(HEMCOBuildProperties
-	INTERFACE
-        -cpp -w -std=legacy -fautomatic -fno-align-commons -fconvert=big-endian
-        -fno-range-check -mcmodel=medium -fbacktrace -g -DLINUX_GFORTRAN
-    )
-    set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -funroll-loops")
-    # same as release for GEOS-Chem
-    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O3 -funroll-loops")
-    set(CMAKE_Fortran_FLAGS_DEBUG "-g -gdwarf-2 -gstrict-dwarf -O0 -Wall -Wextra -Wconversion -Warray-temporaries -fcheck-array-temporaries")
+    target_compile_options(HEMCOBuildProperties INTERFACE
+        -cpp -w -std=legacy -fautomatic -fno-align-commons
+        -fconvert=big-endian -fno-range-check -mcmodel=medium
+        -fbacktrace -g -DLINUX_GFORTRAN -ffree-line-length-none
+        $<$<CONFIG:Release>:-O3 -funroll-loops>
+        $<$<CONFIG:RelWithDebInfo>:-O3 -funroll-loops>
+        $<$<CONFIG:Debug>:-g -gdwarf-2 -gstrict-dwarf -O0 -Wall -Wextra -Wconversion -Warray-temporaries -fcheck=array-temps -ffpe-trap=invalid,zero,overflow -finit-real=snan -fcheck=bounds -fcheck=pointer>
+     )
 else()
     message(FATAL_ERROR "Unknown Fortran compiler: ${CMAKE_Fortran_COMPILER_ID}")
 endif()
 
-#---------------------------------------------------------------------
-# Always set USE_REAL8
-#---------------------------------------------------------------------
-target_compile_definitions(HEMCOBuildProperties
-    INTERFACE "USE_REAL8"
+#-----------------------------------------------------------------------------
+# Set USE_REAL8 as cache variable to not override the existing definition
+# See https://github.com/geoschem/geos-chem/issues/43.
+#-----------------------------------------------------------------------------
+set(USE_REAL8 ON CACHE BOOL
+  "Switch to set HEMCO precision (hp) to 8-byte floating point real"
+)
+target_compile_definitions(HEMCOBuildProperties INTERFACE
+  $<$<BOOL:${USE_REAL8}>:USE_REAL8>
 )
 
-#---------------------------------------------------------------------
-# Set OpenMP setting as cache variable to not override existing definition
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+# Add OpenMP compile command to the compilation settings
+# Define OMP as a cached variable to prevent overriding existing definition
+#-----------------------------------------------------------------------------
 set(OMP "TRUE" CACHE STRING "Enables/disables HEMCO built with OpenMP")
-if("${OMP}")
+if(${OMP})
     find_package(OpenMP REQUIRED)
-    target_link_libraries(HEMCOBuildProperties INTERFACE OpenMP::OpenMP_Fortran) # Prefer OpenMP::OpenMP target rather than variables
+    ###########################################################################
+    # NOTE: Newer versions of CMake (maybe > 3.8) prefer OpenMP::OpenMP
+    # rather than ${OpenMP_Fortran_FLAGS} to specify compilation options
+    # for OpenMP.  However, this is not supported in older versions.
+    # For backwards compatibility, especially with Azure DevOps, we will
+    # leave the new syntax commented out.  It can be restored later.
+    #  -- Bob Yantosca (28 Jul 2020)
+    #
+    #    target_compile_options(HEMCOBuildProperties
+    #      INTERFACE OpenMP::OpenMP_Fortran
+    #    )
+    #    target_link_libraries(HEMCOBuildProperties
+    #      INTERFACE OpenMP::OpenMP_Fortran
+    #    )
+    ###########################################################################
+    target_compile_options(HEMCOBuildProperties
+      INTERFACE ${OpenMP_Fortran_FLAGS}
+    )
+    target_link_libraries(HEMCOBuildProperties
+      INTERFACE ${OpenMP_Fortran_FLAGS}
+    )
 else()
     target_compile_definitions(HEMCOBuildProperties
         INTERFACE "NO_OMP"
     )
 endif()
 
-#---------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------
 # Put all of HEMCO's mod files in build subdir called mod
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 set(CMAKE_Fortran_MODULE_DIRECTORY ${HEMCO_BINARY_DIR}/mod)
 target_include_directories(HEMCOBuildProperties
     INTERFACE ${HEMCO_BINARY_DIR}/mod
 )
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # Append HEMCO's environment variables to CMAKE_PREFIX_PATH
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH
     # Possible NetCDF environment variables
     $ENV{NetCDF_F_ROOT}     $ENV{NetCDF_C_ROOT}     $ENV{NetCDF_ROOT}
     $ENV{NETCDF_F_ROOT}     $ENV{NETCDF_C_ROOT}     $ENV{NETCDF_ROOT}
     $ENV{NetCDF_Fortran_ROOT}
     $ENV{NETCDF_FORTRAN_ROOT}
-    
+
     # Possible HEMCO environmnet variables (still needed? -ewl)
     $ENV{GC_F_BIN} 	    $ENV{GC_BIN}
     $ENV{GC_F_INCLUDE} 	    $ENV{GC_INCLUDE}
     $ENV{GC_F_LIB} 	    $ENV{GC_LIB}
 )
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # Link NetCDF-F to HEMCOBuildProperties
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 find_package(NetCDF REQUIRED)
 target_include_directories(HEMCOBuildProperties
     INTERFACE ${NETCDF_INCLUDE_DIRS}
@@ -109,9 +142,9 @@ target_link_libraries(HEMCOBuildProperties
     INTERFACE ${NETCDF_LIBRARIES}
 )
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # Use the NC_HAS_COMPRESSION def if nf_def_var_deflate is in netcdf.inc
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 if(EXISTS ${NETCDF_F77_INCLUDE_DIR}/netcdf.inc)
     file(READ ${NETCDF_F77_INCLUDE_DIR}/netcdf.inc NCINC)
     if("${NCINC}" MATCHES ".*nf_def_var_deflate.*")
@@ -121,22 +154,21 @@ if(EXISTS ${NETCDF_F77_INCLUDE_DIR}/netcdf.inc)
     endif()
 endif()
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # Print a description of the source code repo's version
 # (Needs more work to enable)
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 #get_repo_version(HEMCO_REPO_VERSION ${CMAKE_CURRENT_SOURCE_DIR})
 #message(STATUS "HEMCO @ ${HEMCO_REPO_VERSION})
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # For HEMCO Standalone
-#---------------------------------------------------------------------
+#
+# This conditional block configures the HEMCO build for HEMCO standalone.
+# It sets HEMCO_EXE_TARGETS and it configures the HEMCOBuildProperties.
+#-----------------------------------------------------------------------------
 if(NOT HEMCO_EXTERNAL_CONFIG)
 
-    # This conditional block configures the HEMCO build for HEMCO
-    # standalone. It sets HEMCO_EXE_TARGETS and it configures
-    # the HEMCOBuildProperties.
-    
     # Set CMAKE_BUILD_TYPE to Release by default
     if(NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE "Release"
@@ -145,7 +177,7 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
             FORCE
     	)
     endif()
-    
+
     # Set the run directory to one directory up
     set(RUNDIR ".." CACHE PATH "Path to your run directory")
     message(STATUS "Bootstrapping  ${RUNDIR}")
@@ -154,7 +186,7 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
     get_filename_component(RUNDIR "${RUNDIR}"
         ABSOLUTE BASE_DIR "${CMAKE_BINARY_DIR}"
     )
-    
+
     # Configure the run directory, if any.
     set(BUILD_WITHOUT_RUNDIR FALSE)
     if(EXISTS ${RUNDIR}/HEMCO_sa_Spec.rc)
@@ -163,11 +195,11 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
         set(RUNDIR ${CMAKE_BINARY_DIR})
         set(BUILD_WITHOUT_RUNDIR TRUE)
     else()
-        message(FATAL_ERROR "Your run directory doesn't 
-                have HEMCO_sa_Spec.rc! Set RUNDIR to a 
+        message(FATAL_ERROR "Your run directory doesn't
+                have HEMCO_sa_Spec.rc! Set RUNDIR to a
                 valid run directory.")
     endif()
-    
+
     # Determine which executables should be built
     set(HEMCO_EXE_TARGETS "hemco_standalone"
         CACHE STRING "Executable targets that get built as a part of \"all\""
@@ -175,21 +207,21 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
 
 endif()
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # For HEMCO as submodule in MAPL/ESMF superproject
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
     target_link_libraries(HEMCOBuildProperties
-        INTERFACE MAPL_Base
+        INTERFACE MAPL.base
     )
     target_compile_definitions(HEMCOBuildProperties
         INTERFACE ESMF_
     )
 endif()
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # Write HEMCOBuildProperties's configuration to a file
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 get_target_property(BT_DEFINITIONS  HEMCOBuildProperties
     INTERFACE_COMPILE_DEFINITIONS
 )
@@ -209,27 +241,23 @@ file(WRITE ${CMAKE_BINARY_DIR}/HEMCOBuildProperties.txt
     "HEMCOBuildProperties::INTERFACE_COMPILE_OPTIONS:${BT_OPTIONS}\n"
     "HEMCOBuildProperties::INTERFACE_LINK_LIBRARIES:${BT_LIBRARIES}\n"
     "HEMCOBuildProperties::INTERFACE_INCLUDE_DIRECTORIES:${BT_INCLUDES}\n"
-    "CMAKE_Fortran_FLAGS_RELEASE:${CMAKE_Fortran_FLAGS_RELEASE}\n"
-    "CMAKE_Fortran_FLAGS_DEBUG:${CMAKE_Fortran_FLAGS_DEBUG}\n"
-    "CMAKE_Fortran_FLAGS:${CMAKE_Fortran_FLAGS}\n\n"
 )
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # Try to compile a simple program that uses NetCDF-Fortran and OpenMP
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 if(NOT HEMCO_EXTERNAL_CONFIG AND NOT HEMCO_TRY_RUN_PASSED)
 
     # Format definitions with -D prefix
-    set(TRY_RUN_DEFINITIONS "")
-    foreach(DEF ${BT_DEFINITIONS})
-        list(APPEND TRY_RUN_DEFINITIONS "-D${DEF}")
-    endforeach()
-    
+    #set(TRY_RUN_DEFINITIONS "")
+    #foreach(DEF ${BT_DEFINITIONS})
+    #    list(APPEND TRY_RUN_DEFINITIONS "-D${DEF}")
+    #endforeach()
+
     # Try to compile and run try_compile.F90
     try_run(RUN_FAILED COMPILED_OK
         ${CMAKE_CURRENT_BINARY_DIR}/try_compile                  # binary dir
         ${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/try_compile.F90 # test src file
-        COMPILE_DEFINITIONS ${TRY_RUN_DEFINITIONS} ${BT_OPTIONS} # compile flags
         LINK_LIBRARIES ${BT_LIBRARIES}	                         # link flags
         CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${BT_INCLUDES}"       # include dirs
     	COMPILE_OUTPUT_VARIABLE COMPILE_OUTPUT
@@ -253,7 +281,7 @@ if(NOT HEMCO_EXTERNAL_CONFIG AND NOT HEMCO_TRY_RUN_PASSED)
     else()
         file(REMOVE ${CMAKE_BINARY_DIR}/FailedCompile.txt)
     endif()
-    
+
     # Display a warning if its execution failed
     if(RUN_FAILED)
         if(OMP)
@@ -278,7 +306,14 @@ if(NOT HEMCO_EXTERNAL_CONFIG AND NOT HEMCO_TRY_RUN_PASSED)
     endif()
 endif()
 
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+# Print output of environment variable settings
+#-----------------------------------------------------------------------------
+hco_pretty_print(SECTION "Settings")
+hco_pretty_print(VARIABLE OMP IS_BOOLEAN)
+hco_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
+
+#-----------------------------------------------------------------------------
 # Add source code directory
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 add_subdirectory(src)

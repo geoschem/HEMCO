@@ -27,6 +27,7 @@ add_library(HCO STATIC EXCLUDE_FROM_ALL
 	hcoio_dataread_mod.F90
 	hcoio_diagn_mod.F90
 	hcoio_messy_mod.F90
+	hcoio_util_mod.F90
 	hcoio_read_esmf_mod.F90
 	hcoio_read_std_mod.F90
 	hcoio_write_esmf_mod.F90

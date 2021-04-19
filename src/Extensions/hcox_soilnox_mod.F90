@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -155,6 +155,9 @@ MODULE HCOX_SoilNOx_Mod
      REAL(sp),          ALLOCATABLE :: SpcScalVal(:)
      CHARACTER(LEN=61), ALLOCATABLE :: SpcScalFldNme(:)
 
+     ! Diagnostics
+     REAL(sp), POINTER              :: FertNO_Diag(:,:)
+
      TYPE(MyInst), POINTER          :: NextInst => NULL()
   END TYPE MyInst
 
@@ -250,7 +253,7 @@ MODULE HCOX_SoilNOx_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -304,7 +307,6 @@ CONTAINS
 !
     INTEGER                  :: I, J, N
     REAL(hp), TARGET         :: FLUX_2D(HcoState%NX,HcoState%NY)
-    REAL(hp), TARGET         :: DIAG   (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: Tmp2D  (HcoState%NX,HcoState%NY)
     REAL(sp)                 :: Def2D  (HcoState%NX,HcoState%NY)
     REAL(hp)                 :: FERTDIAG, DEP_FERT, SOILFRT
@@ -316,10 +318,6 @@ CONTAINS
     CHARACTER(LEN= 31)       :: DiagnName
     CHARACTER(LEN=255)       :: MSG, DMY
     TYPE(MyInst),    POINTER :: Inst
-
-    ! For manual diagnostics
-    LOGICAL, SAVE            :: DoDiagn = .FALSE.
-    TYPE(DiagnCont), POINTER :: TmpCnt
 
     !=================================================================
     ! HCOX_SoilNOx_RUN begins here!
@@ -334,7 +332,6 @@ CONTAINS
 
     ! Nullify
     Inst   => NULL()
-    TmpCnt => NULL()
 
     ! Get Instance
     CALL InstGet ( ExtState%SoilNox, Inst, RC )
@@ -427,12 +424,6 @@ CONTAINS
           ExtState%DRYCOEFF => Inst%DRYCOEFF
           DEALLOCATE(VecDp)
        ENDIF
-
-       ! Check if we need to write manual fertilizer NO diagnostics
-       DiagnName = 'EmisNO_Fert'
-       CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
-                             DiagnName, 0, DoDiagn, TmpCnt )
-       TmpCnt => NULL()
     ENDIF
 
     !---------------------------------------------------------------
@@ -507,7 +498,6 @@ CONTAINS
     ! Init
     TSEMIS  = HcoState%TS_EMIS
     FLUX_2D = 0e+0_hp
-    IF(DoDiagn) DIAG = 0e+0_hp
 
     ! Loop over each land grid-box, removed loop over landpoints
 !$OMP PARALLEL DO                                               &
@@ -548,7 +538,9 @@ CONTAINS
 
        ! Write out
        FLUX_2D(I,J) = MAX(IJFLUX,0.0_hp)
-       IF (DoDiagn) DIAG(I,J) = FERTDIAG
+
+       ! Update diagnostics
+       Inst%FertNO_Diag(I,J) = FERTDIAG
 
     ENDDO !J
     ENDDO !I
@@ -579,17 +571,6 @@ CONTAINS
        RETURN
     ENDIF
 
-    ! 'EmisNO_Fert' is the fertilizer NO emissions.
-    ! This is a manual diagnostic created in GeosCore/hcoi_gc_diagn_mod.F90.
-    ! If an empty pointer (i.e. not associated) is passed to Diagn_Update,
-    ! diagnostics are treated as zeros!
-    IF ( DoDiagn ) THEN
-       DiagnName = 'EmisNO_Fert'
-       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                          cName=TRIM(DiagnName), Array2D=DIAG, RC=RC)
-       IF ( RC /= HCO_SUCCESS ) RETURN
-    ENDIF
-
     ! ----------------------------------------------------------------
     ! Eventually copy internal values to ESMF internal state object
     ! ----------------------------------------------------------------
@@ -617,7 +598,7 @@ CONTAINS
   END SUBROUTINE HCOX_SoilNox_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -742,35 +723,47 @@ CONTAINS
     I = HcoState%NX
     J = HcoState%NY
 
+    ALLOCATE( Inst%FertNO_Diag( I, J ), STAT=AS )
+    IF ( AS /= 0 ) THEN
+       CALL HCO_ERROR( HcoState%Config%Err, 'FertNO_Diag', RC )
+       RETURN
+    ENDIF
+    Inst%FertNO_Diag = 0.0_sp
+
     ALLOCATE( Inst%DRYPERIOD( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'DRYPERIOD', RC )
        RETURN
     ENDIF
+    Inst%DRYPERIOD     = 0.0_sp
 
     ALLOCATE( Inst%PFACTOR( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'PFACTOR', RC )
        RETURN
     ENDIF
+    Inst%PFACTOR       = 0.0_sp
 
     ALLOCATE( Inst%GWET_PREV( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'GWET_PREV', RC )
        RETURN
     ENDIF
+    Inst%GWET_PREV     = 0.0_sp
 
     ALLOCATE( Inst%DEP_RESERVOIR( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'DEP_RESERVOIR', RC )
        RETURN
     ENDIF
+    Inst%DEP_RESERVOIR = 0.0_sp
 
     ALLOCATE( Inst%CANOPYNOX( I, J, NBIOM ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( HcoState%Config%Err, 'CANOPYNOX', RC )
        RETURN
     ENDIF
+    Inst%CANOPYNOX     = 0e+0_hp
 
     ! Reserve 24 pointers for land fractions for each Koppen category
     ALLOCATE ( Inst%LANDTYPE(NBIOM), STAT=AS )
@@ -798,21 +791,22 @@ CONTAINS
     Inst%CLIMARID  = 0.0_hp
     Inst%CLIMNARID = 0.0_hp
 
-    ! Zero arrays
-    Inst%DRYPERIOD     = 0.0_sp
-    Inst%PFACTOR       = 0.0_sp
-    Inst%GWET_PREV     = 0.0_sp
-    Inst%DEP_RESERVOIR = 0.0_sp
-    Inst%CANOPYNOX     = 0e+0_hp
-
-    ! Initialize pointers
-    !Inst%CLIMARID  => NULL()
-    !Inst%CLIMNARID => NULL()
-    !Inst%SOILFERT  => NULL()
-
     ! ----------------------------------------------------------------------
     ! Set diagnostics
     ! ----------------------------------------------------------------------
+    CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'EmisNO_Fert',         &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FertNO_Diag,      &
+                       RC        = RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
     CALL HCO_RestartDefine( HcoState, 'PFACTOR', &
                             Inst%PFACTOR, '1',  RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
@@ -857,7 +851,7 @@ CONTAINS
   END SUBROUTINE HCOX_SoilNOx_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -902,7 +896,7 @@ CONTAINS
   END SUBROUTINE HCOX_SoilNox_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -943,7 +937,7 @@ CONTAINS
   END FUNCTION HCOX_SoilNOx_GetFertScale
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1090,7 +1084,7 @@ CONTAINS
   END SUBROUTINE Soil_NOx_Emission
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1369,7 +1363,7 @@ CONTAINS
   END SUBROUTINE Get_Canopy_NOx
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1448,7 +1442,7 @@ CONTAINS
   END FUNCTION DiffG
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1533,7 +1527,7 @@ CONTAINS
   END SUBROUTINE Get_Dep_N
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1582,7 +1576,7 @@ CONTAINS
   END FUNCTION Source_DryN
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1630,7 +1624,7 @@ CONTAINS
   END FUNCTION Source_WetN
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1743,7 +1737,7 @@ CONTAINS
   END FUNCTION SoilTemp
 !EOC
 !----------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1844,7 +1838,7 @@ CONTAINS
   END FUNCTION SoilWet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1922,7 +1916,7 @@ CONTAINS
   END FUNCTION SoilCrf
 !EOC
 !-----------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2007,7 +2001,7 @@ CONTAINS
   END FUNCTION FERTADD
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2143,7 +2137,7 @@ CONTAINS
   END FUNCTION Pulsing
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2197,7 +2191,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2282,7 +2276,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2324,13 +2318,12 @@ CONTAINS
     IF ( ASSOCIATED(Inst) ) THEN
 
        ! Deallocate arrays
-       IF ( ALLOCATED  ( Inst%DRYPERIOD     ) ) DEALLOCATE ( Inst%DRYPERIOD     )
-       IF ( ALLOCATED  ( Inst%PFACTOR       ) ) DEALLOCATE ( Inst%PFACTOR       )
-       IF ( ALLOCATED  ( Inst%GWET_PREV     ) ) DEALLOCATE ( Inst%GWET_PREV     )
-       IF ( ALLOCATED  ( Inst%CANOPYNOX     ) ) DEALLOCATE ( Inst%CANOPYNOX     )
-       IF ( ALLOCATED  ( Inst%DEP_RESERVOIR ) ) DEALLOCATE ( Inst%DEP_RESERVOIR )
-       IF ( ALLOCATED  ( Inst%SpcScalVal    ) ) DEALLOCATE ( Inst%SpcScalVal    )
-       IF ( ALLOCATED  ( Inst%SpcScalFldNme ) ) DEALLOCATE ( Inst%SpcScalFldNme )
+       IF ( ALLOCATED( Inst%PFACTOR       ) ) DEALLOCATE( Inst%PFACTOR       )
+       IF ( ALLOCATED( Inst%GWET_PREV     ) ) DEALLOCATE( Inst%GWET_PREV     )
+       IF ( ALLOCATED( Inst%CANOPYNOX     ) ) DEALLOCATE( Inst%CANOPYNOX     )
+       IF ( ALLOCATED( Inst%DEP_RESERVOIR ) ) DEALLOCATE( Inst%DEP_RESERVOIR )
+       IF ( ALLOCATED( Inst%SpcScalVal    ) ) DEALLOCATE( Inst%SpcScalVal    )
+       IF ( ALLOCATED( Inst%SpcScalFldNme ) ) DEALLOCATE( Inst%SpcScalFldNme )
 
        ! Deallocate LANDTYPE vector
        IF ( ASSOCIATED(Inst%LANDTYPE) ) THEN
@@ -2349,9 +2342,10 @@ CONTAINS
        ENDIF
 
        ! Free pointers
-       IF ( ASSOCIATED( Inst%CLIMARID  ) ) DEALLOCATE ( Inst%CLIMARID  )
-       IF ( ASSOCIATED( Inst%CLIMNARID ) ) DEALLOCATE ( Inst%CLIMNARID )
-       IF ( ASSOCIATED( Inst%SOILFERT  ) ) DEALLOCATE ( Inst%SOILFERT  )
+       IF ( ASSOCIATED( Inst%FertNO_Diag ) ) DEALLOCATE( Inst%FertNO_Diag )
+       IF ( ASSOCIATED( Inst%CLIMARID    ) ) DEALLOCATE( Inst%CLIMARID    )
+       IF ( ASSOCIATED( Inst%CLIMNARID   ) ) DEALLOCATE( Inst%CLIMNARID   )
+       IF ( ASSOCIATED( Inst%SOILFERT    ) ) DEALLOCATE( Inst%SOILFERT    )
 
        ! ----------------------------------------------------------------
        ! Pop off instance from list

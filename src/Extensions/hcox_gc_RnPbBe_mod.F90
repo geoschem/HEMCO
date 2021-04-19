@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -115,7 +115,7 @@ MODULE HCOX_GC_RnPbBe_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -491,7 +491,7 @@ CONTAINS
   END SUBROUTINE HCOX_Gc_RnPbBe_Run
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -687,7 +687,7 @@ CONTAINS
                            'Cannot allocate EmissBe7Strat', RC )
           RETURN
        ENDIF
-       IF ( RC /= 0 ) RETURN
+       Inst%EmissBe7Strat = 0.0_hp
     ENDIF
 
     IF ( Inst%IDTBe10 > 0 ) THEN
@@ -698,7 +698,6 @@ CONTAINS
                            'Cannot allocate EmissBe10', RC )
           RETURN
        ENDIF
-       IF ( RC /= 0 ) RETURN
     ENDIF
 
     IF ( Inst%IDTBe10Strat > 0 ) THEN
@@ -709,7 +708,7 @@ CONTAINS
                            'Cannot allocate EmissBe10Strat', RC )
           RETURN
        ENDIF
-       IF ( RC /= 0 ) RETURN
+       Inst%EmissBe10Strat = 0.0_hp
     ENDIF
 
     !=======================================================================
@@ -726,7 +725,7 @@ CONTAINS
   END SUBROUTINE HCOX_Gc_RnPbBe_Init
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -762,7 +761,7 @@ CONTAINS
   END SUBROUTINE HCOX_Gc_RnPbBe_Final
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -985,7 +984,7 @@ CONTAINS
   END SUBROUTINE Init_7Be_Emissions
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1113,7 +1112,7 @@ CONTAINS
   END SUBROUTINE SLQ
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1167,7 +1166,7 @@ CONTAINS
   END SUBROUTINE InstGet
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1243,7 +1242,7 @@ CONTAINS
   END SUBROUTINE InstCreate
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !BOP

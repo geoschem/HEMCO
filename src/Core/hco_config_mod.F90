@@ -104,7 +104,7 @@ MODULE HCO_Config_Mod
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -420,7 +420,7 @@ CONTAINS
   END SUBROUTINE Config_ReadFile
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -542,7 +542,7 @@ CONTAINS
   END SUBROUTINE SetReadList
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -962,6 +962,7 @@ CONTAINS
                 ! - "RY" : range, always use simulation year
                 ! - "E"  : exact (read file once)
                 ! - "EF" : exact, forced (error if not exist, read/query once)
+                ! - "EFY": exact, always use simulation year
                 ! - "EC" : exact (read/query continuously, e.g. for ESMF interface)
                 ! - "ECF": exact, forced (error if not exist, read/query continuously)
                 ! - "EY" : exact, always use simulation year
@@ -1011,6 +1012,10 @@ CONTAINS
                    Dta%CycleFlag = HCO_CFLAG_EXACT
                    Dta%UpdtFlag  = HCO_UFLAG_ONCE
                    Dta%MustFind  = .TRUE.
+                ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
+                   Dta%CycleFlag = HCO_CFLAG_EXACT
+                   Dta%MustFind  = .TRUE.
+                   Dta%UseSimYear= .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_EXACT
                 ELSEIF ( TRIM(TmCycle) == "ECF" ) THEN
@@ -1019,7 +1024,7 @@ CONTAINS
                 ELSEIF ( TRIM(TmCycle) == "EY" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_EXACT
                    Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                   Dta%UseSimYear=.TRUE.
+                   Dta%UseSimYear= .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "A" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_AVERG
                 ELSEIF ( TRIM(TmCycle) == "I" ) THEN
@@ -1262,11 +1267,13 @@ CONTAINS
              ! - "RY" : range, always use simulation year
              ! - "E"  : exact (read file once)
              ! - "EF" : exact, forced (error if not exist, read/query once)
+             ! - "EFY": exact, always use simulation year
              ! - "EC" : exact (read/query continuously, e.g. for ESMF interface)
              ! - "ECF": exact, forced (error if not exist, read/query continuously)
              ! - "EY" : exact, always use simulation year
              ! - "A"  : average
              ! - "I"  : interpolate
+             ! - "ID" : interpolate, discontinuous dataset
              Dta%MustFind  = .FALSE.
              Dta%UseSimYear= .FALSE.
              IF ( TRIM(TmCycle) == "C" ) THEN
@@ -1309,6 +1316,10 @@ CONTAINS
                 Dta%CycleFlag = HCO_CFLAG_EXACT
                 Dta%UpdtFlag  = HCO_UFLAG_ONCE
                 Dta%MustFind  = .TRUE.
+             ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
+                Dta%CycleFlag = HCO_CFLAG_EXACT
+                Dta%MustFind  = .TRUE.
+                Dta%UseSimYear= .TRUE.
              ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_EXACT
              ELSEIF ( TRIM(TmCycle) == "ECF" ) THEN
@@ -1317,11 +1328,14 @@ CONTAINS
              ELSEIF ( TRIM(TmCycle) == "EY" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_EXACT
                 Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                Dta%UseSimYear=.TRUE.
+                Dta%UseSimYear= .TRUE.
              ELSEIF ( TRIM(TmCycle) == "A" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_AVERG
              ELSEIF ( TRIM(TmCycle) == "I" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_INTER
+             ELSEIF ( TRIM(TmCycle) == "ID" ) THEN
+                Dta%CycleFlag = HCO_CFLAG_INTER
+                Dta%Discontinuous = .TRUE.
              ELSEIF ( TRIM(TmCycle) == "-" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_CYCLE
              ELSE
@@ -1433,7 +1447,7 @@ CONTAINS
   END SUBROUTINE Config_ReadCont
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1679,7 +1693,7 @@ CONTAINS
   END SUBROUTINE BracketCheck
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1814,7 +1828,7 @@ CONTAINS
   END SUBROUTINE AddShadowFields
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1917,7 +1931,7 @@ CONTAINS
   END SUBROUTINE AddZeroScal
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2087,7 +2101,7 @@ CONTAINS
   END SUBROUTINE ExtSwitch2Buffer
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2185,6 +2199,52 @@ CONTAINS
 
     ENDDO
 
+#ifndef MODEL_GEOS
+#ifndef MODEL_WRF
+#ifndef MODEL_CESM
+#ifndef ESMF_
+    !=======================================================================
+    ! Look for met field and grid resolution.  When running the HEMCO
+    ! standalone these will need to be read from the configuration file.
+    ! Otherwise, HEMCO will inherit the met field and grid resolution
+    ! of the parent model (GC-Classic, GCHP, etc.)
+    !
+    ! NOTE: Only do this check if not using GEOS-Chem in an external ESM!
+    !=======================================================================
+
+    ! Look for met field
+    CALL GetExtOpt( HcoConfig, CoreNr, 'MET', &
+                    OptValChar=MetField, FOUND=FOUND, RC=RC )
+    IF ( FOUND ) THEN
+       HcoConfig%MetField = TRIM( MetField )
+    ENDIF
+
+    ! Look for grid resolution
+    ! Make sure resolution string is in the proper FlexGrid format
+    CALL GetExtOpt( HcoConfig, CoreNr, 'RES', &
+                    OptValChar=GridRes, FOUND=FOUND, RC=RC )
+    IF ( FOUND ) THEN
+       SELECT CASE( TRIM( GridRes ) )
+          CASE( '4x5' )
+             GridRes = '4.0x5.0'
+          CASE( '2x25', '2x2.5' )
+             GridRes = '2.0x2.5'
+          CASE( '05x0625', '0.5x0.625' )
+             GridRes = '0.5x0.625'
+          CASE( '025x03125', '0.25x0.3125' )
+             GridRes = '0.25x0.3125'
+          CASE DEFAULT
+             Msg = 'Improperly formatted grid resolution: ' // TRIM( GridRes )
+             CALL HCO_Error( HcoConfig%Err, Msg, RC, Loc )
+             RETURN
+       END SELECT
+       HcoConfig%GridRes = TRIM( GridRes )
+    ENDIF
+#endif
+#endif
+#endif
+#endif
+
     !-----------------------------------------------------------------------
     ! Initialize error object if needed.
     ! Extract values to initialize error module and set some further
@@ -2237,59 +2297,13 @@ CONTAINS
 
     ENDIF
 
-#ifndef MODEL_GEOS
-#ifndef MODEL_WRF
-#ifndef MODEL_CESM
-#ifndef ESMF_
-    !=======================================================================
-    ! Look for met field and grid resolution.  When running the HEMCO
-    ! standalone these will need to be read from the configuration file.
-    ! Otherwise, HEMCO will inherit the met field and grid resolution
-    ! of the parent model (GC-Classic, GCHP, etc.)
-    !
-    ! NOTE: Only do this check if not using GEOS-Chem in an external ESM!
-    !=======================================================================
-
-    ! Look for met field
-    CALL GetExtOpt( HcoConfig, CoreNr, 'MET', &
-                    OptValChar=MetField, FOUND=FOUND, RC=RC )
-    IF ( FOUND ) THEN
-       HcoConfig%MetField = TRIM( MetField )
-    ENDIF
-
-    ! Look for grid resolution
-    ! Make sure resolution string is in the proper FlexGrid format
-    CALL GetExtOpt( HcoConfig, CoreNr, 'RES', &
-                    OptValChar=GridRes, FOUND=FOUND, RC=RC )
-    IF ( FOUND ) THEN
-       SELECT CASE( TRIM( GridRes ) )
-          CASE( '4x5' )
-             GridRes = '4.0x5.0'
-          CASE( '2x25', '2x2.5' )
-             GridRes = '2.0x2.5'
-          CASE( '05x0625' )
-             GridRes = '0.5x0.625'
-          CASE( '025x03125' )
-             GridRes = '0.25x0.3125'
-          CASE DEFAULT
-             Msg = 'Improperly formatted grid resolution: ' // TRIM( GridRes )
-             CALL HCO_Error( HcoConfig%Err, Msg, RC, Loc )
-             RETURN
-       END SELECT
-       HcoConfig%GridRes = TRIM( GridRes )
-    ENDIF
-#endif
-#endif
-#endif
-#endif
-
     ! Leave w/ success
     RC = HCO_SUCCESS
 
   END SUBROUTINE ReadSettings
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2471,7 +2485,7 @@ CONTAINS
   END SUBROUTINE RegisterPrepare
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2669,7 +2683,7 @@ CONTAINS
   END SUBROUTINE Register_Base
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -2802,7 +2816,7 @@ CONTAINS
   END SUBROUTINE Register_Scal
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3191,7 +3205,7 @@ CONTAINS
   END SUBROUTINE Get_targetID
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3250,7 +3264,7 @@ CONTAINS
   END FUNCTION Calc_Coverage
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3476,7 +3490,7 @@ CONTAINS
   END SUBROUTINE ReadAndSplit_Line
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3527,7 +3541,7 @@ CONTAINS
   END SUBROUTINE READCHAR
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3587,7 +3601,7 @@ CONTAINS
   END SUBROUTINE READINT
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3672,7 +3686,7 @@ CONTAINS
   END SUBROUTINE Get_cID
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3736,7 +3750,7 @@ CONTAINS
   END SUBROUTINE ConfigList_AddCont
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3834,7 +3848,7 @@ CONTAINS
   END SUBROUTINE ScalID_Register
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3925,7 +3939,7 @@ CONTAINS
   END SUBROUTINE ScalID2List
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3980,7 +3994,7 @@ CONTAINS
   END SUBROUTINE ScalID_Cleanup
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4063,7 +4077,7 @@ CONTAINS
   END SUBROUTINE SpecName_Register
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4121,7 +4135,7 @@ CONTAINS
   END SUBROUTINE SpecName_Cleanup
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4162,7 +4176,7 @@ CONTAINS
   END FUNCTION Config_GetnSpecies
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4203,7 +4217,7 @@ CONTAINS
   END SUBROUTINE Config_GetSpecNames
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4301,7 +4315,7 @@ CONTAINS
   END SUBROUTINE Config_GetSpecAttr
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4369,7 +4383,7 @@ CONTAINS
   END FUNCTION Check_ContNames
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4572,7 +4586,7 @@ CONTAINS
   END SUBROUTINE ExtractSrcDim
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4647,7 +4661,7 @@ CONTAINS
   END SUBROUTINE ConfigInit
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4717,7 +4731,7 @@ CONTAINS
   END SUBROUTINE ParseEmisL
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
