@@ -687,7 +687,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: I
+    INTEGER :: I, nTime
 
     !=================================================================
     ! Check_availYMDhm begins here
@@ -699,9 +699,15 @@ CONTAINS
     ! Return if preferred datetime not within the vector range
     IF ( prefYMDhm < availYMDhm(1) .OR. prefYMDhm > availYMDhm(N) ) RETURN
 
-    ! get closest index that is not in the future
-    ! NOTE: Avoid out-of-bounds error, upper loop should be N-1
-    DO I = 1, N-1
+    ! To avoid out-of-bounds error in the loop below:
+    ! (1) For interpolated data, the upper loop limit should be N;
+    ! (2) Otherwise, the upper loop limit should be N-1.
+    ! (bmy, 4/28/21)
+    nTime = N - 1
+    IF ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_INTER ) nTime = N
+
+    ! Get closest index that is not in the future
+    DO I = 1, nTime
 
        ! NOTE: Epsilon test is more robust than an equality test
        ! for double-precision variables (bmy, 4/11/17)
