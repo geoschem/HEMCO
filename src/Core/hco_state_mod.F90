@@ -120,6 +120,9 @@ MODULE HCO_State_Mod
      TYPE(ESMF_State),    POINTER :: IMPORT
      TYPE(ESMF_State),    POINTER :: EXPORT
 #endif
+#ifdef ADJOINT
+     LOGICAL                      :: isAdjoint
+#endif
   END TYPE HCO_State
 !
 ! !REVISION HISTORY:
@@ -306,6 +309,10 @@ CONTAINS
     HcoState%TS_EMIS = 0.0_sp
     HcoState%TS_CHEM = 0.0_sp
     HcoState%TS_DYN  = 0.0_sp
+
+#ifdef ADJOINT
+    HcoState%isAdjoint = .false.
+#endif
 
     ! Nullify temporary array. This array may be used as temporary
     ! place to write emissions into.
