@@ -804,9 +804,9 @@ CONTAINS
              SpcName = 'CH4'
           ELSEIF ( SpcName(1:3) == 'CO_' ) THEN
              SpcName = 'CO'
-          ELSEIF ( SpcName(1:2) == 'BC' ) THEN
+          ELSEIF ( SpcName(1:2) == 'BC' .or. SpcName(1:4) == 'bc_a' ) THEN
              SpcName = 'BC'
-          ELSEIF ( SpcName(1:2) == 'OC' ) THEN
+          ELSEIF ( SpcName(1:2) == 'OC' .or. SpcName(1:5) == 'pom_a' ) THEN
              SpcName = 'OC'
           ENDIF
        ENDIF

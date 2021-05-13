@@ -1031,7 +1031,7 @@ MODULE HCOIO_MESSY_MOD
             ( SIZE(Ptr4D,3) /= NZ ) .OR. &
             ( SIZE(Ptr4D,4) /= NT )       ) THEN
           WRITE(MSG,*) 'Temporary pointer has wrong dimensions: ', &
-                       TRIM(Lct%Dct%cName)
+                       TRIM(Lct%Dct%cName), NX, NY, NZ, NT, SIZE(Ptr4D,1), SIZE(Ptr4D,2), SIZE(Ptr4D,3), SIZE(Ptr4D,4)
           CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, &
                            THISLOC='MESSY2HCO (hcoio_messy_mod.F90)' )
           RETURN
