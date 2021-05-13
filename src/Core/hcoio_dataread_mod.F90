@@ -162,11 +162,7 @@ CONTAINS
 !
 ! !USES:
 !
-#if defined(ESMF_)
-    USE HCOIO_READ_ESMF_MOD,  ONLY : HCOIO_READ_ESMF
-#else
-    USE HCOIO_READ_STD_MOD,   ONLY : HCOIO_READ_STD
-#endif
+    USE HCOIO_READ_MOD,   ONLY : HCOIO_READ
 !
 ! !INPUT PARAMETERS:
 !
@@ -189,9 +185,6 @@ CONTAINS
     ! Strings
     CHARACTER(LEN=512) :: MSG
 
-    ! SAVEd scalars
-    LOGICAL, SAVE      :: doPrintWarning = .TRUE.
-
     !=======================================================================
     ! HCOIO_DATAREAD begins here
     !=======================================================================
@@ -204,59 +197,16 @@ CONTAINS
                     'HCOIO_DataRead (hcoio_dataread_mod.F90)', RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
-#if defined( ESMF_ ) || defined( MODEL_GEOS )
-
-    !-----------------------------------------------------------------------
-    ! %%%%% ESMF environment (e.g. GCHP, GEOS-DAS) %%%%%%
-    !-----------------------------------------------------------------------
-
-    ! Call ESMF I/O routine.
-    CALL HCOIO_READ_ESMF( HcoState, Lct, RC )
+    ! Call the HEMCO Data Input Layer
+    ! Selection of which HCOIO module to be used is performed at compile level
+    CALL HCOIO_READ( HcoState, Lct, RC )
 
     ! Trap potential errors
     IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Error encountered in routine HCOIO_Read_ESMF!'
+       MSG = 'Error encountered in routine HCOIO_Read!'
        CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
        RETURN
     ENDIF
-
-#else
-
-    !-----------------------------------------------------------------------
-    ! %%%%% Standard environment (e.g. GEOS-Chem "Classic") %%%%%
-    !-----------------------------------------------------------------------
-
-    ! If the file has cycle flag "E" (e.g. it's a restart file), then we will
-    ! read it only once and then never again.  If the file has already been
-    ! read on a previous call, then don't call HCOIO_READ_STD. (bmy, 10/4/18)
-    IF ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_EXACT .and.                      &
-         Lct%Dct%Dta%UpdtFlag  == HCO_UFLAG_ONCE  .and.                      &
-         Lct%Dct%Dta%isTouched                          ) THEN
-
-       ! Print a warning message only once
-       IF ( doPrintWarning ) THEN
-          doPrintWarning = .FALSE.
-          MSG = 'No further attempts will be made to read file: ' //         &
-                TRIM( Lct%Dct%Dta%NcFile )
-          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
-       ENDIF
-
-       ! Return without reading
-       CALL HCO_LEAVE( HcoState%Config%Err, RC )
-       RETURN
-    ENDIF
-
-    ! Call standard I/O routines
-    CALL HCOIO_READ_STD( HcoState, Lct, RC )
-
-    ! Trap potential errors
-    IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Error encountered in routine HCOIO_Read_Std!'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
-       RETURN
-    ENDIF
-
-#endif
 
     ! Denote we are leaving this routine
     CALL HCO_LEAVE( HcoState%Config%Err, RC )

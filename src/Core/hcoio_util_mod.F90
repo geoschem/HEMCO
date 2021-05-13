@@ -41,6 +41,7 @@ MODULE HCOIO_Util_Mod
   PUBLIC :: CheckMissVal
   PUBLIC :: GetArbDimIndex
 #endif
+  PUBLIC :: HCOIO_ReadOther
   PUBLIC :: HCOIO_ReadCountryValues
   PUBLIC :: HCOIO_ReadFromConfig
   PUBLIC :: GetDataVals
@@ -2075,6 +2076,78 @@ CONTAINS
   END SUBROUTINE GetArbDimIndex
 !EOC
 #endif
+!------------------------------------------------------------------------------
+!                   Harmonized Emissions Component (HEMCO)                    !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: HCOIO_ReadOther
+!
+! !DESCRIPTION: Subroutine HCOIO\_ReadOther is a wrapper routine to
+! read data from sources other than netCDF.
+!\\
+!\\
+! If a file name is given (ending with '.txt'), the data are assumed
+! to hold country-specific values (e.g. diurnal scale factors). In all
+! other cases, the data is directly read from the configuration file
+! (scalars).
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE HCOIO_ReadOther( HcoState, Lct, RC )
+!
+! !USES:
+!
+!
+! !INPUT PARAMTERS:
+!
+    TYPE(HCO_State), POINTER          :: HcoState    ! HEMCO state
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    TYPE(ListCont),   POINTER         :: Lct
+    INTEGER,          INTENT(INOUT)   :: RC
+!
+! !REVISION HISTORY:
+!  22 Dec 2014 - C. Keller: Initial version
+!  See https://github.com/geoschem/hemco for complete history
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255) :: MSG
+
+    !======================================================================
+    ! HCOIO_ReadOther begins here
+    !======================================================================
+
+    ! Error check: data must be in local time
+    IF ( .NOT. Lct%Dct%Dta%IsLocTime ) THEN
+       MSG = 'Cannot read data from file that is not in local time: ' // &
+             TRIM(Lct%Dct%cName)
+       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC='HCOIO_ReadOther (hcoio_dataread_mod.F90)' )
+       RETURN
+    ENDIF
+
+    ! Read an ASCII file as country values
+    IF ( INDEX( TRIM(Lct%Dct%Dta%ncFile), '.txt' ) > 0 ) THEN
+       CALL HCOIO_ReadCountryValues( HcoState, Lct, RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Directly read from configuration file otherwise
+    ELSE
+       CALL HCOIO_ReadFromConfig( HcoState, Lct, RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+    ENDIF
+
+    ! Return w/ success
+    RC = HCO_SUCCESS
+
+  END SUBROUTINE HCOIO_ReadOther
+!EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------

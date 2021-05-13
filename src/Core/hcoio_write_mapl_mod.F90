@@ -1,3 +1,7 @@
+!BOC
+#if defined ( ESMF_ )
+! The 'standard' HEMCO I/O module is used for:
+! - GEOS-Chem High Performance / GCHP and GEOS (ESMF_)
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -6,7 +10,7 @@
 !
 ! !MODULE: hcoio_write_esmf_mod.F90
 !
-! !DESCRIPTION: Module HCOIO\_Write\_ESMF\_Mod.F90 is the HEMCO output
+! !DESCRIPTION: Module HCOIO\_Write\_Mod.F90 is the HEMCO output
 ! interface for the ESMF environment.
 ! In an ESMF/MAPL environment, the HEMCO diagnostics are not directly
 ! written to disk but passed to the gridded component export state, where
@@ -15,7 +19,7 @@
 !\\
 ! !INTERFACE:
 !
-MODULE HCOIO_WRITE_ESMF_MOD
+MODULE HCOIO_Write_Mod
 !
 ! !USES:
 !
@@ -27,8 +31,7 @@ MODULE HCOIO_WRITE_ESMF_MOD
 !
 ! !PUBLIC MEMBER FUNCTIONS:
 !
-#if defined(ESMF_)
-  PUBLIC :: HCOIO_WRITE_ESMF
+  PUBLIC :: HCOIO_Write
 !
 ! !REMARKS:
 !  HEMCO diagnostics are still in testing mode. We will fully activate them
@@ -50,7 +53,7 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: HCOIO_Diagn_WriteOut
+! !IROUTINE: HCOIO_Write
 !
 ! !DESCRIPTION: Subroutine HCOIO\_Diagn\_WriteOut is the interface routine to
 ! link the HEMCO diagnostics arrays to the corresponding data pointers of the
@@ -76,7 +79,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOIO_WRITE_ESMF ( HcoState, RC, OnlyIfFirst, COL )
+  SUBROUTINE HCOIO_WRITE ( HcoState, RC, OnlyIfFirst, COL )
 !
 ! !USES:
 !
@@ -201,8 +204,7 @@ CONTAINS
     ! Return
     RC = HCO_SUCCESS
 
-  END SUBROUTINE HCOIO_WRITE_ESMF
+  END SUBROUTINE HCOIO_Write
 !EOC
+END MODULE HCOIO_Write_Mod
 #endif
-END MODULE HCOIO_WRITE_ESMF_MOD
-

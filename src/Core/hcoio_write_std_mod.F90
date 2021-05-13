@@ -1,19 +1,26 @@
+!BOC
+#if defined ( MODEL_CLASSIC ) || defined( MODEL_WRF ) || defined( MODEL_CESM ) || defined( HEMCO_STANDALONE )
+! The 'standard' HEMCO I/O module is used for:
+! - HEMCO Standalone (HEMCO_STANDALONE)
+! - GEOS-Chem 'Classic' (MODEL_CLASSIC)
+! - WRF-GC (MODEL_WRF)
+! - CESM-GC and CAM-Chem / HEMCO-CESM (MODEL_CESM)
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: hcoio_write_std_mod.F90
+! !MODULE: hcoio_write_mod.F90
 !
-! !DESCRIPTION: Module HCOIO\_write\_std\_mod.F90 is the HEMCO data output
+! !DESCRIPTION: Module HCOIO\_write\_mod.F90 is the HEMCO data output
 ! interface for the 'standard' model environment. It contains routines to
 ! write out diagnostics into a netCDF file.
 !\\
 !\\
 ! !INTERFACE:
 !
-MODULE HCOIO_WRITE_STD_MOD
+MODULE HCOIO_Write_Mod
 !
 ! !USES:
 !
@@ -22,11 +29,10 @@ MODULE HCOIO_WRITE_STD_MOD
 
   IMPLICIT NONE
   PRIVATE
-#if !defined(ESMF_)
 !
 ! !PUBLIC MEMBER FUNCTIONS:
 !
-  PUBLIC :: HCOIO_WRITE_STD
+  PUBLIC :: HCOIO_Write
 !
 ! !PRIVATE MEMBER FUNCTIONS:
 !
@@ -76,7 +82,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOIO_write_std( HcoState, ForceWrite,  &
+  SUBROUTINE HCOIO_Write    ( HcoState, ForceWrite,  &
                               RC,          PREFIX,   UsePrevTime, &
                               OnlyIfFirst, COL                     )
 !
@@ -779,7 +785,7 @@ CONTAINS
     ! Return
     RC = HCO_SUCCESS
 
-  END SUBROUTINE HCOIO_write_std
+  END SUBROUTINE HCOIO_Write
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -918,6 +924,5 @@ CONTAINS
 
   END SUBROUTINE ConstructTimeStamp
 !EOC
+END MODULE HCOIO_WRITE_MOD
 #endif
-END MODULE HCOIO_WRITE_STD_MOD
-

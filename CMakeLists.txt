@@ -214,6 +214,11 @@ endif()
 #-----------------------------------------------------------------------------
 if(NOT HEMCO_EXTERNAL_CONFIG)
 
+    # Set HEMCO compile flag to standalone
+    target_compile_definitions(HEMCOBuildProperties
+        INTERFACE "HEMCO_STANDALONE"
+    )
+
     # Set CMAKE_BUILD_TYPE to Release by default
     if(NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE "Release"

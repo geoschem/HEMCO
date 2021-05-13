@@ -408,9 +408,9 @@ CONTAINS
 !
 ! !USES:
 !
+    USE HCOIO_Util_Mod,     ONLY : HCOIO_ReadOther
+    USE HCOIO_Read_Mod,     ONLY : HCOIO_CloseAll
     USE HCOIO_DataRead_Mod, ONLY : HCOIO_DataRead
-    USE HCOIO_Read_Std_Mod, ONLY : HCOIO_ReadOther
-    USE HCOIO_Read_Std_Mod, ONLY : HCOIO_CloseAll
     USE HCO_FileData_Mod,   ONLY : FileData_ArrIsDefined
     USE HCO_FileData_Mod,   ONLY : FileData_ArrIsTouched
     USE HCO_EmisList_Mod,   ONLY : EmisList_Pass
