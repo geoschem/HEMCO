@@ -258,6 +258,15 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
 endif()
 
 #-----------------------------------------------------------------------------
+# For HEMCO as submodule in GCClassic superproject
+#-----------------------------------------------------------------------------
+if(HEMCO_EXTERNAL_CONFIG AND GCCLASSIC_WRAPPER)
+    target_compile_definitions(HEMCOBuildProperties
+        INTERFACE MODEL_CLASSIC
+    )
+endif()
+
+#-----------------------------------------------------------------------------
 # For HEMCO as submodule in MAPL/ESMF superproject
 #-----------------------------------------------------------------------------
 if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
