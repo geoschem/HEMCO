@@ -56,7 +56,7 @@ CONTAINS
 !\\
 !\\
 ! !INTERFACE:
-  !
+!
   SUBROUTINE HCOIO_Read( HcoState, Lct, RC )
 !
 ! !USES:
@@ -96,7 +96,7 @@ CONTAINS
     CHARACTER(LEN=ESMF_MAXSTR) :: Iam
 
     !=================================================================
-    ! HCOIO_READ_ESMF begins here
+    ! HCOIO_READ begins here
     !=================================================================
 
     ! For error handling
@@ -204,7 +204,7 @@ CONTAINS
     ! Return w/ success
     CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
 
-  END SUBROUTINE HCOIO_Read_ESMF
+  END SUBROUTINE HCOIO_Read
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !

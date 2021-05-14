@@ -72,7 +72,7 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: HCOIO_Read_std
+! !IROUTINE: HCOIO_Read
 !
 ! !DESCRIPTION: Reads a netCDF file and returns the regridded array in proper
 ! units. This routine uses the HEMCO generic data reading and regridding
@@ -198,11 +198,11 @@ CONTAINS
     LOGICAL, SAVE                 :: doPrintWarning = .TRUE.
 
     !=================================================================
-    ! HCOIO_READ_STD begins here
+    ! HCOIO_READ begins here
     !=================================================================
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOIO_READ_STD (hcoio_read_std_mod.F90)' , RC )
+    CALL HCO_ENTER( HcoState%Config%Err, 'HCOIO_READ (hcoio_read_std_mod.F90)' , RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     ! Initialize pointers
@@ -232,7 +232,7 @@ CONTAINS
 
     ! If the file has cycle flag "E" (e.g. it's a restart file), then we will
     ! read it only once and then never again.  If the file has already been
-    ! read on a previous call, then don't call HCOIO_READ_STD. (bmy, 10/4/18)
+    ! read on a previous call, then don't call HCOIO_READ. (bmy, 10/4/18)
     !
     ! Moved this handling from hcoio_dataread_mod, as it is non-MAPL specific
     ! (hplin, 4/5/21)
