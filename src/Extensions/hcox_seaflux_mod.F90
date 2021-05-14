@@ -409,7 +409,7 @@ CONTAINS
     DO I = 1, HcoState%NX
 
        ! Make sure we have no negative seawater concentrations
-       IF ( SeaConc(I,J) < 0.0_sp ) SeaConc(I,J) = 0.0_sp
+       IF ( SeaConc(I,J) < 0.0_hp ) SeaConc(I,J) = 0.0_hp
 
        ! Kludge: Do not check albedo for HEMCO within CESM because CESM
        ! enforces nighttime "albedo" value to be 1.0 (hplin, 5/7/21)
