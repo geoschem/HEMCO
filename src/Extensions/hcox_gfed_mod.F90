@@ -808,6 +808,27 @@ CONTAINS
              SpcName = 'BC'
           ELSEIF ( SpcName(1:2) == 'OC' .or. SpcName(1:5) == 'pom_a' ) THEN
              SpcName = 'OC'
+          ! CAM-chem species conversion to HEMCO (GEOS-Chem) species list, hplin, 5/17/21
+          ELSEIF ( SpcName(1:6) == 'BIGALK' ) THEN
+             SpcName = 'ALK4'
+          ELSEIF ( SpcName(1:8) == 'CH3COCH3' ) THEN
+             SpcName = 'ACET'
+          ELSEIF ( SpcName(1:6) == 'CH3CHO' ) THEN
+             SpcName = 'ALD2'
+          ELSEIF ( SpcName(1:4) == 'C3H6' ) THEN
+             SpcName = 'PRPE'
+          ELSEIF ( SpcName(1:5) == 'MTERP' ) THEN
+             SpcName = 'MTPA'
+          ELSEIF ( SpcName(1:7) == 'BENZENE' ) THEN
+             SpcName = 'BENZ'
+          ELSEIF ( SpcName(1:7) == 'TOLUENE' ) THEN
+             SpcName = 'TOLU'
+          ELSEIF ( SpcName(1:7) == 'XYLENES' ) THEN
+             SpcName = 'XYLE'
+          ELSEIF ( SpcName(1:6) == 'C2H5OH' ) THEN
+             SpcName = 'EOH'
+          ELSEIF ( SpcName(1:5) == 'CH3OH' ) THEN
+             SpcName = 'MOH'
           ENDIF
        ENDIF
        IF ( TRIM(SpcName) == 'POG1' ) SpcName = 'OC'
