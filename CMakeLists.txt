@@ -258,11 +258,11 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
 endif()
 
 #-----------------------------------------------------------------------------
-# For HEMCO as submodule in GCClassic superproject
+# For HEMCO as submodule in GEOS-Chem "Classic" (GCClassic) superproject
 #-----------------------------------------------------------------------------
 if(HEMCO_EXTERNAL_CONFIG AND GCCLASSIC_WRAPPER)
     target_compile_definitions(HEMCOBuildProperties
-        INTERFACE MODEL_CLASSIC
+        INTERFACE MODEL_GCCLASSIC
     )
 endif()
 
