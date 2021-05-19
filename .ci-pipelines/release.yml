@@ -1,3 +1,4 @@
+#=============================================================================
 # Release pipeline:
 # 
 # This pipeline performs deployment actions upon a HEMCO release.
@@ -6,6 +7,7 @@
 
 # This pipeline is triggered by tagged versions excluding 
 # pre-releases.
+#=============================================================================
 trigger:
   branches:
     exclude:
