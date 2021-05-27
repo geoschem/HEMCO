@@ -995,6 +995,11 @@ CONTAINS
              IF ( BaseDct%Dta%SpaceDim == 3 ) THEN
                 DilFact = 1.0
 
+             ! If emission level mode is 2, copy emissions to all level
+             ! A separate scale factor should be used to distribute vertically
+             ELSE IF ( BaseDct%Dta%EmisLmode == 2 ) THEN
+                DilFact = 1.0
+
              ! 2D dilution factor
              ELSE
                 CALL GetDilFact(                                             &
@@ -2508,6 +2513,9 @@ END FUNCTION GetEmisLUnit
     ! Simple case: data is already on level unit
     IF ( altu == HCO_EMISL_LEV ) THEN
        lidx = INT(alt)
+
+    ELSEIF ( altu == HCO_EMISL_TOP ) THEN
+       lidx = HCOState%NZ
 
     ELSEIF ( altu == HCO_EMISL_M .OR. altu == HCO_EMISL_PBL ) THEN
 

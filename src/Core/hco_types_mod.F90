@@ -63,10 +63,11 @@ MODULE HCO_TYPES_MOD
   INTEGER, PARAMETER, PUBLIC  :: HCO_DCTTYPE_SCAL = 2
   INTEGER, PARAMETER, PUBLIC  :: HCO_DCTTYPE_MASK = 3
 
-  ! PBL level flag
+  ! Emission level unit flag
   INTEGER, PARAMETER, PUBLIC  :: HCO_EMISL_PBL = 0
   INTEGER, PARAMETER, PUBLIC  :: HCO_EMISL_LEV = 1
   INTEGER, PARAMETER, PUBLIC  :: HCO_EMISL_M   = 2
+  INTEGER, PARAMETER, PUBLIC  :: HCO_EMISL_TOP = 3
 !
 ! !PUBLIC TYPES:
 !
@@ -358,6 +359,7 @@ MODULE HCO_TYPES_MOD
      REAL(hp)                    :: EmisL2     ! emission level 2
      INTEGER                     :: EmisL1Unit ! emission level 1 unit
      INTEGER                     :: EmisL2Unit ! emission level 2 unit
+     INTEGER                     :: EmisLmode  ! emission level mode: 1 or 2
      INTEGER                     :: nt        ! time dimension: length of Arr
      INTEGER                     :: DeltaT    ! temp. resolution of array [h]
      LOGICAL                     :: IsLocTime ! local time?

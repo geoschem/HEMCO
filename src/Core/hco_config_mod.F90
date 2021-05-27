@@ -4449,6 +4449,8 @@ CONTAINS
              RETURN
           ENDIF
           Dta%SpaceDim = 2
+          Dta%EmisLmode  = 1 ! Dilute emissions vertically
+
           ! Read levels to put emissions into:
           i=4
           IF ( str1(i:i) == '=' ) i = i + 1
@@ -4456,10 +4458,10 @@ CONTAINS
           ! Reduce to data to be read
           tmpstr = str1(i:strLen)
 
-          ! check if range of levels is provided, i.e. xyL=1:5
+          ! Check if range of levels is provided, i.e. xyL=1:5
           idx = INDEX( TRIM(tmpstr), ':' )
 
-          ! if multiple levels are provided (e.g. xyL=1:5)
+          ! If multiple levels are provided (e.g. xyL=1:5)
           IF ( idx > 0 ) THEN
 
              ! Check for PBL flag. It is possible to emit stuff
@@ -4473,15 +4475,36 @@ CONTAINS
              CALL ParseEmisL( tmpstr((idx+1):LEN(tmpstr)), EmisL, EmisUnit, Lscal2 )
              Dta%EmisL2     = EmisL
              Dta%EmisL2Unit = EmisUnit
+             Dta%EmisLmode  = 1
 
-          ! if only one level is provided (e.g. xyL=5)
+          ! If only one value is provided (e.g. xyL5, xyL=5, xyL*)
           ELSE
-             CALL ParseEmisL( tmpstr, EmisL, EmisUnit, Lscal1 )
-             Dta%EmisL1     = EmisL
-             Dta%EmisL1Unit = EmisUnit
-             Lscal2         = Lscal1
-             Dta%EmisL2     = Dta%EmisL1
-             Dta%EmisL2Unit = Dta%EmisL1Unit
+
+             ! Check if wildcard provided, i.e. xyL*
+             idx = INDEX( TRIM(tmpstr), '*' )
+
+             ! Wildcard tells HEMCO to emit same value to all emission levels
+             ! A scale factor should be applied to distribute the emissions
+             ! vertically
+             IF ( idx > 0 ) THEN
+
+                Dta%EmisL1     = 1.0_hp
+                Dta%EmisL1Unit = HCO_EMISL_LEV
+                Dta%EmisL2     = 0.0_hp
+                Dta%EmisL2Unit = HCO_EMISL_TOP
+                Dta%EmisLmode  = 2 ! Copy data to all levels
+
+             ! Emissions are allocated to one level
+             ELSE
+
+                CALL ParseEmisL( tmpstr, EmisL, EmisUnit, Lscal1 )
+                Dta%EmisL1     = EmisL
+                Dta%EmisL1Unit = EmisUnit
+                Lscal2         = Lscal1
+                Dta%EmisL2     = Dta%EmisL1
+                Dta%EmisL2Unit = Dta%EmisL1Unit
+
+             ENDIF
           ENDIF
        ELSE
 
@@ -4661,8 +4684,8 @@ CONTAINS
     ScalID   = -1
 
     IF ( TRIM(str) == 'PBL' ) THEN
-      EmisL    = 0.0_hp
-      EmisUnit = HCO_EMISL_PBL
+       EmisL    = 0.0_hp
+       EmisUnit = HCO_EMISL_PBL
     ELSE
        ! extract scale factor if string starts with 'SCAL' or 'scal'
        nchar = LEN(str)
