@@ -30,7 +30,7 @@ MODULE HCO_JULDAY_MOD
   PRIVATE :: MINT
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -71,7 +71,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Nov 2001 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -172,7 +172,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Nov 2001 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -213,7 +213,7 @@ CONTAINS
 !   Third Edition, by Peter Duffett-Smith, Cambridge UP, 1992.
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

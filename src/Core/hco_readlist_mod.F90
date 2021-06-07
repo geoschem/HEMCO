@@ -52,8 +52,7 @@ MODULE HCO_ReadList_Mod
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller   - Initial version
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-----------------------------------------------------------------------------
 !BOC
@@ -91,7 +90,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  08 Aug 2018 - C. Keller - Add extra checks for 'exact' and 'range' fields.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -242,6 +241,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -408,9 +408,9 @@ CONTAINS
 !
 ! !USES:
 !
+    USE HCOIO_Util_Mod,     ONLY : HCOIO_ReadOther
+    USE HCOIO_Read_Mod,     ONLY : HCOIO_CloseAll
     USE HCOIO_DataRead_Mod, ONLY : HCOIO_DataRead
-    USE HCOIO_Read_Std_Mod, ONLY : HCOIO_ReadOther
-    USE HCOIO_Read_Std_Mod, ONLY : HCOIO_CloseAll
     USE HCO_FileData_Mod,   ONLY : FileData_ArrIsDefined
     USE HCO_FileData_Mod,   ONLY : FileData_ArrIsTouched
     USE HCO_EmisList_Mod,   ONLY : EmisList_Pass
@@ -429,17 +429,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  23 Dec 2014 - C. Keller - Now pass container to EmisList immediately after
-!                            reading the data. Added second loop to remove
-!                            data arrays that are not used in EmisList.
-!  02 Feb 2015 - C. Keller - Now call tIDx_Assign here instead of in
-!                            hco_emislist_mod. This way, hco_emislist_mod
-!                            can also be used by hco_clock_mod.
-!  24 Mar 2015 - C. Keller - Now avoid closing/reopening the same file all
-!                            the time.
-!  24 Mar 2016 - C. Keller - Remove GetFileLUN and SaveFileLUN. This is now
-!                            handled in hcoio_read_std_mod.F90.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -589,7 +579,7 @@ CONTAINS
   END SUBROUTINE ReadList_Fill
 !EOC
 !------------------------------------------------------------------------------
-!         Harvard-NASA Emissions Component (HEMCO)                   !
+!         Harmonized Emissions Component (HEMCO)                              !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -610,7 +600,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -701,7 +691,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  07 Feb 2019 - C. Keller - Added counter
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -771,7 +761,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
-!  15 Mar 2015 - C. Keller - Added verbose number as input argument
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -853,7 +843,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Jan 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -995,6 +985,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

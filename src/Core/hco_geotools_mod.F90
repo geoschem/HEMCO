@@ -56,9 +56,7 @@ MODULE HCO_GeoTools_Mod
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller   - Initialization
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  16 Jul 2014 - C. Keller   - Added HCO_ValidateLon
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -94,6 +92,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller - Initialization!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -153,6 +152,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -167,12 +167,24 @@ CONTAINS
     ! HCO_LANDTYPE begins here
     !--------------------------
 
+    ! Kludge: Override albedo over boxes at night as otherwise ALBD is forcefully set to 1 by CESM
+    ! (hplin with feedback from tmmf, 1/29/21)
+
     ! Water:
+#if !defined( HEMCO_CESM )
     IF ( NINT(WLI) == 0 .AND. Albedo < albd_ice ) THEN
+#else
+    IF ( NINT(WLI) == 0 ) THEN
+#endif
        LandType = 0
 
     ! Land:
+
+#if !defined( HEMCO_CESM )
     ELSEIF ( NINT(WLI) == 1 .AND. Albedo < albd_ice ) THEN
+#else
+    ELSEIF ( NINT(WLI) == 1 ) THEN
+#endif
        LandType = 1
 
     ! Ice:
@@ -213,6 +225,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Jul 2014 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -297,6 +310,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Jul 2014 - C. Keller - Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -382,9 +396,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 May 2015 - C. Keller   - Initial version, based on GEOS-Chem's dao_mod.F.
-!  10 Jul 2015 - R. Yantosca - Corrected issues in ProTeX header
-!  02 Mar 2017 - R. Yantosca - Now compute local time as UTC + Longitude/15,
-!                              so as to avoid using Voronoi TZ's for SUNCOS
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -563,7 +575,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller - Initial version
-!  10 Jul 2015 - R. Yantosca - Corrected issues in ProTeX header
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -639,7 +651,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller - Initial version
-!  10 Jul 2015 - R. Yantosca - Corrected issues in ProTeX header
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -770,7 +782,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Sep 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -854,8 +866,15 @@ CONTAINS
 
     ELSEIF ( EVAL_TK ) THEN
        ALLOCATE(TmpTK(HcoState%NX,HcoState%NY,HcoState%NZ))
-       CALL HCO_EvalFld ( HcoState, 'TK', TmpTK, RC, FOUND=FoundTK )
+       CALL HCO_EvalFld( HcoState, 'TK', TmpTK, RC, FOUND=FoundTK )
        IF ( RC /= HCO_SUCCESS ) RETURN
+
+       ! TK is sometimes listed as TMPU, so look for that too (bmy, 3/5/21)
+       IF ( .not. FoundTK ) THEN
+          CALL HCO_EvalFld( HcoState, 'TMPU', TmpTK, RC, FOUND=FoundTK )
+          IF ( RC /= HCO_SUCCESS ) RETURN
+       ENDIF
+
        EVAL_TK = FoundTK
        IF ( FoundTK ) ThisTK => TmpTk
 
@@ -901,8 +920,17 @@ CONTAINS
 
     ! Otherwise, try to read from HEMCO configuration file
     ELSEIF ( EVAL_PSFC ) THEN
-       CALL HCO_EvalFld ( HcoState, 'PSFC', HcoState%Grid%PSFC%Val, RC, FOUND=FoundPSFC )
+       CALL HCO_EvalFld( HcoState, 'PSFC', HcoState%Grid%PSFC%Val, RC, &
+            FOUND=FoundPSFC )
        IF ( RC /= HCO_SUCCESS ) RETURN
+
+       ! PSFC is sometimes listed as PS, so look for that too (bmy, 3/4/21)
+       IF ( .not. FoundPSFC ) THEN
+          CALL HCO_EvalFld( HcoState, 'PS', HcoState%Grid%PSFC%Val, RC, &
+               FOUND=FoundPSFC )
+          IF ( RC /= HCO_SUCCESS ) RETURN
+       ENDIF
+
        EVAL_PSFC = FoundPSFC
 
        ! Verbose
@@ -1058,6 +1086,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    ! If Box height not available make sure it is not associated
+    IF ( .NOT. EVAL_BXHEIGHT .OR. .NOT. FoundBXHEIGHT ) THEN
+       HcoState%Grid%BXHEIGHT_M%Val => NULL()
+    ENDIF
+
     ! ------------------------------------------------------------------
     ! Calculate various quantities: the goal is to have the following
     ! quantities defined: ZSFC, PSFC, PEDGE, BXHEIGHT_M.
@@ -1109,10 +1142,9 @@ CONTAINS
 
     ! Set PEDGE
     IF ( .NOT. FoundPEDGE ) THEN
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, L )                                               &
-!$OMP SCHEDULE( DYNAMIC )
+       !$OMP PARALLEL DO        &
+       !$OMP DEFAULT( SHARED  ) &
+       !$OMP PRIVATE( I, J, L )
        DO L = 1, HcoState%NZ+1
        DO J = 1, HcoState%NY
        DO I = 1, HcoState%NX
@@ -1123,7 +1155,7 @@ CONTAINS
        ENDDO
        ENDDO
        ENDDO
-!$OMP END PARALLEL DO
+       !$OMP END PARALLEL DO
        FoundPEDGE = .TRUE.
 
        ! Verbose
@@ -1142,10 +1174,14 @@ CONTAINS
           ERRZSFC = .FALSE.
           ERRBX   = .FALSE.
 
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, L, P1, P2 )                                       &
-!$OMP SCHEDULE( DYNAMIC )
+          ! Make sure box height is initialized if it will be calculated
+          CALL HCO_ArrAssert( HcoState%Grid%BXHEIGHT_M, HcoState%NX, &
+                              HcoState%NY,              HcoState%NZ, RC )
+          IF ( RC /= HCO_SUCCESS ) RETURN
+
+          !$OMP PARALLEL DO                &
+          !$OMP DEFAULT( SHARED          ) &
+          !$OMP PRIVATE( I, J, L, P1, P2 )
           DO L = 1, HcoState%NZ
           DO J = 1, HcoState%NY
           DO I = 1, HcoState%NX
@@ -1178,7 +1214,7 @@ CONTAINS
           ENDDO
           ENDDO
           ENDDO
-!$OMP END PARALLEL DO
+          !$OMP END PARALLEL DO
 
           IF ( ERRZSFC ) THEN
              MSG = 'Cannot calculate surface geopotential heights - at least one ' // &
@@ -1293,6 +1329,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Sep 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1421,6 +1458,7 @@ CONTAINS
 !!
 !! !REVISION HISTORY:
 !!  05 May 2016 - C. Keller - Initial version
+!!  See https://github.com/geoschem/hemco for complete history
 !!EOP
 !!------------------------------------------------------------------------------
 !!BOC
@@ -1503,6 +1541,7 @@ CONTAINS
 !!
 !! !REVISION HISTORY:
 !!  05 May 2016 - C. Keller - Initial version
+!!  See https://github.com/geoschem/hemco for complete history
 !!EOP
 !!------------------------------------------------------------------------------
 !!BOC

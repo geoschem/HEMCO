@@ -58,26 +58,9 @@
       PUBLIC :: HCOX_TOMAS_DustDead_Run
       PUBLIC :: HCOX_TOMAS_DustDead_Init
       PUBLIC :: HCOX_TOMAS_DustDead_Final
-      PUBLIC :: HCOX_TOMAS_DustDead_GetFluxTun
 !
 ! !REVISION HISTORY:
-!  (1 ) Added parallel DO loop in GET_ORO (bmy, 4/14/04)
-!  (2 ) Now references "directory_mod.f" (bmy, 7/20/04)
-!  (3 ) Fixed typo in ORO_IS_LND for PGI compiler (bmy, 3/1/05)
-!  (4 ) Modified for GEOS-5 and GCAP met fields (swu, bmy, 8/16/05)
-!  (5 ) Now make sure all USE statements are USE, ONLY (bmy, 10/3/05)
-!  (6 ) Now uses GOCART source function (tdf, bmy, 1/25/07)
-!  (7 ) Modifications for 0.5 x 0.667 grid (yxw, dan, bmy, 11/6/08)
-!  (8 ) Updates for nested grids (amv, bmy, 12/18/09)
-!  01 Mar 2012 - R. Yantosca - Now reference new grid_mod.F90
-!  25 Nov 2013 - C. Keller   - Now a HEMCO extension
-!  06 Oct 2014 - C. Keller   - Allow mass flux tuning factor be set in
-!                              configuration file.
-!  07 Jan 2016 - E. Lundgren - Change dry air gas constant and molec wt to
-!                              match GC values and update acc due to gravity
-!                              and universal gas constant to NIST 2014 values
-!  14 Oct 2016 - C. Keller   - Now use HCO_EvalFld instead of HCO_GetPtr.
-!  24 Aug 2017 - M. Sulprizio- Remove support for GEOS-4, GEOS-5, and MERRA
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -152,11 +135,16 @@
       TYPE(MyInst), POINTER :: AllInst => NULL()
 
       !---------------------------------------
+      ! Number of TOMAS dust bins
+      ! This is now defined in HcoState
+      !---------------------------------------
+      INTEGER               :: NBINS
+
+      !---------------------------------------
       ! MODULE PARAMETER
       !---------------------------------------
       ! JKodros - want to change number of bins, but cant reference
       ! HcoState%MicroPhys?
-      INTEGER, PARAMETER   :: NBINS = 15      ! # of dust bins
       INTEGER, PARAMETER   :: NN_SFCTYP = 28
 
       ! Fundamental physical constants
@@ -220,25 +208,7 @@
 
 ! !REVISION HISTORY:
 !  08 Apr 2004 - T. D. Fairlie - Initial version
-!  (1 ) Added OpenMP parallelization, added comments (bmy, 4/8/04)
-!  (2 ) Bug fix: DSRC needs to be held PRIVATE (bmy, 4/14/04)
-!  (3 ) Now references DATA_DIR from "directory_mod.f" (bmy, 7/20/04)
-!  (4 ) Now make sure all USE statements are USE, ONLY (bmy, 10/3/05)
-!  (5 ) Bug fix: It should be SNOW/1d3 not SNOW*1d3 (tdf, bmy, 11/18/05)
-!  (6 ) Updated output statement (bmy, 1/23/07)
-!  (7 ) Use SNOMAS (m H2O) for GEOS-5 (bmy, 1/24/07)
-!  25 Aug 2010 - R. Yantosca - Treat MERRA in the same way as for GEOS-5
-!  25 Aug 2010 - R. Yantosca - Added ProTeX headers
-!  03 Sep 2010 - R. Yantosca - Bug fix, SNOMAS was mislabled in GEOS-5
-!                              and has units of mm H2O instead of m H2O
-!                              so we need to convert to m H2O.
-!  08 Feb 2012 - R. Yantosca - Treat GEOS-5.7.x in the same way as MERRA
-!  01 Mar 2012 - R. Yantosca - Now use GET_YMID_R(I,J,L) from grid_mod.F90
-!  09 Nov 2012 - M. Payer    - Replaced all met field arrays with State_Met
-!                              derived type object
-!  25 Nov 2013 - C. Keller   - Now a HEMCO extension
-!  06 Oct 2014 - C. Keller   - Now calculate pressure center from edges.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -610,8 +580,7 @@
 
 ! !REVISION HISTORY:
 !  25 Nov 2013 - C. Keller   - Now a HEMCO extension
-!  14 Aug 2014 - R. Yantosca - Now always print out extension info
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -652,6 +621,9 @@
       I = HcoState%NX
       J = HcoState%NY
 
+      ! Set the global NBINS variable with the # of bins from HcoState
+      NBINS = HcoState%MicroPhys%nBins
+
       !-----------------------------------------------------------------
       ! Get species IDs
       !-----------------------------------------------------------------
@@ -662,7 +634,7 @@
 
       ! Sanity check
       IF ( nSpc /= NBINS ) THEN
-         MSG = 'Dust DEAD model does not have four species!'
+         MSG = 'Number of dust species do not match number of bins!'
          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
          RETURN
       ENDIF
@@ -675,18 +647,22 @@
      &                 OptValDp=TmpScal, Found=FOUND, RC=RC )
       IF ( RC /= HCO_SUCCESS ) RETURN
 
-      ! Set parameter FLX_MSS_FDG_FCT to specified tuning factor. Get from
-      ! wrapper routine if not defined in configuration file
+      ! Set parameter FLX_MSS_FDG_FCT to specified tuning factor as
+      ! defined in configuration file
       IF ( FOUND ) THEN
          Inst%FLX_MSS_FDG_FCT = TmpScal
       ELSE
-         Inst%FLX_MSS_FDG_FCT =
-     &      HCOX_TOMAS_DustDead_GetFluxTun( HcoState )
-         IF ( Inst%FLX_MSS_FDG_FCT < 0.0_dp ) THEN
-            MSG = 'Error in getting TOMAS dust DEAD mass tuning factor'
-            CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
-            RETURN
-         ENDIF
+         Inst%FLX_MSS_FDG_FCT = -999.0e0
+      ENDIF
+
+      ! Error
+      IF ( Inst%FLX_MSS_FDG_FCT == -999.0e0 ) THEN
+         MSG = 'Mass flux tuning factor not defined. ' //
+     &         'Please explicitly set it by modifying the line ' //
+     &         '` --> Mass tuning factor: XX.X` in HEMCO_Config.rc. '
+            CALL HCO_ERROR(HcoState%Config%Err, MSG,
+     &                     RC, THISLOC='HCOX_DustDead_Init')
+         RETURN
       ENDIF
 
       ! Verbose mode
@@ -987,8 +963,7 @@
 !
 ! !REVISION HISTORY:
 !  25 Nov 2013 - C. Keller - Now a HEMCO extension
-!
-! !NOTES:
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -5454,215 +5429,6 @@ c Fix up for negative argument, erf, etc.
       END SUBROUTINE PLN_TYP_GET
 
 !******************************************************************************
-
-      FUNCTION HCOX_TOMAS_DustDead_GetFluxTun( HcoState )
-     & RESULT( FLX_MSS_FDG_FCT )
-!
-!******************************************************************************
-! Returns global mass flux tuning factor (a posteriori).
-!
-!******************************************************************************
-!
-      ! Input argument
-      TYPE(HCO_State), POINTER :: HcoState    ! Hemco state
-
-      ! Output argument
-      REAL*8  :: FLX_MSS_FDG_FCT
-
-      ! Local variables
-      CHARACTER(LEN=255)  :: MSG
-      INTEGER             :: RC
-
-      !=================================================================
-      ! HCOX_TOMAS_DustDead_GetFluxTun begins here!
-      !=================================================================
-
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-! Prior to 4/13/19:
-! Need to set tuning factor in HEMCO_Config.rc for FlexGrid. Keep factors for
-! 2x2.5 and 4x5 for now. (mps, 4/13/19)
-!      ! Global mass flux tuning factor (a posteriori) [frc]
-!#if   defined( GEOS_FP ) && defined( GRID025x03125 )
-!
-!#if defined(NESTED_CH)
-!
-!      !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-!      !%%%       NOTE: NEED TO SCALE THIS FOR GEOS-FP nested CH!         %%%
-!      !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-!      ! Copy the 05x0666 scale factors for now (skim, 5/20/12)
-!      FLX_MSS_FDG_FCT = 3.23d-4
-!
-!#elif defined(NESTED_NA)
-!
-!      !----------------------------------------------------------------
-!      ! Based on results from GEOS-FP 0.25x0.3125 NA for 08/2012-08/2013
-!      ! compared to 2006 GEOS-5 0.5x0.666 NA
-!      !
-!      !   (GEOS-FP - GEOS-5)/GEOS-5 * 100 is 80.04% in each size bin.
-!      !
-!      ! We need to scale to the parameter FLX_MSS_FDG_FCT to make the
-!      ! dust emissions consistent. Consequently, to bring GEOS-FP nested
-!      ! NA dust emissions down to GEOS-5 nested NA levels, we need use
-!      ! a FLX_MSS_FDG_FCT of:
-!      !
-!      !             1 / (1 + 0.8004) = 0.5554
-!      !
-!      !             2.16d-4 * 0.5554 = 1.20d-4   ( 2.16d-4 is factor for
-!      !                                            GEOS-5 nested NA )
-!      !
-!      !    -- M. Sulprizio, 15 Jan 2014
-!      !----------------------------------------------------------------
-!      FLX_MSS_FDG_FCT = 1.20d-4
-!
-!#endif
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-      IF ( TRIM(HcoState%Config%MetField) == 'GEOSFP'   .and.
-     &     TRIM(HcoState%Config%GridRes)  == '2.0x2.5'  ) THEN
-
-      !----------------------------------------------------------------
-      ! Based on results from GEOS-FP 2x25 for 08/2012-08/2013
-      !
-      !   (GEOS-FP - GEOS-5)/GEOS-5 * 100 is -2.810% in each size bin.
-      !
-      ! We need to scale to the parameter FLX_MSS_FDG_FCT to make the
-      ! dust emissions consistent.  Consequently, to bring GEOS-FP 2x25
-      ! dust emissions up to 2005 GEOS-5 levels, we need to MULTIPLY the
-      ! FLX_MSS_FDG_FCT used for GEOS-5 by:
-      !
-      !             1 / (1. - 0.02810) = 1 / 0.9719 = 1.0289
-      !
-      !    -- M. Sulprizio, 15 Jan 2014
-      !----------------------------------------------------------------
-      FLX_MSS_FDG_FCT = 4.9d-4 * 1.0289d0
-
-      ELSE IF ( TRIM(HcoState%Config%MetField) == 'GEOSFP'   .and.
-     &          TRIM(HcoState%Config%GridRes)  == '4.0x5.0'  ) THEN
-
-      !----------------------------------------------------------------
-      ! Based on results from GEOS-FP 4x5 for 08/2012-08/2013
-      !
-      !   (GEOS-FP - GEOS-5)/GEOS-5 * 100 is -15.95% in each size bin.
-      !
-      ! We need to scale to the parameter FLX_MSS_FDG_FCT to make the
-      ! dust emissions consistent.  Consequently, to bring GEOS-FP 4x5
-      ! dust emissions up to 2005 GEOS-5 levels, we need to MULTIPLY the
-      ! FLX_MSS_FDG_FCT used for GEOS-5 by:
-      !
-      !             1 / (1. - 0.1595) = 1 / 0.8405 = 1.1898
-      !
-      !    -- R. Yantosca, M. Sulprizio, 06 Jan 2014
-      !----------------------------------------------------------------
-      FLX_MSS_FDG_FCT = 7.0d-4 * 1.1898d0
-
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-! Prior to 4/13/19:
-! Need to set tuning factor in HEMCO_Config.rc for FlexGrid. Keep factors for
-! 2x2.5 and 4x5 for now. (mps, 4/13/19)
-!#elif defined( MERRA2 ) && defined( GRID05x0625 )
-!
-!#if defined(NESTED_AS)
-!
-!      !----------------------------------------------------------------
-!      ! Based on results from MERRA2 0.5x0.625 CH for 2011 compared to
-!      ! GEOS-5 0.5x0.666 CH for 2011
-!      !
-!      !   (MERRA2 - GEOS-5)/GEOS-5 * 100 is 5.788% in each size bin.
-!      !
-!      ! We need to scale to the parameter FLX_MSS_FDG_FCT to make the
-!      ! dust emissions consistent. Consequently, to bring MERRA2 nested
-!      ! CH dust emissions down to GEOS-5 nested CH levels, we need use
-!      ! a FLX_MSS_FDG_FCT of:
-!      !
-!      !             1 / (1 + 0.05788) = 0.9453
-!      !
-!      !             3.23d-4 * 0.9453 = 3.05d-4   ( 3.23d-4 is factor for
-!      !                                            GEOS-5 nested CH )
-!      !
-!      ! NOTE: The MERRA2 0.5x0.625 CH grid extends further west (to 60E)
-!      ! than the GEOS-5 0.5x0.666 CH grid (to 70E). For this calculation,
-!      ! any dust emissions in the 60E-70E band in the MERRA2 CH output
-!      ! were ignored.
-!      !
-!      !    -- M. Sulprizio, 22 Feb 2016
-!      !----------------------------------------------------------------
-!      FLX_MSS_FDG_FCT = 3.05d-4
-!
-!#elif defined(NESTED_NA)
-!
-!      !----------------------------------------------------------------
-!      ! Based on results from MERRA2 0.5x0.625 NA for 2012 compared to
-!      ! GEOS-5 0.5x0.666 CH for 2012
-!      !
-!      !   (MERRA2 - GEOS-5)/GEOS-5 * 100 is 25.02% in each size bin.
-!      !
-!      ! We need to scale to the parameter FLX_MSS_FDG_FCT to make the
-!      ! dust emissions consistent. Consequently, to bring MERRA2 nested
-!      ! NA dust emissions down to GEOS-5 nested NA levels, we need use
-!      ! a FLX_MSS_FDG_FCT of:
-!      !
-!      !             1 / (1 + 0.2502) = 0.7999
-!      !
-!      !             2.16d-4 * 0.7999 = 1.73d-4   ( 2.16d-4 is factor for
-!      !                                            GEOS-5 nested NA )
-!      !
-!      !    -- M. Sulprizio, 22 Feb 2016
-!      !----------------------------------------------------------------
-!      FLX_MSS_FDG_FCT = 1.73d-4
-!
-!#endif
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-      ELSE IF ( TRIM(HcoState%Config%MetField) == 'MERRA2'   .and.
-     &          TRIM(HcoState%Config%GridRes)  == '2.0x2.5'  ) THEN
-
-      !----------------------------------------------------------------
-      ! Based on results from MERRA2 2x2.5 for 2012 (Chi Li, 7/8/16)
-      !----------------------------------------------------------------
-      FLX_MSS_FDG_FCT = 4.9d-4 * 0.971141
-
-      ELSE IF ( TRIM(HcoState%Config%MetField) == 'MERRA2'   .and.
-     &          TRIM(HcoState%Config%GridRes)  == '4.0x5.0'    ) THEN
-
-      !----------------------------------------------------------------
-      ! Based on results from MERRA2 4x5 for 2012
-      !
-      !   (MERRA2 - GEOS-5)/GEOS-5 * 100 is -10.86% in each size bin.
-      !
-      ! We need to scale to the parameter FLX_MSS_FDG_FCT to make the
-      ! dust emissions consistent.  Consequently, to bring 2012 MERRA2
-      ! dust emissions up to 2012 GEOS-5 levels, we need to MULTIPLY the
-      ! FLX_MSS_FDG_FCT used for GEOS-5 by:
-      !
-      !             1 / (1. - 0.1086) = 1 / 0.8913 = 1.1219
-      !
-      !    -- M. Sulprizio, 12 Feb 2016
-      !----------------------------------------------------------------
-      FLX_MSS_FDG_FCT = 7.0d-4 * 1.1219d0
-
-      ELSE
-
-      ! Default value
-      ! ==> Don't allow default value anymore. The tuning factor can
-      ! now also be set in the HEMCO configuration file. This should be
-      ! done whenever the compiler combinations above don't apply!
-!      FLX_MSS_FDG_FCT = 7.0d-4
-      FLX_MSS_FDG_FCT = -999.0d0
-
-      ! Error
-      MSG = 'Cannot assign mass flux tuning factor - ' //
-     &      'please explicitly set it by adding ' //
-     &      '` --> Mass tuning factor: XX.X` to the extension ' //
-     &      'options in your config. file.'
-         CALL HCO_ERROR(HcoState%Config%Err,MSG, RC,
-     & THISLOC='HCOX_TOMAS_DustDead_GetFluxTun')
-      RETURN
-
-      ENDIF
-
-      ! Return to calling program
-      END FUNCTION HCOX_TOMAS_DustDead_GetFluxTun
-
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -5686,6 +5452,7 @@ c Fix up for negative argument, erf, etc.
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -5746,7 +5513,7 @@ c Fix up for negative argument, erf, etc.
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -5820,7 +5587,7 @@ c Fix up for negative argument, erf, etc.
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

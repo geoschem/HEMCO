@@ -79,77 +79,7 @@ MODULE HCOX_LightNOx_Mod
 !
 ! !REVISION HISTORY:
 !  14 Apr 2004 - L. Murray, R. Hudman - Initial version
-!  (1 ) Based on "lightnox_nox_mod.f", but updated for near-land formulation
-!        and for CTH, MFLUX, PRECON parameterizations (ltm, bmy, 5/10/06)
-!  (2 ) Now move computation of IC/CG flash ratio out of routines FLASHES_CTH,
-!        FLASHES_MFLUX, FLASHES_PRECON, and into routine GET_IC_CG_RATIO.
-!        Added a fix in LIGHTDIST for pathological grid boxes.  Set E_IC_CG=1
-!        according to Allen & Pickering [2002].  Rename OTDSCALE array to
-!        OTD_REG_REDIST, and also add OTD_LOC_REDIST array.  Now scale
-!        lightnox to 6 Tg N/yr for both 2x25 and 4x5.  Rename routine
-!        GET_OTD_LIS_REDIST to GET_REGIONAL_REDIST.  Add similar routine
-!        GET_LOCAL_REDIST.  Removed GET_OTD_LOCp AL_REDIST.  Bug fix: divide
-!        A_M2 by 1d6 to get A_KM2. (rch, ltm, bmy, 2/22/07)
-!  (3 ) Rewritten for separate treatment of LNOx emissions at tropics &
-!        midlatitudes, based on Hudman et al 2007.  Removed obsolete
-!        variable E_IC_CG. (rch, ltm, bmy, 3/27/07)
-!  (4 ) Changes implemented in this version (ltm, bmy, 10/3/07)
-!        * Revert to not classifying near-land as land
-!        * Eliminate NOx emisisons per path length entirely
-!        * Scale tropics to 260 mol/fl constraint from Randall Martin's
-!           4.4 Tg and OTD-LIS avg ann flash rate
-!        * Remove top-down scaling (remove the three functions)
-!        * Allow option of mid-level scaling to match global avg ann flash
-!           rate between G-C and OTD-LIS 11-year climatology (new function)
-!        * Local Redist now a la Murray et al, 2007 in preparation (monthly)
-!        * Replace GEMISNOX (from CMN_NOX) with module variable EMIS_LI_NOx
-!  (5 ) Added MFLUX, PRECON redistribution options (ltm, bmy, 11/29/07)
-!  (6 ) Updated OTD/LIS scaling for GEOS-5 to get more realistic totals
-!        (ltm, bmy, 2/20/08)
-!  (7 ) Now add the proper scale factors for the GEOS-5 0.5 x 0.666 grid
-!        and the GEOS-3 1x1 nested N. America grid in routine
-!        GET_OTD_LIS_SCALE. (yxw, dan, ltm, bmy, 11/14/08)
-!  (8 ) Added quick fix for GEOS-5 reprocessed met fields (ltm, bmy, 2/18/09)
-!  (9 ) Added quick fix for GEOS-5 years 2004, 2005, 2008 (ltm, bmy, 4/29/09)
-!  (10) Updated OTD/LIS scaling for GEOS-5 reprocessed data (ltm, bmy, 7/10/09)
-!  (11) Updated for GEOS-4 1 x 1.25 grid (lok, ltm, bmy, 1/13/10)
-!  (12) Reprocessed for CLDTOPS calculation error; Updated Ott vertical
-!        profiles; Removal of depreciated options, e.g., MFLUX and PRECON;
-!        GEOS5 5.1.0 vs. 5.2.0 special treatment; MERRA; Other changes.
-!        Please see PDF on wiki page for full description of lightnox
-!        changes to v9-01-01. (ltm, 1/25/11)
-!  13 Aug 2010 - R. Yantosca - Add modifications for MERRA
-!  10 Nov 2010 - L. Murray   - Updated OTD/LIS local scaling for MERRA 4x5
-!  10 Nov 2010 - R. Yantosca - Added ProTeX headers
-!  02 Feb 2012 - R. Yantosca - Added modifications for GEOS-5.7.x met fields
-!  01 Mar 2012 - R. Yantosca - Now reference new grid_mod.F90
-!  03 Aug 2012 - R. Yantosca - Move calls to findFreeLUN out of DEVEL block
-!  22 Oct 2013 - C. Keller   - Now a HEMCO extension.
-!  22 Jul 2014 - R. Yantosca - Now hardwire the Lesley Ott et al CDF's in
-!                              lightning_cdf_mod.F90.  This avoids having to
-!                              read an ASCII input in the ESMF environment.
-!  13 Jan 2015 - L. Murray   - Add most recent lightning updates to HEMCO version
-!  26 Feb 2015 - R. Yantosca - Restore reading the lightning CDF's from an
-!                              ASCII file into the PROFILE array.  This helps
-!                              to reduce compilation time.
-!  31 Jul 2015 - C. Keller   - Added option to define scalar/gridded scale
-!                              factors via HEMCO configuration file.
-!  14 Oct 2016 - C. Keller   - Now use HCO_EvalFld instead of HCO_GetPtr.
-!  02 Dec 2016 - M. Sulprizio- Update WEST_NS_DIV from 23d0 to 35d0 (K. Travis)
-!  16 Feb 2017 - L. Murray   - Updated BETA factors for all GEOS-FP/MERRA-2
-!                              products fields available by v11-01 release
-!                              (through Dec. 2016), and latest version of
-!                              LIS/OTD satellite climatology.
-!  24 Aug 2017 - M. Sulprizio- Remove support for GCAP, GEOS-4, GEOS-5 and MERRA
-!  17 Oct 2017 - C. Keller   - Add option to use GEOS-5 lightning flash rate
-!                              (LFR). Autoselection of flash rate scale factor.
-!  16 Jan 2019 - L. Murray   - Lightning flash densities and convective depths
-!                              for vertical distribution are now calculated offline
-!                              at the native model resolution and prescribed in
-!                              HEMCO_Config.rc as the other model meteorology.
-!                              Model flash climatology remains constrained to the
-!                              LIS/OTD climatology, as described by Murray et al.
-!                              (2012). Removed obsolete subroutines and code.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -229,23 +159,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  09 Oct 1997 - R. Yantosca - Initial version
-!  (1 ) Remove IOFF, JOFF from the argument list.  Also remove references
-!        to header files "CMN_O3" and "comtrid.h" (bmy, 3/16/00)
-!  (2 ) Now use allocatable array for ND32 diagnostic (bmy, 3/16/00)
-!  (3 ) Now reference BXHEIGHT from "dao_mod.f".  Updated comments, cosmetic
-!        changes.  Replace LCONVM with the parameter LLCONVM. (bmy, 9/18/02)
-!  (4 ) Removed obsolete reference to "CMN".  Now bundled into
-!        "lightnox_mod.f" (bmy, 4/14/04)
-!  (5 ) Renamed from EMLIGHTNOX_NL to EMLIGHTNOX.  Now replace GEMISNOX
-!        (from CMN_NOX) with module variable EMIS_LI_NOx. (ltm, bmy, 10/3/07)
-!  10 Nov 2010 - R. Yantosca - Added ProTeX headers
-!  09 Nov 2012 - M. Payer    - Replaced all met field arrays with State_Met
-!                              derived type object
-!  25 Mar 2013 - R. Yantosca - Now accept State_Chm
-!  22 Oct 2013 - C. Keller   - Now a HEMCO extension.
-!  07 Oct 2013 - C. Keller   - Now allow OTD-LIS scale factor to be set
-!                              externally. Check for transition to Sep 2008.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -345,38 +259,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 May 2006 - L. Murray - Initial version
-!  (1 ) Now recompute the cold cloud thickness according to updated formula
-!        from Lee Murray.  Rearranged argument lists to routines FLASHES_CTH,
-!        FLASHES_MFLUX, FLASHES_PRECON.  Now call READ_REGIONAL_REDIST and
-!        READ_LOCAL_REDIST. Updated comments accordingly.  Now apply
-!        FLASH_SCALE to scale the total lightnox NOx to 6 Tg N/yr.  Now apply
-!        OTD/LIS regional or local redistribution (cf. B. Sauvage) to the ND56
-!        diagnostic. lightnox redistribution to the ND56 diag.  Renamed
-!        REGSCALE variable to REDIST.  Bug fix: divide A_M2 by 1d6 to get
-!        A_KM2. (rch, ltm, bmy, 2/14/07)
-!  (2 ) Rewritten for separate treatment of LNOx emissions at tropics &
-!        midlatitudes (rch, ltm, bmy, 3/27/07)
-!  (3 ) Remove path-length algorithm.  Renamed from LIGHTNOX_NL to LIGHTNOX.
-!        Other improvements. (ltm, bmy, 9/24/07)
-!  (4 ) Remove depreciated options; Update to new Ott et al vertical profiles;
-!        Reprocessed for bug in CLDTOPS calculation. See PDF on wiki for
-!        full description of changes for v9-01-01. (ltm, bmy, 1/25,11)
-!  10 Nov 2010 - R. Yantosca - Added ProTeX headers
-!  09 Nov 2012 - M. Payer    - Replaced all met field arrays with State_Met
-!                              derived type object
-!  22 Oct 2013 - C. Keller   - Now a HEMCO extension.
-!  06 Oct 2014 - C. Keller   - Now calculate pressure centers from edges.
-!  16 Jan 2015 - R. Yantosca - Bug fix: TmpScale should be REAL(dp)
-!  11 Mar 2015 - C. Keller   - Now determine LTOP from buoyancy for grid boxes
-!                              where convection is explicitly resolved. For now,
-!                              this will only work in an ESMF environment.
-!  31 Jul 2015 - C. Keller   - Take into account scalar/gridded scale factors
-!                              defined in HEMCO configuration file.
-!  03 Mar 2016 - C. Keller   - Use buoyancy in combination with convective
-!                              fraction CNV_FRC (ESMF only).
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  30 Aug 2018 - C. Keller   - Use diagnostic names for special diagnostics.
-!                              This makes interface with GEOS easier.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -622,7 +505,7 @@ CONTAINS
        TOTAL = TOTAL_IC + TOTAL_CG
 
        ! Convert from molec km-2 s-1 to kg(NO) m-2 s-1
-       TOTAL = TOTAL * ( HcoState%Spc(Inst%IDTNO)%EmMW_g / 1000.0_hp ) / &
+       TOTAL = TOTAL * ( HcoState%Spc(Inst%IDTNO)%MW_g / 1000.0_hp ) / &
                          HcoState%Phys%Avgdr / 1000000.0_hp
 
        !===========================================================
@@ -723,36 +606,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2002 - M. Evans - Initial version (based on Yuhang Wang's code)
-!  (1 ) Use functions IS_LAND and IS_WATER to determine if the given grid
-!        box is over land or water.  These functions work for all DAO met
-!        field data sets. (bmy, 4/2/02)
-!  (2 ) Renamed M2 to LTOP and THEIGHT to H0 for consistency w/ variable names
-!        w/in "lightning.f".  Now read the "light_dist.dat.geos3" file for
-!        GEOS-3 directly from the DATA_DIR/lightning_NOx_200203/ subdirectory.
-!        Now read the "light_dist.dat" file for GEOS-1, GEOS-STRAT directly
-!        from the DATA_DIR/lightning_NOx_200203/ subdirectory.  Added
-!        descriptive comment header.  Now trap I/O errors across all
-!        platforms with subroutine "ioerror.f".  Updated comments, cosmetic
-!        changes.  Redimension FRAC(NNLIGHT) to FRAC(LLPAR). (bmy, 4/2/02)
-!  (3 ) Deleted obsolete code from April 2002.  Now reference IU_FILE and
-!        IOERROR from "file_mod.f".  Now use IU_FILE instead of IUNIT as the
-!        file unit number. (bmy, 6/27/02)
-!  (4 ) Now reference BXHEIGHT from "dao_mod.f" (bmy, 9/18/02)
-!  (5 ) Bug fix: add GEOS_4 to the #if block (bmy, 3/4/04)
-!  (6 ) Now bundled into "lightning_mod.f".  CDF's are now read w/in
-!        routine INIT_LIGHTNOX to allow parallelization (bmy, 4/14/04)
-!  (7 ) Now references DATA_DIR from "directory_mod.f" (bmy, 7/20/04)
-!  (8 ) Now uses near-land formulation (ltm, bmy, 5/10/06)
-!  (9 ) Added extra safety check for pathological boxes (bmy, 12/11/06)
-!  (10) Remove the near-land formulation, except for PRECON (ltm, bmy, 9/24/07)
-!  (11) Now use the Ott et al. [2010] profiles, and apply consistently with
-!        GMI model [Allen et al., 2010] (ltm, bmy, 1/25/11).
-!  10 Nov 2010 - R. Yantosca - Added ProTeX headers
-!  01 Mar 2012 - R. Yantosca - Now use GET_AREA_CM2(I,J,L) from grid_mod.F90
-!  15 Jun 2012 - Nielsen - INQUIRE finds free logical unit number for IU_FILE
-!  09 Nov 2012 - M. Payer    - Replaced all met field arrays with State_Met
-!                              derived type object
-!  22 Oct 2013 - C. Keller   - Now a HEMCO extension.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -914,27 +768,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  14 Apr 2004 - R. Yantosca - Initial version
-!  (1 ) Now reference DATA_DIR from "directory_mod.f"
-!  (2 ) Now call GET_MET_FIELD_SCALE to initialize the scale factor for
-!        each met field type and grid resolution (bmy, 8/25/05)
-!  (3 ) Now make sure all USE statements are USE, ONLY (bmy, 10/3/05)
-!  (4 ) Now get the box area at 30N for MFLUX, PRECON (lth, bmy, 5/10/06)
-!  (5 ) Rename OTDSCALE to OTD_REG_REDIST.  Also add similar array
-!        OTD_LOC_REDIST.  Now call GET_FLASH_SCALE_CTH, GET_FLASH_SCALE_MFLUX,
-!        GET_FLASH_SCALE_PRECON depending on the type of lightning param used.
-!        Updated comments.  (ltm, bmy, 1/31/07)
-!  (6 ) Removed near-land stuff.  Renamed from HCOX_LightNOX_Init_NL to
-!        HCOX_LightNOX_Init.  Now allocate EMIS_LI_NOx. (ltm, bmy, 10/3/07)
-!  (7 ) Also update location of PDF file to lightning_NOx_200709 directory.
-!        (bmy, 1/24/08)
-!  (8 ) Read in new Ott profiles from lightning_NOx_201101. Remove
-!        depreciated options. (ltm, bmy, 1/25/11)
-!  10 Nov 2010 - R. Yantosca - Added ProTeX headers
-!  01 Mar 2012 - R. Yantosca - Removed reference to GET_YEDGE
-!  22 Oct 2013 - C. Keller   - Now a HEMCO extension.
-!  26 Feb 2015 - R. Yantosca - Now re-introduce reading the CDF table from an
-!                              ASCII file (reduces compilation time)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1173,7 +1007,7 @@ CONTAINS
     ! Create diagnostics for lightning flash rates and convective cloud height
     !=======================================================================
     CALL Diagn_Create( HcoState  = HcoState,                        &
-                       cName     = 'LightningFlashRate_Total' ,     &
+                       cName     = 'HcoLightningFlashRate_Total',   &
                        ExtNr     = ExtNr,                           &
                        Cat       = -1,                              &
                        Hier      = -1,                              &
@@ -1186,7 +1020,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     CALL Diagn_Create( HcoState  = HcoState,                        &
-                       cName     = 'LightningFlashRate_IntraCloud', &
+                       cName     = 'HcoLightningFlashRate_IntraCld', &
                        ExtNr     = ExtNr,                           &
                        Cat       = -1,                              &
                        Hier      = -1,                              &
@@ -1199,7 +1033,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     CALL Diagn_Create( HcoState  = HcoState,                         &
-                       cName     = 'LightningFlashRate_CloudGround', &
+                       cName     = 'HcoLightningFlashRate_CldGround', &
                        ExtNr     = ExtNr,                            &
                        Cat       = -1,                               &
                        Hier      = -1,                               &
@@ -1212,7 +1046,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     CALL Diagn_Create( HcoState  = HcoState,                         &
-                       cName     = 'ConvectiveCloudTopHeight',       &
+                       cName     = 'HcoConvectiveCloudTopHeight',       &
                        ExtNr     = ExtNr,                            &
                        Cat       = -1,                               &
                        Hier      = -1,                               &
@@ -1272,17 +1106,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  14 Apr 2004 - R. Yantosca - Initial version
-!  (1 ) Now deallocates OTDSCALE (ltm, bmy, 5/10/06)
-!  (2 ) Rename OTDSCALE to OTD_REG_REDIST.  Now deallocate OTD_LOC_REDIST.
-!        (bmy, 1/31/07)
-!  (3 ) Renamed from HCOX_LightNOX_Final_NL to HCOX_LightNOX_Final.
-!        Now deallocate EMIS_LI_NOx. (ltm, bmy, 10/3/07)
-!  (4 ) Remove depreciated options. (ltm, bmy, 1/25/11)
-!  10 Nov 2010 - R. Yantosca - Added ProTeX headers
-!  22 Oct 2013 - C. Keller   - Now a HEMCO extension.
-!  22 Jul 2014 - R. Yantosca - PROFILE is now set in lightning_cdf_mod.F90
-!  26 Feb 2015 - R. Yantosca - Now re-introduce PROFILE, as we read the CDF
-!                              table from an ASCII file (reduces compile time)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1317,6 +1141,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1379,7 +1204,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1443,7 +1268,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

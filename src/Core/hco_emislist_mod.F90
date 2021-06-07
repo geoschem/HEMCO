@@ -38,7 +38,7 @@ MODULE HCO_EMISLIST_MOD
 !
 ! !REVISION HISTORY:
 !  04 Dec 2012 - C. Keller   - Initialization
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -84,7 +84,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Dec 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -102,7 +102,7 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, &
-                     'EmisList_Add (HCO_EMISLL_MOD.F90)', RC )
+                     'EmisList_Add (hco_emislist_mod.F90)', RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! Set verbose flag
@@ -181,7 +181,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Dec 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -359,7 +359,7 @@ CONTAINS
 !!
 !! !REVISION HISTORY:
 !!  20 Apr 2013 - C. Keller - Initial version
-!!  See https://github.com/geoschem/geos-chem for complete history
+!!  See https://github.com/geoschem/hemco for complete history
 !!EOP
 !!------------------------------------------------------------------------------
 !!BOC
@@ -437,7 +437,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Mar 2013 - C. Keller - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -714,7 +714,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Sep 2013 - C. Keller - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -839,7 +839,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Sep 2013 - C. Keller - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

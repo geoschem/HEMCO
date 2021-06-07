@@ -91,16 +91,7 @@ MODULE HCOX_SeaFlux_Mod
 !
 ! !REVISION HISTORY:
 !  16 Apr 2013 - C. Keller   - Initial version
-!  01 Oct 2013 - C. Keller   - Now a HEMCO extension module
-!  11 Dec 2013 - C. Keller   - Now define container name during initialization
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  06 Nov 2015 - C. Keller   - Now use land type definitions instead of FRCLND
-!  14 Oct 2016 - C. Keller   - Now use HCO_EvalFld instead of HCO_GetPtr.
-!  10 Mar 2017 - M. Sulprizio- Add fix for acetone parameterization of Schmidt
-!                              number - use SCWPAR = 3 instead of 1
-!  11 Sep 2018 - C. Keller   - Added instances wrapper
-!  08 May 2019 - J. Fisher   - Add C1-C2 alkyl nitrates (MENO3, ETNO3)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !
@@ -163,7 +154,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Apr 2013 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -337,15 +328,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Apr 2013 - C. Keller   - Initial version
-!  15 Aug 2014 - C. Keller   - Now restrict calculations to temperatures above
-!                              10 deg C.
-!  03 Oct 2014 - C. Keller   - Added surface temperature limit of 45 degrees C
-!                              to avoid negative Schmidt numbers.
-!  07 Oct 2014 - C. Keller   - Now use skin temperature instead of air temperature
-!  06 Mar 2015 - C. Keller   - Now calculate deposition rate over entire PBL.
-!  14 Oct 2015 - R. Yantosca - Pulled variables MW, VB, SCW out of the parallel
-!                              loop.
-!  06 Nov 2015 - C. Keller   - Now use HCO_LANDTYPE instead of FRCLND
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -426,10 +409,14 @@ CONTAINS
     DO I = 1, HcoState%NX
 
        ! Make sure we have no negative seawater concentrations
-       IF ( SeaConc(I,J) < 0.0_sp ) SeaConc(I,J) = 0.0_sp
+       IF ( SeaConc(I,J) < 0.0_hp ) SeaConc(I,J) = 0.0_hp
 
+       ! Kludge: Do not check albedo for HEMCO within CESM because CESM
+       ! enforces nighttime "albedo" value to be 1.0 (hplin, 5/7/21)
+#if !defined( HEMCO_CESM )
        ! Assume no air-sea exchange over snow/ice (ALBEDO > 0.4)
        IF ( ExtState%ALBD%Arr%Val(I,J) > 0.4_hp ) CYCLE
+#endif
 
        ! Do only over the ocean:
        IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J), &
@@ -655,6 +642,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Apr 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -901,6 +889,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Apr 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -937,6 +926,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -997,7 +987,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1065,7 +1055,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

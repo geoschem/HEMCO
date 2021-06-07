@@ -75,7 +75,6 @@ MODULE HEMCO_GridCompMod
 !
 ! !PRIVATE TYPES:
 !
-
   ! HEMCO state objects for various HEMCO instances 
   TYPE :: Instance
      TYPE(ConfigObj), POINTER             :: HcoConfig 
@@ -87,11 +86,11 @@ MODULE HEMCO_GridCompMod
   ! Linked list holding all active HEMCO instances
   TYPE(Instance), POINTER                 :: Instances => NULL()
 !
-! !MODULE INTERFACES
-!
 !EOP
+!------------------------------------------------------------------------------
+!BOC
 CONTAINS
-
+!EOC
 !------------------------------------------------------------------------------
 !     NASA/GSFC, Global Modeling and Assimilation Office, Code 610.1          !
 !------------------------------------------------------------------------------
@@ -119,6 +118,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -149,20 +149,24 @@ CONTAINS
     am_I_Root = MAPL_Am_I_Root()
 
     ! Set the Initialize, Run and Finalize entry points
-    call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_INITIALIZE, Initialize_, __RC__ ) 
-    call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_RUN,        Run1,        __RC__ )
-    call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_RUN,        Run2,        __RC__ )
-    call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_FINALIZE,   Finalize_,   __RC__ )
+    call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_INITIALIZE, &
+                                      Initialize_, __RC__ ) 
+    call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_RUN, Run1, __RC__ )
+    call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_RUN, Run2, __RC__ )
+    call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_FINALIZE,   &
+                                      Finalize_, __RC__ )
 
     ! Define ESMF config for HEMCO
     HemcoCF = ESMF_ConfigCreate(__RC__)
     CALL ESMF_ConfigLoadFile( HemcoCF, TRIM(COMP_NAME)//'_GridComp.rc', __RC__ )
 
     ! Get number of instances
-    call ESMF_ConfigGetAttribute(HemcoCF, nnInst, Label="HEMCO_Instances:" , DEFAULT=1, __RC__)
+    call ESMF_ConfigGetAttribute(HemcoCF, nnInst, Label="HEMCO_Instances:" , &
+                                 DEFAULT=1, __RC__)
   
     ! Verbose
-    IF ( Am_I_Root ) WRITE(*,*) TRIM(Iam), ' - number of HEMCO instances: ', nnInst
+    IF ( Am_I_Root ) WRITE(*,*) TRIM(Iam), ' - number of HEMCO instances: ', &
+                                nnInst
  
     ! Set HEMCO services for all instances
     DO N = 1, nnInst 
@@ -173,7 +177,8 @@ CONTAINS
                                      DEFAULT="HEMCOsa_Config.rc", __RC__)
 
        ! Verbose
-       IF ( Am_I_Root ) WRITE(*,'(a19,i3.3,a2,a)') '--> HEMCO instance ', N, ': ', TRIM(ConfigFile)
+       IF ( Am_I_Root ) WRITE(*,'(a19,i3.3,a2,a)') '--> HEMCO instance ',    &
+                              N, ': ', TRIM(ConfigFile)
  
        ! Create a new instance object that holds the HEMCO states for this 
        ! instance. Will be added to linked list Instances.
@@ -472,9 +477,6 @@ CONTAINS
 !
 !!!#   include "HEMCO_ExportSpec___.h"
 
-!EOP
-!BOC
-
     CALL MAPL_TimerAdd(GC, NAME="INITIALIZE", __RC__ )
     CALL MAPL_TimerAdd(GC, NAME="RUN",        __RC__ )
     CALL MAPL_TimerAdd(GC, NAME="FINALIZE",   __RC__ )
@@ -485,9 +487,9 @@ CONTAINS
    VERIFY_(STATUS)
 
    RETURN_(ESMF_SUCCESS)
-  
-  end subroutine SetServices
 
+  end subroutine SetServices
+!EOC
 !------------------------------------------------------------------------------
 !     NASA/GSFC, Global Modeling and Assimilation Office, Code 610.1          !
 !------------------------------------------------------------------------------
@@ -516,7 +518,8 @@ CONTAINS
     INTEGER,             INTENT(OUT)   :: RC          ! Error return code
 !
 ! !REVISION HISTORY:
-!  22 Feb 2016 - C. Keller   - Initial version 
+!  22 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -585,6 +588,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -645,12 +649,11 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-!
-! LOCAL VARIABLES:
-!  
+
     __Iam__('Run2')
 
     !=======================================================================
@@ -695,6 +698,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -784,6 +788,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -890,7 +895,7 @@ CONTAINS
     Inst%HcoState%IMPORT   => Import
     Inst%HcoState%EXPORT   => Export
 
-    ! Don't let HEMCO schedule the diagnostics output (will be scheduled manually)
+    ! Don't let HEMCO schedule the diag output (will be scheduled manually)
     Inst%HcoState%Options%HcoWritesDiagn = .FALSE.
 
     ! Don't add import fields to HEMCO diagnostics. This is redundant in ESMF.
@@ -978,6 +983,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1122,6 +1128,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1194,6 +1201,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller   - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1534,9 +1542,6 @@ CONTAINS
 ! !INTERFACE:
     SUBROUTINE GET_SUMCOSZA(HcoState,Clock,IM,JM,tsEmis,SUMCOSZA,RC)
 !
-! !USES:
-!
-!
 ! !INPUT PARAMETERS:
 !
     TYPE(HCO_State), POINTER         :: HcoState
@@ -1551,6 +1556,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2018 - C. Keller - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1672,7 +1678,7 @@ CONTAINS
     END SUBROUTINE GET_SUMCOSZA 
 !EOC
 !------------------------------------------------------------------------------
-!                  Harvard-NASA Emissions Component (HEMCO)                   !
+!                  Harmonized Emissions Component (HEMCO)                     !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -1692,9 +1698,10 @@ CONTAINS
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    TYPE(ESMF_Clock), INTENT(IN)     :: Clock          ! ESMF clock obj 
-    TYPE(HCO_State),  POINTER        :: HcoState       ! HEMCO state object
-    INTEGER,          INTENT(IN   )  :: DT             ! Time shift relative to current date [hrs]
+    TYPE(ESMF_Clock), INTENT(IN)     :: Clock       ! ESMF clock obj 
+    TYPE(HCO_State),  POINTER        :: HcoState    ! HEMCO state object
+    INTEGER,          INTENT(IN   )  :: DT          ! Time shift relative
+                                                    ! to current date [hrs]
 !
 ! !OUTPUT PARAMETERS:
 !
@@ -1706,6 +1713,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Sep 2018 - C. Keller   - Adapted from HCO_GetSuncos 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1850,23 +1858,15 @@ CONTAINS
 ! !INTERFACE:
 !
     SUBROUTINE NewInst_ ( Inst, RC ) 
-!
-! !USES:
-!
-!
-! !INPUT PARAMETERS:
-!
-!                                                             
-! !INPUT/OUTPUT PARAMETERS:                                   
-!
 !                                                             
 ! !OUTPUT PARAMETERS:                                   
 !
-    TYPE(Instance),      POINTER               :: Inst           ! pointer to new instance 
-    INTEGER,             INTENT(  OUT)         :: RC             ! Return code
+    TYPE(Instance), POINTER         :: Inst   ! pointer to new instance 
+    INTEGER,        INTENT(  OUT)   :: RC     ! Return code
 !
 ! !REVISION HISTORY:
 !  22 Feb 2016 - C. Keller - Initial version 
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

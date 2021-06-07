@@ -58,13 +58,7 @@ MODULE HCOX_GC_POPs_Mod
 !
 ! !REVISION HISTORY:
 !  20 Sep 2010 - N.E. Selin    - Initial Version
-!  04 Jan 2011 - C.L. Friedman - Expansion on initial version
-!  19 Aug 2014 - M. Sulprizio  - Now a HEMCO extension
-!  18 Aug 2015 - M. Sulprizio  - Add VEGEMISPOP, LAKEEMISPOP, and SOILEMISPOP
-!                                routines from new land_pops_mod.F written by
-!                                C.L. Friedman.
-!  24 Aug 2017 - M. Sulprizio  - Remove support for GCAP
-!  25 Jan 2019 - M. Sulprizio  - Add instance wrapper
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -154,6 +148,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Sep 2010 - N.E. Selin  - Initial Version based on EMISSMERCURY
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -538,6 +533,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  21 Aug 2012 - C.L. Friedman - Initial version based on LAND_MERCURY_MOD
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -848,6 +844,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  21 Aug 2012 - C.L. Friedman - Initial version based on LAND_MERCURY_MOD
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1172,6 +1169,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  21 Aug 2012 - C.L. Friedman - Initial version based on LAND_MERCURY_MOD
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1514,6 +1512,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Jun 2000 - R. Yantosca - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1551,6 +1550,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  09 Aug 2005 - R. Yantosca - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1593,6 +1593,7 @@ CONTAINS
 
 ! !REVISION HISTORY:
 !  19 Aug 2014 - M. Sulprizio- Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1939,6 +1940,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Aug 2014 - M. Sulprizio- Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1974,6 +1976,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2034,6 +2037,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2100,6 +2104,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

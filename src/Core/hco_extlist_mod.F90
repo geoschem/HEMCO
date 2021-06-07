@@ -70,16 +70,7 @@ MODULE HCO_ExtList_Mod
 !
 ! !REVISION HISTORY:
 !  02 Oct 2013 - C. Keller   - Initial version
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  30 Sep 2014 - R. Yantosca - ThisExt%Spcs now has 2047 chars for extensions
-!                              having many individual species
-!  20 Sep 2015 - C. Keller   - Reorganize options in linked lists. Tokens are
-!                              now the same as options and can be flexibly
-!                              set by the user.
-!  24 Aug 2017 - M. Sulprizio- Remove support for GCAP, GEOS-4, GEOS-5 and MERRA
-!  29 Aug 2018 - M. Sulprizio- Users can now specify $MET or $met to use
-!                              uppercase or lowercase strings for met field
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-----------------------------------------------------------------------------
 !BOC
@@ -161,9 +152,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Oct 2013 - C. Keller - Initial version
-!  20 Sep 2015 - C. Keller - Options are now linked list
-!  12 Dec 2015 - C. Keller - Added argument InUse
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -295,8 +284,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Oct 2013 - C. Keller - Initial version
-!  20 Sep 2015 - C. Keller - Options are now linked list
-!  12 Dec 2015 - C. Keller - Added argument IgnoreIfExist
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -392,12 +380,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Oct 2013 - C. Keller   - Initial version
-!  13 Jan 2015 - R. Yantosca - Add optional variable of flex precision (hp)
-!  14 Feb 2015 - C. Keller   - Add option to search all extensions (ExtNr=-999).
-!  17 Apr 2015 - C. Keller   - Passed option OptName must now exactly match the
-!                              stored option name to avoid ambiguity.
-!  20 Sep 2015 - C. Keller   - Options are now linked list.
-!  20 Jan 2016 - C. Keller   - Bug fix: boolean options are now case insensitive.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -515,7 +498,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Oct 2013 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -594,7 +577,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -671,7 +654,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jun 2015 - C. Keller - Initial version
-!  20 Sep 2015 - C. Keller - Now allocate output array in this routine.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -726,7 +709,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jun 2015 - C. Keller - Initial version
-!  20 Sep 2015 - C. Keller - Now allocate output array in this routine.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -781,7 +764,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jun 2015 - C. Keller - Initial version
-!  20 Sep 2015 - C. Keller - Now allocate output array in this routine.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -841,7 +824,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jun 2015 - C. Keller   - Initial version
-!  20 Sep 2015 - C. Keller   - Options are now linked list.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -922,7 +905,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Jan 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1018,7 +1001,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Oct 2013 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1083,8 +1066,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Oct 2013 - C. Keller - Initial version
-!  20 Sep 2015 - C. Keller - Options are now linked list.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1154,8 +1136,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2015 - C. Keller - Initial version
-!  12 Dec 2015 - C. Keller - Added argument IgnoreIfExist
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1169,7 +1150,7 @@ CONTAINS
     LOGICAL                 :: VRB
     LOGICAL                 :: Ignore
     CHARACTER(LEN=255)      :: MSG
-    CHARACTER(LEN=255)      :: LOC = 'HCO_AddOpt (hco_chartools_mod.F90)'
+    CHARACTER(LEN=255)      :: LOC = 'HCO_AddOpt (hco_extlist_mod.F90)'
 
     !=================================================================
     ! HCO_AddOpt begins here!
@@ -1285,7 +1266,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1381,6 +1362,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1413,7 +1395,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1479,6 +1461,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

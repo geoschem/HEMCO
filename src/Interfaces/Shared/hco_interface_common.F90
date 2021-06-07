@@ -36,17 +36,10 @@ MODULE HCO_Interface_Common
 !
 ! !REVISION HISTORY:
 !  12 Mar 2020 - H.P. Lin    - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-!
-! !PRIVATE MODULE VARIABLES:
-!
-
-!
-! !DEFINED PARAMETERS:
-!
-
 CONTAINS
 !EOC
 !------------------------------------------------------------------------------
@@ -89,9 +82,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  23 Oct 2012 - C. Keller - Initial Version
-!  12 Jan 2015 - C. Keller - Added argument TimeForEmis
-!  12 Mar 2020 - H.P. Lin  - Changed to accept external arguments, renamed to
-!                            be consistent with GIGC\_Chunk\_Run argument order
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -147,14 +138,14 @@ CONTAINS
 !  HcoID = TrcID. If your model is not, please do a mapping internally in the
 !  interface.
 !
-!  Note that HEMCO expects the grid to be 3-D in IJL indices. If your model (e.g. CAM)
-!  stores data in 2-D columns (K, I) where I is a chunked set of columns,
-!  one dummy dimension needs to be added. Refer to ESCOMP/HEMCO_CESM (hplin, 3/12/20)
+!  Note that HEMCO expects the grid to be 3-D in IJL indices. If your model
+!  (e.g. CAM) stores data in 2-D columns (K, I) where I is a chunked set of
+!  columns, one dummy dimension needs to be added. Refer to ESCOMP/HEMCO_CESM 
+!  (hplin, 3/12/20)
 !
 ! !REVISION HISTORY:
 !  20 Oct 2014 - C. Keller - Initial Version
-!  12 Dec 2014 - M. Yannetti - Changed real(dp) to real(hp)
-!  12 Mar 2020 - H.P. Lin  - Tracer IDs are always HcoID. See remarks.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -226,11 +217,9 @@ CONTAINS
     REAL(sp),         POINTER, OPTIONAL    :: Ptr2D(:,:)     ! Pointer to 2D data
     REAL(sp),         POINTER, OPTIONAL    :: Ptr3D(:,:,:)   ! Pointer to 3D data
 !
-! !REMARKS:
-!
 ! !REVISION HISTORY:
 !  24 Sep 2014 - C. Keller   - Initial version
-!  12 Mar 2020 - H.P. Lin    - Moved to HEMCO. Uses HEMCO errors.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -330,5 +319,6 @@ CONTAINS
     RC = HCO_SUCCESS
 
   END SUBROUTINE GetHcoDiagn
+
 !EOC
 END MODULE HCO_Interface_Common

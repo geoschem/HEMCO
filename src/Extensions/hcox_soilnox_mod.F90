@@ -88,23 +88,7 @@ MODULE HCOX_SoilNOx_Mod
 !        doi:10.5194/acp-12-7779-2012, 2012.
 !
 ! !REVISION HISTORY:
-!
-!  17 Aug 2009 - R. Yantosca     - Columnized and cleaned up
-!  17 Aug 2009 - R. Yantosca     - Added ProTeX headers
-!  31 Jan 2011 - R. Hudman       - Added new code12259.perceus-ucb0
-!  31 Jan 2011 - R. Hudman       - Updated headers
-!  29 Aug 2012 - J.D. Maasakkers - Implemented Jacob and Bakwin CRF
-!  29 Aug 2012 - J.D. Maasakkers - Adapted code to work with new (online
-!                                  regridded) landfraction, climate and
-!                                  fertilizer data
-!  29 Aug 2012 - J.D. Maasakkers - Removed all unused Wang et al. code
-!                                  (comments)
-!  04 Nov 2013 - C. Keller       - Moved all soil NOx routines into one
-!                                  module. Now a HEMCO extension.
-!  28 Jul 2014 - C. Keller       - Now allow DRYCOEFF to be read through
-!                                  configuration file (as setting)
-!  11 Dec 2014 - M. Yannetti     - Changed REAL*8 to REAL(hp)
-!  14 Oct 2016 - C. Keller       - Now use HCO_EvalFld instead of HCO_GetPtr.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -293,12 +277,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Nov 2013 - C. Keller - Initial Version
-!  08 May 2015 - C. Keller - Now read/write restart variables from here to
-!                            accomodate replay runs in GEOS-5.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  29 Mar 2017 - M. Sulprizio- Read DEP_RESERVOIR_DEFAULT field from file for
-!                              use when when DEP_RESERVOIR is not found in the
-!                              HEMCO restart file
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -342,7 +321,7 @@ CONTAINS
     ENDIF
 
     ! Conversion factor from ng N to kg NO
-    UNITCONV = 1.0e-12_hp / 14.0e+0_hp * HcoState%Spc(Inst%IDTNO)%EmMW_g
+    UNITCONV = 1.0e-12_hp / 14.0e+0_hp * HcoState%Spc(Inst%IDTNO)%MW_g
 
     !-----------------------------------------------------------------
     ! On first call, set pointers to all arrays needed by SoilNOx
@@ -630,8 +609,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Nov 2013 - C. Keller   - Initial Version
-!  12 May 2015 - R. Yantosca - Cosmetic changes
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -879,8 +857,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Nov 2013 - C. Keller - Initial Version
-!
-! !NOTES:
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -918,8 +895,8 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Dec 2013 - C. Keller   - Initial version
-!  12 May 2015 - R. Yantosca - Bug fix: PGI expects routine name to end w/ ()
-!!EOP
+!  See https://github.com/geoschem/hemco for complete history
+!EOP
 !------------------------------------------------------------------------------
 !BOC
 !
@@ -990,11 +967,8 @@ CONTAINS
 !  dry deposition code (J.D. Maasakkers)
 !
 ! !REVISION HISTORY:
-!  17 Aug 2009 - R. Yantosca - Columnized and cleaned up
-!  17 Aug 2009 - R. Yantosca - Added ProTeX headers
 !  31 Jan 2011 - R. Hudman   - New Model added
-!  23 Oct 2012 - M. Payer    - Now reference Headers/gigc_errcode_mod.F90
-!  12 May 2015 - R. Yantosca - Cosmetic changes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1119,15 +1093,9 @@ CONTAINS
 !  NOx routines.
 !
 ! !REVISION HISTORY:
-!  22 Jun 2009 - R. Yantosca     - Split off from "drydep_mod.f"
 !  14 Jun 2012 - J.D. Maasakkers - Rewritten as a function of the
 !                                     MODIS/Koppen biometype
-!  09 Nov 2012 - M. Payer        - Replaced all met field arrays with State_Met
-!                                   derived type object
-!  13 Dec 2012 - R. Yantosca     - Removed ref to obsolete CMN_DEP_mod.F
-!  28 Jul 2014 - C. Keller       - Added error trap for DRYCOEFF
-!  11 Dec 2014 - M. Yannetti     - Added BIO_RESULT
-!  12 May 2015 - R. Yantosca     - Cosmetic changes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1398,8 +1366,8 @@ CONTAINS
 !  as long as molecule is not too big.
 !
 ! !REVISION HISTORY:
-!     22 Jun 2009 - R. Yantosca - Copied from "drydep_mod.f"
-!     07 Jan 2016 - E. Lundgren - Update Avogadro's # to NIST 2014 value
+!  22 Jun 2009 - R. Yantosca - Copied from "drydep_mod.f"
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1471,7 +1439,7 @@ CONTAINS
     REAL(hp) ,  INTENT(INOUT) :: DEP_FERT
 !
 ! !REVISION HISTORY:
-!  23 Oct 2012 - M. Payer    - Added ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1554,7 +1522,7 @@ CONTAINS
     REAL(hp)                      :: DRYN       ! Dry dep. N since prev timestep
 !
 ! !REVISION HISTORY:
-!  23 Oct 2012 - M. Payer    - Added ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1571,7 +1539,7 @@ CONTAINS
     !Molecules/cm2/s --> kg NO/m2/s
     NTS  = HcoState%TS_EMIS / HcoState%TS_CHEM
     DRYN = ExtState%DRY_TOTN%Arr%Val(I,J) * CM2_PER_M2 / NTS / &
-           HcoState%Phys%Avgdr * HcoState%Spc(Inst%IDTNO)%EmMW_g / 1000.0e+0_hp
+           HcoState%Phys%Avgdr * HcoState%Spc(Inst%IDTNO)%MW_g / 1000.0e+0_hp
 
   END FUNCTION Source_DryN
 !EOC
@@ -1602,7 +1570,7 @@ CONTAINS
     REAL(hp)                      :: WETN       ! Dry dep. N since prev timestep
 !
 ! !REVISION HISTORY:
-!  23 Oct 2012 - M. Payer    - Added ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1678,10 +1646,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Aug 2009 - R. Yantosca - Initial Version
-!  17 Aug 2009 - R. Yantosca - Added ProTeX headers
-!  31 Jan 2011 - R. Hudman   - Added new soil T dependance
-!  31 Jan 2011 - R. Hudman   - Updated headers
-!  12 May 2015 - R. Yantosca - Cosmetic changes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1818,10 +1783,8 @@ CONTAINS
 !        Grasslands, CAB Int., Wallingford, UK, 1997, 67-71.
 !
 ! !REVISION HISTORY:
-!  17 Aug 2009 - R. Yantosca - Columnized and cleaned up
-!  17 Aug 2009 - R. Yantosca - Added ProTeX headers
 !  31 Jan 2011 - R. Hudman   - Rewrote scaling scheme
-!  31 Jan 2011 - R.Hudman    - Updated ProTeX headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1872,6 +1835,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Aug 2009 - R. Yantosca - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1979,10 +1943,8 @@ CONTAINS
 !        (2006), 74:207-228 DOI 10.1007/s10705-006-9000-7.
 !
 ! !REVISION HISTORY:
-!  17 Aug 2009 - R. Yantosca - Columnized and cleaned up
-!  17 Aug 2009 - R. Yantosca - Added ProTeX headers
 !  31 Jan 2011 - R. Hudman   - Rewrote pulsing scheme
-!  31 Jan 2011 - R. Hudman   - Updated ProTex headers
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2062,13 +2024,8 @@ CONTAINS
 !        doi:10.1029/2004GB002276.Section 2.3.3
 !
 ! !REVISION HISTORY:
-!  17 Aug 2009 - R. Yantosca - Columnized and cleaned up
-!  17 Aug 2009 - R. Yantosca - Added ProTeX headers
 !  31 Jan 2011 - R. Hudman   - Rewrote pulsing scheme
-!  31 Jan 2011 - R. Hudman   - Updated ProTex header
-!  29 May 2013 - R. Yantosca - Bug fix: prevent log(0) from happening
-!  21 Oct 2014 - C. Keller   - Limit PFACTOR to 1.
-!  12 May 2015 - R. Yantosca - Cosmetic changes
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2159,6 +2116,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2221,7 +2179,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2296,7 +2254,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

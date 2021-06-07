@@ -81,15 +81,7 @@ MODULE HCO_Config_Mod
 !
 ! !REVISION HISTORY:
 !  18 Jun 2013 - C. Keller   -  Initialization
-!  08 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  08 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  15 Feb 2015 - C. Keller   - Added BracketCheck, AddZeroScal, AddShadowFields
-!  15 Feb 2016 - C. Keller   - Update to v2.0: ConfigList now sits in HcoConfig
-!  23 Oct 2018 - M. Sulprizio- Make routine ConfigInit public to allow for
-!                              initialization of HcoConfig%ModelSpc from the
-!                              external model. Also add routine Hco_GetTagInfo
-!                              to get information for wildcard strings (e.g.
-!                              ?ALL?) used in HEMCO_Config.rc.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -151,14 +143,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Sep 2012 - C. Keller   - Initialization
-!  03 Jan 2014 - C. Keller   - Now use Config_ReadCont calls.
-!  30 Sep 2014 - R. Yantosca - Now declare LINE w/ 2047 characters.  This lets
-!                              us handle extra-long species lists
-!  13 Feb 2015 - C. Keller   - Removed section extension data: these are now
-!                              listed in section base emissions.
-!  11 Dec 2015 - C. Keller   - Read settings and extension switches even for
-!                              nested configuration files.
-!  15 Feb 2016 - C. Keller   - Now pass HcoConfig argument.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -450,7 +435,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Jun 2013 - C. Keller: Initialization
-!  17 Sep 2013 - C. Keller: Now get data from buffer
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -584,30 +569,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Jan 2014 - C. Keller - Initial version
-!  29 Dec 2014 - C. Keller - Added optional 11th element for scale factors. This
-!                            value will be interpreted as mask field (applied to
-!                            this scale factor only).
-!  27 Feb 2015 - C. Keller - Added CycleFlag 'I' (interpolation)
-!  13 Mar 2015 - C. Keller - Added include files (nested configuration files)
-!                            and CFDIR argument.
-!  23 Sep 2015 - C. Keller - Added cycle flags 'A' and 'RA' (for averaging).
-!  06 Oct 2015 - C. Keller - Added cycle flags 'EF' and 'RF' (fields must be
-!                            found).
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  20 Jul 2018 - C. Keller   - Return error if duplicate container name
-!  05 Oct 2018 - R. Yantosca - Cycle flag "E" now will read the target file
-!                              only once (e.g. use for restart files).
-!                              Cycle flag "EC" will now continously attempt
-!                              to read/query from the target file.
-!  23 Oct 2018 - M. Sulprizio- Add option to use wildcard (e.g. ?ALL?) in
-!                              variable name to simplify reading all species
-!                              concentration fields from the GEOS-Chem restart
-!                              file, but may be expanded for other purposes
-!  02 Nov 2018 - M. Sulprizio- Add cycle flag "CS" to skip fields not found
-!  08 Mar 2019 - M. Sulprizio- Add "*Y" options to TmCycle to force always using
-!                              simulation year (eg, instead of emissions year)
-!  23 Oct 2019 - M. Sulprizio- Added cycle flag "ID" to denote when dataset is
-!                              discontinous and needs to be interpolated
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -950,25 +912,26 @@ CONTAINS
 #endif
 
                 ! Set time cycling behaviour. Possible values are:
-                ! - "C"  : cycling <-- DEFAULT
-                ! - "CS" : cycling, skip if not exist
-                ! - "CY" : cycling, always use simulation year
-                ! - "CYS": cycling, always use simulation yr, skip if not exist
-                ! - "R"  : range
-                ! - "RA" : range, average outside
-                ! - "RF" : range, forced (error if not in range)
-                ! - "RFY": range, forced, always use simulation year
-                ! - "RFY3: range, forced, always use simulation year, 3-hourly
-                ! - "RY" : range, always use simulation year
-                ! - "E"  : exact (read file once)
-                ! - "EF" : exact, forced (error if not exist, read/query once)
-                ! - "EFY": exact, always use simulation year
-                ! - "EC" : exact (read/query continuously, e.g. for ESMF interface)
-                ! - "ECF": exact, forced (error if not exist, read/query continuously)
-                ! - "EY" : exact, always use simulation year
-                ! - "A"  : average
-                ! - "I"  : interpolate
-                ! - "ID" : interpolate, discontinuous dataset
+                ! - "C"   : cycling <-- DEFAULT
+                ! - "CS"  : cycling, skip if not exist
+                ! - "CY"  : cycling, always use simulation year
+                ! - "CYS" : cycling, always use simulation yr, skip if not exist
+                ! - "R"   : range
+                ! - "RA"  : range, average outside
+                ! - "RF"  : range, forced (error if not in range)
+                ! - "RFY" : range, forced, always use simulation year
+                ! - "RFY3 : range, forced, always use simulation year, 3-hourly
+                ! - "RY"  : range, always use simulation year
+                ! - "E"   : exact, read/query once
+                ! - "EF"  : exact, forced (error if not exist), read/query once
+                ! - "EFY" : exact, forced, always use sim year
+                ! - "EFYO": exact, forced, always use sim year, read once
+                ! - "EC"  : exact, read/query continuously (e.g. for ESMF interface)
+                ! - "ECF" : exact, forced, read/query continuously
+                ! - "EY"  : exact, always use simulation year, read/query once
+                ! - "A"   : average
+                ! - "I"   : interpolate
+                ! - "ID"  : interpolate, discontinuous dataset
                 Dta%MustFind  = .FALSE.
                 Dta%UseSimYear= .FALSE.
                 Dta%Discontinuous = .FALSE.
@@ -1014,6 +977,11 @@ CONTAINS
                    Dta%MustFind  = .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
                    Dta%CycleFlag = HCO_CFLAG_EXACT
+                   Dta%MustFind  = .TRUE.
+                   Dta%UseSimYear= .TRUE.
+                ELSEIF ( TRIM(TmCycle) == "EFYO" ) THEN
+                   Dta%CycleFlag = HCO_CFLAG_EXACT
+                   Dta%UpdtFlag  = HCO_UFLAG_ONCE
                    Dta%MustFind  = .TRUE.
                    Dta%UseSimYear= .TRUE.
                 ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
@@ -1255,25 +1223,26 @@ CONTAINS
 #endif
 
              ! Set time cycling behaviour. Possible values are:
-             ! - "C"  : cycling <-- DEFAULT
-             ! - "CS" : cycling, skip if not exist
-             ! - "CY" : cycling, always use simulation year
-             ! - "CYS": cycling, always use simulation yr, skip if not exist
-             ! - "R"  : range
-             ! - "RA" : range, average outside
-             ! - "RF" : range, forced (error if not in range)
-             ! - "RFY": range, forced, always use simulation year
-             ! - "RFY3: range, forced, always use simulation year, 3-hourly
-             ! - "RY" : range, always use simulation year
-             ! - "E"  : exact (read file once)
-             ! - "EF" : exact, forced (error if not exist, read/query once)
-             ! - "EFY": exact, always use simulation year
-             ! - "EC" : exact (read/query continuously, e.g. for ESMF interface)
-             ! - "ECF": exact, forced (error if not exist, read/query continuously)
-             ! - "EY" : exact, always use simulation year
-             ! - "A"  : average
-             ! - "I"  : interpolate
-             ! - "ID" : interpolate, discontinuous dataset
+             ! - "C"   : cycling <-- DEFAULT
+             ! - "CS"  : cycling, skip if not exist
+             ! - "CY"  : cycling, always use simulation year
+             ! - "CYS" : cycling, always use simulation yr, skip if not exist
+             ! - "R"   : range
+             ! - "RA"  : range, average outside
+             ! - "RF"  : range, forced (error if not in range)
+             ! - "RFY" : range, forced, always use simulation year
+             ! - "RFY3": range, forced, always use simulation year, 3-hourly
+             ! - "RY"  : range, always use simulation year
+             ! - "E"   : exact, read/query once
+             ! - "EF"  : exact, forced (error if not exist), read/query once
+             ! - "EFY" : exact, forced, always use sim year
+             ! - "EFYO": exact, forced, always use sim year, read once
+             ! - "EC"  : exact, read/query continuousl (e.g. for ESMF interface)
+             ! - "ECF" : exact, forced, read/query continuously
+             ! - "EY"  : exact, always use simulation year, read/query once
+             ! - "A"   : average
+             ! - "I"   : interpolate
+             ! - "ID"  : interpolate, discontinuous dataset
              Dta%MustFind  = .FALSE.
              Dta%UseSimYear= .FALSE.
              IF ( TRIM(TmCycle) == "C" ) THEN
@@ -1318,6 +1287,11 @@ CONTAINS
                 Dta%MustFind  = .TRUE.
              ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_EXACT
+                Dta%MustFind  = .TRUE.
+                Dta%UseSimYear= .TRUE.
+             ELSEIF ( TRIM(TmCycle) == "EFYO" ) THEN
+                Dta%CycleFlag = HCO_CFLAG_EXACT
+                Dta%UpdtFlag  = HCO_UFLAG_ONCE
                 Dta%MustFind  = .TRUE.
                 Dta%UseSimYear= .TRUE.
              ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
@@ -1496,7 +1470,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Feb 2015 - C. Keller   - Initial version.
-!  12 Mar 2015 - C. Keller   - Added 'mirror' option.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1727,7 +1701,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Feb 2015 - C. Keller   - Initial version.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1862,7 +1836,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Feb 2015 - C. Keller   - Initial version.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1963,14 +1937,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Sep 2013 - C. Keller   - Initialization (update)
-!  30 Sep 2014 - R. Yantosca - Declare SUBSTR and SPECS w/ 2047 characters,
-!                              which lets us handle extra-long species lists
-!  21 Apr 2015 - R. Yantosca - Bug fix: now look for END_SECTION before
-!                              testing if the line is a comment.  This will
-!                              allow for tags labeled "### END SECTION".
-!  12 Dec 2015 - C. Keller   - Added argument IgnoreIfExist to AddExtOpt to
-!                              make sure that nested configuration files do
-!                              use the settings set at highest level.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2135,12 +2102,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Sep 2013 - C. Keller   - Initialization (update)
-!  21 Apr 2015 - R. Yantosca - Bug fix: now look for END_SECTION before
-!                              testing if the line is a comment.  This will
-!                              allow for tags labeled "### END SECTION".
-!  12 Dec 2015 - C. Keller   - Added argument IgnoreIfExist to AddExtOpt to
-!                              make sure that nested configuration files do
-!                              use the settings set at highest level.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2343,7 +2305,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2013 - C. Keller - Initial version (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2456,9 +2418,10 @@ CONTAINS
              ! can be seen as fully covering a given CPU even though in
              ! reality it may only cover parts of it. Thus, in ESMF mode
              ! always set coverage to zero or partial (ckeller, 3/17/16).
-             IF ( HcoState%Options%isESMF ) THEN
-                IF ( ThisCover == 1 ) ThisCover = -1
-             ENDIF
+#if defined ( ESMF_ ) || defined( MODEL_WRF ) || defined( MODEL_CESM )
+             IF ( ThisCover == 1 ) ThisCover = -1
+#endif
+
           ENDIF
 
           ! Update container information
@@ -2515,7 +2478,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Jun 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2712,8 +2675,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Jun 2013 - C. Keller - Initialization
-!  29 Dec 2014 - C. Keller - Now check for masks assigned to scale factors.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2866,9 +2828,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Apr 2013 - C. Keller - Initialization
-!  07 Dec 2015 - C. Keller - Make sure emissions with limited time range do
-!                            never erase lower hierarchy base emissions.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3239,6 +3199,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 Apr 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3348,10 +3309,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Aug 2013 - C. Keller - Initial version
-!  11 Dec 2013 - C. Keller - Added optional arguments inLine and outLine
-!  29 Dec 2014 - C. Keller - Added optional argument optcl. Now use wrapper
-!                            routines READCHAR and READINT.
-!  13 Mar 2015 - C. Keller - Added check for include files.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3519,6 +3477,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Dec 2014 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3575,6 +3534,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Dec 2014 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3630,7 +3590,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Sep 2013 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3712,7 +3672,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Sep 2013 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3775,8 +3735,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  29 Dec 2014 - C. Keller: Now add new container to end of list to allow
-!                           list being updated while calling Register_Scal.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3873,9 +3832,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  29 Dec 2014 - C. Keller: Now add new container to end of list to allow
-!                           list being updated while calling Register_Scal.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3959,7 +3916,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4023,7 +3980,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4097,7 +4054,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4159,6 +4116,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4205,6 +4163,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4252,7 +4211,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4343,6 +4302,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Jan 2014 - C. Keller: Initialization (update)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4421,9 +4381,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 May 2015 - C. Keller   - Initial version
-!  22 Jan 2016 - R. Yantosca - Bug fix, removed & in the middle of the line
-!                              since the PGI compiler chokes on it.
-!  26 Jan 2018 - C. Keller   - Add L1 & L2
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4491,6 +4449,8 @@ CONTAINS
              RETURN
           ENDIF
           Dta%SpaceDim = 2
+          Dta%EmisLmode  = 1 ! Dilute emissions vertically
+
           ! Read levels to put emissions into:
           i=4
           IF ( str1(i:i) == '=' ) i = i + 1
@@ -4498,10 +4458,10 @@ CONTAINS
           ! Reduce to data to be read
           tmpstr = str1(i:strLen)
 
-          ! check if range of levels is provided, i.e. xyL=1:5
+          ! Check if range of levels is provided, i.e. xyL=1:5
           idx = INDEX( TRIM(tmpstr), ':' )
 
-          ! if multiple levels are provided (e.g. xyL=1:5)
+          ! If multiple levels are provided (e.g. xyL=1:5)
           IF ( idx > 0 ) THEN
 
              ! Check for PBL flag. It is possible to emit stuff
@@ -4515,15 +4475,36 @@ CONTAINS
              CALL ParseEmisL( tmpstr((idx+1):LEN(tmpstr)), EmisL, EmisUnit, Lscal2 )
              Dta%EmisL2     = EmisL
              Dta%EmisL2Unit = EmisUnit
+             Dta%EmisLmode  = 1
 
-          ! if only one level is provided (e.g. xyL=5)
+          ! If only one value is provided (e.g. xyL5, xyL=5, xyL*)
           ELSE
-             CALL ParseEmisL( tmpstr, EmisL, EmisUnit, Lscal1 )
-             Dta%EmisL1     = EmisL
-             Dta%EmisL1Unit = EmisUnit
-             Lscal2         = Lscal1
-             Dta%EmisL2     = Dta%EmisL1
-             Dta%EmisL2Unit = Dta%EmisL1Unit
+
+             ! Check if wildcard provided, i.e. xyL*
+             idx = INDEX( TRIM(tmpstr), '*' )
+
+             ! Wildcard tells HEMCO to emit same value to all emission levels
+             ! A scale factor should be applied to distribute the emissions
+             ! vertically
+             IF ( idx > 0 ) THEN
+
+                Dta%EmisL1     = 1.0_hp
+                Dta%EmisL1Unit = HCO_EMISL_LEV
+                Dta%EmisL2     = 0.0_hp
+                Dta%EmisL2Unit = HCO_EMISL_TOP
+                Dta%EmisLmode  = 2 ! Copy data to all levels
+
+             ! Emissions are allocated to one level
+             ELSE
+
+                CALL ParseEmisL( tmpstr, EmisL, EmisUnit, Lscal1 )
+                Dta%EmisL1     = EmisL
+                Dta%EmisL1Unit = EmisUnit
+                Lscal2         = Lscal1
+                Dta%EmisL2     = Dta%EmisL1
+                Dta%EmisL2Unit = Dta%EmisL1Unit
+
+             ENDIF
           ENDIF
        ELSE
 
@@ -4611,8 +4592,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Feb 2016 - C. Keller: Initialization (update)
-!  23 Oct 2018 - M. Sulprizio- Add nModelSpecies to represent all species from
-!                              external model (i.e. advected+chemical species)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4686,6 +4666,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  09 May 2016 - C. Keller: Intial version.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4703,8 +4684,8 @@ CONTAINS
     ScalID   = -1
 
     IF ( TRIM(str) == 'PBL' ) THEN
-      EmisL    = 0.0_hp
-      EmisUnit = HCO_EMISL_PBL
+       EmisL    = 0.0_hp
+       EmisUnit = HCO_EMISL_PBL
     ELSE
        ! extract scale factor if string starts with 'SCAL' or 'scal'
        nchar = LEN(str)
@@ -4757,6 +4738,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Jul 2018 - C. Keller: Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4843,6 +4825,7 @@ CONTAINS
 ! !REVISION HISTORY:
 !  23 Oct 2018 - M. Sulprizio- Initial version based on routine Get_TagInfo in
 !                              GEOS-Chem's Headers/state_diag_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

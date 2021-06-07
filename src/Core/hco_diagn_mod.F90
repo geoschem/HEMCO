@@ -11,7 +11,7 @@
 ! in list DiagnList. Each diagnostics container contains information
 ! about the diagnostics type (extension number, emission category /
 ! hierarchy, species ID), data structure (Scalar, 2D, 3D), and output
-! units (mass, area, time).
+! units (area, time).
 !\\
 !\\
 ! The HEMCO diagnostics module can store multiple, independent
@@ -171,19 +171,7 @@ MODULE HCO_Diagn_Mod
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller   - Initialization
-!  08 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  08 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  01 Aug 2014 - C. Keller   - Added manual output frequency
-!  12 Aug 2014 - C. Keller   - Added cumulative sum option
-!  09 Jan 2015 - C. Keller   - Added diagnostics collections
-!  03 Apr 2015 - C. Keller   - Now tie output frequency to collection instead
-!                              of individual diagnostic containers.
-!  06 Nov 2015 - C. Keller   - Added argument OutTimeStamp to collection to
-!                              control the file output time stamp (beginning,
-!                              middle, end of diagnostics interval).
-!  25 Jan 2016 - R. Yantosca - Added bug fixes for pgfortran compiler
-!  19 Sep 2016 - R. Yantosca - Add extra overloaded functions to the
-!                              Diagn_Update interface to avoid Gfortran errors
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -241,9 +229,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller   - Initial version
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  11 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -328,12 +314,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Apr 2015 - C. Keller   - Initial version
-!  10 Apr 2015 - C. Keller   - Now create diagnostics based on entries
-!                              in the HEMCO diagnostics definition file.
-!  06 Nov 2015 - C. Keller   - Added OutTimeStamp.
-!  01 Nov 2017 - E. Lundgren - Change default OutTimeStamp from end to start
-!                              for diagnostics collection
-!  29 Dec 2017 - C. Keller   - Added datetime tokens to file prefixes.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-----------------------------------------------------------------------
 !BOC
@@ -449,6 +430,71 @@ CONTAINS
     ! Pass this collection ID to fixed variable for easy further
     ! reference to this collection
     HcoState%Diagn%HcoDiagnIDRestart = CollectionID
+#ifdef ADJOINT
+    IF ( HcoState%isAdjoint ) THEN
+    ! ------------------------------------------------------------------
+    ! Default diagnostics
+    ! ------------------------------------------------------------------
+    CALL DiagnCollection_GetDefaultDelta ( HcoState, &
+                                           deltaYMD,  deltaHMS, RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Try to get prefix from configuration file
+    CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnPrefix', &
+                     OptValChar=DiagnPrefix, FOUND=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( .NOT. FOUND ) THEN
+#if defined( MODEL_GEOS )
+       DiagnPrefix = 'HEMCO_Diagnostics.$YYYY$MM$DD$HH$MN.nc'
+#else
+       DiagnPrefix = 'HEMCO_diagnostics'
+#endif
+    ENDIF
+
+    ! Output time stamp location
+    CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnTimeStamp', &
+                     OptValChar=OutTimeStampChar, FOUND=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( .NOT. FOUND ) THEN
+       OutTimeStamp = HcoDiagnStart
+    ELSE
+       CALL TRANLC( OutTimeStampChar )
+       IF (     TRIM(OutTimeStampChar) == 'start' ) THEN
+          OutTimeStamp = HcoDiagnStart
+
+       ELSEIF ( TRIM(OutTimeStampChar) == 'mid'   ) THEN
+          OutTimeStamp = HcoDiagnMid
+
+       ELSEIF ( TRIM(OutTimeStampChar) == 'end'   ) THEN
+          OutTimeStamp = HcoDiagnEnd
+
+       ELSE
+          WRITE(MSG,*) 'Unrecognized output time stamp location: ', &
+             TRIM(OutTimeStampChar), ' - will use default (start)'
+          CALL HCO_WARNING(HcoState%Config%Err,MSG,RC,THISLOC=LOC,WARNLEV=1)
+          OutTimeStamp = HcoDiagnStart
+       ENDIF 
+    ENDIF
+
+    CALL DiagnCollection_Create( HcoState%Diagn,                           &
+                                 NX           = HcoState%NX,               &
+                                 NY           = HcoState%NY,               &
+                                 NZ           = HcoState%NZ,               &
+                                 TS           = HcoState%TS_EMIS,          &
+                                 AM2          = HcoState%Grid%AREA_M2%Val, &
+                                 COL          = CollectionID,              & 
+                                 PREFIX       = TRIM(DiagnPrefix),         &
+                                 deltaYMD     = deltaYMD,                  & 
+                                 deltaHMS     = deltaHMS,                  & 
+                                 OutTimeStamp = OutTimeStamp,              & 
+                                 RC           = RC                          )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Pass this collection ID to fixed variable for easy further 
+    ! reference to this collection
+    HcoState%Diagn%HcoDiagnIDAdjoint = CollectionID
+    endif
+#endif
 
     ! ------------------------------------------------------------------
     ! Manual diagnostics
@@ -554,7 +600,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Apr 2015 - C. Keller   - Initial version
-!  21 Feb 2016 - C. Keller   - Added default diagnostics (optional)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -600,6 +646,26 @@ CONTAINS
           HcoID = HCO_GetHcoID( TRIM(SpcName), HcoState )
           IF ( HcoID <= 0 ) CYCLE
 
+#ifdef ADJOINT
+          if ( cName(1:6) == 'SFEmis' ) then
+          ! ------------------------------------------------------------------
+          ! Add it to the HEMCO diagnostics collection
+          ! ------------------------------------------------------------------
+          CALL Diagn_Create( HcoState,                      &
+                             cName     = cName,             &
+                             long_name = lName,             &
+                             HcoID     = HcoID,             &  
+                             ExtNr     = ExtNr,             &  
+                             Cat       = Cat,               &  
+                             Hier      = Hier,              &  
+                             SpaceDim  = SpaceDim,          &  
+                             OutUnit   = OutUnit,           &
+                             OutOper   = 'CumulSum',        &
+                             AutoFill  = 1,                 &  
+                             COL       = HcoState%Diagn%HcoDiagnIDAdjoint, &
+                             RC        = RC                  )
+          else
+#endif
           ! ------------------------------------------------------------------
           ! Add it to the HEMCO diagnostics collection
           ! ------------------------------------------------------------------
@@ -615,6 +681,9 @@ CONTAINS
                              AutoFill  = 1,                 &
                              COL       = HcoState%Diagn%HcoDiagnIDDefault, &
                              RC        = RC                  )
+#ifdef ADJOINT
+          endif
+#endif
           IF ( RC /= HCO_SUCCESS ) RETURN
 
        ENDDO
@@ -702,8 +771,7 @@ CONTAINS
 !      module (see HCO\_UNITS\_Mod.F90). No unit conversions will be
 !      performed if the argument OutOper is set (see below).
 !\item HcoState: HEMCO state object. Used to determine the species
-!      properties if any of arguments MW\_g, EmMW\_g or MolecRatio
-!      is missing.
+!      properties.
 !\item OutOper: output operation for non-standard units. If this
 !      argument is used, the specified operation is performed and all
 !      unit specifications are ignored. Can be one of 'Mean', 'Sum',
@@ -717,18 +785,6 @@ CONTAINS
 !      unit conversions, etc., and the data will be written to disk
 !      as is.
 !\item Trgt3D: as Trgt2D, but for 3D data.
-!\item MW\_g: species molecular weight. Used to determine unit
-!      conversion factors. Not needed for target containers or if
-!      argument OutOper is specified. Can be omitted if HcoState is
-!      given.
-!\item EmMW\_g: Molecular weight of emitted species. Used to determine
-!      unit conversion factors. Not needed for target containers or if
-!      argument OutOper is specified. Can be omitted if HcoState is
-!      given.
-!\item MolecRatio: Molecules of species per emitted molecule. Used to
-!      determine unit conversion factors. Not needed for target
-!      containers or if argument OutOper is specified. Can be omitted
-!      if HcoState is given.
 !\item ScaleFact: constant scale factor. If provided, the diagnostics
 !      are scaled uniformly by this value before outputting. Will be
 !      applied on top of any other unit conversions. Does not work on
@@ -744,15 +800,13 @@ CONTAINS
                            ExtNr,     Cat,        Hier,       &
                            HcoID,     SpaceDim,   OutUnit,    &
                            OutOper,   LevIdx,     AutoFill,   &
-                           Trgt2D,    Trgt3D,     MW_g,       &
-                           EmMW_g,    MolecRatio, ScaleFact,  &
+                           Trgt2D,    Trgt3D,     ScaleFact,  &
                            cID,       RC,    COL, OkIfExist,  &
                            long_name                           )
 !
 ! !USES:
 !
     USE HCO_State_Mod, ONLY : HCO_State
-    USE HCO_Unit_Mod,  ONLY : HCO_Unit_GetMassScal
     USE HCO_Unit_Mod,  ONLY : HCO_Unit_GetAreaScal
     USE HCO_Unit_Mod,  ONLY : HCO_Unit_GetTimeScal
 !
@@ -771,9 +825,6 @@ CONTAINS
     INTEGER,          INTENT(IN   ), OPTIONAL :: AutoFill      ! 1=fill auto.;0=don't
     REAL(sp),         INTENT(IN   ), OPTIONAL :: Trgt2D(:,:)   ! 2D target data
     REAL(sp),         INTENT(IN   ), OPTIONAL :: Trgt3D(:,:,:) ! 3D target data
-    REAL(hp),         INTENT(IN   ), OPTIONAL :: MW_g          ! species MW (g/mol)
-    REAL(hp),         INTENT(IN   ), OPTIONAL :: EmMW_g        ! emission MW (g/mol)
-    REAL(hp),         INTENT(IN   ), OPTIONAL :: MolecRatio    ! molec. emission ratio
     REAL(hp),         INTENT(IN   ), OPTIONAL :: ScaleFact     ! uniform scale factor
     INTEGER,          INTENT(IN   ), OPTIONAL :: COL           ! Collection number
     INTEGER,          INTENT(IN   ), OPTIONAL :: cID           ! Container ID
@@ -786,9 +837,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller - Initialization
-!  05 Mar 2015 - C. Keller - container ID can now be set by the user
-!  31 Mar 2015 - C. Keller - added argument OkIfExist
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -804,7 +853,6 @@ CONTAINS
     CHARACTER(LEN=255)             :: LOC, MSG
     INTEGER                        :: PS, Flag
     REAL(hp)                       :: Scal
-    REAL(hp)                       :: MWg, EmMWg, MolR
     LOGICAL                        :: ForceMean, FOUND
 
     !======================================================================
@@ -993,37 +1041,6 @@ CONTAINS
           ThisDiagn%AvgName = 'mean'
 
           !----------------------------------------------------------------
-          ! Scale factor for mass. This determines the scale factor from
-          ! HEMCO mass unit (kg) to the desired output unit.
-          ! HCO_UNIT_MassCal returns the mass scale factor from OutUnit to
-          ! HEMCO unit, hence need to invert this value!
-          !----------------------------------------------------------------
-          IF ( .NOT. PRESENT(MW_g)       .OR. &
-               .NOT. PRESENT(EmMW_g)     .OR. &
-               .NOT. PRESENT(MolecRatio)       ) THEN
-             MWg   = HcoState%Spc(HcoID)%MW_g
-             EmMWg = HcoState%Spc(HcoID)%EmMW_g
-             MolR  = HcoState%Spc(HcoID)%MolecRatio
-          ELSE
-                MWg   = MW_g
-                EmMWg = EmMW_g
-                MolR  = MolecRatio
-          ENDIF
-
-          CALL HCO_UNIT_GetMassScal( HcoState%Config,             &
-                    unt         = OutUnit,                        &
-                    MW_IN       = MWg,                            &
-                    MW_OUT      = EmMWg,                          &
-                    MOLEC_RATIO = MolR,                           &
-                    Scal        = Scal                             )
-          IF ( Scal <= 0.0_hp ) THEN
-             MSG = 'Cannot find mass scale factor for unit '//TRIM(OutUnit)
-             CALL HCO_ERROR( HcoState%config%Err, MSG, RC, THISLOC=LOC )
-             RETURN
-          ENDIF
-          ThisDiagn%MassScal = 1.0_hp / Scal
-
-          !----------------------------------------------------------------
           ! Scale factor for area. This determines the scale factor from
           ! HEMCO area unit (m2) to the desired output unit.
           ! HCO_UNIT_AreaScal returns the area scale factor from OutUnit to
@@ -1035,6 +1052,12 @@ CONTAINS
              ThisDiagn%AreaScal = 1.0_hp / Scal
           ENDIF
 
+          IF (HCO_IsVerb(HcoState%Config%Err,3)) THEN
+             WRITE(MSG, *) '  ThisDiagn%AreaScal = ', ThisDiagn%AreaScal
+             CALL HCO_MSG( HcoState%Config%Err, MSG)
+             WRITE(MSG, *) '  ThisDiagn%MassScal = ', ThisDiagn%MassScal
+             CALL HCO_MSG( HcoState%Config%Err, MSG)
+          ENDIF
           !----------------------------------------------------------------
           ! Determine the normalization factors applied to the diagnostics
           ! before they are written out. Diagnostics are always stored
@@ -1197,8 +1220,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Scalar and
-!                              Array3d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1267,8 +1289,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Scalar and
-!                              Array3d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1337,8 +1358,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Scalar and
-!                              Array2d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1407,8 +1427,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller   - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Array2d and
-!                              Array3d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1477,8 +1496,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller   - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Scalar and
-!                              Array3d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1551,8 +1569,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Apr 2015 - C. Keller   - Initialization
-!  19 Sep 2016 - R. Yantosca - Rewritten for Gfortran: remove Scalar and
-!                              Array2d (put those in other overloaded methods)
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1678,11 +1695,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller - Initialization
-!  25 Sep 2014 - C. Keller - Now allow updating multiple diagnostics
-!  11 Mar 2015 - C. Keller - Now allow scanning of all diagnostic collections
-!  13 Mar 2015 - C. Keller - Bug fix: only prompt warning if it's a new timestep
-!  17 Jun 2015 - C. Keller - Added argument MinDiagnLev
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1859,6 +1872,15 @@ CONTAINS
                   TRIM(ThisDiagn%cName)
              CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
              CYCLE
+          ENDIF
+
+          IF (HCO_IsVerb(HcoState%Config%Err, 3)) THEN
+             WRITE(MSG,*) 'ThisDiagn%cName:    ', trim(ThisDiagn%cName)
+             CALL HCO_MSG(HcoState%Config%Err, MSG)
+             WRITE(MSG,*) 'ThisDiagn%AvgFlag:  ', ThisDiagn%AvgFlag
+             CALL HCO_MSG(HcoState%Config%Err, MSG)
+             WRITE(MSG,*) 'ThisDiagn%SpaceDim: ', ThisDiagn%SpaceDim
+             CALL HCO_MSG(HcoState%Config%Err, MSG)
           ENDIF
 
           ! Increase counter
@@ -2258,7 +2280,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2416,7 +2438,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Mar 2015 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2500,9 +2522,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller   - Initialization
-!  25 Jan 2016 - R. Yantosca - Bug fix for pgfortran compiler: Test if the
-!                              TMPCONT object is associated before deallocating
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2566,7 +2586,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2655,7 +2675,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2740,7 +2760,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2802,6 +2822,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2830,7 +2851,6 @@ CONTAINS
     DgnCont%SpaceDim =  2
 
     ! Default values for unit conversion factors
-    DgnCont%MassScal  = 1.0_hp
     DgnCont%AreaScal  = 1.0_hp
     DgnCont%ScaleFact = 1.0_hp
     DgnCont%AreaFlag  = 2
@@ -2886,6 +2906,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2942,7 +2963,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3020,15 +3041,15 @@ CONTAINS
 
     !-----------------------------------------------------------------------
     ! Output data is calculated as:
-    ! out = saved / norm1 * mult1 * MassScal * AreaScal
+    ! out = saved / norm1 * mult1 * * AreaScal
     ! The normalization factor norm1 and multiplication factor mult1
     ! are used to average to the desired time interval, i.e. per
     ! second, per day, etc.
     ! Since all diagnostics are internally stored in units of [kg/m2]
     ! first convert to [kg/m2/s] and then multiply by the desired time
     ! averaging interval (e.g. seconds/hour to get kg/m2/s). Factors
-    ! MassScal and AreaScal convert mass and area to desired units, as
-    ! determined during initialization of the diagnostics.
+    ! AreaScal convert area to desired units, as determined during
+    ! initialization of the diagnostics.
     !-----------------------------------------------------------------------
 
     ! If the averaging is forced to the sum:
@@ -3100,7 +3121,6 @@ CONTAINS
     ! totscal is the combined scale factor
     totscal = mult1             &
             / norm1             &
-            * DgnCont%MassScal  &
             * DgnCont%AreaScal  &
             * DgnCont%ScaleFact
 
@@ -3219,9 +3239,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
-!  25 Sep 2014 - C. Keller: Added Resume flag
-!  09 Apr 2015 - C. Keller: Can now search all collections
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3381,6 +3399,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3481,6 +3500,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Dec 2013 - C. Keller: Initialization
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3586,7 +3606,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 Aug 2014 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3669,7 +3689,7 @@ CONTAINS
   END SUBROUTINE Diagn_Print
 !EOC
 !------------------------------------------------------------------------------
-!          Harvard University Atmospheric Chemistry Modeling Group            !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3720,7 +3740,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  08 Jan 2015 - C. Keller   - Initial version
-!  06 Nov 2015 - C. Keller   - Added OutTimeStamp.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3806,7 +3826,7 @@ CONTAINS
   END SUBROUTINE DiagnCollection_Create
 !EOC
 !------------------------------------------------------------------------------
-!          Harvard University Atmospheric Chemistry Modeling Group            !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3826,7 +3846,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  08 Jan 2015 - C. Keller - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3860,7 +3880,7 @@ CONTAINS
   END SUBROUTINE DiagnCollection_Cleanup
 !EOC
 !------------------------------------------------------------------------------
-!          Harvard University Atmospheric Chemistry Modeling Group            !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -3899,6 +3919,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 Apr 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3973,7 +3994,7 @@ CONTAINS
   END SUBROUTINE DiagnCollection_DefineID
 !EOC
 !------------------------------------------------------------------------------
-!          Harvard University Atmospheric Chemistry Modeling Group            !
+!                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
@@ -4000,8 +4021,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 Apr 2015 - C. Keller   - Initial version
-!  10 Jul 2015 - R. Yantosca - Fixed minor issues in ProTeX header
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4086,6 +4106,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Aug 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4209,9 +4230,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Aug 2015 - C. Keller   - Initial version
-!  30 Sep 2015 - C. Keller   - Bug fix: now set current hour from 0 to 24 to
-!                              make sure that it will be greater than previous
-!                              hour.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4293,6 +4312,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  09 Sep 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4352,6 +4372,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Apr 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4495,7 +4516,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Apr 2015 - C. Keller   - Initial version
-!  23 Feb 2016 - C. Keller   - Added lName and UnitName arguments
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4599,6 +4620,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  10 Apr 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4626,6 +4648,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4636,6 +4659,9 @@ CONTAINS
        Diagn%HcoDiagnIDDefault = -999
        Diagn%HcoDiagnIDRestart = -999
        Diagn%HcoDiagnIDManual  = -999
+#ifdef ADJOINT
+       Diagn%HcoDiagnIDAdjoint = -999
+#endif
        Diagn%nnCollections     = 0
     ENDIF
 
@@ -4661,6 +4687,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  17 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

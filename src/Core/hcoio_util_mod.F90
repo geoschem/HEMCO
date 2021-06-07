@@ -6,7 +6,7 @@
 ! !MODULE: hcoio_util_mod.F90
 !
 ! !DESCRIPTION: Module HCOIO\_Util\_Mod contains utility functions
-! for use in data processing including file reading, unit conversions, 
+! for use in data processing including file reading, unit conversions,
 ! and regridding.
 !\\
 !\\
@@ -41,6 +41,7 @@ MODULE HCOIO_Util_Mod
   PUBLIC :: CheckMissVal
   PUBLIC :: GetArbDimIndex
 #endif
+  PUBLIC :: HCOIO_ReadOther
   PUBLIC :: HCOIO_ReadCountryValues
   PUBLIC :: HCOIO_ReadFromConfig
   PUBLIC :: GetDataVals
@@ -51,6 +52,7 @@ MODULE HCOIO_Util_Mod
 ! !REVISION HISTORY:
 !  12 Jun 2020 - E. Lundgren - Initial version, created from subset of
 !                              hcoio_util_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -124,7 +126,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller - Initial version
-!  27 Feb 2015 - C. Keller - Added weigths
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -207,7 +209,16 @@ CONTAINS
     ! ----------------------------------------------------------------
     CALL HCO_GetPrefTimeAttr ( HcoState, Lct, &
                                prefYr, prefMt, prefDy, prefHr, prefMn, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = &
+         'Error encountered in HCO_GetPrefTimeAttr for ' // TRIM(Lct%Dct%cName)
+       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       IF ( ASSOCIATED(availYMDhm) ) THEN
+          DEALLOCATE(availYMDhm)
+          availYMDhm => NULL()
+       ENDIF
+       RETURN
+    ENDIF
 
     ! Eventually force preferred year to passed value
     IF ( PRESENT(Year) ) prefYr = Year
@@ -219,6 +230,10 @@ CONTAINS
        IF ( Lct%Dct%Dta%CycleFlag /= HCO_CFLAG_RANGE ) THEN
           MSG = 'Cannot get preferred datetime for ' // TRIM(Lct%Dct%cName)
           CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          IF ( ASSOCIATED(availYMDhm) ) THEN
+             DEALLOCATE(availYMDhm)
+             availYMDhm => NULL()
+          ENDIF
           RETURN
        ENDIF
 
@@ -432,6 +447,10 @@ CONTAINS
              MSG = 'Data must have exactly 7 time slices '// &
                    'if you set day attribute to WD: '//TRIM(Lct%Dct%cName)
              CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             IF ( ASSOCIATED(availYMDhm) ) THEN
+                DEALLOCATE(availYMDhm)
+                availYMDhm => NULL()
+             ENDIF
              RETURN
           ENDIF
 
@@ -451,6 +470,10 @@ CONTAINS
                 WRITE(MSG,*) 'Cannot get weekday slices for: ', &
                    TRIM(Lct%Dct%cName), '. Cannot find first time slice.'
                 CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                IF ( ASSOCIATED(availYMDhm) ) THEN
+                   DEALLOCATE(availYMDhm)
+                   availYMDhm => NULL()
+                ENDIF
                 RETURN
              ENDIF
 
@@ -459,6 +482,10 @@ CONTAINS
                    '. There are less than 6 additional time slices after ',  &
                    'selected start date ', availYMDhm(tidx1)
                 CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                IF ( ASSOCIATED(availYMDhm) ) THEN
+                   DEALLOCATE(availYMDhm)
+                   availYMDhm => NULL()
+                ENDIF
                 RETURN
              ENDIF
              tidx2 = tidx1 + 6
@@ -493,7 +520,16 @@ CONTAINS
                                    availYMDhm, prefYMDhm, origYMDhm,  &
                                    tidx1,      tidx2,     wgt1,       &
                                    wgt2,       RC                   )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                MSG = 'Error encountered in GetIndex2Interp for: '        // &
+                     TRIM(Lct%Dct%Cname)
+                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                IF ( ASSOCIATED(availYMDhm) ) THEN
+                   DEALLOCATE(availYMDhm)
+                   availYMDhm => NULL()
+                ENDIF
+                RETURN
+             ENDIF
 
           ! Check for multiple hourly data
           ELSEIF ( tidx1 > 0 .AND. prefHr < 0 ) THEN
@@ -518,6 +554,10 @@ CONTAINS
                 'be set to `C` in the HEMCO configuration file:'    // &
                 TRIM(Lct%Dct%cName)
           CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          IF ( ASSOCIATED(availYMDhm) ) THEN
+             DEALLOCATE(availYMDhm)
+             availYMDhm => NULL()
+          ENDIF
           RETURN
        ENDIF
 
@@ -601,7 +641,11 @@ CONTAINS
        oYMDhm = origYMDhm
     ENDIF
 
-    IF ( ASSOCIATED(availYMDhm) ) DEALLOCATE(availYMDhm)
+    ! Deallocate and nullify the pointer
+    IF ( ASSOCIATED(availYMDhm) ) THEN
+       DEALLOCATE(availYMDhm)
+       availYMDhm => NULL()
+    ENDIF
 
     ! Return w/ success
     CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
@@ -637,14 +681,14 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller   - Initial version
-!  11 Apr 2017 - R. Yantosca - Now epsilon-test time stamps for equality
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: I
+    INTEGER :: I, nTime
 
     !=================================================================
     ! Check_availYMDhm begins here
@@ -656,8 +700,15 @@ CONTAINS
     ! Return if preferred datetime not within the vector range
     IF ( prefYMDhm < availYMDhm(1) .OR. prefYMDhm > availYMDhm(N) ) RETURN
 
-    ! get closest index that is not in the future
-    DO I = 1, N
+    ! To avoid out-of-bounds error in the loop below:
+    ! (1) For interpolated data, the upper loop limit should be N;
+    ! (2) Otherwise, the upper loop limit should be N-1.
+    ! (bmy, 4/28/21)
+    nTime = N - 1
+    IF ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_INTER ) nTime = N
+
+    ! Get closest index that is not in the future
+    DO I = 1, nTime
 
        ! NOTE: Epsilon test is more robust than an equality test
        ! for double-precision variables (bmy, 4/11/17)
@@ -706,8 +757,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller   - Initial version
-!  17 Jul 2014 - C. Keller   - Now allow to adjust year, month, or day.
-!  10 Apr 2017 - R. Yantosca - Times are now in YYYYMMDDhhmm format
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -878,8 +928,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller   - Initial version
-!  10 Apr 2017 - R. Yantosca - AvailYMDHm now uses YYYYMMDDhhmm format,
-!                              so divide by 1d4 instead of 1d2
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -945,7 +994,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Mar 2015 - C. Keller   - Initial version
-!  11 Apr 2017 - R. Yantosca - Now epsilon-test time stamps for equality
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1031,9 +1080,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  02 Mar 2015 - C. Keller   - Initial version
-!  11 Apr 2017 - R. Yantosca - Time stamp variables now use YYYYMMDDhhmm
-!                              fprmat and are REAL(dp) instead of INTEGER(8)
-!  11 Apr 2017 - R. Yantosca - Now epsilon-test time stamps for equality
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1211,7 +1258,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Mar 2015 - C. Keller - Initial version
-!  24 Feb 2019 - C. Keller - Now use julian dates via YMDhm2jd
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1274,6 +1321,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Feb 2019 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1326,6 +1374,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Jan 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1369,6 +1418,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1477,11 +1527,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  01 Oct 2014 - C. Keller - Initial version
-!  23 Feb 2015 - C. Keller - Now check for negative return values in
-!                            HCO_GetPrefTimeAttr
-!  06 Nov 2015 - C. Keller - Bug fix: restrict day to last day of month.
-!  24 Feb 2019 - C. Keller - Change flag FUTURE to Direction so that it works
-!                            in both direction
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1493,7 +1539,7 @@ CONTAINS
     INTEGER :: origYr,  origMt, origDy, origHr
     LOGICAL :: hasFile, hasYr,  hasMt,  hasDy, hasHr
     LOGICAL :: nextTyp
-    CHARACTER(LEN=512)  :: MSG
+    CHARACTER(LEN=1023)  :: MSG
     CHARACTER(LEN=1023) :: srcFileOrig
 
     ! maximum # of iterations for file search
@@ -1804,6 +1850,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  03 Oct 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1868,6 +1915,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Mar 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1929,6 +1977,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Sep 2015 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2032,6 +2081,78 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
+! !IROUTINE: HCOIO_ReadOther
+!
+! !DESCRIPTION: Subroutine HCOIO\_ReadOther is a wrapper routine to
+! read data from sources other than netCDF.
+!\\
+!\\
+! If a file name is given (ending with '.txt'), the data are assumed
+! to hold country-specific values (e.g. diurnal scale factors). In all
+! other cases, the data is directly read from the configuration file
+! (scalars).
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE HCOIO_ReadOther( HcoState, Lct, RC )
+!
+! !USES:
+!
+!
+! !INPUT PARAMTERS:
+!
+    TYPE(HCO_State), POINTER          :: HcoState    ! HEMCO state
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    TYPE(ListCont),   POINTER         :: Lct
+    INTEGER,          INTENT(INOUT)   :: RC
+!
+! !REVISION HISTORY:
+!  22 Dec 2014 - C. Keller: Initial version
+!  See https://github.com/geoschem/hemco for complete history
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255) :: MSG
+
+    !======================================================================
+    ! HCOIO_ReadOther begins here
+    !======================================================================
+
+    ! Error check: data must be in local time
+    IF ( .NOT. Lct%Dct%Dta%IsLocTime ) THEN
+       MSG = 'Cannot read data from file that is not in local time: ' // &
+             TRIM(Lct%Dct%cName)
+       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC='HCOIO_ReadOther (hcoio_dataread_mod.F90)' )
+       RETURN
+    ENDIF
+
+    ! Read an ASCII file as country values
+    IF ( INDEX( TRIM(Lct%Dct%Dta%ncFile), '.txt' ) > 0 ) THEN
+       CALL HCOIO_ReadCountryValues( HcoState, Lct, RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Directly read from configuration file otherwise
+    ELSE
+       CALL HCOIO_ReadFromConfig( HcoState, Lct, RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+    ENDIF
+
+    ! Return w/ success
+    RC = HCO_SUCCESS
+
+  END SUBROUTINE HCOIO_ReadOther
+!EOC
+!------------------------------------------------------------------------------
+!                   Harmonized Emissions Component (HEMCO)                    !
+!------------------------------------------------------------------------------
+!BOP
+!
 ! !IROUTINE: HCOIO_ReadCountryValues
 !
 ! !DESCRIPTION: Subroutine HCOIO\_ReadCountryValues
@@ -2059,7 +2180,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Dec 2014 - C. Keller: Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2279,7 +2400,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Jul 2014 - C. Keller: Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2421,6 +2542,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2527,20 +2649,20 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  22 Dec 2014 - C. Keller: Initial version
-!  08 Aug 2018 - C. Keller: Added check for range/exact dataon
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 !
 ! !LOCAL VARIABLES:
 !
-    REAL(hp)           :: MW_g,  EmMW_g, MolecRatio
     INTEGER            :: HcoID
     INTEGER            :: I, N, NUSE, AS
     INTEGER            :: IDX1, IDX2
     INTEGER            :: AreaFlag, TimeFlag, Check
     INTEGER            :: prefYr, prefMt, prefDy, prefHr, prefMn
     INTEGER            :: cYr,    cMt,    cDy,    cHr
+    REAL(hp)           :: MW_g
     REAL(hp)           :: UnitFactor
     REAL(hp)           :: FileVals(100)
     REAL(hp), POINTER  :: FileArr(:,:,:,:)
@@ -2556,17 +2678,12 @@ CONTAINS
     ! Initialize
     FileArr => NULL()
 
-    ! Shadow molecular weights and molec. ratio (needed for
-    ! unit conversion during file read)
+    ! Shadow species properties needed for unit conversion
     HcoID = Lct%Dct%HcoID
     IF ( HcoID > 0 ) THEN
-       MW_g       = HcoState%Spc(HcoID)%MW_g
-       EmMW_g     = HcoState%Spc(HcoID)%EmMW_g
-       MolecRatio = HcoState%Spc(HcoID)%MolecRatio
+       MW_g = HcoState%Spc(HcoID)%MW_g
     ELSE
-       MW_g       = -999.0_hp
-       EmMW_g     = -999.0_hp
-       MolecRatio = -999.0_hp
+       MW_g = -999.0_hp
     ENDIF
 
     ! Is this a math expression?
@@ -2792,9 +2909,7 @@ CONTAINS
        CALL HCO_UNIT_CHANGE( HcoConfig     = HcoState%Config,            &
                              Array         = FileArr,                    &
                              Units         = TRIM(Lct%Dct%Dta%OrigUnit), &
-                             MW_IN         = MW_g,                       &
-                             MW_OUT        = EmMW_g,                     &
-                             MOLEC_RATIO   = MolecRatio,                 &
+                             MW            = MW_g,                       &
                              YYYY          = -999,                       &
                              MM            = -999,                       &
                              AreaFlag      = AreaFlag,                   &
@@ -2802,14 +2917,6 @@ CONTAINS
                              FACT          = UnitFactor,                 &
                              RC            = RC                           )
        IF ( RC /= HCO_SUCCESS ) RETURN
-
-       ! testing only
-       IF ( UnitFactor /= 1.0_hp ) THEN
-             WRITE(MSG,*) 'Data was in units of ', TRIM(Lct%Dct%Dta%OrigUnit), &
-                          ' - converted to HEMCO units by applying ', &
-                          'scale factor ', UnitFactor
-             write(*,*) TRIM(MSG)
-       ENDIF
 
        ! Verbose mode
        IF ( UnitFactor /= 1.0_hp ) THEN
@@ -2929,7 +3036,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Dec 2014 - C. Keller - Initial version
-!  19 Nov 2015 - C. Keller - Now support grid point masks
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3069,11 +3176,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  11 May 2017 - C. Keller - Initial version
-!  07 Jul 2017 - C. Keller - Parse function before evaluation to allow
-!                            the usage of user-defined tokens within the
-!                            function.
-!  27 Aug 2019 - C. Keller - Add tokens 'ELS' and 'ELH' for elapsed seconds
-!                            and hours, respectively.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3219,15 +3322,6 @@ CONTAINS
        NVAL                      = NVAL + 1
        all_variables(NVAL)       = 'els'
        all_variablesvalues(NVAL) = ELS
-    ENDIF
-
-    ! Need at least one expression
-    IF ( NVAL == 0 ) THEN
-       MSG = 'No valid time expression found - '//&
-             'the function should contain at least one of '//&
-             'YYYY,MM,DD,HH,NN,SS,DOY,WD,ELH,ELS; '//TRIM(func)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
-       RETURN
     ENDIF
 
     ! Error trap: cannot have local hour and local weekday in

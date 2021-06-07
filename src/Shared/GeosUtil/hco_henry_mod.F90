@@ -43,7 +43,7 @@ MODULE HCO_HENRY_MOD
 !
 ! !REVISION HISTORY:
 !  16 Apr 2013 - C. Keller   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -89,7 +89,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Apr 2013 - C. Keller - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -181,7 +181,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  16 Apr 2013 - C. Keller - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

@@ -1,17 +1,24 @@
+!BOC
+#if defined ( ESMF_ )
+! The 'standard' HEMCO I/O module is used for:
+! - GEOS-Chem High Performance / GCHP and GEOS (ESMF_)
+!EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: hcoio_read_esmf_mod.F90
+! !MODULE: hcoio_read_mapl_mod.F90
 !
-! !DESCRIPTION: Module HCOIO\_Read\_ESMF\_mod is the HEMCO interface for
-!  data reading within the ESMF framework.
+! !DESCRIPTION: Module HCOIO\_Read\_mod is the HEMCO interface for
+!  data reading within the MAPL library.
+!
+!  This module implements the MAPL environment.
 !\\
 !\\
 ! !INTERFACE:
 !
-MODULE HCOIO_Read_ESMF_mod
+MODULE HCOIO_Read_Mod
 !
 ! !USES:
 !
@@ -24,14 +31,12 @@ MODULE HCOIO_Read_ESMF_mod
 !
 ! !PUBLIC MEMBER FUNCTIONS:
 !
-#if defined(ESMF_)
-  PUBLIC  :: HCOIO_Read_ESMF
+  PUBLIC  :: HCOIO_Read
+  PUBLIC  :: HCOIO_CloseAll
 !
 ! !REVISION HISTORY:
 !  22 Aug 2013 - C. Keller   - Initial version
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  22 Feb 2016 - C. Keller   - Split off from hcoio_dataread_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -51,8 +56,8 @@ CONTAINS
 !\\
 !\\
 ! !INTERFACE:
-  !
-  SUBROUTINE HCOIO_Read_ESMF( HcoState, Lct, RC )
+!
+  SUBROUTINE HCOIO_Read( HcoState, Lct, RC )
 !
 ! !USES:
 !
@@ -73,7 +78,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Aug 2013 - C. Keller   - Initial version
-!  27 Aug 2014 - R. Yantosca - Err msg now displays hcoio_dataread_mod.F90
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -87,11 +92,11 @@ CONTAINS
     REAL,             POINTER  :: Ptr2D(:,:)
     TYPE(ESMF_State), POINTER  :: IMPORT
     CHARACTER(LEN=255)         :: MSG
-    CHARACTER(LEN=255), PARAMETER :: LOC = 'HCOIO_READ_ESMF (hcoi_read_esmf_mod.F90)'
+    CHARACTER(LEN=255), PARAMETER :: LOC = 'HCOIO_READ (hcoio_read_mapl_mod.F90)'
     CHARACTER(LEN=ESMF_MAXSTR) :: Iam
 
     !=================================================================
-    ! HCOIO_READ_ESMF begins here
+    ! HCOIO_READ begins here
     !=================================================================
 
     ! For error handling
@@ -199,7 +204,49 @@ CONTAINS
     ! Return w/ success
     CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
 
-  END SUBROUTINE HCOIO_Read_ESMF
+  END SUBROUTINE HCOIO_Read
 !EOC
+!------------------------------------------------------------------------------
+!                   Harmonized Emissions Component (HEMCO)                    !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: HCOIO_CloseAll
+!
+! !DESCRIPTION: Subroutine HCOIO\_CloseAll makes sure that there is no open
+! netCDF file left in the stream. This is a stub as there is no such handling
+! within HEMCO for the MAPL environment, it is performed by MAPL.
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE HCOIO_CloseAll( HcoState, RC )
+!
+! !INPUT PARAMTERS:
+!
+    TYPE(HCO_State), POINTER          :: HcoState    ! HEMCO state
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    INTEGER,          INTENT(INOUT)   :: RC
+!
+! !REVISION HISTORY:
+!  24 Mar 2016 - C. Keller: Initial version
+!  See https://github.com/geoschem/hemco for complete history
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    !======================================================================
+    ! HCOIO_CloseAll begins here
+    !======================================================================
+
+    ! Return w/ success
+    RC = HCO_SUCCESS
+
+  END SUBROUTINE HCOIO_CloseAll
+!EOC
+END MODULE HCOIO_Read_Mod
 #endif
-END MODULE HCOIO_Read_ESMF_mod

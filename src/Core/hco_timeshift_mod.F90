@@ -51,6 +51,7 @@ MODULE HCO_TIMESHIFT_MOD
 !
 ! !REVISION HISTORY:
 !  29 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -91,7 +92,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Feb 2016 - C. Keller - Initial version
-!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -102,7 +103,7 @@ CONTAINS
     CHARACTER(LEN=255)             :: MSG
     CHARACTER(LEN=255)             :: iShift
     CHARACTER(LEN=255)             :: tShift
-    CHARACTER(LEN=255), PARAMETER  :: LOC = 'TimeShift_Set (hco_tShift_mod.F90)'
+    CHARACTER(LEN=255), PARAMETER  :: LOC = 'TimeShift_Set (hco_timeshift_mod.F90)'
 
     !======================================================================
     ! TimeShift_Set begins here!
@@ -224,8 +225,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  29 Feb 2016 - C. Keller - Initial version
-!  19 Nov 2018 - C. Keller - Add option TimeShiftCap
-!
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -239,7 +239,7 @@ CONTAINS
     REAL(dp)                       :: TimeShift, DAY, UTC, JD
 
     CHARACTER(LEN=255)             :: MSG
-    CHARACTER(LEN=255), PARAMETER  :: LOC = 'TimeShift_Apply (hco_tShift_mod.F90)'
+    CHARACTER(LEN=255), PARAMETER  :: LOC = 'TimeShift_Apply (hco_timeshift_mod.F90)'
 
     !======================================================================
     ! TimeShift_Apply begins here!

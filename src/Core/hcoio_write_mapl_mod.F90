@@ -1,3 +1,7 @@
+!BOC
+#if defined ( ESMF_ )
+! The 'standard' HEMCO I/O module is used for:
+! - GEOS-Chem High Performance / GCHP and GEOS (ESMF_)
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -6,7 +10,7 @@
 !
 ! !MODULE: hcoio_write_esmf_mod.F90
 !
-! !DESCRIPTION: Module HCOIO\_Write\_ESMF\_Mod.F90 is the HEMCO output
+! !DESCRIPTION: Module HCOIO\_Write\_Mod.F90 is the HEMCO output
 ! interface for the ESMF environment.
 ! In an ESMF/MAPL environment, the HEMCO diagnostics are not directly
 ! written to disk but passed to the gridded component export state, where
@@ -15,7 +19,7 @@
 !\\
 ! !INTERFACE:
 !
-MODULE HCOIO_WRITE_ESMF_MOD
+MODULE HCOIO_Write_Mod
 !
 ! !USES:
 !
@@ -27,22 +31,15 @@ MODULE HCOIO_WRITE_ESMF_MOD
 !
 ! !PUBLIC MEMBER FUNCTIONS:
 !
-#if defined(ESMF_)
-  PUBLIC :: HCOIO_WRITE_ESMF
+  PUBLIC :: HCOIO_Write
 !
 ! !REMARKS:
 !  HEMCO diagnostics are still in testing mode. We will fully activate them
 !  at a later time.  They will be turned on when debugging & unit testing.
 !
 ! !REVISION HISTORY:
-!  04 May 2014 - C. Keller   - Initial version.
-!  11 Jun 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  11 Jun 2014 - R. Yantosca - Now use F90 freeform indentation
-!  28 Jul 2014 - C. Keller   - Removed GC specific initialization calls and
-!                              moved to HEMCO core.
-!  05 Aug 2014 - C. Keller   - Added dummy interface for ESMF.
-!  03 Apr 2015 - C. Keller   - Added HcoDiagn_Write
-!  22 Feb 2016 - C. Keller   - Split off from hcoio_diagn_mod.F90
+!  04 May 2014 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -56,7 +53,7 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: HCOIO_Diagn_WriteOut
+! !IROUTINE: HCOIO_Write
 !
 ! !DESCRIPTION: Subroutine HCOIO\_Diagn\_WriteOut is the interface routine to
 ! link the HEMCO diagnostics arrays to the corresponding data pointers of the
@@ -82,7 +79,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOIO_WRITE_ESMF ( HcoState, RC, OnlyIfFirst, COL )
+  SUBROUTINE HCOIO_WRITE ( HcoState, RC, OnlyIfFirst, COL )
 !
 ! !USES:
 !
@@ -106,8 +103,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  05 Aug 2014 - C. Keller    - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -151,10 +147,18 @@ CONTAINS
     ThisDiagn => NULL()
     DO WHILE ( .TRUE. )
 
+       ! IF (MAPL_am_I_Root()) WRITE(*,*) "Getting next diagnostic in list"
+
        ! Get next diagnostics in list. This will return the next
        ! diagnostics container that contains content to be written
        ! out on this time step.
        CALL Diagn_Get ( HcoState, EOI, ThisDiagn, FLAG, RC, COL=PS )
+
+       ! IF (MAPL_am_I_Root()) THEN
+       !    IF ( RC == HCO_SUCCESS .and. FLAG == HCO_SUCCESS ) WRITE(*,*) "Got it! Name: ", TRIM(ThisDiagn%cName)
+       !    IF ( RC /= HCO_SUCCESS) WRITE(*,*) "Fail! RC: ", RC, "   Flag: ", FLAG
+       ! ENDIF
+
        IF ( RC /= HCO_SUCCESS ) RETURN
        IF ( FLAG /= HCO_SUCCESS ) EXIT
 
@@ -200,8 +204,7 @@ CONTAINS
     ! Return
     RC = HCO_SUCCESS
 
-  END SUBROUTINE HCOIO_WRITE_ESMF
+  END SUBROUTINE HCOIO_Write
 !EOC
+END MODULE HCOIO_Write_Mod
 #endif
-END MODULE HCOIO_WRITE_ESMF_MOD
-

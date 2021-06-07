@@ -22,8 +22,7 @@
 ! \item HEMCO\_sa\_Spec: contains the HEMCO species definitions. The first row
 !  must contain the total number of species. For each species, the following
 !  parameter need to be specified (separated by at least one space character):
-!  species ID, name, molecular weight [g/mol], emitted molecular weight
-!  [g/mol], the molecule emission ratio, the liq. over gas Henry constant
+!  species ID, name, molecular weight [g/mol], the liq. over gas Henry constant
 !  [M/atm], the temperature dependency of the Henry constant (K0, in [K]), and
 !  the pKa (for correction of the Henry constant).
 !
@@ -86,14 +85,8 @@ MODULE HCOI_StandAlone_Mod
   PRIVATE :: ExtState_UpdateFields
 !
 ! !REVISION HISTORY:
-!  20 Aug 2013 - C. Keller   - Initial version.
-!  14 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  14 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  09 Apr 2015 - C. Keller   - Now accept comments and empty lines in
-!                              all input files.
-!  15 Feb 2015 - C. Keller   - Update to v2.0
-!  18 Jan 2019 - R. Yantosca - Improve error trapping.  Also now made
-!                              compatible w/ met field names for FlexGrid
+!  20 Aug 2013 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -107,27 +100,25 @@ MODULE HCOI_StandAlone_Mod
   CHARACTER(LEN=255)             :: TimeFile  = 'HEMCO_sa_Time'
 
   ! HEMCO state
-  TYPE(HCO_State),       POINTER :: HcoState  => NULL()
+  TYPE(HCO_State),       POINTER :: HcoState          => NULL()
 
   ! HEMCO extensions state
-  TYPE(Ext_State),       POINTER :: ExtState  => NULL()
+  TYPE(Ext_State),       POINTER :: ExtState          => NULL()
 
   ! HEMCO config object
-  TYPE(ConfigObj),       POINTER :: HcoConfig => NULL()
+  TYPE(ConfigObj),       POINTER :: HcoConfig         => NULL()
 
   ! Pointers used during initialization (for species matching)
   INTEGER                        :: nHcoSpec
-  CHARACTER(LEN= 31),    POINTER :: HcoSpecNames       (:) => NULL()
+  CHARACTER(LEN= 31),    POINTER :: HcoSpecNames  (:) => NULL()
   INTEGER                        :: nModelSpec
-  CHARACTER(LEN= 31),    POINTER :: ModelSpecNames     (:) => NULL()
-  INTEGER,               POINTER :: ModelSpecIDs       (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecMW        (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecEmMW      (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecMolecRatio(:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecK0        (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecCR        (:) => NULL()
-  REAL(hp),              POINTER :: ModelSpecPKA       (:) => NULL()
-  INTEGER,               POINTER :: matchidx           (:) => NULL()
+  CHARACTER(LEN= 31),    POINTER :: ModelSpecNames(:) => NULL()
+  INTEGER,               POINTER :: ModelSpecIDs  (:) => NULL()
+  REAL(hp),              POINTER :: ModelSpecMW   (:) => NULL()
+  REAL(hp),              POINTER :: ModelSpecK0   (:) => NULL()
+  REAL(hp),              POINTER :: ModelSpecCR   (:) => NULL()
+  REAL(hp),              POINTER :: ModelSpecPKA  (:) => NULL()
+  INTEGER,               POINTER :: matchidx      (:) => NULL()
 
   ! Start and end time of simulation
   INTEGER                        :: YRS(2), MTS(2), DYS(2)
@@ -140,6 +131,7 @@ MODULE HCOI_StandAlone_Mod
   REAL(hp), ALLOCATABLE, TARGET  :: YEDGE  (:,:,:)
   REAL(hp), ALLOCATABLE, TARGET  :: YSIN   (:,:,:)
   REAL(hp), ALLOCATABLE, TARGET  :: AREA_M2(:,:,:)
+  REAL(hp), ALLOCATABLE, TARGET  :: PBL_M  (:,:  )
 
   ! MAXIT is the maximum number of run calls allowed
   INTEGER, PARAMETER             :: MAXIT = 100000
@@ -174,7 +166,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -236,11 +228,11 @@ CONTAINS
 !
 ! !USES:
 !
-    USE HCO_Config_Mod,    ONLY : Config_ReadFile
-    USE HCO_State_Mod,     ONLY : HcoState_Init
-    USE HCO_Driver_Mod,    ONLY : HCO_Init
-    USE HCOX_Driver_Mod,   ONLY : HCOX_Init
-    USE HCO_EXTLIST_Mod,   ONLY : GetExtOpt, CoreNr
+    USE HCO_Config_Mod,   ONLY : Config_ReadFile
+    USE HCO_State_Mod,    ONLY : HcoState_Init
+    USE HCO_Driver_Mod,   ONLY : HCO_Init
+    USE HCOX_Driver_Mod,  ONLY : HCOX_Init
+    USE HCO_ExtList_Mod,  ONLY : GetExtOpt, CoreNr
 !
 ! !INPUT PARAMETERS:
 !
@@ -254,8 +246,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
-!  29 Jan 2019 - R. Yantosca - Now flush errmsgs to logfile before exiting
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -496,10 +487,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
-!  29 Jan 2019 - R. Yantosca - Bug fix: Call HCO_RUN twice, once with phase=1
-!                              and again with phase=2.  This is necessary
-!                              for emissions to be computed.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -587,7 +575,7 @@ CONTAINS
           ENDIF
        ENDIF
 
-       ! ================================================================
+       ! ===============================================================
        ! Set HCO options and define all arrays needed by core module
        ! and the extensions
        ! ================================================================
@@ -622,23 +610,10 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! Phase 2: Compute emissions (skip for dry-run)
-       IF ( notDryRun ) THEN
-          CALL HCO_Run( HcoState, 2, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-             ErrMsg = 'Error encountered in routine "Hco_Run", phase 2!'
-             CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
-             RETURN
-          ENDIF
-       ENDIF
-
-       ! ================================================================
-       ! Run HCO extensions
-       ! ================================================================
        IF ( notDryRun ) THEN
 
           ! Set ExtState fields (skip for dry-run)
-          CALL ExtState_SetFields ( HcoState, ExtState, RC )
+          CALL ExtState_SetFields( HcoState, ExtState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in routine "ExtState_SetFields"!'
              CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
@@ -652,7 +627,19 @@ CONTAINS
              CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
+
+          ! Phase 2: Compute emissions (skip for dry-run)
+          CALL HCO_Run( HcoState, 2, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in routine "Hco_Run", phase 2!'
+             CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
        ENDIF
+
+       ! ================================================================
+       ! Run HCO extensions
+       ! ================================================================
 
        ! Execute all enabled emission extensions. Emissions will be
        ! added to corresponding flux arrays in HcoState.
@@ -703,7 +690,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  12 Sep 2013 - C. Keller   - Initial version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -750,12 +737,13 @@ CONTAINS
     ENDIF
 
     ! Deallocate module arrays/pointers
-    IF ( ALLOCATED( XMID    ) ) DEALLOCATE ( XMID    )
-    IF ( ALLOCATED( YMID    ) ) DEALLOCATE ( YMID    )
-    IF ( ALLOCATED( XEDGE   ) ) DEALLOCATE ( XEDGE   )
-    IF ( ALLOCATED( YEDGE   ) ) DEALLOCATE ( YEDGE   )
-    IF ( ALLOCATED( YSIN    ) ) DEALLOCATE ( YSIN    )
-    IF ( ALLOCATED( AREA_M2 ) ) DEALLOCATE ( AREA_M2 )
+    IF ( ALLOCATED ( XMID     ) ) DEALLOCATE( XMID     )
+    IF ( ALLOCATED ( YMID     ) ) DEALLOCATE( YMID     )
+    IF ( ALLOCATED ( XEDGE    ) ) DEALLOCATE( XEDGE    )
+    IF ( ALLOCATED ( YEDGE    ) ) DEALLOCATE( YEDGE    )
+    IF ( ALLOCATED ( YSIN     ) ) DEALLOCATE( YSIN     )
+    IF ( ALLOCATED ( AREA_M2  ) ) DEALLOCATE( AREA_M2  )
+    IF ( ALLOCATED ( PBL_M    ) ) DEALLOCATE( PBL_M    )
 
     ! Cleanup HcoState object
     CALL HcoState_Final( HcoState )
@@ -778,7 +766,6 @@ CONTAINS
   SUBROUTINE Model_GetSpecies( HcoConfig,                          &
                                nModelSpec,     ModelSpecNames,     &
                                ModelSpecIDs,   ModelSpecMW,        &
-                               ModelSpecEmMW,  ModelSpecMolecRatio,&
                                ModelSpecK0,    ModelSpecCR,        &
                                ModelSpecPKA,   RC                   )
 !
@@ -794,8 +781,6 @@ CONTAINS
     CHARACTER(LEN= 31), POINTER     :: ModelSpecNames     (:)
     INTEGER,            POINTER     :: ModelSpecIDs       (:)
     REAL(hp),           POINTER     :: ModelSpecMW        (:)
-    REAL(hp),           POINTER     :: ModelSpecEmMW      (:)
-    REAL(hp),           POINTER     :: ModelSpecMolecRatio(:)
     REAL(hp),           POINTER     :: ModelSpecK0        (:)
     REAL(hp),           POINTER     :: ModelSpecCR        (:)
     REAL(hp),           POINTER     :: ModelSpecPKA       (:)
@@ -803,6 +788,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -895,8 +881,6 @@ CONTAINS
     ALLOCATE(ModelSpecNames     (nModelSpec))
     ALLOCATE(ModelSpecIDs       (nModelSpec))
     ALLOCATE(ModelSpecMW        (nModelSpec))
-    ALLOCATE(ModelSpecEmMW      (nModelSpec))
-    ALLOCATE(ModelSpecMolecRatio(nModelSpec))
     ALLOCATE(ModelSpecK0        (nModelSpec))
     ALLOCATE(ModelSpecCR        (nModelSpec))
     ALLOCATE(ModelSpecPKA       (nModelSpec))
@@ -915,9 +899,8 @@ CONTAINS
        LNG = LEN(TRIM(DUM))
        LOW = 0
 
-       ! Read species ID, name, molecular weight, emitted molecular weight,
-       ! molecular coefficient, and Henry coefficients K0, CR, pKa (in this
-       ! order).
+       ! Read species ID, name, molecular weight, and Henry coefficients
+       ! K0, CR, pKa (in this order).
        DO I = 1, 8
 
           ! Get lower and upper index of species ID (first entry in row).
@@ -944,9 +927,9 @@ CONTAINS
              WRITE(MSG,*) 'Error reading species property ', I, &
                           ' on line ', TRIM(DUM), '. Each ', &
                           'species definition line is expected ', &
-                          'to have 8 entries (ID, Name, MW, MWemis, ', &
-                          'MOLECRATIO, K0, CR, PKA, e.g.: ', &
-                          '1 CO   28.0 28.0 1.0 0.0 0.0 0.0'
+                          'to have 8 entries (ID, Name, MW, ', &
+                          'K0, CR, PKA, e.g.: ', &
+                          '1 CO   28.0 0.0 0.0 0.0'
              CALL HCO_Error ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
@@ -960,14 +943,10 @@ CONTAINS
              CASE ( 3 )
                 READ( DUM(LOW:UPP), * ) ModelSpecMW(N)
              CASE ( 4 )
-                READ( DUM(LOW:UPP), * ) ModelSpecEmMW(N)
-             CASE ( 5 )
-                READ( DUM(LOW:UPP), * ) ModelSpecMolecRatio(N)
-             CASE ( 6 )
                 READ( DUM(LOW:UPP), * ) ModelSpecK0(N)
-             CASE ( 7 )
+             CASE ( 5 )
                 READ( DUM(LOW:UPP), * ) ModelSpecCR(N)
-             CASE ( 8 )
+             CASE ( 6 )
                 READ( DUM(LOW:UPP), * ) ModelSpecPKA(N)
           END SELECT
 
@@ -1027,13 +1006,14 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE SET_Grid( HcoState, RC )
+  SUBROUTINE Set_Grid( HcoState, RC )
 !
 ! !USES:
 !
-    USE HCO_inquireMod,   ONLY  : findFreeLUN
-    USE HCO_ExtList_Mod,  ONLY  : HCO_GetOpt, GetExtOpt, CoreNr
-    USE HCO_VertGrid_Mod, ONLY  : HCO_VertGrid_Define
+    USE HCO_inquireMod,   ONLY : findFreeLUN
+    USE HCO_ExtList_Mod,  ONLY : HCO_GetOpt, GetExtOpt, CoreNr
+    USE HCO_VertGrid_Mod, ONLY : HCO_VertGrid_Define
+    USE HCO_GeoTools_Mod, ONLY : HCO_SetPBLm
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -1042,9 +1022,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
-!  11 May 2015 - C. Keller - Now provide lon/lat edges instead of assuming
-!                            global grid.
-!  10 Sep 2015 - C. Keller - Allow to provide mid-points instead of edges.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1215,22 +1193,24 @@ CONTAINS
     ! ------------------------------------------------------------------
     ! Now that sizes are known, allocate all arrays
     ! ------------------------------------------------------------------
-    ALLOCATE ( XMID     (NX,  NY,  1   ) )
-    ALLOCATE ( YMID     (NX,  NY,  1   ) )
-    ALLOCATE ( XEDGE    (NX+1,NY,  1   ) )
-    ALLOCATE ( YEDGE    (NX,  NY+1,1   ) )
-    ALLOCATE ( YSIN     (NX,  NY+1,1   ) )
-    ALLOCATE ( AREA_M2  (NX,  NY,  1   ) )
-    ALLOCATE ( AP       (          NZ+1) )
-    ALLOCATE ( BP       (          NZ+1) )
-    YSIN      = HCO_MISSVAL
-    AREA_M2   = HCO_MISSVAL
-    XMID      = HCO_MISSVAL
-    YMID      = HCO_MISSVAL
-    XEDGE     = HCO_MISSVAL
-    YEDGE     = HCO_MISSVAL
-    AP        = HCO_MISSVAL
-    BP        = HCO_MISSVAL
+    ALLOCATE( XMID   ( NX,  NY,  1    ), STAT=RC )
+    ALLOCATE( YMID   ( NX,  NY,  1    ), STAT=RC )
+    ALLOCATE( XEDGE  ( NX+1,NY,  1    ), STAT=RC )
+    ALLOCATE( YEDGE  ( NX,  NY+1,1    ), STAT=RC )
+    ALLOCATE( YSIN   ( NX,  NY+1,1    ), STAT=RC )
+    ALLOCATE( AREA_M2( NX,  NY,  1    ), STAT=RC )
+    ALLOCATE( AP     (           NZ+1 ), STAT=RC )
+    ALLOCATE( BP     (           NZ+1 ), STAT=RC )
+    ALLOCATE( PBL_M  ( NX,  NY        ), STAT=RC )
+    YSIN    = HCO_MISSVAL
+    AREA_M2 = HCO_MISSVAL
+    XMID    = HCO_MISSVAL
+    YMID    = HCO_MISSVAL
+    XEDGE   = HCO_MISSVAL
+    YEDGE   = HCO_MISSVAL
+    AP      = HCO_MISSVAL
+    BP      = HCO_MISSVAL
+    PBL_M   = HCO_MISSVAL
 
     ! ------------------------------------------------------------------
     ! Check if grid box edges and/or midpoints are explicitly given.
@@ -1527,15 +1507,23 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     ! Set pointers to grid variables
-    HcoState%Grid%XMID%Val       => XMID   (:,:,1)
-    HcoState%Grid%YMID%Val       => YMID   (:,:,1)
-    HcoState%Grid%XEDGE%Val      => XEDGE  (:,:,1)
-    HcoState%Grid%YEDGE%Val      => YEDGE  (:,:,1)
-    HcoState%Grid%YSIN%Val       => YSIN   (:,:,1)
-    HcoState%Grid%AREA_M2%Val    => AREA_M2(:,:,1)
+    HcoState%Grid%XMID%Val      => XMID   (:,:,1)
+    HcoState%Grid%YMID%Val      => YMID   (:,:,1)
+    HcoState%Grid%XEDGE%Val     => XEDGE  (:,:,1)
+    HcoState%Grid%YEDGE%Val     => YEDGE  (:,:,1)
+    HcoState%Grid%YSIN%Val      => YSIN   (:,:,1)
+    HcoState%Grid%AREA_M2%Val   => AREA_M2(:,:,1)
+    HcoState%Grid%PBLHEIGHT%Val => PBL_M
 
-    ! The pressure edges and grid box heights are obtained from
-    ! an external file in ExtState_SetFields
+    ! Define a default PBL height
+    CALL HCO_SetPBLm( HcoState = HcoState,                                   &
+                      FldName  ='PBL_HEIGHT',                                &
+                      PBLM     = HcoState%Grid%PBLHEIGHT%Val,                &
+                      DefVal   = 1000.0_hp,                                  &
+                      RC       = RC                                         )
+
+    ! The pressure edges and grid box heights will be obtained
+    ! by routine HCO_CalcVertGrid (called from HCO_Run).
     HcoState%Grid%PEDGE%Val      => NULL()
     HcoState%Grid%BXHEIGHT_M%Val => NULL()
     HcoState%Grid%ZSFC%Val       => NULL()
@@ -1597,7 +1585,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller   - Initial Version
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1632,7 +1620,6 @@ CONTAINS
     CALL Model_GetSpecies( HcoConfig,                           &
                            nModelSpec,     ModelSpecNames,      &
                            ModelSpecIDs,   ModelSpecMW,         &
-                           ModelSpecEmMW,  ModelSpecMolecRatio, &
                            ModelSpecK0,    ModelSpecCR,         &
                            ModelSpecPKA,   RC                    )
     IF ( RC /= HCO_SUCCESS ) THEN
@@ -1689,6 +1676,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1716,12 +1704,8 @@ CONTAINS
        HcoState%Spc(cnt)%SpcName  = HcoSpecNames(I)
        HcoState%Spc(cnt)%ModID    = IDX
 
-       ! Molecular weights of species & emitted species.
+       ! Molecular weights of species
        HcoState%Spc(cnt)%MW_g     = ModelSpecMW(IDX)
-       HcoState%Spc(cnt)%EmMW_g   = ModelSpecEmMW(IDX)
-
-       ! Emitted molecules per molecule of species.
-       HcoState%Spc(cnt)%MolecRatio = ModelSpecMolecRatio(IDX)
 
        ! Set Henry coefficients
        HcoState%Spc(cnt)%HenryK0  = ModelSpecK0(IDX)
@@ -1770,7 +1754,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
-!  05 Feb 2015 - C. Keller - Added SetDefault flag
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1805,7 +1789,7 @@ CONTAINS
        RETURN
     ENDIF
 
-    print*, '### Define_Diagnostics: NNDIAGN: ', N
+    !print*, '### Define_Diagnostics: NNDIAGN: ', N
 
     ! If there are no diagnostics defined yet, define some default
     ! diagnostics below. These are simply the overall emissions
@@ -1964,6 +1948,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Sep 2013 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2114,12 +2099,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Jul 2014 - C. Keller   - Initial Version
-!  06 Oct 2014 - M. Sulprizio- Remove PCENTER. Now calculate from pressure edges
-!  09 Jul 2015 - E. Lundgren - Add MODIS Chlorophyll-a (CHLR)
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  15 Jan 2019 - R. Yantosca - Update met field names to be consistent with
-!                              those used for the FlexGrid update
-!  18 Jan 2019 - R. Yantosca - Improve error trapping
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2746,8 +2726,7 @@ CONTAINS
     ! quantities read from disk.
     !-----------------------------------------------------------------
 
-    ! Eventually get temperature from disk
-    IF ( ExtState%TK%DoUse ) TK => ExtState%TK%Arr%Val
+
 
     ! Attempt to calculate vertical grid quantities
     CALL HCO_CalcVertGrid( HcoState, PSFC, ZSFC, TK, BXHEIGHT, PEDGE, RC )
@@ -2821,6 +2800,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  28 Jul 2014 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2870,8 +2850,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  08 Sep 2014 - C. Keller - Initial Version
-!  13 Jul 2015 - C. Keller - Bug fix: now save YYYYMMDD and hhmmss in different
-!                            variables to avoid integer truncation errors.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2929,6 +2908,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Feb 2016 - C. Keller - Initial Version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2943,8 +2923,6 @@ CONTAINS
     IF ( ASSOCIATED(ModelSpecNames     ) ) DEALLOCATE(ModelSpecNames     )
     IF ( ASSOCIATED(ModelSpecIDs       ) ) DEALLOCATE(ModelSpecIDs       )
     IF ( ASSOCIATED(ModelSpecMW        ) ) DEALLOCATE(ModelSpecMW        )
-    IF ( ASSOCIATED(ModelSpecEmMW      ) ) DEALLOCATE(ModelSpecEmMW      )
-    IF ( ASSOCIATED(ModelSpecMolecRatio) ) DEALLOCATE(ModelSpecMolecRatio)
     IF ( ASSOCIATED(ModelSpecK0        ) ) DEALLOCATE(ModelSpecK0        )
     IF ( ASSOCIATED(ModelSpecCR        ) ) DEALLOCATE(ModelSpecCR        )
     IF ( ASSOCIATED(ModelSpecPKA       ) ) DEALLOCATE(ModelSpecPKA       )
@@ -2993,7 +2971,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Nov 2019 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3078,7 +3056,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Nov 2019 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3135,7 +3113,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  06 Jan 2015 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/geos-chem for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

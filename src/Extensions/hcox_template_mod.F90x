@@ -32,10 +32,9 @@ MODULE HCOX_<yourname>_mod
   PUBLIC :: HCOX_<yourname>_Init
   PUBLIC :: HCOX_<yourname>_Final
 !
-! !PRIVATE MEMBER FUNCTIONS:
-!
 ! !REVISION HISTORY:
 !  19 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -102,6 +101,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  19 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -176,6 +176,7 @@ CONTAINS
 
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -230,7 +231,7 @@ CONTAINS
 
     ! Add conversion factor from kg S to kg of emitted species
     DO N = 1, Inst%nSpc
-       Inst%SpcScl(N) = Inst%SpcScl(N) * HcoState%Spc(Inst%SpcIDs(N))%EmMW_g &
+       Inst%SpcScl(N) = Inst%SpcScl(N) * HcoState%Spc(Inst%SpcIDs(N))%MW_g &
                       * HcoState%Spc(Inst%SpcIDs(N))%MolecRatio / MW_S
     ENDDO
 
@@ -280,6 +281,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  04 Jun 2015 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -313,6 +315,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -375,6 +378,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -442,6 +446,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

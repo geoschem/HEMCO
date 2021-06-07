@@ -42,8 +42,7 @@ MODULE HCOX_Iodine_Mod
 !
 ! !REVISION HISTORY:
 !  15 Mar 2013 - T. Sherwen - Initial implementation (v9-3-01)
-!  15 Jul 2015 - T. Sherwen - Now a HEMCO extension module
-!  11 Sep 2018 - C. Keller  - Added instances wrapper
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !
@@ -112,7 +111,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Mar 2013 - T. Sherwen - Initial implementation (v9-3-01)
-!  15 Jul 2015 - T. Sherwen - Now a HEMCO extension module
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -349,10 +348,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Mar 2013 - T. Sherwen - Initial implementation (v9-3-01)
-!  15 Jul 2015 - T. Sherwen - Now a HEMCO extension module adapted from
-!                             hcox_seasalt_mod
-!  11 Oct 2017 - R. Yantosca - Fixed typo in comment character (# instead of !)
-!  27 Nov 2017 - C. Keller   - Now output messages to HEMCO logfile
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -491,8 +487,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  15 Mar 2013 - T. Sherwen - Initial implementation (v9-3-01)
-!  15 Jul 2015 - T. Sherwen - Now a HEMCO extension module adapted from
-!                             hcox_seasalt_final
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -531,6 +526,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -591,7 +587,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -658,7 +654,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

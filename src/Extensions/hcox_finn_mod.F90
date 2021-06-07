@@ -80,18 +80,7 @@ MODULE HcoX_FINN_Mod
 !
 ! !REVISION HISTORY:
 !  02 Jan 2013 - J. Mao & J.A. Fisher - Initial version, based on GFED3
-!  01 Oct 2013 - J.A. Fisher - Update to only use one input file
-!  05 May 2014 - J.A. Fisher - Replace NOx emissions with NO emissions as part
-!                              of removal of NOx-Ox partitioning
-!  18 Jun 2014 - C. Keller   - Now a HEMCO extension.
-!  03 Jul 2014 - C. Keller   - Added 13 new FINN species
-!  11 Aug 2014 - R. Yantosca - Now get emission factors and NMOC ratios from
-!                              hard-coded statements in hcox_finn_include.H
-!  11 Aug 2014 - R. Yantosca - Now use F90 free-form indentation
-!  11 Aug 2014 - R. Yantosca - Cosmetic changes to ProTeX subroutine headers
-!  11 Jun 2015 - C. Keller   - Update to include individual scale factors and
-!                              masks.
-!  14 Oct 2016 - C. Keller   - Now use HCO_EvalFld instead of HCO_GetPtr.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -220,13 +209,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  02 Jan 2012 - J. Mao & J. Fisher - Initial version, based on GFED3
-!  18 Jun 2014 - C. Keller          - Now a HEMCO extension.
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
-!  10 Mar 2017 - M. Sulprizio- Add SpcArr3D for emitting 65% of biomass
-!                              burning emissions into the PBL and 35% into the
-!                              free troposphere, following code from E.Fischer
-!  24 Apr 2017 - M. Sulprizio- Comment out vertical distribution of biomass
-!                              burning emissions for now.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -582,12 +565,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  02 Jan 2013 - J. Mao & J. Fisher - Initial version, based on GFED3
-!  05 May 2014 - J.A. Fisher - Replace NOx emissions with NO emissions as part
-!                              of removal of NOx-Ox partitioning
-!  18 Jun 2014 - C. Keller   - Now a HEMCO extension.
-!  11 Aug 2014 - R. Yantosca - Now get FINN emission factors and species names
-!                              from include file hcox_finn_include.H.
-!  11 Nov 2014 - C. Keller   - Now get hydrophilic fractions through config file
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1020,7 +998,7 @@ CONTAINS
                       ! Normalize by species' molecular weight.
                       ELSE
                          AdjFact = 1.0_dp / MW_CO2 * &
-                                   HcoState%Spc(Inst%HcoIDs(Inst%nSpc))%EmMW_g
+                                   HcoState%Spc(Inst%HcoIDs(Inst%nSpc))%MW_g
                       ENDIF
                       Inst%FINN_EMFAC(N,:) = AdjFact / EMFAC_IN(M,:)
                       IF ( HcoState%amIRoot ) THEN
@@ -1059,15 +1037,12 @@ CONTAINS
                 ! NMOC_RATIO is [mole X] / [kg NMOC]
                 ! To convert NMOC_RATIO to [kg X] / [kg NMOC], we need to
                 ! multiply by the MW of X (kg/mol this time).
-                ! Most (not all) of these species are carried as atoms C,
-                ! so we also multiply here by the number of carbon atoms/molec.
                 IF ( IS_NMOC ) THEN
                    DO M = 1, N_EMFAC
-                      C_MOLEC              = HcoState%Spc(Inst%HcoIDs(Inst%nSpc))%MolecRatio
-                      AdjFact              = HcoState%Spc(Inst%HcoIDs(Inst%nSpc))%EmMW_g
-                      Inst%FINN_EMFAC(N,M) = NMOC_EMFAC(M)             * &
-                                           ( NMOC_RATIO(M) * C_MOLEC ) * &
-                                           ( AdjFact       * 1e-3_hp )
+                      AdjFact = HcoState%Spc(Inst%HcoIDs(Inst%nSpc))%MW_g
+                      Inst%FINN_EMFAC(N,M) = NMOC_EMFAC(M) * &
+                                             NMOC_RATIO(M) * &
+                                             ( AdjFact * 1e-3_hp )
                    ENDDO
                 ENDIF
              ENDIF
@@ -1175,7 +1150,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  02 Jan 2013 - J. Mao & J. Fisher - Initial version, based on GFED3
-!  18 Jun 2014 - C. Keller          - Now a HEMCO extension.
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1211,6 +1186,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1271,7 +1247,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1338,7 +1314,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  18 Feb 2016 - C. Keller   - Initial version
-!  26 Oct 2016 - R. Yantosca - Don't nullify local ptrs in declaration stmts
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC

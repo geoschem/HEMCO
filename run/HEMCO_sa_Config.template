@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------
-#                  Harvard-NASA Emissions Component (HEMCO)                   !
+#                  Harmonized Emissions Component (HEMCO)                     !
 #------------------------------------------------------------------------------
 #BOP
 #
@@ -44,7 +44,7 @@ Logfile:             HEMCO.log
 # Settings for HEMCO grid
 #-----------------------------------------------------
 MET:                 {MET_NAME}
-RES:                 {MET_RES}
+RES:                 {GRID_RES}
 #-----------------------------------------------------
 # Settings for HEMCO standalone diagnostics
 #-----------------------------------------------------

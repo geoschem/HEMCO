@@ -1,3 +1,11 @@
+!BOC
+#if defined ( MODEL_GCCLASSIC ) || defined( MODEL_WRF ) || defined( MODEL_CESM ) || defined( HEMCO_STANDALONE )
+! The 'standard' HEMCO I/O module is used for:
+! - HEMCO Standalone (HEMCO_STANDALONE)
+! - GEOS-Chem 'Classic' (MODEL_GCCLASSIC)
+! - WRF-GC (MODEL_WRF)
+! - CESM-GC and CAM-Chem / HEMCO-CESM (MODEL_CESM)
+!EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -5,14 +13,16 @@
 !
 ! !MODULE: hcoio_read_std_mod.F90
 !
-! !DESCRIPTION: Module HCOIO\_read\_std\_mod controls data processing
+! !DESCRIPTION: Module HCOIO\_read\_mod controls data processing
 ! (file reading, unit conversion, regridding) for HEMCO in the
 ! 'standard' environment (i.e. non-ESMF).
+!
+! This module implements the 'standard' environment (i.e. non-ESMF).
 !\\
 !\\
 ! !INTERFACE:
 !
-MODULE HCOIO_read_std_mod
+MODULE HCOIO_Read_Mod
 !
 ! !USES:
 !
@@ -27,20 +37,21 @@ MODULE HCOIO_read_std_mod
 !
 ! !PUBLIC MEMBER FUNCTIONS:
 !
-  PUBLIC  :: HCOIO_ReadOther
+  PUBLIC  :: HCOIO_Read
   PUBLIC  :: HCOIO_CloseAll
-#if !defined(ESMF_)
-  PUBLIC  :: HCOIO_read_std
-#endif
+!
+! !REMARKS:
+!  Beginning with HEMCO 3.0.0, all I/O modules use the same module names,
+!  and their compilation depends on pre-processor flags defined at the top
+!  of the file.
+!
+!  This is to streamline the implementation of one unified Data Input Layer,
+!  that can be switched in and out at compile time, and reduce branching of
+!  code paths elsewhere.
 !
 ! !REVISION HISTORY:
 !  22 Aug 2013 - C. Keller   - Initial version
-!  01 Jul 2014 - R. Yantosca - Now use F90 free-format indentation
-!  01 Jul 2014 - R. Yantosca - Cosmetic changes in ProTeX headers
-!  22 Feb 2016 - C. Keller   - Split off from hcoio_dataread_mod.F90
-!  10 Apr 2017 - R. Yantosca - Time vectors now use YYYYMMDDhhmm format,
-!                              and are now all REAL(dp) instead of INTEGER(8)
-!  11 Apr 2017 - R. Yantosca - Added more minor fixes for robustness
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -50,15 +61,18 @@ MODULE HCOIO_read_std_mod
   ! Parameter used for difference testing of floating points
   REAL(dp), PRIVATE, PARAMETER :: EPSILON = 1.0e-5_dp
 
+#if defined( MODEL_CESM ) || defined( MODEL_WRF )
+  REAL(hp), PRIVATE            :: GC_72_EDGE_SIGMA(73) = (/1.000000E+00, 9.849998E-01, 9.699136E-01, 9.548285E-01, 9.397434E-01, 9.246593E-01, 9.095741E-01, 8.944900E-01, 8.794069E-01, 8.643237E-01, 8.492406E-01, 8.341584E-01, 8.190762E-01, 7.989697E-01, 7.738347E-01, 7.487007E-01, 7.235727E-01, 6.984446E-01, 6.733175E-01, 6.356319E-01, 5.979571E-01, 5.602823E-01, 5.226252E-01, 4.849751E-01, 4.473417E-01, 4.097261E-01, 3.721392E-01, 3.345719E-01, 2.851488E-01, 2.420390E-01, 2.055208E-01, 1.746163E-01, 1.484264E-01, 1.261653E-01, 1.072420E-01, 9.115815E-02, 7.748532E-02, 6.573205E-02, 5.565063E-02, 4.702097E-02, 3.964964E-02, 3.336788E-02, 2.799704E-02, 2.341969E-02, 1.953319E-02, 1.624180E-02, 1.346459E-02, 1.112953E-02, 9.171478E-03, 7.520355E-03, 6.135702E-03, 4.981002E-03, 4.023686E-03, 3.233161E-03, 2.585739E-03, 2.057735E-03, 1.629410E-03, 1.283987E-03, 1.005675E-03, 7.846040E-04, 6.089317E-04, 4.697755E-04, 3.602270E-04, 2.753516E-04, 2.082408E-04, 1.569208E-04, 1.184308E-04, 8.783617E-05, 6.513694E-05, 4.737232E-05, 3.256847E-05, 1.973847E-05, 9.869233E-06/)
+#endif
+
 CONTAINS
 !EOC
-#if !defined( ESMF_ )
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: HCOIO_Read_std
+! !IROUTINE: HCOIO_Read
 !
 ! !DESCRIPTION: Reads a netCDF file and returns the regridded array in proper
 ! units. This routine uses the HEMCO generic data reading and regridding
@@ -88,7 +102,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOIO_read_std( HcoState, Lct, RC )
+  SUBROUTINE HCOIO_Read( HcoState, Lct, RC )
 !
 ! !USES:
 !
@@ -131,36 +145,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  13 Mar 2013 - C. Keller   - Initial version
-!  27 Aug 2014 - R. Yantosca - Err msg now displays hcoio_dataread_mod.F90
-!  01 Oct 2014 - C. Keller   - Added file name parser
-!  03 Oct 2014 - C. Keller   - Added vertical regridding capability
-!  12 Dec 2014 - C. Keller   - Don't do vertical regridding if data is already
-!                              on GEOS-Chem levels.
-!  31 Dec 2014 - C. Keller   - Now call ModelLev_Interpolate for model remapping
-!                              of model levels.
-!  15 Jan 2015 - C. Keller   - Now allow model level interpolation in
-!                              combination with MESSy (horizontal) regridding.
-!  03 Feb 2015 - C. Keller   - Moved map_a2a regridding to hco_interp_mod.F90.
-!  24 Mar 2015 - C. Keller   - Added arguments LUN and CloseFile.
-!  27 Mar 2015 - R. Yantosca - Now use a FORMAT statement when printing the
-!                              filename to the Unix stdout.
-!  08 Apr 2015 - R. Yantosca - Bug fix: set KeepSpec=.TRUE. if there is no
-!                              species in the container.  This prevents
-!                              diffs in output in sp vs mp runs.
-!  13 Jul 2015 - C. Keller   - Write data into diagnostics right after reading
-!                              (if a diagnostics with the same name exists).
-!  23 Sep 2015 - C. Keller   - Support time averaging (cycle flags A and RA).
-!  06 Oct 2015 - C. Keller   - Support additional horizontal coordinates. Added
-!                              MustFind error checks (cycle flags EF and RF).
-!  22 Nov 2015 - C. Keller   - Bug fix: now use Lun2 if reading second file.
-!  24 Mar 2016 - C. Keller   - Simplified handling of file in buffer. Remove
-!                              args LUN and CloseFile.
-!  29 Apr 2016 - R. Yantosca - Don't initialize pointers in declaration stmts
-!  02 Nov 2018 - M. Sulprizio- Add option to skip variables when they're not
-!                              found in the file
-!  24 Feb 2019 - C. Keller   - Bug fix for interpolation: make sure that it
-!                              searches both into the future and the past.
-!  02 Nov 2019 - H.P. Lin    - Skip IO and erroring out if HcoState%Options%isDryRun
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -168,7 +153,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     CHARACTER(LEN=255)            :: thisUnit, LevUnit, LevName
-    CHARACTER(LEN=512)            :: MSG
+    CHARACTER(LEN=1023)           :: MSG
     CHARACTER(LEN=1023)           :: srcFile, srcFile2
     INTEGER                       :: NX, NY
     INTEGER                       :: NCRC, Flag, AS
@@ -182,7 +167,7 @@ CONTAINS
     INTEGER                       :: ArbIdx
     INTEGER                       :: nlatEdge, nlonEdge
     INTEGER                       :: Direction
-    REAL(hp)                      :: MW_g, EmMW_g, MolecRatio
+    REAL(hp)                      :: MW_g
     REAL(sp)                      :: wgt1,   wgt2
     REAL(sp), POINTER             :: ncArr(:,:,:,:)
     REAL(sp), POINTER             :: ncArr2(:,:,:,:)
@@ -204,16 +189,20 @@ CONTAINS
     REAL(dp)                      :: oYMDhm1, oYMDhm2
     INTEGER                       :: cYr, cMt, cDy, cHr, Yr1, Yr2
     INTEGER                       :: nYears, iYear
+    INTEGER                       :: I, J
 
     ! Use MESSy regridding routines?
     LOGICAL                       :: UseMESSy
 
+    ! SAVEd scalars
+    LOGICAL, SAVE                 :: doPrintWarning = .TRUE.
+
     !=================================================================
-    ! HCOIO_READ_STD begins here
+    ! HCOIO_READ begins here
     !=================================================================
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOIO_READ_STD (hcoio_read_std_mod.F90)' , RC )
+    CALL HCO_ENTER( HcoState%Config%Err, 'HCOIO_READ (hcoio_read_std_mod.F90)' , RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
     ! Initialize pointers
@@ -239,6 +228,29 @@ CONTAINS
     IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
        WRITE(MSG,*) 'Processing container: ', TRIM(Lct%Dct%cName)
        CALL HCO_MSG( HcoState%Config%Err, MSG, SEP1='-' )
+    ENDIF
+
+    ! If the file has cycle flag "E" (e.g. it's a restart file), then we will
+    ! read it only once and then never again.  If the file has already been
+    ! read on a previous call, then don't call HCOIO_READ. (bmy, 10/4/18)
+    !
+    ! Moved this handling from hcoio_dataread_mod, as it is non-MAPL specific
+    ! (hplin, 4/5/21)
+    IF ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_EXACT .and.                      &
+         Lct%Dct%Dta%UpdtFlag  == HCO_UFLAG_ONCE  .and.                      &
+         Lct%Dct%Dta%isTouched                          ) THEN
+
+       ! Print a warning message only once
+       IF ( doPrintWarning ) THEN
+          doPrintWarning = .FALSE.
+          MSG = 'No further attempts will be made to read file: ' //         &
+                TRIM( Lct%Dct%Dta%NcFile )
+          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+       ENDIF
+
+       ! Return without reading
+       CALL HCO_LEAVE( HcoState%Config%Err, RC )
+       RETURN
     ENDIF
 
     ! ----------------------------------------------------------------
@@ -611,11 +623,19 @@ CONTAINS
              RETURN
           ENDIF
        ENDIF
+       IF ( nlev == 0 ) THEN
+          LevName = 'level'
+          CALL NC_READ_VAR ( ncLun, LevName, nlev, LevUnit, LevMid, NCRC )
+          IF ( NCRC /= 0 ) THEN
+             CALL HCO_ERROR( 'NC_READ_VAR: level', RC )
+             RETURN
+          ENDIF
+       ENDIF
 
        ! Error check
        IF ( nlev == 0 ) THEN
           MSG = 'Cannot find vertical coordinate variable in ' // &
-                 TRIM(SrcFile) // ' - Must be one of `lat`, `height`.'
+                 TRIM(SrcFile) // ' - Must be one of `lev`, `level`, `height`.'
           CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
           RETURN
        ENDIF
@@ -994,24 +1014,6 @@ CONTAINS
     ! 2. If srcUnit is set to 'count', no unit conversion is performed
     !    and data will be treated as 'index' data, e.g. regridding will
     !    preserve the absolute values.
-    !
-    ! Special attention needs to be paid to species that are emitted
-    ! in quantities other than species molecules, e.g. molecules
-    ! carbon. For these species, the species MW differs from the
-    ! 'emitted MW', and the molecular ratio determines how many
-    ! molecules are being emitted per molecule species. By default,
-    ! HEMCO will attempt to convert all input data to kg emitted
-    ! species. If a species is emitted as kgC/m2/s and the input data
-    ! is in kg/m2/s, the mass will be adjusted based on the molecular
-    ! ratio and the ratio of emitted MW / species MW. Only input data
-    ! that is already in kgC/m2/s will not be converted!
-    ! This behavior can be avoided by explicitly setting the srcUnit
-    ! to the same value as the input data unit. In this case, HEMCO
-    ! will not convert between species MW and emitted MW.
-    ! This is useful for cases where the input data does not
-    ! contain data of the actual species, e.g. if VOC emissions are
-    ! calculated from scaled CO emissions. The scale factors then
-    ! must include the conversion from CO to the VOC of interest!
     !-----------------------------------------------------------------
 
     ! If OrigUnit is set to wildcard character: use unit from source file
@@ -1074,36 +1076,12 @@ CONTAINS
           ENDIF
        ENDIF
 
-       ! Mirror species properties needed for unit conversion
+       ! Shadow species properties needed for unit conversion
        HcoID = Lct%Dct%HcoID
        IF ( HcoID > 0 ) THEN
-
-          ! Emitted species molecular weight
-          EmMW_g     = HcoState%Spc(HcoID)%EmMW_g
-          MW_g       = HcoState%Spc(HcoID)%MW_g
-          MolecRatio = HcoState%Spc(HcoID)%MolecRatio
-
-          ! Species molecular weight and molecular ratio to be
-          ! applied. Set to 1.0 if source unit matches input units.
-          IF ( TRIM(Lct%Dct%Dta%OrigUnit) == TRIM(thisUnit) ) THEN
-             !MW_g       = EmMW_g
-             !MolecRatio = 1.0_hp
-             KeepSpec    = .TRUE.
-          ELSE
-             !MW_g       = HcoState%Spc(HcoID)%MW_g
-             !MolecRatio = HcoState%Spc(HcoID)%MolecRatio
-             KeepSpec    = .FALSE.
-          ENDIF
-
-       ! If there is no species associated with this container,
-       ! it won't be possible to do unit conversion of mass.
-       ! This will cause an error if the input data is not in
-       ! units of kg already!
+          MW_g = HcoState%Spc(HcoID)%MW_g
        ELSE
-          KeepSpec   = .TRUE.
-          MW_g       = -999.0_hp
-          EmMW_g     = -999.0_hp
-          MolecRatio = -999.0_hp
+          MW_g = -999.0_hp
        ENDIF
 
        ! Now convert to HEMCO units. This attempts to convert mass,
@@ -1124,14 +1102,6 @@ CONTAINS
        IF ( HcoState%amIRoot .and. HCO_IsVerb(HcoState%Config%Err,3) ) THEN
           WRITE(MSG,*) 'Unit conversion settings: '
           CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) '- Species MW         : ', MW_g
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) '- emitted compound MW: ', EmMW_g
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) '- molecular ratio    : ', MolecRatio
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) '- keep input species : ', KeepSpec
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,*) '- Year, month        : ', ncYr, ncMt
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -1140,10 +1110,7 @@ CONTAINS
             HcoConfig     = HcoState%Config, &
             Array         = ncArr,           &
             Units         = thisUnit,        &
-            MW_IN         = MW_g,            &
-            MW_OUT        = EmMW_g,          &
-            MOLEC_RATIO   = MolecRatio,      &
-            KeepSpec      = KeepSpec,        &
+            MW            = MW_g,            &
             YYYY          = ncYr,            &
             MM            = ncMt,            &
             AreaFlag      = AreaFlag,        &
@@ -1283,6 +1250,20 @@ CONTAINS
     IF ( nlev > 1 .AND. .NOT. IsModelLevel ) THEN
        UseMESSy = .TRUE.
     ENDIF
+
+#if defined( MODEL_CESM ) || defined( MODEL_WRF )
+    ! If in WRF or the CESM environment, the vertical grid is arbitrary.
+    ! MESSy regridding ALWAYS has to be used.
+    IF ( nlev > 1 ) THEN
+      UseMESSy = .TRUE.
+
+      IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+        WRITE(MSG,*) '  ==> WRF/CESM: Always forcing MESSy regridding for number of verticals', nlev, IsModelLevel
+        CALL HCO_MSG(HcoState%Config%Err,MSG)
+      ENDIF
+    ENDIF
+#endif
+
     IF ( HCO_IsIndexData(Lct%Dct%Dta%OrigUnit) .AND. UseMESSy ) THEN
        MSG = 'Cannot do MESSy regridding for index data: ' // &
              TRIM(srcFile)
@@ -1299,6 +1280,7 @@ CONTAINS
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
 
+#if !defined( MODEL_CESM ) && !defined( MODEL_WRF )
        ! If we do MESSy regridding, we can only do one time step
        ! at a time at the moment!
        IF ( tidx1 /= tidx2 ) THEN
@@ -1307,6 +1289,48 @@ CONTAINS
           CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
           RETURN
        ENDIF
+
+       ! Note: This seems to be a soft restriction - removing this
+       ! does not conflict with MESSy regridding. Need to check (hplin, 5/30/20)
+       ! This has to be used for WRF-GC and HEMCO_CESM so ifdefd out
+#endif
+
+#if defined( MODEL_WRF ) || defined( MODEL_CESM )
+       !--------------------------------------------------------------
+       ! Eventually get sigma levels
+       ! For files that have hardcoded GEOS-Chem "index"-based levels,
+       ! translate these levels back into a sigma representation
+       ! of the GEOS-Chem levels (sigma = p/ps on INTERFACE)
+       !
+       ! There are caveats with this. This is essentially a copy of the
+       ! hardcoded hPa lists from
+       ! http://wiki.seas.harvard.edu/geos-chem/index.php/GEOS-Chem_vertical_grids
+       ! hard-coded by hand, and we only assume that the data is either
+       ! 47-levels or 72-levels.
+       !
+       ! Parse the 72 list using regex like so: ^ ?\d{1,2} then remove the lines
+       ! Then you have the 73 edges.
+       !
+       ! psfc = PEDGE(0) = 1013.250 hPa
+       !
+       ! Ported from the original WRF-GC implementation (hplin, 5/27/20)
+       !--------------------------------------------------------------
+       IF ( nlev > 1 .AND. IsModelLevel ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+            WRITE(MSG,*) '  ==> WRF/CESM: Writing in fixed sigma coordinates for GEOS-Chem levels', nlon, nlat
+            CALL HCO_MSG(HcoState%Config%Err,MSG)
+          ENDIF
+
+          ALLOCATE(SigEdge(nlon, nlat, nlev))
+
+          DO I = 1, nlon
+             DO J = 1, nlat
+               ! Fill with pre-defined, hard coded sigma levels computed.
+               SigEdge(I, J, :) = GC_72_EDGE_SIGMA(1:nlev)
+             ENDDO
+           ENDDO
+       ENDIF
+#endif
 
        !--------------------------------------------------------------
        ! Eventually get sigma levels
@@ -1360,6 +1384,11 @@ CONTAINS
           ENDIF
 
        ENDIF ! nlev>1
+
+#if defined( MODEL_WRF ) || defined( MODEL_CESM )
+       ! Input data is "never" on model levels because model levels can change! (hplin, 5/29/20)
+       IsModelLevel = .false.
+#endif
 
        ! Now do the regridding
        CALL HCO_MESSY_REGRID ( HcoState,  NcArr,                 &
@@ -1416,79 +1445,7 @@ CONTAINS
     ! Return w/ success
     CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
 
-  END SUBROUTINE HCOIO_read_std
-
-#endif
-!------------------------------------------------------------------------------
-!                   Harmonized Emissions Component (HEMCO)                    !
-!------------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: HCOIO_ReadOther
-!
-! !DESCRIPTION: Subroutine HCOIO\_ReadOther is a wrapper routine to
-! read data from sources other than netCDF.
-!\\
-!\\
-! If a file name is given (ending with '.txt'), the data are assumed
-! to hold country-specific values (e.g. diurnal scale factors). In all
-! other cases, the data is directly read from the configuration file
-! (scalars).
-!\\
-!\\
-! !INTERFACE:
-!
-  SUBROUTINE HCOIO_ReadOther( HcoState, Lct, RC )
-!
-! !USES:
-!
-!
-! !INPUT PARAMTERS:
-!
-    TYPE(HCO_State), POINTER          :: HcoState    ! HEMCO state
-!
-! !INPUT/OUTPUT PARAMETERS:
-!
-    TYPE(ListCont),   POINTER         :: Lct
-    INTEGER,          INTENT(INOUT)   :: RC
-!
-! !REVISION HISTORY:
-!  22 Dec 2014 - C. Keller: Initial version
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-!
-! !LOCAL VARIABLES:
-!
-    CHARACTER(LEN=255) :: MSG
-
-    !======================================================================
-    ! HCOIO_ReadOther begins here
-    !======================================================================
-
-    ! Error check: data must be in local time
-    IF ( .NOT. Lct%Dct%Dta%IsLocTime ) THEN
-       MSG = 'Cannot read data from file that is not in local time: ' // &
-             TRIM(Lct%Dct%cName)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC='HCOIO_ReadOther (hcoio_dataread_mod.F90)' )
-       RETURN
-    ENDIF
-
-    ! Read an ASCII file as country values
-    IF ( INDEX( TRIM(Lct%Dct%Dta%ncFile), '.txt' ) > 0 ) THEN
-       CALL HCOIO_ReadCountryValues( HcoState, Lct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
-
-    ! Directly read from configuration file otherwise
-    ELSE
-       CALL HCOIO_ReadFromConfig( HcoState, Lct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
-    ENDIF
-
-    ! Return w/ success
-    RC = HCO_SUCCESS
-
-  END SUBROUTINE HCOIO_ReadOther
+  END SUBROUTINE HCOIO_Read
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -1507,9 +1464,7 @@ CONTAINS
 !
 ! !USES:
 !
-#if !defined(ESMF_)
     USE HCO_Ncdf_Mod,   ONLY : NC_CLOSE
-#endif
 !
 ! !INPUT PARAMTERS:
 !
@@ -1521,6 +1476,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  24 Mar 2016 - C. Keller: Initial version
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1530,16 +1486,15 @@ CONTAINS
     !======================================================================
     ! HCOIO_CloseAll begins here
     !======================================================================
-#if !defined(ESMF_)
     IF ( HcoState%ReadLists%FileLun > 0 ) THEN
        CALL NC_CLOSE( HcoState%ReadLists%FileLun )
        HcoState%ReadLists%FileLun = -1
     ENDIF
-#endif
 
     ! Return w/ success
     RC = HCO_SUCCESS
 
   END SUBROUTINE HCOIO_CloseAll
 !EOC
-END MODULE HCOIO_read_std_mod
+END MODULE HCOIO_Read_Mod
+#endif
