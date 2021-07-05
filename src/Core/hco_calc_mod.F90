@@ -895,6 +895,8 @@ CONTAINS
           RC = HCO_FAIL
           RETURN
        ENDIF
+    ELSE
+       LevDct1_Unit = -1
     ENDIF
 
     ! Get the units of LevDct2 (if it exists)
@@ -905,6 +907,8 @@ CONTAINS
           CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
+    ELSE
+       LevDct2_Unit = -1
     ENDIF
 
     ! Throw an error if boxheight is missing and the units are in meters
