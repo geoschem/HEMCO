@@ -2490,6 +2490,34 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% Seaice fraction %%%%%
+    IF ( ExtState%FRSEAICE%DoUse ) THEN
+       Name = 'FRSEAICE'
+       CALL ExtDat_Set( am_I_Root,    HcoState, ExtState%FRSEAICE,           &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                   '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% 2 meter specific humidity %%%%%
+    IF ( ExtState%QV2M%DoUse ) THEN
+       Name = 'QV2M'
+       CALL ExtDat_Set( am_I_Root,    HcoState, ExtState%QV2M,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                   '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
     !%%%%% Solar zenith angle %%%%%
     IF ( ExtState%SZAFACT%DoUse ) THEN
        Name = 'SZAFACT'
