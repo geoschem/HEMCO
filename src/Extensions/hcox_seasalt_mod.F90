@@ -322,7 +322,7 @@ CONTAINS
 !$OMP PRIVATE( I, J, A_M2, W10M, SST, SCALE, N                       ) &
 !$OMP PRIVATE( SALT, SALT_N, R, SALT_NR, RC                          ) &
 !$OMP PRIVATE( OMSS1, OMSS2, CHLR                                    ) &
-!$OMP PRIVATE( FROPEN, SNOWSALT                                      ) &
+!$OMP PRIVATE( FROPEN, SNOWSALT, AGE,                                ) &
 !$OMP PRIVATE( FRICTVEL, WVMR, TEMP, PRESS, P_ICE, RH_ICE            ) &
 !$OMP PRIVATE( D, FK, FD, PSI, QSPRIME, APRIM, UT, FRFIRST           ) &
 !$OMP PRIVATE( SLNT, SLNT_FYI, SLNT_MYI                              ) &
