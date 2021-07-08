@@ -368,16 +368,6 @@ CONTAINS
        ! Eventually apply wind scaling factor.
        SCALE = SCALE * Inst%WindScale * FROPEN
 
-! blowing snow question: has this been removed anyway in <=13.2?
-       ! There is no need for this conditions as FROPEN=0 if there is
-       ! no open ocean. Also this lead to zeroing of SSA emissions over
-       ! polar night regions 
-       !inhibit emission if not ocean grid box
-       !IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J), &
-       !     ExtState%ALBD%Arr%Val(I,J) ) /= 0 ) &
-       !     SCALE = 0d0
-! end blowing snow q
-
        !----------------------------------------------------------------
        ! huang, 04/09/20: Add blowing snow emissions over sea ice
        !----------------------------------------------------------------
