@@ -2493,7 +2493,7 @@ CONTAINS
     !%%%%% Seaice fraction %%%%%
     IF ( ExtState%FRSEAICE%DoUse ) THEN
        Name = 'FRSEAICE'
-       CALL ExtDat_Set( am_I_Root,    HcoState, ExtState%FRSEAICE,           &
+       CALL ExtDat_Set( HcoState,     ExtState%FRSEAICE,                     &
                         TRIM( Name ), RC,       FIRST=FIRST                 )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
@@ -2507,7 +2507,7 @@ CONTAINS
     !%%%%% 2 meter specific humidity %%%%%
     IF ( ExtState%QV2M%DoUse ) THEN
        Name = 'QV2M'
-       CALL ExtDat_Set( am_I_Root,    HcoState, ExtState%QV2M,               &
+       CALL ExtDat_Set( HcoState,     ExtState%QV2M,                         &
                         TRIM( Name ), RC,       FIRST=FIRST                 )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
