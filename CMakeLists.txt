@@ -219,6 +219,12 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
         INTERFACE "HEMCO_STANDALONE"
     )
 
+    # Specify the HEMCO interface being used
+    set(HEMCO_INTERFACE
+        standalone
+        CACHE STRING "HEMCO interface type (used to choose appropriate I/O option)"
+    )
+
     # Set CMAKE_BUILD_TYPE to Release by default
     if(NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE "Release"
@@ -264,6 +270,12 @@ if(HEMCO_EXTERNAL_CONFIG AND GCCLASSIC_WRAPPER)
     target_compile_definitions(HEMCOBuildProperties
         INTERFACE MODEL_GCCLASSIC
     )
+
+    # Specify the HEMCO interface being used
+    set(HEMCO_INTERFACE
+        gcclassic
+        CACHE STRING "HEMCO interface type (used to choose appropriate I/O option)"
+    )
 endif()
 
 #-----------------------------------------------------------------------------
@@ -278,6 +290,12 @@ if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
     )
     target_compile_definitions(HEMCOBuildProperties
         INTERFACE ESMF_
+    )
+
+    # Specify the HEMCO interface being used
+    set(HEMCO_INTERFACE
+        mapl
+        CACHE STRING "HEMCO interface type (used to choose appropriate I/O option)"
     )
 endif()
 
