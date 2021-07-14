@@ -624,7 +624,7 @@ CONTAINS
 
     ! SALA Chloride, xnw 10/13/17
     IF ( Inst%IDTSALACL > 0 ) THEN
-       FLUXSALACL = FLUXSALA * 0.5504d0
+       FLUXSALACL = ( FLUXSALA + SNOWSALA ) * 0.5504d0
        ! Add flux to emission array
        CALL HCO_EmisAdd( HcoState, FLUXSALACL, Inst%IDTSALACL, &
                          RC,        ExtNr=Inst%ExtNrSS )
@@ -636,7 +636,7 @@ CONTAINS
 
     ! SALC Chloride, xnw 11/17/17
     IF ( Inst%IDTSALCCL > 0 ) THEN
-        FLUXSALCCL = FLUXSALC * 0.5504d0
+        FLUXSALCCL = ( FLUXSALC + SNOWSALC ) * 0.5504d0
        ! Add flux to emission array
        CALL HCO_EmisAdd( HcoState, FLUXSALCCL, Inst%IDTSALCCL, &
                          RC,        ExtNr=Inst%ExtNrSS )
