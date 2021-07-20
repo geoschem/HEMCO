@@ -2790,6 +2790,13 @@ END FUNCTION GetEmisLUnit
     CHARACTER(LEN=255)      :: MSG, LOC
     LOGICAL                 :: NegScalExist
     LOGICAL                 :: MaskFractions
+    LOGICAL                 :: isLevDct1
+    LOGICAL                 :: isLevDct2
+    LOGICAL                 :: isMaskDct
+    LOGICAL                 :: isPblHt
+    LOGICAL                 :: isBoxHt
+    INTEGER                 :: LevDct1_Unit
+    INTEGER                 :: LevDct2_Unit
  
     ! testing only
     INTEGER                 :: IX, IY
@@ -2801,9 +2808,10 @@ END FUNCTION GetEmisLUnit
     ! Initialize
     ScalDct => NULL()
     MaskDct => NULL()
+    LOC     = 'GET_CURRENT_EMISSIONS_ADJ (hco_calc_mod.F90)'
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS', RC )
+    CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS_ADJ', RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! testing only:
@@ -2852,6 +2860,55 @@ END FUNCTION GetEmisLUnit
        LevDct2 => NULL()
     ENDIF
 
+    ! Test whether LevDct1 and LevDct2 are associated
+    isLevDct1 = ASSOCIATED( LevDct1 )
+    isLevDct2 = ASSOCIATED( LevDct2 )
+
+    ! Get the units of LevDct1 (if it exists)
+    IF ( isLevDct1 ) THEN
+       LevDct1_Unit = GetEmisLUnit( HcoState, LevDct1 )
+       IF ( LevDct1_Unit < 0 ) THEN
+          MSG = 'LevDct1 units are not defined!'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RC = HCO_FAIL
+          RETURN
+       ENDIF
+    ELSE
+       LevDct1_Unit = -1
+    ENDIF
+
+    ! Get the units of LevDct2 (if it exists)
+    IF ( isLevDct2 ) THEN
+       LevDct2_Unit = GetEmisLUnit( HcoState, LevDct2 )
+       IF ( LevDct2_Unit < 0 ) THEN
+          MSG = 'LevDct2_Units are not defined!'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
+       ENDIF
+    ELSE
+       LevDct2_Unit = -1
+    ENDIF
+
+    ! Throw an error if boxheight is missing and the units are in meters
+    IF ( LevDct1_Unit == HCO_EMISL_M  .or.                                  &
+         LevDct2_Unit == HCO_EMISL_M ) THEN
+       IF ( .NOT. ASSOCIATED(HcoState%Grid%BXHEIGHT_M%Val) ) THEN
+          MSG = 'Boxheight (in meters) is missing in HEMCO state'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    ! Throw an error if boxheight is missing and the units are in PBL frac
+    IF ( LevDct1_Unit == HCO_EMISL_PBL  .or.                                &
+         LevDct2_Unit == HCO_EMISL_PBL ) THEN
+       IF ( .NOT. ASSOCIATED(HcoState%Grid%PBLHEIGHT%Val) ) THEN
+          MSG = 'Boundary layer height is missing in HEMCO state'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
+       ENDIF
+    ENDIF
+
     ! Loop over all latitudes and longitudes
 !$OMP PARALLEL DO                                                      &
 !$OMP DEFAULT( SHARED )                                                &
@@ -2870,8 +2927,10 @@ END FUNCTION GetEmisLUnit
        ENDIF
 
        ! Get lower and upper vertical index
-       CALL GetVertIndx ( HcoState, BaseDct, LevDct1, LevDct2, &
-                          I, J, LowLL, UppLL, RC )
+       CALL GetVertIndx ( HcoState,     BaseDct,   isLevDct1, LevDct1,       &
+                          LevDct1_Unit, isLevDct2, LevDct2,   LevDct2_Unit,  &
+                          I,            J,         LowLL,     UppLL,         &
+                          RC                                                )
        IF ( RC /= HCO_SUCCESS ) THEN
           WRITE(MSG,*) 'Error getting vertical index at location ',I,J,&
                        ': ', TRIM(BaseDct%cName)
@@ -3095,8 +3154,10 @@ END FUNCTION GetEmisLUnit
           ! ------------------------------------------------------------ 
        
           ! Get lower and upper vertical index
-          CALL GetVertIndx ( HcoState, BaseDct, &
-                             LevDct1, LevDct2, I, J, LowLL, UppLL, RC )
+          CALL GetVertIndx( HcoState, BaseDct,       isLevDct1,              &
+                            LevDct1,  LevDct1_Unit,  isLevDct2,              &
+                            LevDct2,  LevDct2_Unit,  I,                      &
+                            J,        LowLL,         UppLL,      RC         )
           IF ( RC /= HCO_SUCCESS ) THEN
              ERROR = 1 ! Will cause error
              EXIT
