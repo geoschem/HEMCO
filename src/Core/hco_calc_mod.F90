@@ -2625,7 +2625,8 @@ END FUNCTION GetEmisLUnit
     INTEGER            :: L1
     CHARACTER(LEN=255) :: MSG
     CHARACTER(LEN=255) :: LOC = 'GetDilFact (hco_calc_mod.F90)'
-    REAL(hp)           :: h1, h2, lh, dh
+    REAL(hp)           :: h1, h2, dh, dh1, dh2
+    REAL(hp)           :: UppLLR, LowLLR
 
     !=================================================================
     ! GetDilFact begins here
@@ -2638,12 +2639,9 @@ END FUNCTION GetEmisLUnit
     ! Nothing to do if it's only one level
     IF ( LowLL == UppLL ) RETURN
 
-    ! Compute 'accurate' dilution factor if boxheights are available
-    IF ( HcoState%Options%VertWeight .AND. &
-         ASSOCIATED( HcoState%Grid%BXHEIGHT_M%Val ) ) THEN
-
-       ! Height of grid box of interest (in m)
-       dh = HcoState%Grid%BXHEIGHT_M%Val(I,J,L)
+    ! Compute dilution factor based on boxheights if this information
+    ! is available
+    IF ( ASSOCIATED( HcoState%Grid%BXHEIGHT_M%Val ) ) THEN
 
        ! Get height of bottom level LowLL (in m)
        IF ( EmisL1Unit == HCO_EMISL_M ) THEN
@@ -2667,25 +2665,67 @@ END FUNCTION GetEmisLUnit
           h2 = SUM(HcoState%Grid%BXHEIGHT_M%Val(I,J,1:UppLL))
        ENDIF
 
-       ! Adjust dh if we are in lowest level
-       IF ( L == LowLL ) THEN
-          dh = SUM(HcoState%Grid%BXHEIGHT_M%Val(I,J,1:LowLL)) - h1
-       ENDIF
+       ! If vertical weight option is enabled, calculate vertical
+       ! distribution factor relative to the grid cell heights. This
+       ! is the default (and recommended) option as this makes sure 
+       ! that the same amount of mass is emitted into each layer.
+       IF ( HcoState%Options%VertWeight ) THEN 
 
-       ! Adjust dh if we are in top level
-       IF ( L == UppLL ) THEN
-          dh = h2 - SUM(HcoState%Grid%BXHEIGHT_M%Val(I,J,1:(UppLL-1)))
-       ENDIF
+          ! Height of grid box of interest (in m)
+          dh = HcoState%Grid%BXHEIGHT_M%Val(I,J,L)
 
-       ! compute dilution factor: the new flux should emit the same mass per
-       ! volume, i.e. flux_total/column_total = flux_level/column_level
-       ! --> flux_level = fluxtotal * column_level / column_total.
-       IF ( h2 > h1 ) THEN
-          DilFact = dh / ( h2 - h1 )
+          ! Adjust dh if we are in lowest level
+          IF ( L == LowLL ) THEN
+             dh = SUM(HcoState%Grid%BXHEIGHT_M%Val(I,J,1:LowLL)) - h1
+          ENDIF
+
+          ! Adjust dh if we are in top level
+          IF ( L == UppLL ) THEN
+             dh = h2 - SUM(HcoState%Grid%BXHEIGHT_M%Val(I,J,1:(UppLL-1)))
+          ENDIF
+
+          ! compute dilution factor: the new flux should emit the same mass per
+          ! volume, i.e. flux_total/column_total = flux_level/column_level
+          ! --> flux_level = fluxtotal * column_level / column_total.
+          IF ( h2 > h1 ) THEN
+             DilFact = dh / ( h2 - h1 )
+          ELSE
+             MSG = 'GetDilFact h2 not greater than h1'
+             CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+             RETURN
+          ENDIF
+
+       ! If VertWeight option is turned off, emit the same flux in each layer.
+       ! Since model layers have different depths, this will result in differnt
+       ! total emissions per layer.
        ELSE
-          MSG = 'GetDilFact h2 not greater than h1'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
-          RETURN
+          ! Get fractional layer indeces for lower and upper level. This makes 
+          ! sure that only fractions of the lower and upper level are being
+          ! considered, so that double-counting is avoided if a model layer serves
+          ! both as the top layer and the bottom layer (e.g., wildfire emissions
+          ! emitted from bottom to the top of PBL, and from the top of PBL to 5000m).
+          LowLLR = REAL(LowLL,hp) - 1.0_hp
+          UppLLR = REAL(UppLL,hp)
+          dh1 = 0.0 
+          DO L1 = 1, HcoState%NZ
+             dh2 = SUM(HcoState%Grid%BXHEIGHT_M%Val(I,J,1:L1))
+             IF ( h1 >= dh1 .AND. h1 < dh2 ) THEN
+                LowLLR = REAL(L1,hp) - ( (dh2-h1)/(dh2-dh1) )
+             ENDIF      
+             IF ( h2 > dh1 .AND. h2 <= dh2 ) THEN
+                UppLLR = REAL(L1,hp) - ( (dh2-h2)/(dh2-dh1) )
+             ENDIF      
+             ! top layer is bottom layer in next loop
+             dh1 = dh2 
+          ENDDO
+
+          ! Dilution factor using fractional levels
+          IF ( UppLLR <= LowLLR ) THEN
+             DilFact = 1.0_hp / REAL(UppLL-LowLL+1,hp)
+          ELSE
+             DilFact = 1.0_hp / (UppLLR-LowLLR)
+          ENDIF
+
        ENDIF
 
     ! Approximate dilution factor otherwise
