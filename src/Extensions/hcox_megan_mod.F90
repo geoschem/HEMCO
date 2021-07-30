@@ -212,7 +212,7 @@ MODULE HCOX_MEGAN_MOD
      REAL(hp), POINTER       :: FLUXEOH(:,:)
          
      ! Emission arrays for use in diagnostics (kg/m2/s)
-     REAL(sp), POINTER       :: FLUXACETmo(:,:)
+!     REAL(sp), POINTER       :: FLUXACETmo(:,:)
      REAL(sp), POINTER       :: FLUXACETmb(:,:)
      REAL(sp), POINTER       :: FLUXACETbg(:,:)
      REAL(sp), POINTER       :: FLUXAPIN(:,:)
@@ -393,7 +393,7 @@ CONTAINS
     Inst%FLUXEOH    = 0.0_hp
     Inst%FLUXFAXX   = 0.0_hp
     Inst%FLUXAAXX   = 0.0_hp
-    Inst%FLUXACETmo = 0.0_sp
+!    Inst%FLUXACETmo = 0.0_sp
     Inst%FLUXACETmb = 0.0_sp
     Inst%FLUXACETbg = 0.0_sp
     Inst%FLUXPRPE   = 0.0_sp
@@ -778,23 +778,23 @@ CONTAINS
        !--------------------------------------------------------------------
        IF ( Inst%IDTACET > 0 ) THEN
 
-          !-----------------------------------------------------------------
-          ! (1) BIOGENIC EMISSIONS OF ACETONE FROM MONOTERPENES
-          !
-          ! The yield for monoterpenes is .12 mol/mol from Reisell et.al.
-          ! 1999 (this does not includes direct acetone emissions)
-
-          ! Apply yield from monoterpenes to get [kg ACET/m2/s]
-          TMP = EMIS_MONO * YIELD_MO
-          TMP = TMP * HcoState%Spc(Inst%IDTACET)%MW_g / &
-                      HcoState%Spc(Inst%IDTMTPA)%MW_g
-
-          ! Scale to a posteriori source from Jacob et al 2001 (bdf, 9/5/01)
-          TMP = TMP * MONO_SCALE
-
-          ! Add to total biogenic acetone emissions [kg ACET/m2/s]
-          Inst%FLUXACETmo(I,J) = TMP
-
+!          !-----------------------------------------------------------------
+!          ! (1) BIOGENIC EMISSIONS OF ACETONE FROM MONOTERPENES
+!          !
+!          ! The yield for monoterpenes is .12 mol/mol from Reisell et.al.
+!          ! 1999 (this does not includes direct acetone emissions)
+!
+!          ! Apply yield from monoterpenes to get [kg ACET/m2/s]
+!          TMP = EMIS_MONO * YIELD_MO
+!          TMP = TMP * HcoState%Spc(Inst%IDTACET)%MW_g / &
+!                      HcoState%Spc(Inst%IDTMTPA)%MW_g
+!
+!          ! Scale to a posteriori source from Jacob et al 2001 (bdf, 9/5/01)
+!          TMP = TMP * MONO_SCALE
+!
+!          ! Add to total biogenic acetone emissions [kg ACET/m2/s]
+!          Inst%FLUXACETmo(I,J) = TMP
+!
           !-----------------------------------------------------------------
           ! (2) BIOGENIC ACETONE FROM METHYL BUTENOL -- NORTH AMERICA
           !
@@ -1121,7 +1121,8 @@ CONTAINS
     IF ( Inst%IDTACET > 0 ) THEN
 
        ! Add flux to emission array
-       Inst%FLUXACET = Inst%FLUXACETbg + Inst%FLUXACETmo + Inst%FLUXACETmb
+       !Inst%FLUXACET = Inst%FLUXACETbg + Inst%FLUXACETmo + Inst%FLUXACETmb
+       Inst%FLUXACET = Inst%FLUXACETbg + Inst%FLUXACETmb
        CALL HCO_EmisAdd( HcoState, Inst%FLUXACET, Inst%IDTACET, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -3950,12 +3951,12 @@ CONTAINS
     ENDIF
     Inst%FLUXACET = 0.0_hp
 
-    ALLOCATE( Inst%FLUXACETmo( NX, NY ), STAT=AS )
-    IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXACETmo', RC )
-       RETURN
-    ENDIF
-    Inst%FLUXACETmo = 0.0_sp
+!    ALLOCATE( Inst%FLUXACETmo( NX, NY ), STAT=AS )
+!    IF ( AS /= 0 ) THEN
+!       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXACETmo', RC )
+!       RETURN
+!    ENDIF
+!    Inst%FLUXACETmo = 0.0_sp
 
     ALLOCATE( Inst%FLUXACETmb( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
@@ -4168,18 +4169,18 @@ CONTAINS
     !=================================================================
     ! Create manual diagnostics
     !=================================================================
-    CALL Diagn_Create( HcoState  = HcoState,              &
-                       cName     = 'InvMEGAN_ACET_MONO',  &
-                       ExtNr     = ExtNr,                 &
-                       Cat       = -1,                    &
-                       Hier      = -1,                    &
-                       HcoID     = -1,                    &
-                       SpaceDim  = 2,                     &
-                       OutUnit   = 'kg/m2/s',             &
-                       AutoFill  = 0,                     &
-                       Trgt2D    = Inst%FLUXACETmo,       &
-                       RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+!    CALL Diagn_Create( HcoState  = HcoState,              &
+!                       cName     = 'InvMEGAN_ACET_MONO',  &
+!                       ExtNr     = ExtNr,                 &
+!                       Cat       = -1,                    &
+!                       Hier      = -1,                    &
+!                       HcoID     = -1,                    &
+!                       SpaceDim  = 2,                     &
+!                       OutUnit   = 'kg/m2/s',             &
+!                       AutoFill  = 0,                     &
+!                       Trgt2D    = Inst%FLUXACETmo,       &
+!                       RC        = RC )
+!    IF ( RC /= HCO_SUCCESS ) RETURN
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_ACET_MBOX',  &
@@ -4672,7 +4673,7 @@ CONTAINS
        IF ( ASSOCIATED( Inst%FLUXISOP    ) ) DEALLOCATE( Inst%FLUXISOP    )
        IF ( ASSOCIATED( Inst%FLUXMONO    ) ) DEALLOCATE( Inst%FLUXMONO    )
        IF ( ASSOCIATED( Inst%FLUXACET    ) ) DEALLOCATE( Inst%FLUXACET    )
-       IF ( ASSOCIATED( Inst%FLUXACETmo  ) ) DEALLOCATE( Inst%FLUXACETmo  )
+!       IF ( ASSOCIATED( Inst%FLUXACETmo  ) ) DEALLOCATE( Inst%FLUXACETmo  )
        IF ( ASSOCIATED( Inst%FLUXACETmb  ) ) DEALLOCATE( Inst%FLUXACETmb  )
        IF ( ASSOCIATED( Inst%FLUXACETbg  ) ) DEALLOCATE( Inst%FLUXACETbg  )
        IF ( ASSOCIATED( Inst%FLUXPRPE    ) ) DEALLOCATE( Inst%FLUXPRPE    )
