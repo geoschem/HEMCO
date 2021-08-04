@@ -300,8 +300,8 @@ CONTAINS
     ! Reset arrays
     Inst%SLBASE         = 0.0_hp
     Inst%FLASH_DENS_TOT = 0.0_sp
-    Inst%FLASH_DENS_IC  = 0.0_sp
-    Inst%FLASH_DENS_CG  = 0.0_sp
+    !Inst%FLASH_DENS_IC  = 0.0_sp
+    !Inst%FLASH_DENS_CG  = 0.0_sp
     Inst%CONV_DEPTH     = 0.0_sp
 
     ! LMAX: the highest L-level to look for lightning NOx (usually LLPAR-1)
@@ -444,12 +444,12 @@ CONTAINS
        IF ( RATE > 0d0 ) THEN
 
           ! Flashes per km2 per minute
-          RATE_SAVE   = RATE / 360d0
+          RATE_SAVE   = RATE / 60d0
 
           ! Store total, IC, and CG flash rates
           Inst%FLASH_DENS_TOT(I,J) = RATE_SAVE
-          Inst%FLASH_DENS_IC(I,J)  = RATE_SAVE * X
-          Inst%FLASH_DENS_CG(I,J)  = H0 * 1d-3
+          !Inst%FLASH_DENS_IC(I,J)  = RATE_SAVE * X
+          !Inst%FLASH_DENS_CG(I,J)  = RATE_SAVE * ( 1d0 - X )
 
        ENDIF
 
@@ -942,19 +942,19 @@ CONTAINS
     ENDIF
     Inst%FLASH_DENS_TOT = 0.0_sp
 
-    ALLOCATE ( Inst%FLASH_DENS_IC( HcoState%NX, HcoState%NY), STAT=AS )
-    IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLASH_DENS_IC', RC )
-       RETURN
-    ENDIF
-    Inst%FLASH_DENS_IC = 0.0_sp
+    !ALLOCATE ( Inst%FLASH_DENS_IC( HcoState%NX, HcoState%NY), STAT=AS )
+    !IF ( AS/=0 ) THEN
+    !   CALL HCO_ERROR( HcoState%Config%Err, 'FLASH_DENS_IC', RC )
+    !   RETURN
+    !ENDIF
+    !Inst%FLASH_DENS_IC = 0.0_sp
 
-    ALLOCATE ( Inst%FLASH_DENS_CG( HcoState%NX, HcoState%NY), STAT=AS )
-    IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLASH_DENS_CG', RC )
-       RETURN
-    ENDIF
-    Inst%FLASH_DENS_CG = 0.0_sp
+    !ALLOCATE ( Inst%FLASH_DENS_CG( HcoState%NX, HcoState%NY), STAT=AS )
+    !IF ( AS/=0 ) THEN
+    !   CALL HCO_ERROR( HcoState%Config%Err, 'FLASH_DENS_CG', RC )
+    !   RETURN
+    !ENDIF
+    !Inst%FLASH_DENS_CG = 0.0_sp
 
     ALLOCATE ( Inst%CONV_DEPTH( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS/=0 ) THEN
@@ -1019,31 +1019,31 @@ CONTAINS
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
-    CALL Diagn_Create( HcoState  = HcoState,                        &
-                       cName     = 'HcoLightningFlashRate_IntraCld', &
-                       ExtNr     = ExtNr,                           &
-                       Cat       = -1,                              &
-                       Hier      = -1,                              &
-                       HcoID     = -1,                              &
-                       SpaceDim  = 2,                               &
-                       OutUnit   = 'flashes/min/km2',               &
-                       AutoFill  = 0,                               &
-                       Trgt2D    = Inst%FLASH_DENS_IC,              &
-                       RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    CALL Diagn_Create( HcoState  = HcoState,                         &
-                       cName     = 'HcoLightningFlashRate_CldGround', &
-                       ExtNr     = ExtNr,                            &
-                       Cat       = -1,                               &
-                       Hier      = -1,                               &
-                       HcoID     = -1,                               &
-                       SpaceDim  = 2,                                &
-                       OutUnit   = 'flashes/min/km2',                &
-                       AutoFill  = 0,                                &
-                       Trgt2D    = Inst%FLASH_DENS_CG,               &
-                       RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    !CALL Diagn_Create( HcoState  = HcoState,                        &
+    !                   cName     = 'HcoLightningFlashRate_IntraCld', &
+    !                   ExtNr     = ExtNr,                           &
+    !                   Cat       = -1,                              &
+    !                   Hier      = -1,                              &
+    !                   HcoID     = -1,                              &
+    !                   SpaceDim  = 2,                               &
+    !                   OutUnit   = 'flashes/min/km2',               &
+    !                   AutoFill  = 0,                               &
+    !                   Trgt2D    = Inst%FLASH_DENS_IC,              &
+    !                   RC        = RC )
+    !IF ( RC /= HCO_SUCCESS ) RETURN
+    !    
+    !CALL Diagn_Create( HcoState  = HcoState,                         &
+    !                   cName     = 'HcoLightningFlashRate_CldGround', &
+    !                   ExtNr     = ExtNr,                            &
+    !                   Cat       = -1,                               &
+    !                   Hier      = -1,                               &
+    !                   HcoID     = -1,                               &
+    !                   SpaceDim  = 2,                                &
+    !                   OutUnit   = 'flashes/min/km2',                &
+    !                   AutoFill  = 0,                                &
+    !                   Trgt2D    = Inst%FLASH_DENS_CG,               &
+    !                   RC        = RC )
+    !IF ( RC /= HCO_SUCCESS ) RETURN
 
     CALL Diagn_Create( HcoState  = HcoState,                         &
                        cName     = 'HcoConvectiveCloudTopHeight',       &
@@ -1291,8 +1291,8 @@ CONTAINS
        IF ( ASSOCIATED( Inst%PROFILE       ) ) DEALLOCATE ( Inst%PROFILE       )
        IF ( ASSOCIATED( Inst%SLBASE        ) ) DEALLOCATE ( Inst%SLBASE        )
        IF ( ASSOCIATED( Inst%FLASH_DENS_TOT) ) DEALLOCATE ( Inst%FLASH_DENS_TOT)
-       IF ( ASSOCIATED( Inst%FLASH_DENS_IC ) ) DEALLOCATE ( Inst%FLASH_DENS_IC )
-       IF ( ASSOCIATED( Inst%FLASH_DENS_CG ) ) DEALLOCATE ( Inst%FLASH_DENS_CG )
+       !IF ( ASSOCIATED( Inst%FLASH_DENS_IC ) ) DEALLOCATE ( Inst%FLASH_DENS_IC )
+       !IF ( ASSOCIATED( Inst%FLASH_DENS_CG ) ) DEALLOCATE ( Inst%FLASH_DENS_CG )
        IF ( ASSOCIATED( Inst%CONV_DEPTH    ) ) DEALLOCATE ( Inst%CONV_DEPTH    )
        IF ( ALLOCATED ( Inst%SpcScalVal    ) ) DEALLOCATE ( Inst%SpcScalVal    )
        IF ( ALLOCATED ( Inst%SpcScalFldNme ) ) DEALLOCATE ( Inst%SpcScalFldNme )
