@@ -19,11 +19,11 @@ master_doc = 'index'
 # -- Project information -----------------------------------------------------
 
 project = 'HEMCO'
-copyright = '2020, GEOS-Chem Support Team'
+copyright = '2021, GEOS-Chem Support Team'
 author = 'GEOS-Chem Support Team'
 
 # The full version, including alpha/beta/rc tags
-release = '13.0.0-alpha.10'
+release = '3.0.0-rc.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -32,11 +32,45 @@ release = '13.0.0-alpha.10'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx_rtd_theme",   
+    "sphinx_rtd_theme",
+    "sphinxcontrib.bibtex",
+    "recommonmark",
 ]
+bibtex_default_style = 'gcrefstyle'
 
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+from pybtex.style.formatting.unsrt import Style as UnsrtStyle
+from pybtex.style.names.lastfirst import NameStyle as LastFirst
+from pybtex.style.template import join, words, optional, sentence
+from pybtex.style.labels import BaseLabelStyle
+
+class GCLabelStyle(BaseLabelStyle):
+    def format_labels(self, sorted_entries):
+        for entry in sorted_entries:
+            yield entry.key.replace("_", " ").replace("et al.", "et al.,")
+
+class GCRefStyle(UnsrtStyle):
+    default_name_style = LastFirst
+    default_sort_style = None
+    default_label_style = GCLabelStyle
+
+    def __init__(self):
+       super().__init__()
+       self.abbreviate_names = True
+      #  self.label_style = KeyLabelStyle()
+      #  self.format_labels = self.label_style.format_labels
+
+    def format_web_refs(self, e):
+       return sentence[ optional[ self.format_doi(e) ], ]
+
+from pybtex.plugin import register_plugin
+register_plugin('pybtex.style.formatting', 'gcrefstyle', GCRefStyle)
+
+
+bibtex_bibliography_header = ".. rubric:: References"
+bibtex_footbibliography_header = bibtex_bibliography_header
+
+bibtex_bibfiles = ['geos-chem-shared-docs/geos-chem.bib']
+
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
