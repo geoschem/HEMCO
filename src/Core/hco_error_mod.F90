@@ -224,6 +224,14 @@ CONTAINS
 !
   SUBROUTINE HCO_ErrorNoErr( ErrMsg, RC, THISLOC )
 !
+! !USES:
+!
+#if defined( ESMF_ )
+#include "MAPL_Generic.h"
+    USE ESMF
+    USE MAPL_Mod
+#endif
+!
 ! !INPUT PARAMETERS:
 !
     CHARACTER(LEN=*), INTENT(IN   )            :: ErrMsg
@@ -240,21 +248,35 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
     INTEGER :: I, J
-    CHARACTER(LEN=1023) :: MSG
+    CHARACTER(LEN=1023) :: MSG, MSG1, MSG2
+#if defined( ESMF_)
+    INTEGER             :: localPET, STATUS
+    CHARACTER(4)        :: localPETchar
+    TYPE(ESMF_VM)       :: VM
+#endif
 
     !======================================================================
     ! HCO_ERROR begins here
     !======================================================================
 
-    ! Print error message
-    MSG =  'HEMCO ERROR: ' // TRIM(ErrMsg)
-    WRITE(*,*) TRIM(MSG)
-
-    ! Print error location
+    ! Construct error message
+#if defined( ESMF_ )
+    ! Get current thread number
+    CALL ESMF_VMGetCurrent(VM, RC=STATUS)
+    CALL ESMF_VmGet( VM, localPET=localPET, __RC__ )
+    WRITE(localPETchar,'(I4.4)') localPET
+    MSG1 = 'HEMCO ERROR ['//TRIM(localPETchar)//']: '//TRIM(ErrMsg)
+#else
+    MSG1 = 'HEMCO ERROR: '//TRIM(ErrMsg)
+#endif
+    MSG2 = ''
     IF ( PRESENT(THISLOC) ) THEN
-       MSG = 'ERROR LOCATION: ' // TRIM( THISLOC )
-       WRITE(*,*) TRIM(MSG)
+       MSG2 = NEW_LINE('a') // ' --> LOCATION: ' // TRIM( THISLOC )
     ENDIF
+    MSG = NEW_LINE('a') // TRIM(MSG1) // TRIM(MSG2)
+
+    ! Print error message
+    WRITE(*,*) TRIM(MSG)
 
     ! Return w/ error
     RC = HCO_FAIL
