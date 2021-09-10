@@ -162,7 +162,7 @@ CONTAINS
     CALL ExtStateInit( ExtState, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in "ExtState_Init"!'
-       CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
 
@@ -180,7 +180,7 @@ CONTAINS
     CALL HCOX_PARANOX_INIT( HcoState, 'ParaNOx', ExtState, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in "HCOX_ParaNOx_Init"!'
-       CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
 
@@ -190,7 +190,7 @@ CONTAINS
     CALL HCOX_LightNox_Init( HcoState, 'LightNOx', ExtState, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in "HCOX_LightNox_Init"!'
-       CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
 
@@ -200,7 +200,7 @@ CONTAINS
     CALL HCOX_Volcano_Init( HcoState, 'Volcano', ExtState,  RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in "HCOX_Volcano_Init"!'
-       CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
 
@@ -216,7 +216,7 @@ CONTAINS
        CALL HCOX_Custom_Init( HcoState, 'Custom', ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_Custom_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -226,7 +226,7 @@ CONTAINS
        CALL HCOX_SeaFlux_Init( HcoState, 'SeaFlux', ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_SeaFlux_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -236,7 +236,7 @@ CONTAINS
        CALL HCOX_SoilNox_Init( HcoState, 'SoilNOx', ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_SoilNox_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -246,7 +246,7 @@ CONTAINS
        CALL HCOX_DustDead_Init( HcoState, 'DustDead', ExtState,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_DustDead_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 #if defined( TOMAS )
@@ -254,7 +254,7 @@ CONTAINS
                                       ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_TOMAS_DustDead_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 #endif
@@ -265,7 +265,7 @@ CONTAINS
        CALL HCOX_DustGinoux_Init( HcoState, 'DustGinoux', ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_DustGinoux_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -275,7 +275,7 @@ CONTAINS
        CALL HCOX_SeaSalt_Init( HcoState, 'SeaSalt', ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_SeaSalt_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -285,7 +285,7 @@ CONTAINS
        CALL HCOX_Megan_Init( HcoState, 'MEGAN', ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_Megan_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -295,7 +295,7 @@ CONTAINS
        CALL HCOX_GFED_Init( HcoState, 'GFED', ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_GFED_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -305,7 +305,7 @@ CONTAINS
        CALL HCOX_FINN_Init( HcoState, 'FINN', ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_FINN_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -315,7 +315,7 @@ CONTAINS
        CALL HCOX_GC_RnPbBe_Init( HcoState, 'GC_Rn-Pb-Be', ExtState,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_GC_RnPbBe_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -325,7 +325,7 @@ CONTAINS
        CALL HCOX_GC_POPs_Init( HcoState, 'GC_POPs', ExtState,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_GC_POPs_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -335,7 +335,7 @@ CONTAINS
        CALL HCOX_CH4Wetland_Init( HcoState, 'CH4_WETLANDS', ExtState,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_CH4Wetland_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -345,7 +345,7 @@ CONTAINS
        CALL HCOX_Iodine_Init( HcoState, 'Inorg_Iodine', ExtState,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_Iodine_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -356,7 +356,7 @@ CONTAINS
        CALL HCOX_TOMAS_Jeagle_Init( HcoState, 'TOMAS_Jeagle', ExtState,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_TOMAS_Jeagle_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 #endif
@@ -373,7 +373,7 @@ CONTAINS
     ! Cannot have both DustDead and DustGinoux turned on!
     IF ( ExtState%DustDead > 0 .AND. ExtState%DustGinoux > 0 ) THEN
        ErrMsg = 'Ginoux and DEAD dust emissions switched on!'
-       CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
 
@@ -384,7 +384,7 @@ CONTAINS
        CALL HCOX_DiagnDefine( HcoState, ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "ExtState_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
     ENDIF
@@ -498,7 +498,7 @@ CONTAINS
        CALL HCOX_Volcano_Run( ExtState, HcoState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_Volcano_Run"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
     ENDIF
@@ -519,7 +519,7 @@ CONTAINS
           CALL HCOX_Custom_Run( ExtState, HcoState, RC)
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_Custom_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -531,7 +531,7 @@ CONTAINS
           CALL HCOX_SeaFlux_Run( ExtState, HcoState, RC)
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_SeaFlux_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -543,7 +543,7 @@ CONTAINS
           CALL HCOX_ParaNox_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_ParaNOx_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -555,7 +555,7 @@ CONTAINS
           CALL HCOX_LightNox_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_LightNox_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -567,7 +567,7 @@ CONTAINS
           CALL HCOX_SoilNox_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_SoilNOx_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -579,7 +579,7 @@ CONTAINS
           CALL HCOX_DustDead_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_DustDead_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -590,7 +590,7 @@ CONTAINS
           CALL HCOX_TOMAS_DustDead_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_TOMAS_DustDead_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -603,7 +603,7 @@ CONTAINS
           CALL HCOX_DustGinoux_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_DustGinoux_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -615,7 +615,7 @@ CONTAINS
           CALL HCOX_SeaSalt_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_SeaSalt_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -627,7 +627,7 @@ CONTAINS
           CALL HCOX_Megan_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX__Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -639,7 +639,7 @@ CONTAINS
           CALL HCOX_GFED_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_GFED_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -651,7 +651,7 @@ CONTAINS
           CALL HcoX_FINN_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_FINN_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -663,7 +663,7 @@ CONTAINS
           CALL HCOX_GC_RnPbBe_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_GC_RnPbBe_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -675,7 +675,7 @@ CONTAINS
           CALL HCOX_GC_POPs_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_GC_POPs_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -687,7 +687,7 @@ CONTAINS
           CALL HCOX_CH4Wetland_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_CH4Wetland_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -700,7 +700,7 @@ CONTAINS
           CALL HCOX_TOMAS_Jeagle_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_TOMAS_Jeagle_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -713,7 +713,7 @@ CONTAINS
           CALL HCOX_Iodine_Run( ExtState, HcoState, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_Iodine_Run"!'
-             CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
        ENDIF
@@ -735,7 +735,7 @@ CONTAINS
        CALL HCOX_DiagnFill( HcoState, ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_DiagnFill_Run"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -968,38 +968,38 @@ CONTAINS
 
        ALLOCATE( DGN_LAI(I,J), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Diagnostics allocation error 1', RC, THISLOC=LOC )
+          CALL HCO_ERROR( 'Diagnostics allocation error 1', RC, THISLOC=LOC )
           RETURN
        ENDIF
 !       ALLOCATE( DGN_GWET(I,J), STAT=AS )
 !       IF ( AS /= 0 ) THEN
-!          CALL HCO_ERROR( HcoState%Config%Err, 'Diagnostics allocation error 1', RC, THISLOC=LOC )
+!          CALL HCO_ERROR( 'Diagnostics allocation error 1', RC, THISLOC=LOC )
 !          RETURN
 !       ENDIF
 !       ALLOCATE( DGN_T2M(I,J), DGN_V10M(I,J), DGN_U10M(I,J), STAT=AS )
 !       IF ( AS /= 0 ) THEN
-!          CALL HCO_ERROR( HcoState%Config%Err, 'Diagnostics allocation error 2', RC, THISLOC=LOC )
+!          CALL HCO_ERROR( 'Diagnostics allocation error 2', RC, THISLOC=LOC )
 !          RETURN
 !       ENDIF
 !       ALLOCATE( DGN_PARDR(I,J), DGN_PARDF(I,J), DGN_SZAFACT(I,J), STAT=AS )
 !       IF ( AS /= 0 ) THEN
-!          CALL HCO_ERROR( HcoState%Config%Err, 'Diagnostics allocation error 3', RC, THISLOC=LOC )
+!          CALL HCO_ERROR( 'Diagnostics allocation error 3', RC, THISLOC=LOC )
 !          RETURN
 !       ENDIF
 !       ALLOCATE( DGN_CLDFRC(I,J), DGN_ALBD(I,J), DGN_WLI(I,J), STAT=AS )
 !       IF ( AS /= 0 ) THEN
-!          CALL HCO_ERROR( HcoState%Config%Err, 'Diagnostics allocation error 4', RC, THISLOC=LOC )
+!          CALL HCO_ERROR( 'Diagnostics allocation error 4', RC, THISLOC=LOC )
 !          RETURN
 !       ENDIF
 !       ALLOCATE( DGN_TROPP(I,J), STAT=AS )
 !       IF ( AS /= 0 ) THEN
-!          CALL HCO_ERROR( HcoState%Config%Err, 'Diagnostics allocation error 5', RC, THISLOC=LOC )
+!          CALL HCO_ERROR( 'Diagnostics allocation error 5', RC, THISLOC=LOC )
 !          RETURN
 !       ENDIF
 
        ALLOCATE( DGN_SUNCOS(I,J), DGN_DRYTOTN(I,J), DGN_WETTOTN(I,J), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Diagnostics allocation error 6', RC, THISLOC=LOC )
+          CALL HCO_ERROR( 'Diagnostics allocation error 6', RC, THISLOC=LOC )
           RETURN
        ENDIF
 

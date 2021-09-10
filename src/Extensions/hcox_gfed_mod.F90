@@ -244,7 +244,7 @@ CONTAINS
     CALL InstGet ( ExtState%GFED, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find GFED instance Nr. ', ExtState%GFED
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -327,7 +327,7 @@ CONTAINS
              CASE( 6 )
                 TMPPTR => Inst%GFED_AGRI
              CASE DEFAULT
-                CALL HCO_ERROR ( HcoState%Config%Err, 'Undefined emission factor', RC )
+                CALL HCO_ERROR ( 'Undefined emission factor', RC )
                 RETURN
           END SELECT
 
@@ -480,7 +480,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, SpcArr, Inst%HcoIDs(N), RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'HCO_EmisAdd error: ' // TRIM(HcoState%Spc(Inst%HcoIDs(N))%SpcName)
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
 
@@ -571,7 +571,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%GFED, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create GFED instance', RC )
+       CALL HCO_ERROR ( 'Cannot create GFED instance', RC )
        RETURN
     ENDIF
 
@@ -586,7 +586,7 @@ CONTAINS
     IF ( .NOT. Inst%IsGFED4  ) THEN
        MSG = 'GFED is enabled but no GFED version is selected. ' // &
              'Please set GFED4 in HEMCO configuration file.'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -650,7 +650,7 @@ CONTAINS
          Inst%POG1frac < 0.0_sp .OR. Inst%POG1frac > 1.0_sp     ) THEN
        WRITE(MSG,*) 'fractions must be between 0-1: ', &
           Inst%OCPIfrac, Inst%BCPIfrac, Inst%POG1frac, Inst%SOAPfrac
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -677,7 +677,7 @@ CONTAINS
     ! Allocate scale factors table
     ALLOCATE ( Inst%GFED4_EMFAC ( N_SPEC, N_EMFAC ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate GFED_EMFAC', RC )
+       CALL HCO_ERROR( 'Cannot allocate GFED_EMFAC', RC )
        RETURN
     ENDIF
     Inst%GFED4_EMFAC = 0.0_hp
@@ -735,7 +735,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
     IF ( Inst%nSpc == 0 ) THEN
        MSG = 'No GFED species specified'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
     ALLOCATE(Inst%HcoIDs(Inst%nSpc),Inst%SpcNames(Inst%nSpc))
@@ -777,14 +777,14 @@ CONTAINS
              'This version of HEMCO expects species scale factors to be ' // &
              'set as `Scaling_XX` instead of `XX scale factor`. '         // &
              'Please update the GFED settings section accordingly.'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
     ! GFEDIDS are the matching indeces of the HEMCO species in GFED_EMFAC.
     ALLOCATE ( Inst%GfedIDs(Inst%nSpc), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate GfedIDs', RC )
+       CALL HCO_ERROR( 'Cannot allocate GfedIDs', RC )
        RETURN
     ENDIF
     Inst%GfedIDs = -1
@@ -849,7 +849,7 @@ CONTAINS
        ENDDO
        IF ( .NOT. Matched ) THEN
           MSG = 'Species '// TRIM(SpcName) //' not found in GFED'
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
     ENDDO !N

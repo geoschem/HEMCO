@@ -155,7 +155,7 @@ CONTAINS
     CALL InstGet ( ExtState%TOMAS_Jeagle, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find TOMAS_Jeagle instance Nr. ', ExtState%TOMAS_Jeagle
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -270,7 +270,7 @@ CONTAINS
        ! Add mass to the HEMCO data structure (jkodros)
        CALL HCO_EmisAdd( HcoState, Inst%TC2(:,:,:,K), Inst%HcoIDs(K), RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALT', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALT', RC )
           RETURN
        ENDIF
 
@@ -291,7 +291,7 @@ CONTAINS
        ! Add number to the HEMCO data structure
        CALL HCO_EmisAdd( HcoState, Inst%TC1(:,:,:,K), HcoID, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALT', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALT', RC )
           RETURN
        ENDIF
     ENDDO
@@ -378,7 +378,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%TOMAS_Jeagle, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create TOMAS_Jeagle instance', RC )
+       CALL HCO_ERROR ( 'Cannot create TOMAS_Jeagle instance', RC )
        RETURN
     ENDIF
     ! Also fill Inst%ExtNr
@@ -394,7 +394,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
     IF ( nSpc < HcoState%MicroPhys%nBins ) THEN
        MSG = 'Not enough sea salt emission species set'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -402,7 +402,7 @@ CONTAINS
     ALLOCATE ( Inst%TOMAS_DBIN( HcoState%MicroPhys%nBins ), STAT=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Cannot allocate TOMAS_DBIN array (hcox_tomas_jeagle_mod.F90)'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -410,7 +410,7 @@ CONTAINS
     ALLOCATE ( Inst%DRFAC( HcoState%MicroPhys%nBins ), STAT=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Cannot allocate DRFAC array (hcox_tomas_jeagle_mod.F90)'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -419,7 +419,7 @@ CONTAINS
                HcoState%NZ, HcoState%MicroPhys%nBins ), STAT=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Cannot allocate TC1 array (hcox_tomas_jeagle_mod.F90)'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ELSE
     Inst%TC1 = 0d0
@@ -430,7 +430,7 @@ CONTAINS
                HcoState%NZ, HcoState%MicroPhys%nBins ), STAT=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Cannot allocate TC2 array (hcox_tomas_jeagle_mod.F90)'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ELSE
     Inst%TC2 = 0d0
@@ -538,7 +538,7 @@ CONTAINS
     ELSE
 
        MSG = 'Adjust TOMAS_Jeagle emiss coeff (TOMAS_COEF) for your model res: SRCSALT30: hcox_TOMAS_jeagle_mod.F90'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
 
     ENDIF
 

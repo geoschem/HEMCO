@@ -194,7 +194,7 @@ CONTAINS
     CALL InstGet( ExtState%Volcano, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE( ErrMsg, * ) 'Cannot find Volcano instance Nr. ', ExtState%Volcano
-       CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+       CALL HCO_Error( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
 
@@ -205,7 +205,7 @@ CONTAINS
     CALL ReadVolcTable( HcoState, ExtState, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error encountered in "ReadVolcTable"!'
-       CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+       CALL HCO_Error( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
 
@@ -220,7 +220,7 @@ CONTAINS
                       SO2degas, SO2erupt, RC    )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "EmitVolc"!'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
 
@@ -239,7 +239,7 @@ CONTAINS
                            TRIM(Inst%SpcScalFldNme(N)), RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_Scale (degassing)"!'
-             CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_Error( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
 
@@ -248,7 +248,7 @@ CONTAINS
                             RC, ExtNr=Inst%ExtNr, Cat=Inst%CatDegas )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCO_EmisAdd" (degassing)!'
-             CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_Error( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
 
@@ -264,7 +264,7 @@ CONTAINS
                            TRIM(Inst%SpcScalFldNme(N)), RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCOX_Scale" (eruptive"!'
-             CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_Error( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
 
@@ -273,7 +273,7 @@ CONTAINS
                             RC, ExtNr=Inst%ExtNr, Cat=Inst%CatErupt )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "HCO_EmisAdd" (eruptive)!'
-             CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
+             CALL HCO_Error( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
 
@@ -361,7 +361,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate( ExtNr, ExtState%Volcano, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_Error( HcoState%Config%Err,                                  &
+       CALL HCO_Error(                                  &
                       'Cannot create Volcano instance', RC                  )
        RETURN
     ENDIF
@@ -373,7 +373,7 @@ CONTAINS
 
     ! There must be at least one species
     IF ( Inst%nSpc == 0 ) THEN
-       CALL HCO_Error( HcoState%Config%Err,                                  &
+       CALL HCO_Error(                                  &
                       'No Volcano species specified', RC                    )
        RETURN
     ENDIF
@@ -405,7 +405,7 @@ CONTAINS
        MSG = 'Cannot read Volcano table file name. Please provide '       // &
              'the Volcano table as a setting to the Volcano extension. '  // &
              'The name of this setting must be `Volcano_Table`.'
-       CALL HCO_Error( HcoState%Config%Err, MSG, RC )
+       CALL HCO_Error( MSG, RC )
        RETURN
     ENDIF
 
@@ -595,7 +595,7 @@ CONTAINS
        ELSE
           IF ( .not. FileExists ) THEN
              WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
        ENDIF
@@ -609,7 +609,7 @@ CONTAINS
        OPEN ( LUN, FILE=TRIM(ThisFile), STATUS='OLD', IOSTAT=IOS )
        IF ( IOS /= 0 ) THEN
           MSG = 'Error reading ' // TRIM(ThisFile)
-          CALL HCO_ERROR( HcoState%Config%Err,  MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR(  MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -655,7 +655,7 @@ CONTAINS
                    Inst%VolcEnd(nVolc), &
                    STAT=AS )
           IF ( AS /= 0 ) THEN
-             CALL HCO_ERROR ( HcoState%Config%Err, &
+             CALL HCO_ERROR ( &
                               'Volc allocation error', RC, THISLOC=LOC )
              RETURN
           ENDIF
@@ -691,7 +691,7 @@ CONTAINS
                 WRITE(MSG,*) 'N exceeds nVolc: ', N, nVolc, &
                              ' - This error occurred when reading ', &
                              TRIM(ThisFile), '. This line: ', TRIM(ThisLine)
-                CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC = LOC )
+                CALL HCO_ERROR ( MSG, RC, THISLOC = LOC )
                 RETURN
              ENDIF
 
@@ -705,7 +705,7 @@ CONTAINS
                 WRITE(MSG,*) 'Cannot parse line ', TRIM(ThisLine), &
                              'Expected five or seven entries, separated by ', &
                              'space character, instead found ', nCol
-                CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC = LOC )
+                CALL HCO_ERROR ( MSG, RC, THISLOC = LOC )
                 RETURN
              ENDIF
 
@@ -727,7 +727,7 @@ CONTAINS
           IF ( N /= nVolc ) THEN
              WRITE(MSG,*) 'N /= nVolc: ', N, nVolc, &
                           ' - This error occurred when reading ', TRIM(ThisFile)
-             CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC = LOC )
+             CALL HCO_ERROR ( MSG, RC, THISLOC = LOC )
              RETURN
           ENDIF
 
@@ -821,17 +821,17 @@ CONTAINS
 
     ! Make sure all required grid quantities are defined
     IF ( .NOT. ASSOCIATED(HcoState%Grid%AREA_M2%Val) ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, &
+       CALL HCO_ERROR ( &
                        'Grid box areas not defined', RC, THISLOC=LOC )
        RETURN
     ENDIF
     IF ( .NOT. ASSOCIATED(HcoState%Grid%ZSFC%Val) ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, &
+       CALL HCO_ERROR ( &
                        'Surface heights not defined', RC, THISLOC=LOC )
        RETURN
     ENDIF
     IF ( .NOT. ASSOCIATED(HcoState%Grid%BXHEIGHT_M%Val) ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, &
+       CALL HCO_ERROR ( &
                        'Grid box heights not defined', RC, THISLOC=LOC )
        RETURN
     ENDIF

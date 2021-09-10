@@ -127,7 +127,7 @@ CONTAINS
     CALL InstGet ( ExtState%Custom, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find custom instance Nr. ', ExtState%Custom
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -135,7 +135,7 @@ CONTAINS
     ALLOCATE ( FLUXICE( HcoState%NX,HcoState%NY),        &
                FLUXWIND(HcoState%NX,HcoState%NY), STAT=AS )
     IF ( AS/= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'ALLOCATION ERROR', RC )
+       CALL HCO_ERROR( 'ALLOCATION ERROR', RC )
        RETURN
     ENDIF
     FLUXICE  = 0.0_hp
@@ -268,7 +268,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%Custom, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create custom instance', RC )
+       CALL HCO_ERROR (  'Cannot create custom instance', RC )
        RETURN
     ENDIF
 
@@ -279,7 +279,7 @@ CONTAINS
     ! Assume first half are 'wind species', second half are ice.
     IF ( MOD(nSpc,2) /= 0 ) THEN
        MSG = 'Cannot set species IDs for custom emission module!'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 

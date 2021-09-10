@@ -192,7 +192,7 @@ MODULE HCOIO_MESSY_MOD
     IF ( Lct%Dct%Dta%SpaceDim /= 2 .AND. &
          Lct%Dct%Dta%SpaceDim /= 3         ) THEN
        MSG = 'Can only regrid 2D or 3D data: ' // TRIM(Lct%Dct%cName)
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR ( MSG, RC )
        RETURN
     ENDIF
 
@@ -246,7 +246,7 @@ MODULE HCOIO_MESSY_MOD
        IF ( .NOT. ASSOCIATED(LevEdge) .AND. .NOT. IsModelLev ) THEN
           MSG = 'Cannot regrid '//TRIM(Lct%Dct%cName)//'. Either level '//&
                 'edges must be provided or data must be on model levels.'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR ( MSG, RC )
           RETURN
        ENDIF
     ENDIF
@@ -259,7 +259,7 @@ MODULE HCOIO_MESSY_MOD
        ! pressure @ i,j: sigma(i,j,l) = p(i,j,l) / ps(i,j)
        ALLOCATE(sigout(HcoState%NX,HcoState%NY,HcoState%NZ+1),STAT=AS)
        IF ( AS/= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate sigout', RC )
+          CALL HCO_ERROR( 'Cannot allocate sigout', RC )
           RETURN
        ENDIF
        DO l = 1, HcoState%NZ+1
@@ -415,7 +415,7 @@ MODULE HCOIO_MESSY_MOD
        NCALLS = NZIN
        ALLOCATE(ArrOut(HcoState%NX,HcoState%NY,NZIN,NTIME),STAT=AS)
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate ArrOut', RC )
+          CALL HCO_ERROR( 'Cannot allocate ArrOut', RC )
           RETURN
        ENDIF
        ArrOut = 0.0_sp
@@ -470,7 +470,7 @@ MODULE HCOIO_MESSY_MOD
     !-----------------------------------------------------------------
     DEALLOCATE( sovl, dovl, rcnt, STAT=AS)
     IF(AS/=0) THEN
-       CALL HCO_ERROR(HcoState%Config%Err,'DEALLOCATION ERROR 1', RC )
+       CALL HCO_ERROR('DEALLOCATION ERROR 1', RC )
        RETURN
     ENDIF
     NULLIFY(sovl, dovl, rcnt)
@@ -480,7 +480,7 @@ MODULE HCOIO_MESSY_MOD
     ENDDO
     DEALLOCATE(narr_dst, STAT=AS)
     IF(AS/=0) THEN
-       CALL HCO_ERROR(HcoState%Config%Err,'DEALLOCATION ERROR 3', RC )
+       CALL HCO_ERROR('DEALLOCATION ERROR 3', RC )
        RETURN
     ENDIF
     NULLIFY(narr_dst)
@@ -490,7 +490,7 @@ MODULE HCOIO_MESSY_MOD
     ENDDO
     DEALLOCATE(narr_src, STAT=AS)
     IF(AS/=0) THEN
-       CALL HCO_ERROR(HcoState%Config%Err,'DEALLOCATION ERROR 2', RC )
+       CALL HCO_ERROR('DEALLOCATION ERROR 2', RC )
        RETURN
     ENDIF
     NULLIFY(narr_src)
@@ -587,7 +587,7 @@ MODULE HCOIO_MESSY_MOD
     ! ALLOCATE AXIS
     ALLOCATE(ax(N), STAT=status)
     IF ( status /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate axis', RC )
+       CALL HCO_ERROR ( 'Cannot allocate axis', RC )
        RETURN
     ENDIF
     DO I=1, N
@@ -612,7 +612,7 @@ MODULE HCOIO_MESSY_MOD
        ax(N)%ndp    = 1          ! LONGITUDE IS ...
        ALLOCATE(ax(N)%dep(1), STAT=status)
        IF ( status/= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate lon dependencies', RC )
+          CALL HCO_ERROR ( 'Cannot allocate lon dependencies', RC )
           RETURN
        ENDIF
        ax(N)%dep(1) = N          ! ... INDEPENDENT
@@ -621,14 +621,14 @@ MODULE HCOIO_MESSY_MOD
        ax(N)%dat%n = 1          ! 1 dimension
        ALLOCATE(ax(N)%dat%dim(ax(N)%dat%n), STAT=status)
        IF ( status/= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate lon dimensions', RC )
+          CALL HCO_ERROR( 'Cannot allocate lon dimensions', RC )
           RETURN
        ENDIF
        ax(N)%dat%dim(:) = XLON
 
        ALLOCATE(ax(N)%dat%vd(XLON),STAT=status)
        IF ( status/= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate lon axis', RC )
+          CALL HCO_ERROR( 'Cannot allocate lon axis', RC )
           RETURN
        ENDIF
        ax(N)%dat%vd(:) = lon
@@ -650,7 +650,7 @@ MODULE HCOIO_MESSY_MOD
        ax(N)%ndp    = 1          ! LATITUDE IS ...
        ALLOCATE(ax(N)%dep(1), STAT=status)
        IF ( status/= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate lat dependencies', RC )
+          CALL HCO_ERROR( 'Cannot allocate lat dependencies', RC )
           RETURN
        ENDIF
        ax(N)%dep(1) = N          ! ... INDEPENDENT
@@ -659,14 +659,14 @@ MODULE HCOIO_MESSY_MOD
        ax(N)%dat%n = 1          ! 1 dimension
        ALLOCATE(ax(N)%dat%dim(ax(N)%dat%n), STAT=status)
        IF ( status/= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate lat dimensions', RC )
+          CALL HCO_ERROR( 'Cannot allocate lat dimensions', RC )
           RETURN
        ENDIF
        ax(N)%dat%dim(:) = YLAT
 
        ALLOCATE(ax(N)%dat%vd(YLAT),STAT=status)
        IF ( status/= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate lat axis', RC )
+          CALL HCO_ERROR( 'Cannot allocate lat axis', RC )
           RETURN
        ENDIF
        ax(N)%dat%vd(:) = lat
@@ -715,7 +715,7 @@ MODULE HCOIO_MESSY_MOD
        ax(N)%ndp = ndp
        ALLOCATE(ax(N)%dep(ax(N)%ndp), STAT=status)
        IF ( status /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate lev dependencies', RC )
+          CALL HCO_ERROR( 'Cannot allocate lev dependencies', RC )
           RETURN
        ENDIF
 
@@ -724,7 +724,7 @@ MODULE HCOIO_MESSY_MOD
        ax(N)%dat%n = ndp
        ALLOCATE(ax(N)%dat%dim(ax(N)%dat%n), STAT=status)
        IF ( status/= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate lat dimensions', RC )
+          CALL HCO_ERROR( 'Cannot allocate lat dimensions', RC )
           RETURN
        ENDIF
 
@@ -751,7 +751,7 @@ MODULE HCOIO_MESSY_MOD
 
        ALLOCATE(ax(N)%dat%vd(nlev),STAT=status)
        IF ( status/= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate lat axis', RC )
+          CALL HCO_ERROR( 'Cannot allocate lat axis', RC )
           RETURN
        ENDIF
 
@@ -888,7 +888,7 @@ MODULE HCOIO_MESSY_MOD
     ! create
     ALLOCATE(narr(NT),STAT=status)
     IF(status/=0) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'narr allocation error', RC, THISLOC=LOC )
+       CALL HCO_ERROR( 'narr allocation error', RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -899,7 +899,7 @@ MODULE HCOIO_MESSY_MOD
        narr(T)%n = size(ax)
        ALLOCATE(narr(T)%dim(narr(T)%n),STAT=status)
        IF(status/=0) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate array dims', RC, THISLOC=LOC )
+          CALL HCO_ERROR( 'Cannot allocate array dims', RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -914,7 +914,7 @@ MODULE HCOIO_MESSY_MOD
 
        ALLOCATE(narr(T)%vd(NCELLS),STAT=status)
        IF(status/=0) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate array', RC, THISLOC=LOC )
+          CALL HCO_ERROR( 'Cannot allocate array', RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDDO !T
@@ -1032,7 +1032,7 @@ MODULE HCOIO_MESSY_MOD
             ( SIZE(Ptr4D,4) /= NT )       ) THEN
           WRITE(MSG,*) 'Temporary pointer has wrong dimensions: ', &
                        TRIM(Lct%Dct%cName), NX, NY, NZ, NT, SIZE(Ptr4D,1), SIZE(Ptr4D,2), SIZE(Ptr4D,3), SIZE(Ptr4D,4)
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, &
+          CALL HCO_ERROR ( MSG, RC, &
                            THISLOC='MESSY2HCO (hcoio_messy_mod.F90)' )
           RETURN
        ENDIF

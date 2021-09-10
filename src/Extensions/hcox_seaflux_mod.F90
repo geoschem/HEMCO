@@ -196,7 +196,7 @@ CONTAINS
     CALL InstGet ( ExtState%SeaFlux, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find SeaFlux instance Nr. ', ExtState%SeaFlux
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -240,7 +240,7 @@ CONTAINS
        CALL HCO_EmisAdd ( HcoState, SOURCE, HcoID, RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'HCO_EmisAdd error: ' // TRIM(Inst%OcSpecs(OcID)%OcSpcName)
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
        IF ( RC /= HCO_SUCCESS ) RETURN
@@ -540,7 +540,7 @@ CONTAINS
 
     ! Check exit status
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -674,7 +674,7 @@ CONTAINS
     ! Create instance for this simulation
     CALL InstCreate ( ExtNr, ExtState%SeaFlux, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create SeaFlux instance', RC )
+       CALL HCO_ERROR ( 'Cannot create SeaFlux instance', RC )
        RETURN
     ENDIF
 
@@ -712,7 +712,7 @@ CONTAINS
 
     I = I + 1
     IF ( I > Inst%nOcSpc ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, ERR, RC )
+       CALL HCO_ERROR ( ERR, RC )
        RETURN
     ENDIF
 
@@ -727,7 +727,7 @@ CONTAINS
 
     I = I + 1
     IF ( I > Inst%nOcSpc ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, ERR, RC )
+       CALL HCO_ERROR ( ERR, RC )
        RETURN
     ENDIF
 
@@ -742,7 +742,7 @@ CONTAINS
 
     I = I + 1
     IF ( I > Inst%nOcSpc ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, ERR, RC )
+       CALL HCO_ERROR ( ERR, RC )
        RETURN
     ENDIF
 
@@ -757,7 +757,7 @@ CONTAINS
 
     I = I + 1
     IF ( I > Inst%nOcSpc ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, ERR, RC )
+       CALL HCO_ERROR ( ERR, RC )
        RETURN
     ENDIF
 

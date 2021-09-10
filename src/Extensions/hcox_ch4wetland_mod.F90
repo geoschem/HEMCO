@@ -198,7 +198,7 @@ CONTAINS
     CALL InstGet ( ExtState%Wetland_CH4, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find CH4 wetland instance Nr. ', ExtState%Wetland_CH4
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -717,7 +717,7 @@ CONTAINS
     ! Create Instance
     CALL InstCreate ( ExtNr, ExtState%Wetland_CH4, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create CH4WETLAND instance', RC )
+       CALL HCO_ERROR ( 'Cannot create CH4WETLAND instance', RC )
        RETURN
     ENDIF
 
@@ -729,7 +729,7 @@ CONTAINS
                Inst%SOIL_C(HcoState%NX, HcoState%NY), &
                Inst%MEAN_T(HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Allocation error', RC )
+       CALL HCO_ERROR ( 'Allocation error', RC )
        RETURN
     ENDIF
     Inst%RICE         = 0.0_hp
@@ -766,7 +766,7 @@ CONTAINS
     ! Make sure at least one source is used.
     IF ( .NOT. Inst%DoWetland .AND. .NOT. Inst%DoRice ) THEN
        MSG = 'Wetlands and rice emissions are both turned off!'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 

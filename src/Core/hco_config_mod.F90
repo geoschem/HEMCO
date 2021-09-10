@@ -704,7 +704,7 @@ CONTAINS
 
        ! Error if not enough entries found
        IF ( STAT == 100 ) THEN
-          CALL HCO_ERROR ( HcoConfig%Err, 'STAT == 100', RC, THISLOC=LOC )
+          CALL HCO_ERROR ( 'STAT == 100', RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -744,7 +744,7 @@ CONTAINS
 
        ! Output status should be 0 if none of the statuses above applies
        IF ( STAT /= 0 ) THEN
-          CALL HCO_ERROR ( HcoConfig%Err, 'STAT /= 0', RC, THISLOC=LOC )
+          CALL HCO_ERROR ( 'STAT /= 0', RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -781,7 +781,7 @@ CONTAINS
              IF ( RC /= HCO_SUCCESS ) THEN
                 ErrMsg = 'Error retrieving tag name for' //            &
                          ' wildcard ' // TRIM(tagId)
-                CALL HCO_Error( HcoConfig%Err, ErrMsg, RC )
+                CALL HCO_Error( ErrMsg, RC )
                 RETURN
              ENDIF
 
@@ -859,7 +859,7 @@ CONTAINS
              IF ( TRIM(srcFile) == '-' ) THEN
                 IF ( .NOT. ASSOCIATED(Dta) ) THEN
                    MSG = 'Cannot use previous data container: '//TRIM(tagcName)
-                   CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
                 Lct%Dct%DtaHome = Lct%Dct%DtaHome - 1
@@ -1005,7 +1005,7 @@ CONTAINS
                 ELSE
                    MSG = 'Invalid time cycling attribute: ' // &
                          TRIM(TmCycle) // ' - in ' // TRIM(tagcName)
-                   CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1050,7 +1050,7 @@ CONTAINS
                    IF ( nEdges /= 4 ) THEN
                       MSG = 'Cannot properly read mask coverage: ' // &
                            TRIM(Lct%Dct%cName)
-                      CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+                      CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
                       RETURN
                    ENDIF
 
@@ -1148,7 +1148,7 @@ CONTAINS
              ENDIF
 
           ELSE
-             CALL HCO_ERROR ( HcoConfig%Err, 'Invalid data type!', RC, &
+             CALL HCO_ERROR ( 'Invalid data type!', RC, &
                               THISLOC=LOC )
              RETURN
           ENDIF
@@ -1170,7 +1170,7 @@ CONTAINS
           IF ( TRIM(srcFile) == '-' ) THEN
              IF ( .NOT. ASSOCIATED(Dta) ) THEN
                 MSG = 'Cannot use previous data container: '//TRIM(cName)
-                CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+                CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
                 RETURN
              ENDIF
              Lct%Dct%DtaHome = Lct%Dct%DtaHome - 1
@@ -1315,7 +1315,7 @@ CONTAINS
              ELSE
                 MSG = 'Invalid time cycling attribute: ' // &
                      TRIM(TmCycle) // ' - in ' // TRIM(tagcName)
-                CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+                CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
                 RETURN
              ENDIF
 
@@ -1360,7 +1360,7 @@ CONTAINS
                 IF ( nEdges /= 4 ) THEN
                    MSG = 'Cannot properly read mask coverage: ' // &
                          TRIM(Lct%Dct%cName)
-                   CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1396,7 +1396,7 @@ CONTAINS
              ! nCat cannot exceed CatMax
              IF ( nCat > CatMax ) THEN
                 MSG = 'Category max exceeded'
-                CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+                CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
                 RETURN
              ENDIF
 
@@ -1503,7 +1503,7 @@ CONTAINS
     IF ( STAT == 5 .OR. STAT == 6 ) THEN
        STRLEN     = LEN(LINE)
        IF ( STRLEN < 4 ) THEN
-          CALL HCO_ERROR ( HcoConfig%Err, &
+          CALL HCO_ERROR ( &
                           'Illegal bracket length: '//TRIM(LINE), &
                            RC, THISLOC=LOC )
           RETURN
@@ -1522,7 +1522,7 @@ CONTAINS
        NEST = NEST + 1
        IF ( NEST > MAXBRACKNEST ) THEN
           MSG = 'Too many nested brackets'
-          CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
        AllBrackets(NEST) = TmpBracket
@@ -1639,7 +1639,7 @@ CONTAINS
        IF ( TRIM(TmpBracket) /= TRIM(AllBrackets(NEST)) ) THEN
           MSG = 'Closing bracket does not match opening bracket: '// &
              TRIM(TmpBracket)//', expected: '//TRIM(AllBrackets(NEST))
-          CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -2051,7 +2051,7 @@ CONTAINS
              CALL STRSPLIT( SUBSTR(idx), &
                      HCO_GetOpt(HcoConfig%ExtList,'Separator'), SPECS, N )
              IF ( N < 1 ) THEN
-                CALL HCO_ERROR ( HcoConfig%Err, 'No species defined', RC, THISLOC=LOC )
+                CALL HCO_ERROR ( 'No species defined', RC, THISLOC=LOC )
                 RETURN
              ENDIF
              DO I = 1, N
@@ -2197,7 +2197,7 @@ CONTAINS
              GridRes = '0.25x0.3125'
           CASE DEFAULT
              Msg = 'Improperly formatted grid resolution: ' // TRIM( GridRes )
-             CALL HCO_Error( HcoConfig%Err, Msg, RC, Loc )
+             CALL HCO_Error( Msg, RC, Loc )
              RETURN
        END SELECT
        HcoConfig%GridRes = TRIM( GridRes )
@@ -2729,7 +2729,7 @@ CONTAINS
        IF ( .NOT. ASSOCIATED(Lct) ) THEN
           WRITE ( strID, * ) ThisScalID
           MSG = 'Container ID not found: ' // strID
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC)
+          CALL HCO_ERROR ( MSG, RC)
           RETURN
        ENDIF
 
@@ -2737,7 +2737,7 @@ CONTAINS
        IF ( Lct%Dct%DctType == HCO_DCTTYPE_BASE ) THEN
           WRITE ( strID, * ) ThisScalID
           MSG = 'Container ID belongs to base field: ' // strID
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC)
+          CALL HCO_ERROR ( MSG, RC)
           RETURN
        ENDIF
 
@@ -2912,7 +2912,7 @@ CONTAINS
           IF ( .NOT. FOUND ) THEN
              WRITE ( strID, * ) Lct%Dct%Scal_cID(I)
              MSG = 'No scale factor with cID: ' // TRIM(strID)
-             CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC)
+             CALL HCO_ERROR ( MSG, RC)
              RETURN
           ENDIF
 
@@ -3025,7 +3025,7 @@ CONTAINS
              ! Error if container not found
              IF ( .NOT. FOUND ) THEN
                 WRITE(MSG,*) 'No scale factor with ID: ', tmpID
-                CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC)
+                CALL HCO_ERROR ( MSG, RC)
                 RETURN
              ENDIF
 
@@ -4234,19 +4234,19 @@ CONTAINS
     IF ( PRESENT(SpecNames) ) THEN
        IF ( .NOT. ASSOCIATED(SpecNames) ) THEN
           IF ( N <= 0 ) THEN
-             CALL HCO_ERROR ( HcoConfig%Err, &
+             CALL HCO_ERROR ( &
                 'Cannot allocate SpecNames - N is size 0 or smaller', RC, THISLOC=LOC )
              RETURN
           ENDIF
           ALLOCATE(SpecNames(N), STAT=AS )
           IF ( AS/= 0 ) THEN
-             CALL HCO_ERROR ( HcoConfig%Err, &
+             CALL HCO_ERROR ( &
                 'SpecNames allocation error', RC, THISLOC=LOC )
              RETURN
           ENDIF
           SpecNames(:) = ''
        ELSEIF ( SIZE(SpecNames) /= N ) THEN
-          CALL HCO_ERROR ( HcoConfig%Err, &
+          CALL HCO_ERROR ( &
              'SpecNames size error', RC, THISLOC=LOC )
           RETURN
        ENDIF
@@ -4430,13 +4430,13 @@ CONTAINS
 
        ! There must be at least 3 characters (e.g. xyz)
        IF ( strLen < 3 ) THEN
-          CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
        ! First two entries must be xy
        IF ( str1(1:2) /= 'xy' ) THEN
-          CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -4445,7 +4445,7 @@ CONTAINS
        ! emitted into level 4.
        IF ( str1(3:3) == 'L' .OR. str1(3:3) == 'l' ) THEN
           IF ( strLen < 4 ) THEN
-             CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
           Dta%SpaceDim = 2
@@ -4528,7 +4528,7 @@ CONTAINS
            // 'and contain the name/value pair, e.g. xyz+"ens"=3'
        idx = INDEX( TRIM(str2), '=' )
        IF ( idx <= 0 ) THEN
-          CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -4622,7 +4622,7 @@ CONTAINS
        IF ( nModelSpecies > 0 ) THEN
           ALLOCATE ( HcoConfig%ModelSpc( nModelSpecies ), STAT=AS )
           IF ( AS /= 0 ) THEN
-             CALL HCO_ERROR( HcoConfig%Err, 'ModelSpecies', RC )
+             CALL HCO_ERROR( 'ModelSpecies', RC )
              RETURN
           ENDIF
 
@@ -4782,7 +4782,7 @@ CONTAINS
 
     IF ( Duplicate ) THEN
        MSG = 'Error: HEMCO field already exists:'//TRIM(cName)
-       CALL HCO_ERROR ( HcoConfig%Err, MSG, RC )
+       CALL HCO_ERROR ( MSG, RC )
        RETURN
     ENDIF
 
@@ -4856,7 +4856,7 @@ CONTAINS
     ! Exit with error if getting tag name but index not specified
     IF ( isTagName .AND. .NOT. isN ) THEN
        ErrMsg = 'Index must be specified if retrieving an individual tag name'
-       CALL HCO_ERROR( HcoConfig%Err, ErrMsg, RC )
+       CALL HCO_ERROR( ErrMsg, RC )
        RETURN
     ENDIF
 
@@ -4872,7 +4872,7 @@ CONTAINS
           FOUND = .FALSE.
           ErrMsg = 'Handling of tagId ' // TRIM(tagId) // &
                    ' is not implemented for getting number of tags'
-          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
     END SELECT
 
@@ -4890,7 +4890,7 @@ CONTAINS
     IF ( isTagName .AND. .NOT. isN ) THEN
        ErrMsg = 'Index must be greater than total number of tags for wildcard' &
                 // TRIM(tagId)
-       CALL HCO_Error( HcoConfig%Err, ErrMsg, RC )
+       CALL HCO_Error( ErrMsg, RC )
        RETURN
     ENDIF
 
@@ -4904,7 +4904,7 @@ CONTAINS
           FOUND = .FALSE.
           ErrMsg = 'Handling of tagId ' // TRIM( tagId ) // &
                    ' is not implemented for getting tag name'
-          CALL HCO_Error( HcoConfig%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
     END SELECT
 

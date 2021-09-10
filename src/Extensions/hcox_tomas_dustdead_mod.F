@@ -286,7 +286,7 @@
       IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find TOMAS DEAD instance Nr. ',
      &               ExtState%TOMAS_DustDead
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
       ENDIF
 
@@ -479,7 +479,7 @@
      &                        Inst%HcoIDs(N), RC,  ExtNr=Inst%ExtNr )
             IF ( RC /= HCO_SUCCESS ) THEN
                WRITE(MSG,*) 'HCO_EmisAdd error: dust bin ', N
-               CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+               CALL HCO_ERROR(MSG, RC )
                RETURN
             ENDIF
 
@@ -533,7 +533,7 @@
             CALL HCO_EmisAdd( HcoState, FLUXN(:,:,N), HcoID,
      &                        RC)
             IF ( RC /= HCO_SUCCESS ) THEN
-               CALL HCO_ERROR( HcoState%Config%Err,
+               CALL HCO_ERROR( 
      &                        'HCO_EmisAdd error: FLUXNDUST', RC )
                RETURN
             ENDIF
@@ -612,7 +612,7 @@
       Inst => NULL()
       CALL InstCreate ( ExtNr, ExtState%TOMAS_DustDead, Inst, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err,
+       CALL HCO_ERROR ( 
      &                 'Cannot create TOMAS DEAD instance', RC )
        RETURN
       ENDIF
@@ -635,7 +635,7 @@
       ! Sanity check
       IF ( nSpc /= NBINS ) THEN
          MSG = 'Number of dust species do not match number of bins!'
-         CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+         CALL HCO_ERROR(MSG, RC )
          RETURN
       ENDIF
 
@@ -660,7 +660,7 @@
          MSG = 'Mass flux tuning factor not defined. ' //
      &         'Please explicitly set it by modifying the line ' //
      &         '` --> Mass tuning factor: XX.X` in HEMCO_Config.rc. '
-            CALL HCO_ERROR(HcoState%Config%Err, MSG,
+            CALL HCO_ERROR(MSG,
      &                     RC, THISLOC='HCOX_DustDead_Init')
          RETURN
       ENDIF
@@ -697,7 +697,7 @@
      &           Inst%VAI_DST       ( HcoState%NX, HcoState%NY),
      &           STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'Allocation error', RC )
+        CALL HCO_ERROR ( 'Allocation error', RC )
         RETURN
       ENDIF
       Inst%ERD_FCT_GEO    = 0.0_hp
@@ -712,98 +712,98 @@
 !      ! Allocate arrays
 !      ALLOCATE( Inst%FLX_LW_DWN_SFC( I, J ), STAT=AS )
 !      IF ( AS /= 0 ) THEN
-!        CALL HCO_ERROR ( HcoState%Config%Err, 'FLX_LW_DWN_SFC', RC )
+!        CALL HCO_ERROR ( 'FLX_LW_DWN_SFC', RC )
 !        RETURN
 !      ENDIF
 !      Inst%FLX_LW_DWN_SFC = 0d0
 
 !      ALLOCATE( Inst%FLX_SW_ABS_SFC( I, J ), STAT=AS )
 !      IF ( AS /= 0 ) THEN
-!        CALL HCO_ERROR ( HcoState%Config%Err, 'FLX_SW_ABS_SFC', RC )
+!        CALL HCO_ERROR ( 'FLX_SW_ABS_SFC', RC )
 !        RETURN
 !      ENDIF
 !      Inst%FLX_SW_ABS_SFC = 0d0
 
 !      ALLOCATE( Inst%TPT_GND( I, J ), STAT=AS )
 !      IF ( AS /= 0 ) THEN
-!        CALL HCO_ERROR ( HcoState%Config%Err, 'TPT_GND', RC )
+!        CALL HCO_ERROR ( 'TPT_GND', RC )
 !        RETURN
 !      ENDIF
 !      Inst%TPT_GND = 0d0
 
 !      ALLOCATE( Inst%TPT_SOI( I, J ), STAT=AS )
 !      IF ( AS /= 0 ) THEN
-!        CALL HCO_ERROR ( HcoState%Config%Err, 'TPT_SOI', RC )
+!        CALL HCO_ERROR ( 'TPT_SOI', RC )
 !        RETURN
 !      ENDIF
 !      Inst%TPT_SOI = 0d0
 
 !      ALLOCATE( Inst%VWC_SFC( I, J ), STAT=AS )
 !      IF ( AS /= 0 ) THEN
-!        CALL HCO_ERROR ( HcoState%Config%Err, 'VWC_SFC', RC )
+!        CALL HCO_ERROR ( 'VWC_SFC', RC )
 !        RETURN
 !      ENDIF
 !      Inst%VWC_SFC = 0d0
 
 !      ALLOCATE( Inst%SRC_STR( I, J ), STAT=AS )
 !      IF ( AS /= 0 ) THEN
-!        CALL HCO_ERROR ( HcoState%Config%Err, 'SRC_STR', RC )
+!        CALL HCO_ERROR ( 'SRC_STR', RC )
 !        RETURN
 !      ENDIF
 !      Inst%SRC_STR = 0d0
 
       ALLOCATE( Inst%PLN_TYP( 0:28, 3 ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'PLN_TYP', RC )
+        CALL HCO_ERROR ( 'PLN_TYP', RC )
         RETURN
       ENDIF
       Inst%PLN_TYP = 0
 
       ALLOCATE( Inst%PLN_FRC( 0:28, 3 ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'PLN_FRC', RC )
+        CALL HCO_ERROR ( 'PLN_FRC', RC )
         RETURN
       ENDIF
       Inst%PLN_FRC = 0d0
 
       ALLOCATE( Inst%TAI( MVT, 12 ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'TAI', RC )
+        CALL HCO_ERROR ( 'TAI', RC )
         RETURN
       ENDIF
       Inst%TAI = 0d0
 
       ALLOCATE( Inst%DMT_VWR( NBINS ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'DMT_VWR', RC )
+        CALL HCO_ERROR ( 'DMT_VWR', RC )
         RETURN
       ENDIF
       Inst%DMT_VWR = 0d0
 
 !      ALLOCATE( Inst%DNS_AER( NBINS ), STAT=AS )
 !      IF ( AS /= 0 ) THEN
-!        CALL HCO_ERROR ( HcoState%Config%Err, 'DNS_AER', RC )
+!        CALL HCO_ERROR ( 'DNS_AER', RC )
 !        RETURN
 !      ENDIF
 !      Inst%DNS_AER = 0d0
 
       ALLOCATE( Inst%OVR_SRC_SNK_FRC( DST_SRC_NBR, NBINS ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'OVR_SRC_SNK_FRC', RC )
+        CALL HCO_ERROR ( 'OVR_SRC_SNK_FRC', RC )
         RETURN
       ENDIF
       Inst%OVR_SRC_SNK_FRC = 0d0
 
       ALLOCATE( Inst%OVR_SRC_SNK_MSS( DST_SRC_NBR, NBINS ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'OVR_SRC_SNK_MSS', RC )
+        CALL HCO_ERROR ( 'OVR_SRC_SNK_MSS', RC )
         RETURN
       ENDIF
       Inst%OVR_SRC_SNK_MSS = 0d0
 
 !      ALLOCATE( Inst%OROGRAPHY( I, J ), STAT=AS )
 !      IF ( AS /= 0 ) THEN
-!        CALL HCO_ERROR ( HcoState%Config%Err, 'OROGRAPHY', RC )
+!        CALL HCO_ERROR ( 'OROGRAPHY', RC )
 !        RETURN
 !      ENDIF
 !      Inst%OROGRAPHY = 0
@@ -814,7 +814,7 @@
       ! Bin size min diameter [m]
       ALLOCATE( Inst%DMT_MIN( NBINS ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'DMT_MIN', RC )
+        CALL HCO_ERROR ( 'DMT_MIN', RC )
         RETURN
       ENDIF
 
@@ -827,7 +827,7 @@
       ! Bin size max diameter [m]
       ALLOCATE( Inst%DMT_MAX( NBINS ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'DMT_MAX', RC )
+        CALL HCO_ERROR ( 'DMT_MAX', RC )
         RETURN
       ENDIF
 
@@ -843,7 +843,7 @@
       ! Bin size min diameter [m]
 !      ALLOCATE( Inst%DMT_MIN( NBINS ), STAT=AS )
 !      IF ( AS /= 0 ) THEN
-!        CALL HCO_ERROR ( HcoState%Config%Err, 'DMT_MIN', RC )
+!        CALL HCO_ERROR ( 'DMT_MIN', RC )
 !        RETURN
 !      ENDIF
 !      Inst%DMT_MIN(1) = 0.2d-6
@@ -854,7 +854,7 @@
       ! Bin size max diameter [m]
 !      ALLOCATE( Inst%DMT_MAX( NBINS ), STAT=AS )
 !      IF ( AS /= 0 ) THEN
-!        CALL HCO_ERROR ( HcoState%Config%Err, 'DMT_MAX', RC )
+!        CALL HCO_ERROR ( 'DMT_MAX', RC )
 !        RETURN
 !      ENDIF
 !      Inst%DMT_MAX(1) = 2.0d-6
@@ -868,7 +868,7 @@
       ! Mass median diameter BSM96 p. 73 Table 2
       ALLOCATE( Inst%DMT_VMA_SRC( DST_SRC_NBR ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'DMT_VMA_SRC', RC )
+        CALL HCO_ERROR ( 'DMT_VMA_SRC', RC )
         RETURN
       ENDIF
       Inst%DMT_VMA_SRC(1) = 0.832d-6
@@ -879,7 +879,7 @@
       ! BSM96 p. 73 Table 2
       ALLOCATE( Inst%GSD_ANL_SRC( DST_SRC_NBR ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'GSD_ANL_SRC', RC )
+        CALL HCO_ERROR ( 'GSD_ANL_SRC', RC )
         RETURN
       ENDIF
       Inst%GSD_ANL_SRC(1) = 2.10d0
@@ -889,7 +889,7 @@
       ! MSS_FRC_SRC:  Mass fraction BSM96 p. 73 Table 2
       ALLOCATE( Inst%MSS_FRC_SRC( DST_SRC_NBR ), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( HcoState%Config%Err, 'MSS_FRC_SRC', RC )
+        CALL HCO_ERROR ( 'MSS_FRC_SRC', RC )
         RETURN
       ENDIF
       Inst%MSS_FRC_SRC(1) = 0.036d0
@@ -1211,7 +1211,7 @@
          ! Stop occasional haywire model runs
 !         IF ( TPT_MDP(I) > 350.0d0 ) THEN
 !            MSG = 'TPT_MDP(i) > 350.0'
-!            CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC='DST_MBL' )
+!            CALL HCO_ERROR(MSG, RC, THISLOC='DST_MBL' )
 !            RETURN
 !         ENDIF
          ! Now simply restrict to 350K, rather than crashing
@@ -2642,7 +2642,7 @@
          ! tdf 10/27/2K3 -- Sanity check
          IF ( RGH_MMN(LON_IDX) <= 0.0 ) THEN
             MSG = 'RGH_MMN <= 0.0'
-            CALL HCO_ERROR(HcoState%Config%Err,MSG,RC,THISLOC='BLM_MBL')
+            CALL HCO_ERROR(MSG,RC,THISLOC='BLM_MBL')
             RETURN
          ENDIF
 
@@ -2656,7 +2656,7 @@
          ! Sanity check
          IF ( WND_FRC_DENOM <= 0.0 ) THEN
             MSG = 'WND_FRC_DENOM <= 0.0'
-            CALL HCO_ERROR(HcoState%Config%Err,MSG,RC,THISLOC='BLM_MBL')
+            CALL HCO_ERROR(MSG,RC,THISLOC='BLM_MBL')
             RETURN
          ENDIF
 
@@ -3097,7 +3097,7 @@
 
               ! Presumably ocean snuck through
               ELSE
-                 CALL HCO_ERROR( HcoState%Config%Err,
+                 CALL HCO_ERROR( 
      &                          'pln_typ_idx == 0', RC,
      &                           THISLOC='RGH_MMN_GET' )
                  RETURN
@@ -3449,7 +3449,7 @@
 
       ! Error check
       IF ( RYN_NBR < 0.03D0 ) THEN
-         CALL HCO_ERROR ( HcoState%Config%Err, 'RYN_NBR < 0.03', RC,
+         CALL HCO_ERROR ( 'RYN_NBR < 0.03', RC,
      &      THISLOC='WND_FRC_THR_SLT_GET' )
          RETURN
 
@@ -3773,7 +3773,7 @@
       ! Error check
       if ( FEFF <= 0.0D0 .OR. FEFF > 1.0D0 ) THEN
          MSG = 'Feff out of range!'
-         CALL HCO_ERROR(HcoState%Config%Err,MSG, RC,
+         CALL HCO_ERROR(MSG, RC,
      &      THISLOC='FRC_THR_NC_DRG_GET' )
          RETURN
       ENDIF
@@ -4078,7 +4078,7 @@
                IF ( MSS_FRC_CACO3_SZ_CRR < 0.0D0  .OR.
      &              MSS_FRC_CACO3_SZ_CRR > 1.0D0 ) THEN
                   MSG = 'mss_frc_CaC_s < 0.0.or.mss_frc_CaC_s > 1.0!'
-                  CALL HCO_ERROR(HcoState%Config%Err,MSG, RC,
+                  CALL HCO_ERROR(MSG, RC,
      &               THISLOC='FLX_MSS_CACO3_MSK' )
                   RETURN
                ENDIF
@@ -4086,7 +4086,7 @@
                IF ( MSS_FRC_CACO3_SLC(LON_IDX) < 0.0D0  .OR.
      &              MSS_FRC_CACO3_SLC(LON_IDX) > 1.0D0 ) THEN
                   MSG = 'mss_frc_CaCO3_s < 0.0.or.mss_frc_CaCO3 > 1.0!'
-                  CALL HCO_ERROR(HcoState%Config%Err,MSG, RC,
+                  CALL HCO_ERROR(MSG, RC,
      &               THISLOC='FLX_MSS_CACO3_MSK' )
                   RETURN
                ENDIF
@@ -4593,7 +4593,7 @@
       ! Error check
       IF ( VAI_MBL_THR <= 0.0d0 ) THEN
          MSG = 'VAI_MBL_THR <= 0.0'
-         CALL HCO_ERROR(HcoState%Config%Err,MSG, RC,
+         CALL HCO_ERROR(MSG, RC,
      &        THISLOC='LND_FRC_MBL_GET' )
          RETURN
       ENDIF
@@ -4720,14 +4720,14 @@
          ! Error check
          IF ( LND_FRC_MBL(lon_idx) > 1.0D0 ) THEN
             MSG = 'LND_FRC_MBL > 1'
-            CALL HCO_ERROR(HcoState%Config%Err,MSG, RC,
+            CALL HCO_ERROR(MSG, RC,
      &         THISLOC='LND_FRC_MBL_GET' )
             RETURN
          ENDIF
 
          IF ( LND_FRC_MBL(LON_IDX) < 0.0D0 )   then
             MSG = 'LND_FRC_MBL < 0'
-            CALL HCO_ERROR(HcoState%Config%Err,MSG, RC,
+            CALL HCO_ERROR(MSG, RC,
      &         THISLOC='LND_FRC_MBL_GET' )
             RETURN
          ENDIF
@@ -4917,7 +4917,7 @@
          ! 19990913: erf() in SGI /usr/lib64/mips4/libftn.so is bogus
          IF ( ABS( 0.8427d0 - ERF(1.0d0) ) / 0.8427d0 > 0.001d0 ) THEN
             MSG = 'ERF error 1 in OVR_SRC_SNK_FRC_GET!'
-            CALL HCO_ERROR(HcoState%Config%Err,MSG, RC,
+            CALL HCO_ERROR(MSG, RC,
      &         THISLOC='OVR_SRC_SNK_FRC_GET' )
             RETURN
          ENDIF
@@ -4925,7 +4925,7 @@
          ! Another ERF check
          IF ( ERF( 0.0D0 ) /= 0.0D0 ) THEN
             MSG = 'ERF error 2 in OVR_SRC_SNK_FRC_GET!'
-            CALL HCO_ERROR(HcoState%Config%Err,MSG, RC,
+            CALL HCO_ERROR(MSG, RC,
      &         THISLOC='OVR_SRC_SNK_FRC_GET' )
             RETURN
          ENDIF

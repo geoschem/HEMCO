@@ -418,7 +418,7 @@ CONTAINS
 
     IF ( Coef1 < 0.0_hp ) THEN
        MSG = 'cannot do unit conversion. Mass unit: ' // TRIM(unt)
-       CALL HCO_ERROR( HcoConfig%Err, MSG, RC, ThisLoc = LOC )
+       CALL HCO_ERROR( MSG, RC, ThisLoc = LOC )
        RETURN
     ENDIF
     Factor = Factor * Coef1

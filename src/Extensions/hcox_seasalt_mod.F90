@@ -272,7 +272,7 @@ CONTAINS
     CALL InstGet ( ExtState%SeaSalt, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find SeaSalt instance Nr. ', ExtState%SeaSalt
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -295,7 +295,7 @@ CONTAINS
        CALL HCO_EvalFld ( HcoState, 'MODIS_CHLR', Inst%CHLR, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           WRITE(MSG,*) 'Cannot find MODIS CHLR data for marine POA'
-          CALL HCO_ERROR(HcoState%Config%Err, MSG, RC)
+          CALL HCO_ERROR(MSG, RC)
           RETURN
        ENDIF
     ENDIF
@@ -309,7 +309,7 @@ CONTAINS
       CALL HCO_EvalFld ( HcoState, 'MULTISEAICE', MULTI, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
           WRITE(MSG,*) 'Cannot find MULTISEAICE data for blowing snow'
-          CALL HCO_ERROR(HcoState%Config%Err, MSG, RC)
+          CALL HCO_ERROR(MSG, RC)
           RETURN
       ENDIF
     ENDIF
@@ -604,7 +604,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXSALA, Inst%IDTSALA, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALA', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALA', RC )
           RETURN
        ENDIF
     ENDIF
@@ -616,7 +616,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXSALC, Inst%IDTSALC, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALC', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALC', RC )
           RETURN
        ENDIF
 
@@ -629,7 +629,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXSALACL, Inst%IDTSALACL, &
                          RC,        ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALACL', RC)
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALACL', RC)
           RETURN
        ENDIF
     ENDIF
@@ -641,7 +641,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXSALCCL, Inst%IDTSALCCL, &
                          RC,        ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALCCL', RC)
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALCCL', RC)
           RETURN
        ENDIF
     ENDIF
@@ -653,7 +653,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXSALAAL, Inst%IDTSALAAL, &
                          RC,        ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALAAL', RC)
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALAAL', RC)
           RETURN
        ENDIF
     ENDIF
@@ -665,7 +665,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXSALCAL, Inst%IDTSALCAL, &
                          RC,        ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALCAL', RC)
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALCAL', RC)
           RETURN
        ENDIF
     ENDIF
@@ -683,7 +683,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXBrSalA, Inst%IDTBrSalA, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXBrSalA', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXBrSalA', RC )
           RETURN
        ENDIF
 
@@ -691,7 +691,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXBrSalC, Inst%IDTBrSalC, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXBrSalC', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXBrSalC', RC )
           RETURN
        ENDIF
 
@@ -704,7 +704,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXMOPO, Inst%IDTMOPO, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXMOPO', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXMOPO', RC )
           RETURN
        ENDIF
 
@@ -717,7 +717,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXMOPI, Inst%IDTMOPI, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXMOPI', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXMOPI', RC )
           RETURN
        ENDIF
 
@@ -810,7 +810,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNrSS, ExtState%SeaSalt, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create SeaSalt instance', RC )
+       CALL HCO_ERROR ( 'Cannot create SeaSalt instance', RC )
        RETURN
     ENDIF
     ! Also fill ExtNrSS - this is the same as the parent ExtNr
@@ -843,7 +843,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
     IF ( nSpcSS < minLen ) THEN
        MSG = 'Not enough sea salt emission species set'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
     Inst%IDTSALA = HcoIDsSS(1)
@@ -1026,53 +1026,53 @@ CONTAINS
 
     ALLOCATE ( Inst%NR  ( Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate NR', RC )
+       CALL HCO_ERROR( 'Cannot allocate NR', RC )
        RETURN
     ENDIF
     Inst%NR = 0
 
     ALLOCATE ( Inst%SS_DEN  ( Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate SS_DEN', RC )
+       CALL HCO_ERROR( 'Cannot allocate SS_DEN', RC )
        RETURN
     ENDIF
     Inst%SS_DEN = 2200.d0
 
     ALLOCATE ( Inst%SRRC   ( NR_MAX,   Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate SRRC', RC )
+       CALL HCO_ERROR( 'Cannot allocate SRRC', RC )
        RETURN
     ENDIF
     Inst%SRRC = 0d0
     ALLOCATE ( Inst%SRRC_N ( NR_MAX,   Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate SRRC_N', RC )
+       CALL HCO_ERROR( 'Cannot allocate SRRC_N', RC )
        RETURN
     ENDIF
     Inst%SRRC_N = 0d0
     ALLOCATE ( Inst%RREDGE ( 0:NR_MAX, Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate RREDGE', RC )
+       CALL HCO_ERROR( 'Cannot allocate RREDGE', RC )
        RETURN
     ENDIF
     Inst%RREDGE = 0d0
     ALLOCATE ( Inst%RRMID  ( NR_MAX,   Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate RRMID', RC )
+       CALL HCO_ERROR( 'Cannot allocate RRMID', RC )
        RETURN
     ENDIF
     Inst%RRMID = 0d0
 
     ALLOCATE ( Inst%NDENS_SALA( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate NDENS_SALA', RC )
+       CALL HCO_ERROR( 'Cannot allocate NDENS_SALA', RC )
        RETURN
     ENDIF
     Inst%NDENS_SALA = 0.0_sp
 
     ALLOCATE ( Inst%NDENS_SALC( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate NDENS_SALC', RC )
+       CALL HCO_ERROR( 'Cannot allocate NDENS_SALC', RC )
        RETURN
     ENDIF
     Inst%NDENS_SALC = 0.0_sp
@@ -1081,56 +1081,56 @@ CONTAINS
     IF ( Inst%EmitSnowSS ) THEN
         ALLOCATE ( Inst%F_DI_N_FYI( NR_MAX,   Inst%NSALT ), STAT=AS )
         IF ( AS/=0 ) THEN
-           CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DI_N_FYI', RC )
+           CALL HCO_ERROR( 'Cannot allocate F_DI_N_FYI', RC )
            RETURN
         ENDIF
         Inst%F_DI_N_FYI = 0.0_sp
 
         ALLOCATE ( Inst%F_DI_N_MYI( NR_MAX,   Inst%NSALT ), STAT=AS )
         IF ( AS/=0 ) THEN
-           CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DI_N_MYI', RC )
+           CALL HCO_ERROR( 'Cannot allocate F_DI_N_MYI', RC )
            RETURN
         ENDIF
         Inst%F_DI_N_MYI = 0.0_sp
 
         ALLOCATE ( Inst%F_DN_N_FYI( NR_MAX,   Inst%NSALT ), STAT=AS )
         IF ( AS/=0 ) THEN
-           CALL HCO_ERROR( 'HcoState%Config%Err, Cannot allocate F_DN_N_FYI', RC )
+           CALL HCO_ERROR( 'Cannot allocate F_DN_N_FYI', RC )
            RETURN
         ENDIF
         Inst%F_DN_N_FYI = 0.0_sp
 
         ALLOCATE ( Inst%F_DN_N_MYI( NR_MAX,   Inst%NSALT ), STAT=AS )
         IF ( AS/=0 ) THEN
-           CALL HCO_ERROR( 'HcoState%Config%Err, Cannot allocate F_DN_N_MYI', RC )
+           CALL HCO_ERROR( 'Cannot allocate F_DN_N_MYI', RC )
            RETURN
         ENDIF
         Inst%F_DN_N_MYI = 0.0_sp
 
         ALLOCATE ( Inst%F_DI_S_FYI( NR_MAX,   Inst%NSALT ), STAT=AS )
         IF ( AS/=0 ) THEN
-           CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DI_S_FYI', RC )
+           CALL HCO_ERROR( 'Cannot allocate F_DI_S_FYI', RC )
            RETURN
         ENDIF
         Inst%F_DI_S_FYI = 0.0_sp
 
         ALLOCATE ( Inst%F_DI_S_MYI( NR_MAX,   Inst%NSALT ), STAT=AS )
         IF ( AS/=0 ) THEN
-           CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DI_S_MYI', RC )
+           CALL HCO_ERROR( 'Cannot allocate F_DI_S_MYI', RC )
            RETURN
         ENDIF
         Inst%F_DI_S_MYI = 0.0_sp
 
         ALLOCATE ( Inst%F_DN_S_FYI( NR_MAX,   Inst%NSALT ), STAT=AS )
         IF ( AS/=0 ) THEN
-           CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DN_S_FYI', RC )
+           CALL HCO_ERROR( 'Cannot allocate F_DN_S_FYI', RC )
            RETURN
         ENDIF
         Inst%F_DN_S_FYI = 0.0_sp
 
         ALLOCATE ( Inst%F_DN_S_MYI( NR_MAX,   Inst%NSALT ), STAT=AS )
         IF ( AS/=0 ) THEN
-           CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DN_S_MYI', RC )
+           CALL HCO_ERROR( 'Cannot allocate F_DN_S_MYI', RC )
            RETURN
         ENDIF
         Inst%F_DN_S_MYI = 0.0_sp
@@ -1141,7 +1141,7 @@ CONTAINS
        ! Allocate density of phobic marine organic aerosols
        ALLOCATE ( Inst%NDENS_MOPO( HcoState%NX, HcoState%NY), STAT=AS )
        IF ( AS/=0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate NDENS_MOPO', RC )
+          CALL HCO_ERROR( 'Cannot allocate NDENS_MOPO', RC )
           RETURN
        ENDIF
        Inst%NDENS_MOPO = 0.0_sp
@@ -1149,14 +1149,14 @@ CONTAINS
        ! Allocate density of philic marine organic aerosols
        ALLOCATE ( Inst%NDENS_MOPI( HcoState%NX, HcoState%NY), STAT=AS )
        IF ( AS/=0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate NDENS_MOPI', RC )
+          CALL HCO_ERROR( 'Cannot allocate NDENS_MOPI', RC )
           RETURN
        ENDIF
        Inst%NDENS_MOPI = 0.0_sp
 
        ALLOCATE ( Inst%CHLR( HcoState%NX, HcoState%NY), STAT=AS )
        IF ( AS/=0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate CHLR', RC )
+          CALL HCO_ERROR( 'Cannot allocate CHLR', RC )
           RETURN
        ENDIF
        Inst%CHLR = 0.0_hp
@@ -1209,7 +1209,7 @@ CONTAINS
        ! Error check
        IF ( Inst%NR(N) > NR_MAX ) THEN
           MSG = 'Too many bins'
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
 

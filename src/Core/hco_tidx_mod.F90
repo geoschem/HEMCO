@@ -532,7 +532,7 @@ CONTAINS
           IF ( dt /= 24 ) THEN
              MSG = '7 time slices but delta t is not 24 hours!' // &
                   TRIM(Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -545,7 +545,7 @@ CONTAINS
           IF ( .NOT. Dct%Dta%IsLocTime ) THEN
              MSG = 'Weekday data must be in local time!' // &
                   TRIM(Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
 
           ELSE
@@ -564,7 +564,7 @@ CONTAINS
           ELSE
              MSG = 'Monthly data must not be gridded:' // &
                   TRIM(Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -581,7 +581,7 @@ CONTAINS
           IF ( MOD(24,dt) /= 0 ) THEN
              MSG = 'Cannot properly split up hourly data!' // &
                   TRIM(Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -590,7 +590,7 @@ CONTAINS
           IF ( ntexp /= nt ) THEN
              MSG = 'Wrong delta t and/or number of time slices!' // &
                   TRIM(Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -610,7 +610,7 @@ CONTAINS
        ELSE
           MSG = 'Invalid time slice for field ' // &
                TRIM(Dct%cName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -999,7 +999,7 @@ CONTAINS
     CALL STRSPLIT( CharStr, HCO_GetOpt(HcoConfig%ExtList,'Separator'), SUBSTR, N )
     IF ( N < 4 ) THEN
        MSG = 'Time stamp must have at least 4 elements: ' // TRIM(CharStr)
-       CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -1061,7 +1061,7 @@ CONTAINS
              TimeVec(I1) = TimeVec(I0)
           ELSE
              MSG = 'Cannot extract time stamp: ' // TRIM(CharStr)
-             CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
        ENDIF

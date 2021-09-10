@@ -565,7 +565,7 @@ CONTAINS
     ! Check input
     IF ( cID > HcoState%nnDataCont ) THEN
        MSG = 'cID higher than number of containers'
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC)
+       CALL HCO_ERROR ( MSG, RC, THISLOC=LOC)
        RETURN
     ENDIF
 
@@ -575,7 +575,7 @@ CONTAINS
     ! Check if data container allocated
     IF ( .NOT. ASSOCIATED( Dct ) ) THEN
        MSG = 'Data container is not associated!'
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC)
+       CALL HCO_ERROR ( MSG, RC, THISLOC=LOC)
        RETURN
     ENDIF
 
