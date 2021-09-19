@@ -1517,9 +1517,9 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-      ! LWI=1 and ALBEDO less than 69.5% is a LAND box
+      ! LWI=1 and FRLANDIC less than 50% is a LAND box
       LAND = ( NINT( ExtState%WLI%Arr%Val(I,J) ) == 1   .and. &
-                     ExtState%ALBD%Arr%Val(I,J)  <  0.695e+0_hp )
+                     ExtState%FRLANDIC%Arr%Val(I,J)  <  0.5e+0_hp )
 
       END FUNCTION IS_LAND
 !EOC
@@ -1555,9 +1555,9 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-      ! LWI=2 or ALBEDO > 69.5% is ice
+      ! LWI=2 or FRLANDIC > 50%
       ICE = ( NINT( ExtState%WLI%Arr%Val(I,J) ) == 2       .or. &
-                    ExtState%ALBD%Arr%Val(I,J)  >= 0.695e+0_hp )
+                    ExtState%FRLANDIC%Arr%Val(I,J)  >= 0.5+0_hp )
 
       END FUNCTION IS_ICE
 !EOC
@@ -1694,7 +1694,7 @@ CONTAINS
 
     ! Activate met fields required by this extension
     ExtState%POPG%DoUse        = .TRUE.
-    ExtState%ALBD%DoUse        = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%AIRVOL%DoUse      = .TRUE.
     ExtState%AIRDEN%DoUse      = .TRUE.
     ExtState%FRAC_OF_PBL%DoUse = .TRUE.

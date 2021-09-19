@@ -342,7 +342,7 @@ CONTAINS
        ! Get surface type. Note that these types are different than
        ! the types used elsewhere: 0 = land, 1=water, 2=ice!
        LNDTYPE = HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J),  &
-                               ExtState%ALBD%Arr%Val(I,J) )
+                               ExtState%FRLANDIC%Arr%Val(I,J) )
 
        ! Adjusted SFCTYPE variable for this module:
        IF ( LNDTYPE == 2 ) THEN
@@ -1065,7 +1065,7 @@ CONTAINS
     ExtState%TROPP%DoUse      = .TRUE.
     ExtState%CNV_MFC%DoUse    = .TRUE.
     ExtState%CNV_FRC%DoUse    = .TRUE.
-    ExtState%ALBD%DoUse       = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%WLI%DoUse        = .TRUE.
     ExtState%LFR%DoUse        = .TRUE.
     ExtState%FLASH_DENS%DoUse = .TRUE.

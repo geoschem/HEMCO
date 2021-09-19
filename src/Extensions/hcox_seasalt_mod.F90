@@ -249,7 +249,7 @@ CONTAINS
 
        ! Advance to next grid box if it's not over water
        IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J), &
-                          ExtState%ALBD%Arr%Val(I,J) ) /= 0 ) CYCLE
+                          ExtState%FRLANDIC%Arr%Val(I,J) ) /= 0 ) CYCLE
 
        ! Wind speed at 10 m altitude [m/s]
        W10M = SQRT( ExtState%U10M%Arr%Val(I,J)**2 &
@@ -980,7 +980,7 @@ CONTAINS
 
     ! Activate met fields used by this module
     ExtState%WLI%DoUse   = .TRUE.
-    ExtState%ALBD%DoUse  = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%TSKIN%DoUse = .TRUE.
     ExtState%U10M%DoUse  = .TRUE.
     ExtState%V10M%DoUse  = .TRUE.

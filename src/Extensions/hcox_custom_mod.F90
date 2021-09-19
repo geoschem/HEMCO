@@ -151,7 +151,7 @@ CONTAINS
 
        ! Get the land type for grid box (I,J)
        LANDTYPE = HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J),  &
-                                ExtState%ALBD%Arr%Val(I,J) )
+                                ExtState%FRLANDIC%Arr%Val(I,J) )
 
        ! Check surface type
        ! Ocean:
@@ -310,7 +310,7 @@ CONTAINS
     ! Activate met fields required by this extension
     ExtState%U10M%DoUse = .TRUE.
     ExtState%V10M%DoUse = .TRUE.
-    ExtState%ALBD%DoUse = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%WLI%DoUse  = .TRUE.
 
     ! Activate this extension
