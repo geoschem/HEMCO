@@ -848,11 +848,13 @@ CONTAINS
     ENDIF
 
     ! Put check for PBLHEIGHT here (bmy, 3/4/21)
+#if !defined ( ESMF_ )
     IF ( .NOT. ASSOCIATED(HcoState%Grid%PBLHEIGHT%Val) ) THEN
        MSG = 'PBLHEIGHT (in meters) is missing in HEMCO state'
        CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
+#endif
 
     ! ----------------------------------------------------------------
     ! Set base emissions
