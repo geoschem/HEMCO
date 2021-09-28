@@ -58,10 +58,12 @@ MODULE HCOX_Volcano_Mod
 ! by using the (optional) setting 'Scaling_<SpecName>'.
 ! For example, to emit SO2 and BrO from volcanoes, with an additional scale
 ! factor of 1e-4 kg BrO / kgS for BrO, use the following setting:
-!115     Volcano           : on    SO2/BrO
-!    --> Scaling_BrO       :       1.0e-4
-!    --> Volcano_Source    :       OMI
-!    --> Volcano_Table     :       $ROOT/VOLCANO/v2018-03/$YYYY/so2_volcanic_emissions_Carns.$YYYY$MM$DD.rc
+!
+!117     Volcano                : on    SO2/BrO
+!    --> Scaling_BrO            :       1.0e-4
+!    --> Volcano_Source         :       AeroCom
+!    --> Volcano_Table          :       $ROOT/VOLCANO/v2021-09/$YYYY/$MM/so2_volcanic_emissions_Carns.$YYYY$MM$DD.rc
+!    --> Volcano_Climatology    :       $ROOT/VOLCANO/v2021-09/so2_volcanic_emissions_CARN_v202005.degassing_only.rc
 !                                                                             .
 ! This extension was originally added for usage within GEOS-5 and AeroCom
 ! volcanic emissions, but has been modified to work with OMI-based volcanic
@@ -103,6 +105,7 @@ MODULE HCOX_Volcano_Mod
    INTEGER,  ALLOCATABLE           :: VolcBeg(:)       ! Begin time (optional)
    INTEGER,  ALLOCATABLE           :: VolcEnd(:)       ! End time   (optional)
    CHARACTER(LEN=255)              :: FileName         ! Volcano file name
+   CHARACTER(LEN=255)              :: ClimFile         ! Climatology file name
    CHARACTER(LEN=255)              :: VolcSource       ! Volcano data source
    CHARACTER(LEN=61), ALLOCATABLE  :: SpcScalFldNme(:) ! Names of scale factor fields
    TYPE(MyInst), POINTER           :: NextInst => NULL()
@@ -409,6 +412,18 @@ CONTAINS
        RETURN
     ENDIF
 
+    ! Get location of volcano climatology table. This must be provided.
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'Volcano_Climatology',           &
+                    OptValChar=Inst%ClimFile, FOUND=FOUND, RC=RC            )
+
+    IF ( RC /= HCO_SUCCESS .OR. .NOT. FOUND ) THEN
+       MSG = 'Cannot read Volcano climatology file name. Please provide ' // &
+             'the Volcano climatology as a setting to the Volcano extension. ' // &
+             'The name of this setting must be `Volcano_Climatology`.'
+       CALL HCO_Error( HcoState%Config%Err, MSG, RC )
+       RETURN
+    ENDIF
+
     ! See if emissions data source is given
     ! As of v11-02f, options are AeroCom or OMI
     Inst%VolcSource = 'AeroCom'
@@ -589,14 +604,49 @@ CONTAINS
        ENDIF
 
        ! For dry-run simulations, return to calling program.
-       ! For regular simulations, throw an error if we can't find the file.
+       ! For regular simulations, attempt to use climatology file.
        IF ( HcoState%Options%IsDryRun ) THEN
           RETURN
        ELSE
           IF ( .not. FileExists ) THEN
-             WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
-             RETURN
+
+             ! Attempt to use climatology file instead
+             ThisFile = Inst%ClimFile
+             CALL HCO_CharParse( HcoState%Config, ThisFile, &
+                                 YYYY, MM, DD, 0, 0, RC )
+             IF ( RC /= HCO_SUCCESS ) RETURN
+
+             ! Test if the file exists
+             INQUIRE( FILE=TRIM( ThisFile ), EXIST=FileExists )
+
+             ! Write message to stdout and HEMCO log
+             MSG = 'Attempting to read volcano climatology file'
+             WRITE( 6,   300 ) TRIM( MSG )             
+             CALL HCO_MSG( HcoState%Config%Err, MSG )
+
+             IF ( FileExists ) THEN
+
+                ! Write file status to stdout and the HEMCO log
+                FileMsg = 'HEMCO (VOLCANO): Opening'
+                IF ( Hcostate%amIRoot ) THEN
+                   WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( ThisFile )
+                   WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
+                   CALL HCO_MSG( HcoState%Config%Err, MSG )
+                ENDIF
+
+             ELSE
+
+                ! Throw an error if we can't find the file
+                FileMsg = 'HEMCO (VOLCANO): CLIMATOLOGY FILE NOT FOUND'
+                IF ( Hcostate%amIRoot ) THEN
+                   WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( ThisFile )
+                   WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
+                   CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                   RETURN
+                ENDIF
+
+             ENDIF
+
           ENDIF
        ENDIF
 
