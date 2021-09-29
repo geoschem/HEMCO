@@ -603,50 +603,47 @@ CONTAINS
  300      FORMAT( a, ' ', a )
        ENDIF
 
+       IF ( .not. FileExists ) THEN
+
+          ! Attempt to use climatology file instead
+          ThisFile = Inst%ClimFile
+          CALL HCO_CharParse( HcoState%Config, ThisFile, &
+                              YYYY, MM, DD, 0, 0, RC )
+          IF ( RC /= HCO_SUCCESS ) RETURN
+
+          ! Test if the file exists
+          INQUIRE( FILE=TRIM( ThisFile ), EXIST=FileExists )
+
+          ! Write message to stdout and HEMCO log
+          MSG = 'Attempting to read volcano climatology file'
+          WRITE( 6,   300 ) TRIM( MSG )             
+          CALL HCO_MSG( HcoState%Config%Err, MSG )
+
+          ! Create a display string based on whether or not the file is found
+          IF ( FileExists ) THEN
+             FileMsg = 'HEMCO (VOLCANO): Opening'
+          ELSE
+             FileMsg = 'HEMCO (VOLCANO): CLIMATOLOGY FILE NOT FOUND'
+          ENDIF
+
+          ! Write file status to stdout and the HEMCO log
+          IF ( Hcostate%amIRoot ) THEN
+             WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( ThisFile )
+             WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
+             CALL HCO_MSG( HcoState%Config%Err, MSG )
+          ENDIF
+
+       ENDIF
+
        ! For dry-run simulations, return to calling program.
-       ! For regular simulations, attempt to use climatology file.
+       ! For regular simulations, throw an error if we can't find the file.
        IF ( HcoState%Options%IsDryRun ) THEN
           RETURN
        ELSE
           IF ( .not. FileExists ) THEN
-
-             ! Attempt to use climatology file instead
-             ThisFile = Inst%ClimFile
-             CALL HCO_CharParse( HcoState%Config, ThisFile, &
-                                 YYYY, MM, DD, 0, 0, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
-
-             ! Test if the file exists
-             INQUIRE( FILE=TRIM( ThisFile ), EXIST=FileExists )
-
-             ! Write message to stdout and HEMCO log
-             MSG = 'Attempting to read volcano climatology file'
-             WRITE( 6,   300 ) TRIM( MSG )             
-             CALL HCO_MSG( HcoState%Config%Err, MSG )
-
-             IF ( FileExists ) THEN
-
-                ! Write file status to stdout and the HEMCO log
-                FileMsg = 'HEMCO (VOLCANO): Opening'
-                IF ( Hcostate%amIRoot ) THEN
-                   WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( ThisFile )
-                   WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
-                   CALL HCO_MSG( HcoState%Config%Err, MSG )
-                ENDIF
-
-             ELSE
-
-                ! Throw an error if we can't find the file
-                FileMsg = 'HEMCO (VOLCANO): CLIMATOLOGY FILE NOT FOUND'
-                IF ( Hcostate%amIRoot ) THEN
-                   WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( ThisFile )
-                   WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
-                   CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
-                   RETURN
-                ENDIF
-
-             ENDIF
-
+             WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
+             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             RETURN
           ENDIF
        ENDIF
 
