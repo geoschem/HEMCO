@@ -260,14 +260,14 @@ CONTAINS
     ! Trap potential errors
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Error in getting diagnostics: ' // TRIM(DiagnName)
-       CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+       CALL HCO_Error( ErrMsg, RC )
        RETURN
     ENDIF
 
     IF ( (FLAG /= HCO_SUCCESS) .AND. StopIfNotFound ) THEN
        ErrMsg = 'Cannot get diagnostics for this time stamp: ' //    &
                  TRIM(DiagnName)
-       CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+       CALL HCO_Error( ErrMsg, RC )
        RETURN
     ENDIF
 
@@ -290,7 +290,7 @@ CONTAINS
           ! Error if no 2D or 3D data available
           ELSE
              ErrMsg = 'no data defined: '// TRIM(DiagnName)
-             CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+             CALL HCO_Error( ErrMsg, RC )
              RETURN
           ENDIF
 
@@ -300,14 +300,14 @@ CONTAINS
              Ptr3D => DgnCont%Arr3D%Val
           ELSE
              ErrMsg = 'no 3D data defined: '// TRIM(DiagnName)
-             CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+             CALL HCO_Error( ErrMsg, RC )
              RETURN
           ENDIF
 
        ! Error otherwise
        ELSE
           ErrMsg = 'Please define output data pointer: ' // TRIM(DiagnName)
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
     ENDIF

@@ -212,35 +212,35 @@ CONTAINS
 
        ALLOCATE ( HcoState%Clock%ThisLocYear(HcoState%Clock%ntz), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, 'ThisLocYear', RC )
+          CALL HCO_ERROR ( 'ThisLocYear', RC )
           RETURN
        ENDIF
        HcoState%Clock%ThisLocYear(:) = -1
 
        ALLOCATE ( HcoState%Clock%ThisLocMonth(HcoState%Clock%ntz), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'ThisLocMonth', RC )
+          CALL HCO_ERROR( 'ThisLocMonth', RC )
           RETURN
        ENDIF
        HcoState%Clock%ThisLocMonth(:) = -1
 
        ALLOCATE ( HcoState%Clock%ThisLocDay(HcoState%Clock%ntz), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'ThisLocDay', RC )
+          CALL HCO_ERROR( 'ThisLocDay', RC )
           RETURN
        ENDIF
        HcoState%Clock%ThisLocDay(:) = -1
 
        ALLOCATE ( HcoState%Clock%ThisLocWD(HcoState%Clock%ntz), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'ThisLocWD', RC )
+          CALL HCO_ERROR( 'ThisLocWD', RC )
           RETURN
        ENDIF
        HcoState%Clock%ThisLocWD(:) = -1
 
        ALLOCATE ( HcoState%Clock%ThisLocHour(HcoState%Clock%ntz), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'ThisLocHour', RC )
+          CALL HCO_ERROR( 'ThisLocHour', RC )
           RETURN
        ENDIF
        HcoState%Clock%ThisLocHour(:) = -1.0_sp
@@ -410,7 +410,7 @@ CONTAINS
                        FOUND=FND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error getting emission year'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
        IF ( FND ) THEN
@@ -423,7 +423,7 @@ CONTAINS
                        FOUND=FND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error getting emission month'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
 
@@ -437,7 +437,7 @@ CONTAINS
                        FOUND=FND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error getting emission day'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
 
@@ -451,7 +451,7 @@ CONTAINS
                        FOUND=FND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error getting emission hour'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
 
@@ -540,7 +540,7 @@ CONTAINS
        CALL Set_LocalTime ( HcoState, Clock, UTC, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error setting local time'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
 
@@ -922,7 +922,7 @@ CONTAINS
 
     ! Check time zone index
     IF ( IX > HcoState%Clock%ntz ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'time zone index too large!', RC )
+       CALL HCO_ERROR ( 'time zone index too large!', RC )
        RETURN
     ENDIF
 

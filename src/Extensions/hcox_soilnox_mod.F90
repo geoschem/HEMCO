@@ -316,7 +316,7 @@ CONTAINS
     CALL InstGet ( ExtState%SoilNox, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find soil NOx instance Nr. ', ExtState%SoilNOx
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -391,7 +391,7 @@ CONTAINS
           CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'DRYCOEFF', &
                            OptValChar=DMY, FOUND=FOUND, RC=RC )
           IF ( .NOT. FOUND ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, 'DRYCOEFF not defined', RC )
+             CALL HCO_ERROR( 'DRYCOEFF not defined', RC )
              RETURN
           ENDIF
           ALLOCATE(VecDp(MaxDryCoeff))
@@ -546,7 +546,7 @@ CONTAINS
     CALL HCO_EmisAdd( HcoState, FLUX_2D, Inst%IDTNO, &
                       RC,       ExtNr=Inst%ExtNr )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error', RC )
+       CALL HCO_ERROR( 'HCO_EmisAdd error', RC )
        RETURN
     ENDIF
 
@@ -639,7 +639,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%SoilNox, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create soil NOx instance', RC )
+       CALL HCO_ERROR ( 'Cannot create soil NOx instance', RC )
        RETURN
     ENDIF
 
@@ -662,7 +662,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
     IF ( nSpc /= 1 ) THEN
        MSG = 'Module soil NOx accepts only one species!'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
     Inst%IDTNO = HcoIDs(1)
@@ -703,42 +703,42 @@ CONTAINS
 
     ALLOCATE( Inst%FertNO_Diag( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FertNO_Diag', RC )
+       CALL HCO_ERROR( 'FertNO_Diag', RC )
        RETURN
     ENDIF
     Inst%FertNO_Diag = 0.0_sp
 
     ALLOCATE( Inst%DRYPERIOD( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'DRYPERIOD', RC )
+       CALL HCO_ERROR( 'DRYPERIOD', RC )
        RETURN
     ENDIF
     Inst%DRYPERIOD     = 0.0_sp
 
     ALLOCATE( Inst%PFACTOR( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'PFACTOR', RC )
+       CALL HCO_ERROR( 'PFACTOR', RC )
        RETURN
     ENDIF
     Inst%PFACTOR       = 0.0_sp
 
     ALLOCATE( Inst%GWET_PREV( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'GWET_PREV', RC )
+       CALL HCO_ERROR( 'GWET_PREV', RC )
        RETURN
     ENDIF
     Inst%GWET_PREV     = 0.0_sp
 
     ALLOCATE( Inst%DEP_RESERVOIR( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'DEP_RESERVOIR', RC )
+       CALL HCO_ERROR( 'DEP_RESERVOIR', RC )
        RETURN
     ENDIF
     Inst%DEP_RESERVOIR = 0.0_sp
 
     ALLOCATE( Inst%CANOPYNOX( I, J, NBIOM ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'CANOPYNOX', RC )
+       CALL HCO_ERROR( 'CANOPYNOX', RC )
        RETURN
     ENDIF
     Inst%CANOPYNOX     = 0e+0_hp
@@ -746,13 +746,13 @@ CONTAINS
     ! Reserve 24 pointers for land fractions for each Koppen category
     ALLOCATE ( Inst%LANDTYPE(NBIOM), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'LANDTYPE', RC )
+       CALL HCO_ERROR( 'LANDTYPE', RC )
        RETURN
     ENDIF
     DO II = 1,NBIOM
        ALLOCATE( Inst%LANDTYPE(II)%VAL( I, J ), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'LANDTYPE array', RC )
+          CALL HCO_ERROR( 'LANDTYPE array', RC )
           RETURN
        ENDIF
        Inst%LANDTYPE(II)%Val = 0.0_hp
@@ -762,7 +762,7 @@ CONTAINS
                Inst%CLIMARID  ( I, J ), &
                Inst%CLIMNARID ( I, J ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'SOILFERT', RC )
+       CALL HCO_ERROR( 'SOILFERT', RC )
        RETURN
     ENDIF
     Inst%SOILFERT  = 0.0_hp

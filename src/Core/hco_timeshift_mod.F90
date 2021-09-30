@@ -174,7 +174,7 @@ CONTAINS
             ( Dta%ncDys(1) == 1 .AND. Dta%ncDys(2) == 7 ) ) THEN
           WRITE(MSG,*) 'Time shift not supported for weekday data: ', &
              TRIM(Dta%ncFile)
-          CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF

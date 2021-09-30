@@ -204,7 +204,7 @@ CONTAINS
     ! Trap potential errors
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error encountered in routine HCOIO_Read!'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 

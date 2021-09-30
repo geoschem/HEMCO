@@ -249,7 +249,7 @@ CONTAINS
     CALL InstGet ( ExtState%GC_POPs, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find GC_POPs instance Nr. ', ExtState%GC_POPs
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -297,7 +297,7 @@ CONTAINS
 
     ! Maximum extent of the PBL [model level]
     IF ( .NOT. ASSOCIATED(ExtState%PBL_MAX) ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'PBL_MAX not defined in ExtState!', RC )
+       CALL HCO_ERROR ( 'PBL_MAX not defined in ExtState!', RC )
        RETURN
     ELSE
        PBL_MAX = DBLE( ExtState%PBL_MAX )
@@ -458,7 +458,7 @@ CONTAINS
                          RC, ExtNr=Inst%ExtNr )
        Arr3D => NULL()
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: EmisPOPPOCPO', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: EmisPOPPOCPO', RC )
           RETURN
        ENDIF
     ENDIF
@@ -474,7 +474,7 @@ CONTAINS
                          RC, ExtNr=Inst%ExtNr )
        Arr3D => NULL()
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: EmisPOPPBCPO', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: EmisPOPPBCPO', RC )
           RETURN
        ENDIF
     ENDIF
@@ -490,7 +490,7 @@ CONTAINS
                          RC, ExtNr=Inst%ExtNr )
        Arr3D => NULL()
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: EmisPOPG', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: EmisPOPG', RC )
           RETURN
        ENDIF
 
@@ -1630,7 +1630,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%GC_POPs, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create GC_POPs instance', RC )
+       CALL HCO_ERROR ( 'Cannot create GC_POPs instance', RC )
        RETURN
     ENDIF
     ! Also fill ExtNrSS - this is the same as the parent ExtNr
@@ -1670,21 +1670,21 @@ CONTAINS
     ! ERROR: POPG tracer is not found!
     IF ( Inst%IDTPOPG <= 0 ) THEN
        RC = HCO_FAIL
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot find POPG tracer in list of species!', RC )
+       CALL HCO_ERROR( 'Cannot find POPG tracer in list of species!', RC )
        RETURN
     ENDIF
 
     ! ERROR! POPPOCPO tracer is not found
     IF ( Inst%IDTPOPPOCPO <= 0 ) THEN
        RC = HCO_FAIL
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot find POPPOCPO tracer in list of species!', RC )
+       CALL HCO_ERROR( 'Cannot find POPPOCPO tracer in list of species!', RC )
        RETURN
     ENDIF
 
     ! ERROR! POPPBCPO tracer is not found
     IF ( Inst%IDTPOPPBCPO <= 0 ) THEN
        RC = HCO_FAIL
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot find POPPBCPO tracer in list of species!', RC )
+       CALL HCO_ERROR( 'Cannot find POPPBCPO tracer in list of species!', RC )
        RETURN
     ENDIF
 
@@ -1714,119 +1714,119 @@ CONTAINS
 
     ALLOCATE( Inst%EmisPOPG( HcoState%NX, HcoState%NY, HcoState%NZ ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate EmisPOPG', RC )
+       CALL HCO_ERROR ( 'Cannot allocate EmisPOPG', RC )
        RETURN
     ENDIF
     Inst%EmisPOPG = 0.0e0_hp
 
     ALLOCATE( Inst%EmisPOPPOCPO( HcoState%NX, HcoState%NY, HcoState%NZ ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate EmisPOPPOCPO', RC )
+       CALL HCO_ERROR ( 'Cannot allocate EmisPOPPOCPO', RC )
        RETURN
     ENDIF
     Inst%EmisPOPPOCPO = 0.0e0_hp
 
     ALLOCATE( Inst%EmisPOPPBCPO( HcoState%NX, HcoState%NY, HcoState%NZ ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate EmisPOPPBCPO', RC )
+       CALL HCO_ERROR ( 'Cannot allocate EmisPOPPBCPO', RC )
        RETURN
     ENDIF
     Inst%EmisPOPPBCPO = 0.0e0_hp
 
     ALLOCATE( Inst%EmisPOPGfromSoil( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate EmisPOPGfromSoil', RC )
+       CALL HCO_ERROR ( 'Cannot allocate EmisPOPGfromSoil', RC )
        RETURN
     ENDIF
     Inst%EmisPOPGfromSoil = 0.0e0_hp
 
     ALLOCATE( Inst%EmisPOPGfromLake( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate EmisPOPGfromLake', RC )
+       CALL HCO_ERROR ( 'Cannot allocate EmisPOPGfromLake', RC )
        RETURN
     ENDIF
     Inst%EmisPOPGfromLake = 0.0e0_hp
 
     ALLOCATE( Inst%EmisPOPGfromLeaf( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate EmisPOPGfromLeaf', RC )
+       CALL HCO_ERROR ( 'Cannot allocate EmisPOPGfromLeaf', RC )
        RETURN
     ENDIF
     Inst%EmisPOPGfromLeaf = 0.0e0_hp
 
     ALLOCATE( Inst%EmisPOPGfromSnow( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate EmisPOPGfromSnow', RC )
+       CALL HCO_ERROR ( 'Cannot allocate EmisPOPGfromSnow', RC )
        RETURN
     ENDIF
     Inst%EmisPOPGfromSnow = 0.0e0_hp
 
     ALLOCATE( Inst%EmisPOPGfromOcean( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate EmisPOPGfromOcean', RC )
+       CALL HCO_ERROR ( 'Cannot allocate EmisPOPGfromOcean', RC )
        RETURN
     ENDIF
     Inst%EmisPOPGfromOcean = 0.0e0_hp
 
     ALLOCATE( Inst%FluxPOPGfromSoilToAir( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate FluxPOPGfromSoilToAir', RC )
+       CALL HCO_ERROR ( 'Cannot allocate FluxPOPGfromSoilToAir', RC )
        RETURN
     ENDIF
     Inst%FluxPOPGfromSoilToAir = 0.0e0_hp
 
     ALLOCATE( Inst%FluxPOPGfromAirToSoil( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate FluxPOPGfromAirToSoil', RC )
+       CALL HCO_ERROR ( 'Cannot allocate FluxPOPGfromAirToSoil', RC )
        RETURN
     ENDIF
     Inst%FluxPOPGfromAirToSoil = 0.0e0_hp
 
     ALLOCATE( Inst%FluxPOPGfromLakeToAir( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate FluxPOPGfromLakeToAir', RC )
+       CALL HCO_ERROR ( 'Cannot allocate FluxPOPGfromLakeToAir', RC )
        RETURN
     ENDIF
     Inst%FluxPOPGfromLakeToAir = 0.0e0_hp
 
     ALLOCATE( Inst%FluxPOPGfromAirToLake( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate FluxPOPGfromAirToLake', RC )
+       CALL HCO_ERROR ( 'Cannot allocate FluxPOPGfromAirToLake', RC )
        RETURN
     ENDIF
     Inst%FluxPOPGfromAirToLake = 0.0e0_hp
 
     ALLOCATE( Inst%FluxPOPGfromLeafToAir( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate FluxPOPGfromLeafToAir', RC )
+       CALL HCO_ERROR ( 'Cannot allocate FluxPOPGfromLeafToAir', RC )
        RETURN
     ENDIF
     Inst%FluxPOPGfromLeafToAir = 0.0e0_hp
 
     ALLOCATE( Inst%FluxPOPGfromAirToLeaf( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate FluxPOPGfromAirToLeaf', RC )
+       CALL HCO_ERROR ( 'Cannot allocate FluxPOPGfromAirToLeaf', RC )
        RETURN
     ENDIF
     Inst%FluxPOPGfromAirToLeaf = 0.0e0_hp
 
     ALLOCATE( Inst%FugacitySoilToAir( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate FugacitySoilToAir', RC )
+       CALL HCO_ERROR ( 'Cannot allocate FugacitySoilToAir', RC )
        RETURN
     ENDIF
     Inst%FugacitySoilToAir = 0.0e0_hp
 
     ALLOCATE( Inst%FugacityLakeToAir( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate FugacityLakeToAir', RC )
+       CALL HCO_ERROR ( 'Cannot allocate FugacityLakeToAir', RC )
        RETURN
     ENDIF
     Inst%FugacityLakeToAir = 0.0e0_hp
 
     ALLOCATE( Inst%FugacityLeafToAir( HcoState%NX, HcoState%NY ), STAT=RC )
     IF ( RC /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot allocate FugacityLeafToAir', RC )
+       CALL HCO_ERROR ( 'Cannot allocate FugacityLeafToAir', RC )
        RETURN
     ENDIF
     Inst%FugacityLeafToAir = 0.0e0_hp

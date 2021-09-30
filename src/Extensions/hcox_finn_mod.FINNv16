@@ -371,7 +371,7 @@ CONTAINS
           ELSEIF ( NF == 7 ) THEN
              THISTYP => VEGTYP9
           ELSE
-             CALL HCO_ERROR ( HcoState%Config%Err, 'Undefined emission factor', RC )
+             CALL HCO_ERROR ( 'Undefined emission factor', RC )
              RETURN
           ENDIF
 
@@ -482,7 +482,7 @@ CONTAINS
                          RC,       ExtNr=ExtNr, Cat=-1, Hier=-1 )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'HCO_EmisAdd error: ' // TRIM(HcoState%Spc(HcoID)%SpcName)
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
 
@@ -643,7 +643,7 @@ CONTAINS
          BCPIfrac < 0.0_sp .OR. BCPIfrac > 1.0_sp     ) THEN
        WRITE(MSG,*) 'hydrophilic fractions must be between 0-1: ', &
           OCPIfrac, BCPIfrac
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -662,7 +662,7 @@ CONTAINS
     ! FINN species names
     ALLOCATE ( FINN_SPEC_NAME ( N_SPEC ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate FINN_SPEC_NAME', RC )
+       CALL HCO_ERROR( 'Cannot allocate FINN_SPEC_NAME', RC )
        RETURN
     ENDIF
     FINN_SPEC_NAME = ''
@@ -671,7 +671,7 @@ CONTAINS
     ! scale factors for all FINN species.
     ALLOCATE ( FINN_EMFAC ( N_SPEC, N_EMFAC ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate FINN_EMFAC', RC )
+       CALL HCO_ERROR( 'Cannot allocate FINN_EMFAC', RC )
        RETURN
     ENDIF
     FINN_EMFAC = 0.0_dp
@@ -682,7 +682,7 @@ CONTAINS
                SpcScal(nSpcMax), SpcScalFldNme(nSpcMax), STAT=AS )
 
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate FinnIDs', RC )
+       CALL HCO_ERROR( 'Cannot allocate FinnIDs', RC )
        RETURN
     ENDIF
     nSpc             = 0
@@ -700,7 +700,7 @@ CONTAINS
                VEGTYP6(HcoState%NX,HcoState%NY), &
                VEGTYP9(HcoState%NX,HcoState%NY), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate VEGTYP', RC )
+       CALL HCO_ERROR( 'Cannot allocate VEGTYP', RC )
        RETURN
     ENDIF
     VEGTYP1 = 0.0_hp
@@ -823,7 +823,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
     IF ( tnSpc == 0 ) THEN
        MSG = 'No FINN species specified'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -854,7 +854,7 @@ CONTAINS
              'This version of HEMCO expects species scale factors to be ' // &
              'set as `Scaling_XX` instead of `XX scale factor`. '         // &
              'Please update the FINN settings section accordingly.'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -918,7 +918,7 @@ CONTAINS
                 IF ( nSpc > nSpcMax ) THEN
                    MSG = 'nSpc greater than nSpcMax, please increase ' // &
                          'parameter `nSpcMax` in hcox_finn_mod.F90'
-                   CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC )
+                   CALL HCO_ERROR ( MSG, RC )
                    RETURN
                 ENDIF
 
@@ -1075,7 +1075,7 @@ CONTAINS
        ! in FINN.
        IF ( .NOT. Matched ) THEN
           MSG = 'Species '// TRIM(SpcName) //' not found in FINN'
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
     ENDDO !L

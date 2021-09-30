@@ -126,7 +126,7 @@ CONTAINS
     CALL InstGet ( ExtState%<yourname>, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find <yourname> instance Nr. ', ExtState%<yourname>
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -203,7 +203,7 @@ CONTAINS
     ! for future reference to the instance. See InstCreate for more details.
     CALL InstCreate ( ExtNr, ExtState%<yourname>, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create <yourname> instance', RC )
+       CALL HCO_ERROR ( 'Cannot create <yourname> instance', RC )
        RETURN
     ENDIF
 
@@ -213,7 +213,7 @@ CONTAINS
 
     ! There must be at least one species
     IF ( Inst%nSpc == 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'No <yourname> species specified', RC )
+       CALL HCO_ERROR ( 'No <yourname> species specified', RC )
        RETURN
     ENDIF
 

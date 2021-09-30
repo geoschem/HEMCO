@@ -211,7 +211,7 @@ CONTAINS
     IF ( nSpecies > 0 ) THEN
        ALLOCATE ( HcoState%Spc (nSpecies ), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoConfig%Err, 'Species', RC )
+          CALL HCO_ERROR( 'Species', RC )
           RETURN
        ENDIF
     ENDIF
@@ -252,7 +252,7 @@ CONTAINS
     HcoState%NZ   = 0
     ALLOCATE ( HcoState%Grid, STAT = AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoConfig%Err, 'HEMCO grid', RC )
+       CALL HCO_ERROR( 'HEMCO grid', RC )
        RETURN
     ENDIF
 
@@ -292,7 +292,7 @@ CONTAINS
     ! Physical constants (Source: NIST, 2014)
     ALLOCATE ( HcoState%Phys, STAT = AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoConfig%Err, 'HEMCO physical constants', RC )
+       CALL HCO_ERROR( 'HEMCO physical constants', RC )
        RETURN
     ENDIF
     HcoState%Phys%Avgdr  = 6.022140857e23_dp
@@ -329,7 +329,7 @@ CONTAINS
     ! Aerosol options
     ALLOCATE ( HcoState%MicroPhys, STAT = AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoConfig%Err, 'HEMCO aerosol microphysics options', RC )
+       CALL HCO_ERROR( 'HEMCO aerosol microphysics options', RC )
        RETURN
     ENDIF
     HcoState%MicroPhys%nBins           = 0
@@ -738,7 +738,7 @@ CONTAINS
     HcoIDs(:)   = -1
 #endif
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR(HcoState%Config%Err,'HcoIDs allocation error', RC, THISLOC=LOC)
+       CALL HCO_ERROR('HcoIDs allocation error', RC, THISLOC=LOC)
        RETURN
     ENDIF
 
