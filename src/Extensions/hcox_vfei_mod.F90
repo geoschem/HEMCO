@@ -38,7 +38,32 @@ MODULE HCOX_VFEI_Mod
   PRIVATE :: EmitVFEI
 !
 ! !REMARKS:
-!  TBD
+!  This HEMCO extension reads biomass burning emissions from daily ASCII tables 
+!  and puts them onto the HEMCO grid. The ASCII data is expected to be in the same 
+!  format as the VFEI files produced by Gonzalo Ferrada, which replicate the 
+!  format and structure of FINN. In particular, the file is expected to contain
+!  one header line followed by entries for each fire of the given day. The latitude
+!  and longitude header name are expected to be 'LATI' and 'LONGI', respectively.
+!  Emissions are assumed to be reported in units of moles/day for gases and kg/day
+!  for aerosols.
+!  The emissions are vertically distributed by emitting a set fraction of the total 
+!  emissions into the PBL, and the rest above up to a specified level. By default, 
+!  the fraction emitted into the PBL is 65%, and the maximum emission height is 5500m. 
+!  This extension is similar to the Volcano extension. The main difference is the 
+!  vertical redistribution and the multi-species input table expected by the VFEI
+!  extension.
+!  This extension is enabled by adding a 'VFEI' extension switch to the HEMCO
+!  configuration file:
+!
+!122     VFEI              : on    NO/CO/ALK4/ACET/MEK/ALD2/PRPE/C3H8/CH2O/C2H6/SO2/NH3/BCPO/BCPI/OCPO/OCPI/HNO2/HCl/ACTA/MGLY/GLYX/EOH/MOH/MTPO/ISOP/BENZ/TOLU/XYLE
+!    --> VFEI_Table        :       /discover/nobackup/cakelle2/data/VFEI/TXT/v0/Y$YYYY/vfeiv0_V1_$YYYY$MM$DD.txt
+!    --> Category          :       1
+!    --> PBL_frac          :       0.65
+!    --> MaxHeightM        :       5500.0
+!    --> Scaling_BCPO      :       0.8
+!    --> Scaling_BCPI      :       0.2
+!    --> Scaling_OCPO      :       0.5
+!    --> Scaling_OCPI      :       0.5 
 !
 ! !REVISION HISTORY:
 !  15 Oct 2021 - C. Keller   - Initial version
@@ -55,6 +80,8 @@ MODULE HCOX_VFEI_Mod
    INTEGER                         :: CatNr     = -1   ! Category number 
    INTEGER                         :: nSpc      =  0   ! # of species
    INTEGER                         :: nFire     =  0   ! # of fires in buffer
+   REAL(sp)                        :: PBL_frac
+   REAL(sp)                        :: MaxHeightM
    INTEGER,  ALLOCATABLE           :: SpcIDs(:)        ! HEMCO species IDs
    CHARACTER(LEN=15), ALLOCATABLE  :: SpcName(:)       ! HEMCO species name 
    REAL(sp), ALLOCATABLE           :: SpcScl(:)        ! Species scale factors
@@ -72,6 +99,10 @@ MODULE HCOX_VFEI_Mod
 
   ! Pointer to instances
   TYPE(MyInst), POINTER            :: AllInst => NULL()
+
+  ! Defaults
+  REAL(sp), PARAMETER              :: PBL_FRAC_DEFAULT   = 0.65
+  REAL(sp), PARAMETER              :: MAXHEIGHTM_DEFAULT = 5500.0
 
 CONTAINS
 !EOC
@@ -408,6 +439,23 @@ CONTAINS
        RETURN
     ENDIF
 
+    ! Check for fraction of emissions into PBL and maximum emission
+    ! height
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'PBL_frac', &
+                    OptValSp=ValSp, FOUND=FOUND, RC=RC )
+    IF ( FOUND ) THEN
+       Inst%PBL_frac = ValSp
+    ELSE
+       Inst%PBL_frac = PBL_FRAC_DEFAULT
+    ENDIF
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'MaxHeightM', &
+                    OptValSp=ValSp, FOUND=FOUND, RC=RC )
+    IF ( FOUND ) THEN
+       Inst%MaxHeightM = ValSp
+    ELSE
+       Inst%MaxHeightM = MAXHEIGHTM_DEFAULT
+    ENDIF
+
     ! See if eruptive and degassing hierarchies are given
     Inst%CatNr = 1
     CALL GetExtOpt( HcoState%Config, ExtNr,       'Category', &
@@ -419,7 +467,14 @@ CONTAINS
     IF ( HcoState%amIRoot ) THEN
        MSG = 'Use emissions extension `VFEI`:'
        CALL HCO_MSG( HcoState%Config%Err,  MSG )
-
+       WRITE(MSG,*) ' - File template: ', TRIM(Inst%FileName)
+       CALL HCO_MSG( HcoState%Config%Err,  MSG )
+       WRITE(MSG,*) ' - Fraction in PBL: ', Inst%PBL_frac
+       CALL HCO_MSG( HcoState%Config%Err,  MSG )
+       WRITE(MSG,*) ' - Maximum emission height (m): ', Inst%MaxHeightM
+       CALL HCO_MSG( HcoState%Config%Err,  MSG )
+       WRITE(MSG,*) ' - Emit emissions as category ', Inst%CatNr
+       CALL HCO_MSG( HcoState%Config%Err,  MSG )
        MSG = ' - use the following species (Name, HcoID, Species names in VFEI table):'
        CALL HCO_MSG( HcoState%Config%Err, MSG)
        DO N = 1, Inst%nSpc
@@ -430,8 +485,6 @@ CONTAINS
           WRITE(MSG,*) 'Apply scale field: ', TRIM(Inst%SpcScalFldNme(N))
           CALL HCO_MSG( HcoState%Config%Err, MSG)
        ENDDO
-       WRITE(MSG,*) ' - Emit emissions as category ', Inst%CatNr
-       CALL HCO_MSG( HcoState%Config%Err,  MSG )
     ENDIF
 
     ! Cleanup
@@ -822,7 +875,6 @@ CONTAINS
     REAL(sp)            :: TotEmisPBL, TotEmisFT
     REAL(sp)            :: z1, z2, zBot, zTop
     REAL(sp)            :: tmp1, tmp2, Frac
-    REAL(sp), PARAMETER :: zTopFT = 5500.0_sp
     CHARACTER(LEN=255)  :: MSG
     CHARACTER(LEN=255)  :: LOC = 'EmitVFEI (hcox_vfei_mod.F90)'
 
@@ -881,16 +933,15 @@ CONTAINS
           ! Get emission heights
           iPBL = HcoState%Grid%PBLHEIGHT%Val(I,J)
           zBot = HcoState%Grid%ZSFC%Val(I,J)
-          zTop = max(zTopFT,iPBL)
+          zTop = max(Inst%MaxHeightM,iPBL)
 
           ! Plume heights
           PlumeHgtPBL = iPBL - zBot
           PlumeHgtFT  = zTop - iPBL 
 
           ! Emission amounts for PBL and FT
-          ! Default: 65% PBL, 35% FT
-          TotEmisPBL = 0.65_sp * TotEmis
-          TotEmisFT  = 0.35_sp * TotEmis 
+          TotEmisPBL = Inst%PBL_frac * TotEmis
+          TotEmisFT  = (1.0-Inst%PBL_frac) * TotEmis 
           ! If PBL is zero, emit everything into free troposphere 
           IF ( PlumeHgtPBL <= 0.0_sp ) THEN
              TotEmisPBL = 0.0_sp
@@ -1081,9 +1132,11 @@ CONTAINS
 
     ! Create new instance
     ALLOCATE(Inst)
-    Inst%Instance  = nnInst + 1
-    Inst%ExtNr     = ExtNr
-    Inst%YmdOnFile = -1
+    Inst%Instance   = nnInst + 1
+    Inst%ExtNr      = ExtNr
+    Inst%YmdOnFile  = -1
+    Inst%PBL_frac   = PBL_FRAC_DEFAULT
+    Inst%MaxHeightM = MAXHEIGHTM_DEFAULT
 
     ! Attach to instance list
     Inst%NextInst => AllInst
