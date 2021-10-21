@@ -104,6 +104,7 @@ MODULE HCOX_Volcano_Mod
    INTEGER,  ALLOCATABLE           :: VolcEnd(:)       ! End time   (optional)
    CHARACTER(LEN=255)              :: FileName         ! Volcano file name
    CHARACTER(LEN=255)              :: VolcSource       ! Volcano data source
+   INTEGER                         :: YmdOnFile = -1   ! Date of file currently in record 
    CHARACTER(LEN=61), ALLOCATABLE  :: SpcScalFldNme(:) ! Names of scale factor fields
    TYPE(MyInst), POINTER           :: NextInst => NULL()
   END TYPE MyInst
@@ -534,6 +535,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER               :: YYYY, MM, DD
+    INTEGER               :: ThisYMD
     INTEGER               :: N, LUN, IOS, AS
     INTEGER               :: nVolc, nCol
     REAL(sp)              :: Dum(10)
@@ -548,17 +550,19 @@ CONTAINS
     ! ReadVolcTable begins here!
     !=================================================================
 
-    ! Do only if it's a new day...
-    IF ( HcoClock_NewDay( HcoState%Clock, EmisTime=.TRUE. ) ) THEN
-
-       ! Get current year, month, day
-       CALL HcoClock_Get ( HcoState%Clock, cYYYY=YYYY, cMM=MM, cDD=DD, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
-
+    ! Get current year, month, day
+    CALL HcoClock_Get ( HcoState%Clock, cYYYY=YYYY, cMM=MM, cDD=DD, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
 #if defined( MODEL_GEOS )
-       ! Error trap: skip leap days
-       IF ( MM == 2 .AND. DD > 28 ) DD = 28
+    ! Error trap: skip leap days
+    IF ( MM == 2 .AND. DD > 28 ) DD = 28
 #endif
+
+    ! Compare current day against day on file
+    ThisYMD  = YYYY*10000 + MM*100+ DD
+
+    ! Do only if it's a different day 
+    IF ( ThisYMD /= Inst%YmdOnFile ) THEN
 
        ! Get file name
        ThisFile = Inst%FileName
@@ -745,6 +749,9 @@ CONTAINS
 
        ! Save # of volcanoes in archive
        Inst%nVolc = nVolc
+
+       ! Update date for file on record
+       Inst%YmdOnFile = ThisYMD 
 
     ENDIF ! new day
 
@@ -1079,8 +1086,9 @@ CONTAINS
 
     ! Create new instance
     ALLOCATE(Inst)
-    Inst%Instance = nnInst + 1
-    Inst%ExtNr    = ExtNr
+    Inst%Instance  = nnInst + 1
+    Inst%ExtNr     = ExtNr
+    Inst%YmdOnFile = -1
 
     ! Attach to instance list
     Inst%NextInst => AllInst
