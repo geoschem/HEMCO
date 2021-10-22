@@ -368,6 +368,8 @@ CONTAINS
              iname(1) = 'BC'
           CASE ( 'NAP','SOAP' )
              iname(1) = 'CO'
+          CASE ( 'SO4' )
+             iname(1) = 'SO2'
           CASE ( 'CH2O' )
              iname(1) = 'HCHO'
           CASE ( 'ACET' )
