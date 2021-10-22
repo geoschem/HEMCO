@@ -316,9 +316,9 @@ CONTAINS
                                   1,        FLD,      RC, Arr3D=Arr3D )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
-    ! If field is all zero assume it to be not filled
+    ! If field is all negatives assume it to be not filled
     IF ( FLD ) THEN
-       IF ( SUM(Arr3D) == 0.0 ) FLD = .FALSE.
+       IF ( MAXVAL(Arr3D) < 0.0 ) FLD = .FALSE.
     ENDIF
 
     ! Log output
@@ -470,9 +470,9 @@ CONTAINS
                                   1,        FLD,      RC, Arr2D=Arr2D )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
-    ! If field is all zero assume it to be not filled
+    ! If field is all negatives assume it to be not filled
     IF ( FLD ) THEN
-       IF ( SUM(Arr2D) == 0.0 ) FLD = .FALSE.
+       IF ( MAXVAL(Arr2D) < 0.0 ) FLD = .FALSE.
     ENDIF
 
     ! Log output
@@ -547,7 +547,7 @@ CONTAINS
     ! Verbose
     IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
        IF ( HcoState%amIRoot .AND. .NOT. FLD ) THEN
-          MSG = 'No restart field found: '//TRIM(Name)
+          MSG = 'No restart field found (2D): '//TRIM(Name)
           CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(*,*) TRIM(MSG)
        ENDIF
