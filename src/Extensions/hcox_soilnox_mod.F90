@@ -415,7 +415,11 @@ CONTAINS
     ! after the rewinding the clock.
     !---------------------------------------------------------------
 
+#if !defined ( MODEL_GEOS ) 
     IF ( FIRST .OR. HcoClock_Rewind( HcoState%Clock, .TRUE. ) ) THEN
+#else
+    IF ( .TRUE. ) THEN
+#endif
 
        ! DEP_RESERVOIR. Read in kg NO/m3
        CALL HCO_EvalFld( HcoState, 'DEP_RESERVOIR_DEFAULT', &
