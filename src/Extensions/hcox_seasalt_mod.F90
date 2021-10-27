@@ -994,9 +994,9 @@ CONTAINS
        CALL HCO_MSG(HcoState%Config%Err,MSG)
 
        IF ( Inst%CalcBrSalt ) THEN
-          WRITE(MSG,*) 'BrSALA: ', TRIM(SpcNamesSS(8)), Inst%IDTBrSALA
+          WRITE(MSG,*) 'BrSALA: ', TRIM(SpcNamesSS(7)), Inst%IDTBrSALA
           CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) 'BrSALC: ', TRIM(SpcNamesSS(9)), Inst%IDTBrSALC
+          WRITE(MSG,*) 'BrSALC: ', TRIM(SpcNamesSS(8)), Inst%IDTBrSALC
           CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,*) 'Br- mass content: ', Inst%BrContent
           CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -1004,11 +1004,11 @@ CONTAINS
 
        IF ( HcoState%MarinePOA ) THEN
           WRITE(MSG,*) 'Hydrophobic marine organic aerosol: ',        &
-                       TRIM(SpcNamesSS(10)), ':', Inst%IDTMOPO
+                       TRIM(SpcNamesSS(9)), ':', Inst%IDTMOPO
           CALL HCO_MSG(HcoState%Config%Err,MSG)
 
           WRITE(MSG,*) 'Hydrophilic marine organic aerosol: ',        &
-                       TRIM(SpcNamesSS(11)), ':', Inst%IDTMOPI
+                       TRIM(SpcNamesSS(10)), ':', Inst%IDTMOPI
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
     ENDIF
