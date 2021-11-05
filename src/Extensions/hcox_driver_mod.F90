@@ -106,7 +106,6 @@ CONTAINS
     USE HCOX_GFED_Mod,          ONLY : HCOX_GFED_Init
     USE HCOX_MEGAN_Mod,         ONLY : HCOX_MEGAN_Init
     USE HCOX_Finn_Mod,          ONLY : HCOX_FINN_Init
-    USE HCOX_VFEI_Mod,          ONLY : HCOX_VFEI_Init
     USE HCOX_GC_RnPbBe_Mod,     ONLY : HCOX_GC_RnPbBe_Init
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Init
     USE HCOX_CH4WetLand_MOD,    ONLY : HCOX_CH4WETLAND_Init
@@ -311,16 +310,6 @@ CONTAINS
        ENDIF
 
        !--------------------------------------------------------------------
-       ! VFEI biomass burning emissions
-       !--------------------------------------------------------------------
-       CALL HCOX_VFEI_Init( HcoState, 'VFEI', ExtState, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in "HCOX_VFEI_Init"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
-          RETURN
-       ENDIF
-
-       !--------------------------------------------------------------------
        ! Extension for GEOS-Chem Rn-Pb-Be specialty simulation
        !--------------------------------------------------------------------
        CALL HCOX_GC_RnPbBe_Init( HcoState, 'GC_Rn-Pb-Be', ExtState,  RC )
@@ -438,7 +427,6 @@ CONTAINS
     USE HCOX_Megan_Mod,         ONLY : HCOX_Megan_Run
     USE HCOX_GFED_Mod,          ONLY : HCOX_GFED_Run
     USE HCOX_FINN_Mod,          ONLY : HCOX_FINN_Run
-    USE HCOX_VFEI_Mod,          ONLY : HCOX_VFEI_Run
     USE HCOX_GC_RnPbBe_Mod,     ONLY : HCOX_GC_RnPbBe_Run
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Run
     USE HCOX_CH4WetLand_mod,    ONLY : HCOX_CH4Wetland_Run
@@ -510,18 +498,6 @@ CONTAINS
        CALL HCOX_Volcano_Run( ExtState, HcoState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_Volcano_Run"!'
-          CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
-          RETURN
-       ENDIF
-    ENDIF
-
-    !--------------------------------------------------------------------
-    ! VFEI biomass burning emissions
-    ! -------------------------------------------------------------------
-    IF ( ExtState%VFEI > 0 ) THEN
-       CALL HCOX_VFEI_Run( ExtState, HcoState, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in "HCOX_VFEI_Run"!'
           CALL HCO_ERROR( HcoState%Config%Err, ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
@@ -800,7 +776,6 @@ CONTAINS
     USE HCOX_MEGAN_Mod,         ONLY : HCOX_MEGAN_Final
     USE HCOX_GFED_Mod,          ONLY : HCOX_GFED_Final
     USE HCOX_FINN_Mod,          ONLY : HCOX_FINN_Final
-    USE HCOX_VFEI_Mod,          ONLY : HCOX_VFEI_Final
     USE HCOX_GC_RnPbBe_Mod,     ONLY : HCOX_GC_RnPbBe_Final
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Final
     USE HCOX_CH4WetLand_Mod,    ONLY : HCOX_CH4Wetland_Final
@@ -897,10 +872,6 @@ CONTAINS
 
           IF ( ExtState%FINN > 0      ) THEN
              CALL HcoX_FINN_Final( ExtState )
-          ENDIF
-
-          IF ( ExtState%VFEI > 0      ) THEN
-             CALL HCOX_VFEI_Final( ExtState )
           ENDIF
 
           IF ( ExtState%GC_RnPbBe > 0 ) THEN
