@@ -409,9 +409,12 @@ CONTAINS
           ! Add category emissions to diagnostics at category level
           ! (only if defined in the diagnostics list).
           IF ( Diagn_AutoFillLevelDefined(HcoState%Diagn,3) .AND. DoDiagn ) THEN
+             ! Bug fix: Make sure to pass COL=-1 to ensure all HEMCO diagnostics
+             ! are updated, including those manually defined in other models
+             ! (mps, 11/30/21)
              CALL Diagn_Update( HcoState,    ExtNr=ExtNr,   &
                                 Cat=PrevCat, Hier=-1,  HcoID=PrevSpc, &
-                                AutoFill=1,  Array3D=CatFlx, COL=HcoState%Diagn%HcoDiagnIDDefault, RC=RC ) 
+                                AutoFill=1,  Array3D=CatFlx, COL=-1, RC=RC ) 
              IF ( RC /= HCO_SUCCESS ) RETURN
 #ifdef ADJOINT
              IF (HcoState%IsAdjoint) THEN
@@ -460,9 +463,12 @@ CONTAINS
           ! The same diagnostics may be updated multiple times during
           ! the same time step, continuously adding emissions to it.
           IF ( Diagn_AutoFillLevelDefined(HcoState%Diagn,2) .AND. DoDiagn ) THEN
+             ! Bug fix: Make sure to pass COL=-1 to ensure all HEMCO diagnostics
+             ! are updated, including those manually defined in other models
+             ! (mps, 11/30/21)
              CALL Diagn_Update( HcoState,  ExtNr=ExtNr,  &
                                 Cat=-1,    Hier=-1,  HcoID=PrevSpc, &
-                               AutoFill=1,Array3D=SpcFlx, COL=HcoState%Diagn%HcoDiagnIDDefault, RC=RC ) 
+                               AutoFill=1,Array3D=SpcFlx, COL=-1, RC=RC ) 
              IF ( RC /= HCO_SUCCESS ) RETURN
 #ifdef ADJOINT
              IF (HcoState%IsAdjoint) THEN
@@ -627,11 +633,13 @@ CONTAINS
        ! Now remove PosOnly flag. TmpFlx is initialized to zero, so it's
        ! ok to keep negative values (ckeller, 7/12/15).
        IF ( Diagn_AutoFillLevelDefined(HcoState%Diagn,4) .AND. DoDiagn ) THEN
+             ! Bug fix: Make sure to pass COL=-1 to ensure all HEMCO diagnostics
+             ! are updated, including those manually defined in other models
+             ! (mps, 11/30/21)
           CALL Diagn_Update( HcoState,       ExtNr=ExtNr,   &
                              Cat=ThisCat,Hier=ThisHir,   HcoID=ThisSpc, &
-                             !AutoFill=1, Array3D=TmpFlx, PosOnly=.TRUE.,&
                              AutoFill=1, Array3D=TmpFlx, &
-                             COL=HcoState%Diagn%HcoDiagnIDDefault, RC=RC ) 
+                             COL=-1, RC=RC ) 
           IF ( RC /= HCO_SUCCESS ) RETURN
 #ifdef ADJOINT
           IF (HcoState%IsAdjoint) THEN
