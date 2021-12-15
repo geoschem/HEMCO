@@ -70,18 +70,18 @@ CONTAINS
 ! !IROUTINE: HCO_LandType_Sp
 !
 ! !DESCRIPTION: Function HCO\_LANDTYPE returns the land type based upon
-!  the land water index (0=water,1=land,2=ice) and the surface albedo.
+!  the land water index (0=water,1=land,2=ice) and the fraction of land ice.
 !  Inputs are in single precision.
 !\\
 !\\
 ! !INTERFACE:
 !
-  FUNCTION HCO_LandType_Sp( WLI, Albedo ) Result ( LandType )
+  FUNCTION HCO_LandType_Sp( WLI, FRLANDIC ) Result ( LandType )
 !
 ! !INPUT PARAMETERS:
 !
     REAL(sp), INTENT(IN) :: WLI       ! Land type: 0=water,1=land,2=ice
-    REAL(sp), INTENT(IN) :: Albedo    ! Surface albedo
+    REAL(sp), INTENT(IN) :: FRLANDIC  ! Fraction of grid-box covered in land ice
 !
 ! !RETURN VALUE
 !
@@ -98,25 +98,24 @@ CONTAINS
 !BOC
 !
 ! !DEFINED PARAMETERS:
-!
-    ! Set threshold for albedo over ice. All surfaces w/ an albedo above
-    ! this value will be classified as ice.
-    REAL(sp), PARAMETER :: albd_ice = 0.695_sp
+!   
+    ! Threshold at which a grid-box is considered ice
+    REAL(sp), PARAMETER :: frac_classify_land_ice_as_ice = 0.5_sp
 
     !--------------------------
     ! HCO_LANDTYPE begins here
     !--------------------------
 
     ! Water:
-    IF ( NINT(WLI) == 0 .AND. Albedo < albd_ice ) THEN
+    IF ( NINT(WLI) == 0 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
        LandType = 0
 
     ! Land:
-    ELSEIF ( NINT(WLI) == 1 .AND. Albedo < albd_ice ) THEN
+    ELSEIF ( NINT(WLI) == 1 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
        LandType = 1
 
     ! Ice:
-    ELSEIF ( NINT(WLI) == 2 .OR. Albedo >= albd_ice ) THEN
+    ELSEIF ( NINT(WLI) == 2 .OR. FRLANDIC >= frac_classify_land_ice_as_ice ) THEN
        LandType = 2
     ENDIF
 
@@ -130,18 +129,18 @@ CONTAINS
 ! !IROUTINE: HCO_LandType_Dp
 !
 ! !DESCRIPTION: Function HCO\_LandType\_Dp returns the land type based upon
-! the land water index (0=water,1=land,2=ice) and the surface albedo.
+! the land water index (0=water,1=land,2=ice) and the fraction of land ice.
 ! Inputs are in double precision.
 !\\
 !\\
 ! !INTERFACE:
 !
-  FUNCTION HCO_LandType_Dp( WLI, Albedo ) Result ( LandType )
+  FUNCTION HCO_LandType_Dp( WLI, FRLANDIC ) Result ( LandType )
 !
 ! !INPUT PARAMETERS:
 !
     REAL(dp), INTENT(IN) :: WLI       ! Land type: 0=water,1=land,2=ice
-    REAL(dp), INTENT(IN) :: Albedo    ! Surface albedo
+    REAL(dp), INTENT(IN) :: FRLANDIC    ! Surface albedo
 !
 ! !RETURN VALUE:
 !
@@ -159,9 +158,8 @@ CONTAINS
 !
 ! !DEFINED PARAMETERS::
 !
-    ! Set threshold for albedo over ice. All surfaces w/ an albedo above
-    ! this value will be classified as ice.
-    REAL(dp), PARAMETER :: albd_ice = 0.695_dp
+    ! Threshold at which a grid-box is considered ice
+    REAL(dp), PARAMETER :: frac_classify_land_ice_as_ice = 0.5_dp
 
     !--------------------------
     ! HCO_LANDTYPE begins here
@@ -172,7 +170,7 @@ CONTAINS
 
     ! Water:
 #if !defined( HEMCO_CESM )
-    IF ( NINT(WLI) == 0 .AND. Albedo < albd_ice ) THEN
+    IF ( NINT(WLI) == 0 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
 #else
     IF ( NINT(WLI) == 0 ) THEN
 #endif
@@ -181,14 +179,14 @@ CONTAINS
     ! Land:
 
 #if !defined( HEMCO_CESM )
-    ELSEIF ( NINT(WLI) == 1 .AND. Albedo < albd_ice ) THEN
+    ELSEIF ( NINT(WLI) == 1 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
 #else
     ELSEIF ( NINT(WLI) == 1 ) THEN
 #endif
        LandType = 1
 
     ! Ice:
-    ELSEIF ( NINT(WLI) == 2 .OR. Albedo >= albd_ice ) THEN
+    ELSEIF ( NINT(WLI) == 2 .OR. FRLANDIC >= frac_classify_land_ice_as_ice ) THEN
        LandType = 2
     ENDIF
 

@@ -812,7 +812,9 @@ CONTAINS
     ExtState%U10M%DoUse      = .TRUE.
     ExtState%V10M%DoUse      = .TRUE.
     ExtState%LAI%DoUse       = .TRUE.
-    ExtState%ALBD%DoUse      = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
+    ExtState%WLI%DoUse         = .TRUE.
+    ExtState%SNODP%DoUse    = .TRUE.
     ExtState%RADSWG%DoUse    = .TRUE.
     ExtState%CLDFRC%DoUse    = .TRUE.
 
@@ -1078,6 +1080,7 @@ CONTAINS
 ! !USES:
 !
     USE Drydep_Toolbox_Mod, ONLY : BIOFIT
+    USE HCO_GeoTools_Mod, ONLY : HCO_LANDTYPE
 !
 ! !ARGUMENTS:
 !
@@ -1180,7 +1183,8 @@ CONTAINS
           KK = K
 
           ! If the surface is snow or ice, then set K=3
-          IF ( ExtState%ALBD%Arr%Val(I,J) > 0.4 ) KK = 3
+          IF ( (ExtState%SNODP%Arr%Val(I,J) > 0.2) .OR. &
+                (HCO_LANDTYPE(ExtState%WLI%Arr%Val(I,J), ExtState%FRLANDIC%Arr%Val(I,J)) == 2) ) KK = 3
 
           ! USE new MODIS/KOPPEN Biometypes to read data
 

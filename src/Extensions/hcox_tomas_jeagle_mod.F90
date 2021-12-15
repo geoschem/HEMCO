@@ -184,7 +184,7 @@ CONTAINS
 
        ! Get the fraction of the box that is over water
        IF ( HCO_LandType( ExtState%WLI%Arr%Val(I,J),              &
-                          ExtState%ALBD%Arr%Val(I,J) ) == 0 ) THEN
+                          ExtState%FRLANDIC%Arr%Val(I,J) ) == 0 ) THEN
           FOCEAN = 1d0 - ExtState%FRCLND%Arr%Val(I,J)
        ELSE
           FOCEAN = 0.d0
@@ -548,7 +548,7 @@ CONTAINS
 
     ! Activate met fields
     ExtState%WLI%DoUse         = .TRUE.
-    ExtState%ALBD%DoUse        = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%TSKIN%DoUse       = .TRUE.
     ExtState%U10M%DoUse        = .TRUE.
     ExtState%V10M%DoUse        = .TRUE.

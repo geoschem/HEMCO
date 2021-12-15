@@ -895,7 +895,7 @@
       ExtState%SNOWHGT%DoUse = .TRUE.
       ExtState%USTAR%DoUse   = .TRUE.
       ExtState%Z0%DoUse      = .TRUE.
-      ExtState%ALBD%DoUse    = .TRUE.
+      ExtState%FRLANDIC%DoUse    = .TRUE.
       ExtState%WLI%DoUse     = .TRUE.
 
       ! Leave w/ success
@@ -2096,7 +2096,7 @@
 
          ! Set orography to land type
          OROGRAPHY (I,J) = HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J),
-     &                                   ExtState%ALBD%Arr%Val(I,J) )
+     &                             ExtState%FRLANDIC%Arr%Val(I,J) )
 
       ENDDO
       ENDDO

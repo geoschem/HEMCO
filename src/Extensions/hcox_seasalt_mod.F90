@@ -337,8 +337,8 @@ CONTAINS
        A_M2 = HcoState%Grid%AREA_M2%Val( I, J )
 
        ! Advance to next grid box if it's not over water or sea ice
-       IF ( ExtState%FROCEAN%Arr%Val(I,J)<=0d0 .and. &
-            ExtState%FRSEAICE%Arr%Val(I,J)<=0d0 ) CYCLE
+       IF ( ExtState%FROCEAN%Arr%Val(I,J)  <= 0d0  .and. &
+            ExtState%FRSEAICE%Arr%Val(I,J) <= 0d0 ) CYCLE
 
        ! Wind speed at 10 m altitude [m/s]
        W10M = SQRT( ExtState%U10M%Arr%Val(I,J)**2 &
@@ -1437,17 +1437,18 @@ CONTAINS
     !=======================================================================
 
     ! Activate met fields used by this module
-    ExtState%TSKIN%DoUse = .TRUE.
-    ExtState%U10M%DoUse  = .TRUE.
-    ExtState%V10M%DoUse  = .TRUE.
+    ExtState%WLI%DoUse      = .TRUE.
+    ExtState%TSKIN%DoUse    = .TRUE.
+    ExtState%U10M%DoUse     = .TRUE.
+    ExtState%V10M%DoUse     = .TRUE.
     ExtState%FROCEAN%DoUse  = .TRUE.
     ExtState%FRSEAICE%DoUse = .TRUE.
 
     ! for blowing snow 
     IF ( Inst%EmitSnowSS ) THEN
-       ExtState%USTAR%DoUse    = .TRUE.
-       ExtState%T2M%DoUse      = .TRUE.
-       ExtState%QV2M%DoUse     = .TRUE.
+       ExtState%USTAR%DoUse = .TRUE.
+       ExtState%T2M%DoUse   = .TRUE.
+       ExtState%QV2M%DoUse  = .TRUE.
     ENDIF
 
     ! Return w/ success
