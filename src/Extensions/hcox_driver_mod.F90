@@ -108,7 +108,6 @@ CONTAINS
     USE HCOX_Finn_Mod,          ONLY : HCOX_FINN_Init
     USE HCOX_GC_RnPbBe_Mod,     ONLY : HCOX_GC_RnPbBe_Init
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Init
-    USE HCOX_CH4WetLand_MOD,    ONLY : HCOX_CH4WETLAND_Init
     USE HCOX_Volcano_Mod,       ONLY : HCOX_Volcano_Init
     USE HCOX_Iodine_Mod,        ONLY : HCOX_Iodine_Init
 #if defined( TOMAS )
@@ -330,16 +329,6 @@ CONTAINS
        ENDIF
 
        !--------------------------------------------------------------------
-       ! CH4 wetland emissions
-       !--------------------------------------------------------------------
-       CALL HCOX_CH4Wetland_Init( HcoState, 'CH4_WETLANDS', ExtState,  RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in "HCOX_CH4Wetland_Init"!'
-          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
-          RETURN
-       ENDIF
-
-       !--------------------------------------------------------------------
        ! Ocean inorganic iodine emissions
        !--------------------------------------------------------------------
        CALL HCOX_Iodine_Init( HcoState, 'Inorg_Iodine', ExtState,  RC )
@@ -429,7 +418,6 @@ CONTAINS
     USE HcoX_FINN_Mod,          ONLY : HcoX_FINN_Run
     USE HCOX_GC_RnPbBe_Mod,     ONLY : HCOX_GC_RnPbBe_Run
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Run
-    USE HCOX_CH4WetLand_mod,    ONLY : HCOX_CH4Wetland_Run
     USE HCOX_Volcano_Mod,       ONLY : HCOX_Volcano_Run
     USE HCOX_Iodine_Mod,        ONLY : HCOX_Iodine_Run
 #if defined( TOMAS )
@@ -680,18 +668,6 @@ CONTAINS
           ENDIF
        ENDIF
 
-       !--------------------------------------------------------------------
-       ! CH4 wetland emissions
-       !--------------------------------------------------------------------
-       IF ( ExtState%Wetland_CH4 > 0 ) THEN
-          CALL HCOX_CH4Wetland_Run( ExtState, HcoState, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-             ErrMsg = 'Error encountered in "HCOX_CH4Wetland_Run"!'
-             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
-             RETURN
-          ENDIF
-       ENDIF
-
 #ifdef TOMAS
        !--------------------------------------------------------------------
        ! TOMAS sectional sea salt emissions
@@ -778,7 +754,6 @@ CONTAINS
     USE HcoX_FINN_Mod,          ONLY : HcoX_FINN_Final
     USE HCOX_GC_RnPbBe_Mod,     ONLY : HCOX_GC_RnPbBe_Final
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Final
-    USE HCOX_CH4WetLand_Mod,    ONLY : HCOX_CH4Wetland_Final
     USE HCOX_Volcano_Mod,       ONLY : HCOX_Volcano_Final
     USE HCOX_Iodine_Mod,        ONLY : HCOX_Iodine_Final
 #if defined( TOMAS )
@@ -880,10 +855,6 @@ CONTAINS
 
           IF ( ExtState%GC_POPs > 0  ) THEN
              CALL HCOX_GC_POPs_Final( ExtState )
-          ENDIF
-
-          IF ( ExtState%Wetland_CH4 > 0 ) THEN
-             CALL HCOX_CH4Wetland_Final( ExtState )
           ENDIF
 
           IF ( ExtState%Volcano > 0 ) THEN
