@@ -83,13 +83,11 @@ PBL dry deposition:  False
 0       Base                   : on    *
     --> CHEMISTRY_INPUT        :       false
     --> GC_RESTART             :       false
-    --> STATE_PSC              :       false
     --> GC_BCs                 :       false
     --> UVALBEDO               :       false
     --> CCM_STRAT_Bry          :       false
     --> GMI_STRAT_OH           :       false
     --> GMI_PROD_LOSS          :       false
-    --> UCX_PROD_LOSS          :       false
     --> OMOC_RATIO             :       false
     --> GMD_SFC_CH4            :       false
     --> CMIP6_SFC_CH4          :       false

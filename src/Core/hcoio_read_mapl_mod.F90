@@ -130,7 +130,7 @@ CONTAINS
        ! Check for MAPL error
        IF( STAT /= ESMF_SUCCESS ) THEN
           MSG = 'Cannot get xyz pointer: ' // TRIM(Lct%Dct%Dta%ncFile)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -171,7 +171,7 @@ CONTAINS
        ! Check for MAPL error
        IF( STAT /= ESMF_SUCCESS ) THEN
           MSG = 'Cannot get xy pointer: ' // TRIM(Lct%Dct%Dta%ncFile)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 

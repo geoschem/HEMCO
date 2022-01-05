@@ -409,9 +409,12 @@ CONTAINS
           ! Add category emissions to diagnostics at category level
           ! (only if defined in the diagnostics list).
           IF ( Diagn_AutoFillLevelDefined(HcoState%Diagn,3) .AND. DoDiagn ) THEN
+             ! Bug fix: Make sure to pass COL=-1 to ensure all HEMCO diagnostics
+             ! are updated, including those manually defined in other models
+             ! (mps, 11/30/21)
              CALL Diagn_Update( HcoState,    ExtNr=ExtNr,   &
                                 Cat=PrevCat, Hier=-1,  HcoID=PrevSpc, &
-                                AutoFill=1,  Array3D=CatFlx, COL=HcoState%Diagn%HcoDiagnIDDefault, RC=RC ) 
+                                AutoFill=1,  Array3D=CatFlx, COL=-1, RC=RC ) 
              IF ( RC /= HCO_SUCCESS ) RETURN
 #ifdef ADJOINT
              IF (HcoState%IsAdjoint) THEN
@@ -460,9 +463,12 @@ CONTAINS
           ! The same diagnostics may be updated multiple times during
           ! the same time step, continuously adding emissions to it.
           IF ( Diagn_AutoFillLevelDefined(HcoState%Diagn,2) .AND. DoDiagn ) THEN
+             ! Bug fix: Make sure to pass COL=-1 to ensure all HEMCO diagnostics
+             ! are updated, including those manually defined in other models
+             ! (mps, 11/30/21)
              CALL Diagn_Update( HcoState,  ExtNr=ExtNr,  &
                                 Cat=-1,    Hier=-1,  HcoID=PrevSpc, &
-                               AutoFill=1,Array3D=SpcFlx, COL=HcoState%Diagn%HcoDiagnIDDefault, RC=RC ) 
+                               AutoFill=1,Array3D=SpcFlx, COL=-1, RC=RC ) 
              IF ( RC /= HCO_SUCCESS ) RETURN
 #ifdef ADJOINT
              IF (HcoState%IsAdjoint) THEN
@@ -503,7 +509,7 @@ CONTAINS
              ! Cannot use temporary array for more than one species!
              IF ( nnSpec > 1 ) THEN
                 MSG = 'Cannot fill buffer for more than one species!'
-                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                CALL HCO_ERROR( MSG, RC )
                 RETURN
              ENDIF
 
@@ -512,14 +518,14 @@ CONTAINS
              OutArr => HcoState%Buffer3D%Val
              IF ( .NOT. ASSOCIATED( OutArr ) ) THEN
                 MSG = 'Buffer array is not associated'
-                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                CALL HCO_ERROR( MSG, RC )
                 RETURN
              ENDIF
              IF ( (SIZE(OutArr,1) /= nI) .OR. &
                   (SIZE(OutArr,2) /= nJ) .OR. &
                   (SIZE(OutArr,3) /= nL)       ) THEN
                 MSG = 'Buffer array has wrong dimension!'
-                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                CALL HCO_ERROR( MSG, RC )
                 RETURN
              ENDIF
 
@@ -582,7 +588,7 @@ CONTAINS
              ELSE
                 MSG = 'Negative emissions in: '// TRIM(Dct%cName) // '. ' // &
                 'To allow negatives, edit settings in the configuration file.'
-                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                CALL HCO_ERROR( MSG, RC )
                 RETURN
              ENDIF
           ENDIF
@@ -627,11 +633,13 @@ CONTAINS
        ! Now remove PosOnly flag. TmpFlx is initialized to zero, so it's
        ! ok to keep negative values (ckeller, 7/12/15).
        IF ( Diagn_AutoFillLevelDefined(HcoState%Diagn,4) .AND. DoDiagn ) THEN
+             ! Bug fix: Make sure to pass COL=-1 to ensure all HEMCO diagnostics
+             ! are updated, including those manually defined in other models
+             ! (mps, 11/30/21)
           CALL Diagn_Update( HcoState,       ExtNr=ExtNr,   &
                              Cat=ThisCat,Hier=ThisHir,   HcoID=ThisSpc, &
-                             !AutoFill=1, Array3D=TmpFlx, PosOnly=.TRUE.,&
                              AutoFill=1, Array3D=TmpFlx, &
-                             COL=HcoState%Diagn%HcoDiagnIDDefault, RC=RC ) 
+                             COL=-1, RC=RC ) 
           IF ( RC /= HCO_SUCCESS ) RETURN
 #ifdef ADJOINT
           IF (HcoState%IsAdjoint) THEN
@@ -833,7 +841,7 @@ CONTAINS
     ! Check if container contains data
     IF ( .NOT. FileData_ArrIsDefined(BaseDct%Dta) ) THEN
        MSG = 'Array not defined: ' // TRIM(BaseDct%cName)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -851,7 +859,7 @@ CONTAINS
 #if !defined ( ESMF_ )
     IF ( .NOT. ASSOCIATED(HcoState%Grid%PBLHEIGHT%Val) ) THEN
        MSG = 'PBLHEIGHT (in meters) is missing in HEMCO state'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 #endif
@@ -893,12 +901,16 @@ CONTAINS
        LevDct1_Unit = GetEmisLUnit( HcoState, LevDct1 )
        IF ( LevDct1_Unit < 0 ) THEN
           MSG = 'LevDct1 units are not defined!'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RC = HCO_FAIL
           RETURN
        ENDIF
     ELSE
+#ifdef MODEL_GEOS
        LevDct1_Unit = HCO_EMISL_LEV
+#else
+       LevDct1_Unit = -1
+#endif
     ENDIF
 
     ! Get the units of LevDct2 (if it exists)
@@ -906,11 +918,15 @@ CONTAINS
        LevDct2_Unit = GetEmisLUnit( HcoState, LevDct2 )
        IF ( LevDct2_Unit < 0 ) THEN
           MSG = 'LevDct2_Units are not defined!'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ELSE
+#ifdef MODEL_GEOS
        LevDct2_Unit = HCO_EMISL_LEV
+#else
+       LevDct2_Unit = -1
+#endif
     ENDIF
 
     ! Throw an error if boxheight is missing and the units are in meters
@@ -918,7 +934,7 @@ CONTAINS
          LevDct2_Unit == HCO_EMISL_M ) THEN
        IF ( .NOT. ASSOCIATED(HcoState%Grid%BXHEIGHT_M%Val) ) THEN
           MSG = 'Boxheight (in meters) is missing in HEMCO state'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF
@@ -928,7 +944,7 @@ CONTAINS
          LevDct2_Unit == HCO_EMISL_PBL ) THEN
        IF ( .NOT. ASSOCIATED(HcoState%Grid%PBLHEIGHT%Val) ) THEN
           MSG = 'Boundary layer height is missing in HEMCO state'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF
@@ -1034,7 +1050,7 @@ CONTAINS
 
     ! Check for error
     IF ( ERROR == 1 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -1059,7 +1075,7 @@ CONTAINS
        ! Sanity check: scale field cannot be a base field
        IF ( (ScalDct%DctType == HCO_DCTTYPE_BASE) ) THEN
           MSG = 'Wrong scale field type: ' // TRIM(ScalDct%cName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -1100,7 +1116,7 @@ CONTAINS
           IF ( MaskDct%DctType /= HCO_DCTTYPE_MASK ) THEN
              MSG = 'Invalid mask for scale factor: '//TRIM(ScalDct%cName)
              MSG = TRIM(MSG) // '; mask: '//TRIM(MaskDct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
        ENDIF
@@ -1314,7 +1330,7 @@ CONTAINS
              MSG = 'Error when applying scale factor: ' // TRIM(ScalDct%cName)
           ENDIF
           ScalDct => NULL()
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -1435,7 +1451,7 @@ CONTAINS
     ! Check if field data is defined
     IF ( .NOT. FileData_ArrIsDefined(BaseDct%Dta) ) THEN
        MSG = 'Array not defined: ' // TRIM(BaseDct%cName)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -1573,7 +1589,7 @@ CONTAINS
              IF ( MaskDct%DctType /= HCO_DCTTYPE_MASK ) THEN
                 MSG = 'Invalid mask for scale factor: '//TRIM(ScalDct%cName)
                 MSG = TRIM(MSG) // '; mask: '//TRIM(MaskDct%cName)
-                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                CALL HCO_ERROR( MSG, RC )
                 ERROR = 5
                 EXIT
              ENDIF
@@ -1705,7 +1721,7 @@ CONTAINS
              ! Return w/ error otherwise (Oper 3 only allowed for masks!)
              ELSE
                 MSG = 'Illegal data operator: ' // TRIM(ScalDct%cName)
-                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                CALL HCO_ERROR( MSG, RC )
                 ERROR = 2
                 EXIT
              ENDIF
@@ -1740,7 +1756,7 @@ CONTAINS
        ELSE
           MSG = 'Error when applying scale factor: ' // TRIM(ScalDct%cName)
        ENDIF
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        ScalDct => NULL()
        RETURN
     ENDIF
@@ -1838,7 +1854,7 @@ CONTAINS
           RETURN
        ELSE
           MSG = 'Cannot find in EmisList: ' // TRIM(cName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF
@@ -1854,14 +1870,14 @@ CONTAINS
     ! Sanity check: horizontal grid dimensions are expected to be on HEMCO grid
     IF ( nI /= HcoState%NX .OR. nJ /= HcoState%nY ) THEN
        WRITE(MSG,*) "Horizontal dimension error: ", TRIM(cName), nI, nJ
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
     ! Make sure mask array is defined
     ALLOCATE(MASK(nI,nJ,nL),STAT=AS)
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate MASK', RC, THISLOC=LOC )
+       CALL HCO_ERROR( 'Cannot allocate MASK', RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -1959,7 +1975,7 @@ CONTAINS
           RETURN
        ELSE
           MSG = 'Cannot find in EmisList: ' // TRIM(cName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF
@@ -1975,14 +1991,14 @@ CONTAINS
     ! Sanity check: horizontal grid dimensions are expected to be on HEMCO grid
     IF ( nI /= HcoState%NX .OR. nJ /= HcoState%nY ) THEN
        WRITE(MSG,*) "Horizontal dimension error: ", TRIM(cName), nI, nJ
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
     ! Make sure mask array is defined
     ALLOCATE(MASK(nI,nJ,nL),Arr3D(nI,nJ,nL),STAT=AS)
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate MASK', RC, THISLOC=LOC )
+       CALL HCO_ERROR( 'Cannot allocate MASK', RC, THISLOC=LOC )
        RETURN
     ENDIF
     Arr3D = 0.0_hp
@@ -2171,7 +2187,7 @@ CONTAINS
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        MSG = '5000 TESTMASK     -140/10/-40/90 - - - xy 1 1 -140/10/-40/90 yes'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
-       CALL HCO_ERROR ( HcoState%Config%Err, &
+       CALL HCO_ERROR ( &
                         'Error reading mask '//TRIM(MaskName), RC, THISLOC=LOC )
        RETURN
     ENDIF
@@ -2187,7 +2203,7 @@ CONTAINS
        IF ( SIZE(MASK,1) /= HcoState%NX .OR. SIZE(MASK,2) /= HcoState%NY ) THEN
           WRITE(MSG,*) 'Input mask array has wrong dimensions. Must be ', &
              HcoState%NX, HcoState%NY, ' but found ', SIZE(MASK,1), SIZE(MASK,2)
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -2209,7 +2225,7 @@ CONTAINS
        ! Error check
        IF ( ERR ) THEN
           MSG = 'Error in GetMaskVal'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -2560,7 +2576,7 @@ END FUNCTION GetEmisLUnit
 
     ELSE
        MSG = 'Illegal altitude unit'
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -2705,6 +2721,7 @@ END FUNCTION GetEmisLUnit
        ! Since model layers have different depths, this will result in differnt
        ! total emissions per layer.
        ELSE
+#ifdef MODEL_GEOS
           ! Get fractional layer indeces for lower and upper level. This makes 
           ! sure that only fractions of the lower and upper level are being
           ! considered, so that double-counting is avoided if a model layer serves
@@ -2732,6 +2749,11 @@ END FUNCTION GetEmisLUnit
              DilFact = 1.0_hp / (UppLLR-LowLLR)
           ENDIF
 
+#else
+          MSG = 'GetDilFact h2 not greater than h1'
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
+          RETURN
+#endif
        ENDIF
 
     ! Approximate dilution factor otherwise
@@ -2832,6 +2854,13 @@ END FUNCTION GetEmisLUnit
     CHARACTER(LEN=255)      :: MSG, LOC
     LOGICAL                 :: NegScalExist
     LOGICAL                 :: MaskFractions
+    LOGICAL                 :: isLevDct1
+    LOGICAL                 :: isLevDct2
+    LOGICAL                 :: isMaskDct
+    LOGICAL                 :: isPblHt
+    LOGICAL                 :: isBoxHt
+    INTEGER                 :: LevDct1_Unit
+    INTEGER                 :: LevDct2_Unit
  
     ! testing only
     INTEGER                 :: IX, IY
@@ -2843,9 +2872,10 @@ END FUNCTION GetEmisLUnit
     ! Initialize
     ScalDct => NULL()
     MaskDct => NULL()
+    LOC     = 'GET_CURRENT_EMISSIONS_ADJ (hco_calc_mod.F90)'
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS', RC )
+    CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS_ADJ', RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! testing only:
@@ -2855,7 +2885,7 @@ END FUNCTION GetEmisLUnit
     ! Check if container contains data
     IF ( .NOT. FileData_ArrIsDefined(BaseDct%Dta) ) THEN
        MSG = 'Array not defined: ' // TRIM(BaseDct%cName)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -2894,6 +2924,55 @@ END FUNCTION GetEmisLUnit
        LevDct2 => NULL()
     ENDIF
 
+    ! Test whether LevDct1 and LevDct2 are associated
+    isLevDct1 = ASSOCIATED( LevDct1 )
+    isLevDct2 = ASSOCIATED( LevDct2 )
+
+    ! Get the units of LevDct1 (if it exists)
+    IF ( isLevDct1 ) THEN
+       LevDct1_Unit = GetEmisLUnit( HcoState, LevDct1 )
+       IF ( LevDct1_Unit < 0 ) THEN
+          MSG = 'LevDct1 units are not defined!'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RC = HCO_FAIL
+          RETURN
+       ENDIF
+    ELSE
+       LevDct1_Unit = -1
+    ENDIF
+
+    ! Get the units of LevDct2 (if it exists)
+    IF ( isLevDct2 ) THEN
+       LevDct2_Unit = GetEmisLUnit( HcoState, LevDct2 )
+       IF ( LevDct2_Unit < 0 ) THEN
+          MSG = 'LevDct2_Units are not defined!'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
+       ENDIF
+    ELSE
+       LevDct2_Unit = -1
+    ENDIF
+
+    ! Throw an error if boxheight is missing and the units are in meters
+    IF ( LevDct1_Unit == HCO_EMISL_M  .or.                                  &
+         LevDct2_Unit == HCO_EMISL_M ) THEN
+       IF ( .NOT. ASSOCIATED(HcoState%Grid%BXHEIGHT_M%Val) ) THEN
+          MSG = 'Boxheight (in meters) is missing in HEMCO state'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    ! Throw an error if boxheight is missing and the units are in PBL frac
+    IF ( LevDct1_Unit == HCO_EMISL_PBL  .or.                                &
+         LevDct2_Unit == HCO_EMISL_PBL ) THEN
+       IF ( .NOT. ASSOCIATED(HcoState%Grid%PBLHEIGHT%Val) ) THEN
+          MSG = 'Boundary layer height is missing in HEMCO state'
+          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          RETURN
+       ENDIF
+    ENDIF
+
     ! Loop over all latitudes and longitudes
 !$OMP PARALLEL DO                                                      &
 !$OMP DEFAULT( SHARED )                                                &
@@ -2912,8 +2991,10 @@ END FUNCTION GetEmisLUnit
        ENDIF
 
        ! Get lower and upper vertical index
-       CALL GetVertIndx ( HcoState, BaseDct, LevDct1, LevDct2, &
-                          I, J, LowLL, UppLL, RC )
+       CALL GetVertIndx ( HcoState,     BaseDct,   isLevDct1, LevDct1,       &
+                          LevDct1_Unit, isLevDct2, LevDct2,   LevDct2_Unit,  &
+                          I,            J,         LowLL,     UppLL,         &
+                          RC                                                )
        IF ( RC /= HCO_SUCCESS ) THEN
           WRITE(MSG,*) 'Error getting vertical index at location ',I,J,&
                        ': ', TRIM(BaseDct%cName)
@@ -2981,7 +3062,7 @@ END FUNCTION GetEmisLUnit
 
     ! Check for error
     IF ( ERROR == 1 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -3006,7 +3087,7 @@ END FUNCTION GetEmisLUnit
        ! Sanity check: scale field cannot be a base field 
        IF ( (ScalDct%DctType == HCO_DCTTYPE_BASE) ) THEN
           MSG = 'Wrong scale field type: ' // TRIM(ScalDct%cName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -3047,7 +3128,7 @@ END FUNCTION GetEmisLUnit
           IF ( MaskDct%DctType /= HCO_DCTTYPE_MASK ) THEN
              MSG = 'Invalid mask for scale factor: '//TRIM(ScalDct%cName)
              MSG = TRIM(MSG) // '; mask: '//TRIM(MaskDct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
        ENDIF
@@ -3137,8 +3218,10 @@ END FUNCTION GetEmisLUnit
           ! ------------------------------------------------------------ 
        
           ! Get lower and upper vertical index
-          CALL GetVertIndx ( HcoState, BaseDct, &
-                             LevDct1, LevDct2, I, J, LowLL, UppLL, RC )
+          CALL GetVertIndx( HcoState, BaseDct,       isLevDct1,              &
+                            LevDct1,  LevDct1_Unit,  isLevDct2,              &
+                            LevDct2,  LevDct2_Unit,  I,                      &
+                            J,        LowLL,         UppLL,      RC         )
           IF ( RC /= HCO_SUCCESS ) THEN
              ERROR = 1 ! Will cause error
              EXIT
@@ -3253,7 +3336,7 @@ END FUNCTION GetEmisLUnit
              MSG = 'Error when applying scale factor: ' // TRIM(ScalDct%cName)
           ENDIF
           ScalDct => NULL()
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 

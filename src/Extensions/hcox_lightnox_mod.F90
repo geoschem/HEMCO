@@ -192,7 +192,7 @@ CONTAINS
     CALL InstGet ( ExtState%LightNOx, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find lightning NOx instance Nr. ', ExtState%LightNOx
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -209,7 +209,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%SLBASE, Inst%IDTNO, &
                          RC, ExtNr=Inst%ExtNr)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: SLBASE', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: SLBASE', RC )
           RETURN
        ENDIF
 
@@ -300,8 +300,8 @@ CONTAINS
     ! Reset arrays
     Inst%SLBASE         = 0.0_hp
     Inst%FLASH_DENS_TOT = 0.0_sp
-    Inst%FLASH_DENS_IC  = 0.0_sp
-    Inst%FLASH_DENS_CG  = 0.0_sp
+    !Inst%FLASH_DENS_IC  = 0.0_sp
+    !Inst%FLASH_DENS_CG  = 0.0_sp
     Inst%CONV_DEPTH     = 0.0_sp
 
     ! LMAX: the highest L-level to look for lightning NOx (usually LLPAR-1)
@@ -444,12 +444,12 @@ CONTAINS
        IF ( RATE > 0d0 ) THEN
 
           ! Flashes per km2 per minute
-          RATE_SAVE   = RATE / 360d0
+          RATE_SAVE   = RATE / 60d0
 
           ! Store total, IC, and CG flash rates
           Inst%FLASH_DENS_TOT(I,J) = RATE_SAVE
-          Inst%FLASH_DENS_IC(I,J)  = RATE_SAVE * X
-          Inst%FLASH_DENS_CG(I,J)  = H0 * 1d-3
+          !Inst%FLASH_DENS_IC(I,J)  = RATE_SAVE * X
+          !Inst%FLASH_DENS_CG(I,J)  = RATE_SAVE * ( 1d0 - X )
 
        ENDIF
 
@@ -799,7 +799,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%LightNOx, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create LightNOx instance', RC )
+       CALL HCO_ERROR ( 'Cannot create LightNOx instance', RC )
        RETURN
     ENDIF
 
@@ -851,7 +851,7 @@ CONTAINS
     ELSE
        IF ( .not. FileExists ) THEN
           WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( FileName )
-          CALL HCO_ERROR(HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
     ENDIF
@@ -889,7 +889,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
     IF ( nSpc /= 1 ) THEN
        MSG = 'Lightning NOx module must have exactly one species!'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
     Inst%IDTNO = HcoIDs(1)
@@ -923,42 +923,42 @@ CONTAINS
 
     ALLOCATE( Inst%PROFILE( NNLIGHT, NLTYPE ), STAT=AS )
     IF( AS /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'PROFILE', RC )
+       CALL HCO_ERROR ( 'PROFILE', RC )
        RETURN
     ENDIF
     Inst%PROFILE = 0.0_hp
 
     ALLOCATE( Inst%SLBASE(HcoState%NX,HcoState%NY,HcoState%NZ), STAT=AS )
     IF( AS /= 0 ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'SLBASE', RC )
+       CALL HCO_ERROR ( 'SLBASE', RC )
        RETURN
     ENDIF
     Inst%SLBASE = 0.0_hp
 
     ALLOCATE ( Inst%FLASH_DENS_TOT( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLASH_DENS_TOT', RC )
+       CALL HCO_ERROR( 'FLASH_DENS_TOT', RC )
        RETURN
     ENDIF
     Inst%FLASH_DENS_TOT = 0.0_sp
 
-    ALLOCATE ( Inst%FLASH_DENS_IC( HcoState%NX, HcoState%NY), STAT=AS )
-    IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLASH_DENS_IC', RC )
-       RETURN
-    ENDIF
-    Inst%FLASH_DENS_IC = 0.0_sp
+    !ALLOCATE ( Inst%FLASH_DENS_IC( HcoState%NX, HcoState%NY), STAT=AS )
+    !IF ( AS/=0 ) THEN
+    !   CALL HCO_ERROR( 'FLASH_DENS_IC', RC )
+    !   RETURN
+    !ENDIF
+    !Inst%FLASH_DENS_IC = 0.0_sp
 
-    ALLOCATE ( Inst%FLASH_DENS_CG( HcoState%NX, HcoState%NY), STAT=AS )
-    IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLASH_DENS_CG', RC )
-       RETURN
-    ENDIF
-    Inst%FLASH_DENS_CG = 0.0_sp
+    !ALLOCATE ( Inst%FLASH_DENS_CG( HcoState%NX, HcoState%NY), STAT=AS )
+    !IF ( AS/=0 ) THEN
+    !   CALL HCO_ERROR( 'FLASH_DENS_CG', RC )
+    !   RETURN
+    !ENDIF
+    !Inst%FLASH_DENS_CG = 0.0_sp
 
     ALLOCATE ( Inst%CONV_DEPTH( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'CONV_DEPTH', RC )
+       CALL HCO_ERROR( 'CONV_DEPTH', RC )
        RETURN
     ENDIF
     Inst%CONV_DEPTH = 0.0_sp
@@ -976,7 +976,7 @@ CONTAINS
     OPEN( IU_FILE, FILE=TRIM( FILENAME ), STATUS='OLD', IOSTAT=IOS )
     IF ( IOS /= 0 ) THEN
        MSG = 'IOERROR: LightDist: 1'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -985,7 +985,7 @@ CONTAINS
        READ( IU_FILE, '(a)', IOSTAT=IOS )
        IF ( IOS /= 0 ) THEN
           MSG = 'IOERROR: LightDist: 2'
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
     ENDDO
@@ -995,7 +995,7 @@ CONTAINS
        READ( IU_FILE,*,IOSTAT=IOS) (Inst%PROFILE(III,JJJ),JJJ=1,NLTYPE)
        IF ( IOS /= 0 ) THEN
           MSG = 'IOERROR: LightDist: 3'
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
     ENDDO
@@ -1019,31 +1019,31 @@ CONTAINS
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
 
-    CALL Diagn_Create( HcoState  = HcoState,                        &
-                       cName     = 'HcoLightningFlashRate_IntraCld', &
-                       ExtNr     = ExtNr,                           &
-                       Cat       = -1,                              &
-                       Hier      = -1,                              &
-                       HcoID     = -1,                              &
-                       SpaceDim  = 2,                               &
-                       OutUnit   = 'flashes/min/km2',               &
-                       AutoFill  = 0,                               &
-                       Trgt2D    = Inst%FLASH_DENS_IC,              &
-                       RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
-
-    CALL Diagn_Create( HcoState  = HcoState,                         &
-                       cName     = 'HcoLightningFlashRate_CldGround', &
-                       ExtNr     = ExtNr,                            &
-                       Cat       = -1,                               &
-                       Hier      = -1,                               &
-                       HcoID     = -1,                               &
-                       SpaceDim  = 2,                                &
-                       OutUnit   = 'flashes/min/km2',                &
-                       AutoFill  = 0,                                &
-                       Trgt2D    = Inst%FLASH_DENS_CG,               &
-                       RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    !CALL Diagn_Create( HcoState  = HcoState,                        &
+    !                   cName     = 'HcoLightningFlashRate_IntraCld', &
+    !                   ExtNr     = ExtNr,                           &
+    !                   Cat       = -1,                              &
+    !                   Hier      = -1,                              &
+    !                   HcoID     = -1,                              &
+    !                   SpaceDim  = 2,                               &
+    !                   OutUnit   = 'flashes/min/km2',               &
+    !                   AutoFill  = 0,                               &
+    !                   Trgt2D    = Inst%FLASH_DENS_IC,              &
+    !                   RC        = RC )
+    !IF ( RC /= HCO_SUCCESS ) RETURN
+    !    
+    !CALL Diagn_Create( HcoState  = HcoState,                         &
+    !                   cName     = 'HcoLightningFlashRate_CldGround', &
+    !                   ExtNr     = ExtNr,                            &
+    !                   Cat       = -1,                               &
+    !                   Hier      = -1,                               &
+    !                   HcoID     = -1,                               &
+    !                   SpaceDim  = 2,                                &
+    !                   OutUnit   = 'flashes/min/km2',                &
+    !                   AutoFill  = 0,                                &
+    !                   Trgt2D    = Inst%FLASH_DENS_CG,               &
+    !                   RC        = RC )
+    !IF ( RC /= HCO_SUCCESS ) RETURN
 
     CALL Diagn_Create( HcoState  = HcoState,                         &
                        cName     = 'HcoConvectiveCloudTopHeight',       &
@@ -1291,8 +1291,8 @@ CONTAINS
        IF ( ASSOCIATED( Inst%PROFILE       ) ) DEALLOCATE ( Inst%PROFILE       )
        IF ( ASSOCIATED( Inst%SLBASE        ) ) DEALLOCATE ( Inst%SLBASE        )
        IF ( ASSOCIATED( Inst%FLASH_DENS_TOT) ) DEALLOCATE ( Inst%FLASH_DENS_TOT)
-       IF ( ASSOCIATED( Inst%FLASH_DENS_IC ) ) DEALLOCATE ( Inst%FLASH_DENS_IC )
-       IF ( ASSOCIATED( Inst%FLASH_DENS_CG ) ) DEALLOCATE ( Inst%FLASH_DENS_CG )
+       !IF ( ASSOCIATED( Inst%FLASH_DENS_IC ) ) DEALLOCATE ( Inst%FLASH_DENS_IC )
+       !IF ( ASSOCIATED( Inst%FLASH_DENS_CG ) ) DEALLOCATE ( Inst%FLASH_DENS_CG )
        IF ( ASSOCIATED( Inst%CONV_DEPTH    ) ) DEALLOCATE ( Inst%CONV_DEPTH    )
        IF ( ALLOCATED ( Inst%SpcScalVal    ) ) DEALLOCATE ( Inst%SpcScalVal    )
        IF ( ALLOCATED ( Inst%SpcScalFldNme ) ) DEALLOCATE ( Inst%SpcScalFldNme )

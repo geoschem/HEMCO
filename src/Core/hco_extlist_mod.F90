@@ -184,7 +184,7 @@ CONTAINS
        IF ( OrigExtNr /= ExtNr ) THEN
           WRITE(MSG,*) 'Cannot create extension - extension already exists', &
                        TRIM(lcName), ExtNr, OrigExtNr
-          CALL HCO_ERROR(HcoConfig%Err,MSG,RC,THISLOC='AddExt (hco_extlist_mod.F90)')
+          CALL HCO_ERROR(MSG,RC,THISLOC='AddExt (hco_extlist_mod.F90)')
           RETURN
 
        ! Nothing to do otherwise
@@ -306,7 +306,7 @@ CONTAINS
     IF ( IDX <= 0 ) THEN
        MSG = 'Cannot extract option name/value pair - these must be ' // &
              'separated by a colon (:) character: ' // TRIM(Opt)
-       CALL HCO_ERROR(HcoConfig%Err,MSG,RC,THISLOC='AddExtOpt (hco_extlist_mod)')
+       CALL HCO_ERROR(MSG,RC,THISLOC='AddExtOpt (hco_extlist_mod)')
        RETURN
     ENDIF
 
@@ -414,7 +414,7 @@ CONTAINS
     ELSEIF ( .NOT. OptFound ) THEN
        WRITE(MSG,*) '(A) Cannot find option ', TRIM(OptName),  &
        ' in extension ', ExtNr
-       CALL HCO_ERROR(HcoConfig%Err,MSG,RC,THISLOC=LOC )
+       CALL HCO_ERROR(MSG,RC,THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -605,7 +605,7 @@ CONTAINS
 
     IF ( .NOT. ASSOCIATED( ThisExt ) ) THEN
        WRITE(MSG,*) 'Cannot find extension Nr. ', ExtNr
-       CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR(  MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -1190,7 +1190,7 @@ CONTAINS
           IF ( TRIM(DUM) /= ADJUSTL(TRIM(OptValue)) ) THEN
              MSG = 'Cannot add option pair: '//TRIM(OptName)//': '//TRIM(OptValue) &
                 // ' - option already exists: '//TRIM(OptName)//': '//TRIM(DUM)
-             CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR (  MSG, RC, THISLOC=LOC )
              RETURN
           ! Return with no error if values are the same
           ELSE
@@ -1210,7 +1210,7 @@ CONTAINS
     IF ( .NOT. ASSOCIATED( ThisExt ) ) THEN
        WRITE(MSG,*) 'Cannot add option to extension Nr. ', ExtNr
        MSG = TRIM(MSG) // '. Make sure this extension is activated!'
-       CALL HCO_ERROR(HcoConfig%Err,MSG,RC,THISLOC='AddOpt (hco_extlist_mod)')
+       CALL HCO_ERROR(MSG,RC,THISLOC='AddOpt (hco_extlist_mod)')
        RETURN
     ENDIF
 

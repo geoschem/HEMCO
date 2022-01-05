@@ -58,6 +58,8 @@ MODULE HCOX_SeaSalt_Mod
    INTEGER             :: IDTBrSALA         ! Br- in accum. sea salt aerosol
    INTEGER             :: IDTBrSALC         ! Br- in coarse sea salt aerosol
    LOGICAL             :: CalcBrSalt        ! Calculate Br- content?
+   LOGICAL             :: EmitSnowSS        ! Calculate sea salt emission blowing snow
+   LOGICAL             :: ColdSST           ! Flag to correct SSA emissions over cold waters
    INTEGER             :: IDTSALACL         ! Fine aerosol Chloride species ID
    INTEGER             :: IDTSALCCL         ! Coarse aerosol Chloride species ID
    INTEGER             :: IDTSALAAL         ! Fine SSA Alkalinity species ID
@@ -66,6 +68,13 @@ MODULE HCOX_SeaSalt_Mod
    ! Scale factors
    REAL*8              :: BrContent         ! Ratio of Br- to dry SSA (mass)
    REAL*8              :: WindScale         ! Wind adjustment factor
+   REAL*8              :: NSLNT_FYI         ! North Hemisphere snow salinity on first year ice (FYI) (psu)
+   REAL*8              :: NSLNT_MYI         ! North Hemisphere snow salinity on multiyear ice (MYI) (psu)
+   REAL*8              :: SSLNT_FYI         ! South Hemisphere snow salinity on FYI (psu)
+   REAL*8              :: SSLNT_MYI         ! South Hemisphere snow salinity on MYI (psu)
+   REAL*8              :: NAGE              ! North Hemisphere snow age (days)
+   REAL*8              :: SAGE              ! South Hemisphere snow age (days)
+   REAL*8              :: NP                ! number of particle per snowflake
 
    ! Module variables
    INTEGER              :: NSALT             ! # of seasalt tracers
@@ -75,12 +84,22 @@ MODULE HCOX_SeaSalt_Mod
    REAL*8,  POINTER     :: RREDGE(:,:)
    REAL*8,  POINTER     :: RRMID (:,:)
    REAL*8,  POINTER     :: SS_DEN(:)         ! densities
+   REAL*8,  POINTER     :: F_DI_N_FYI(:,:)   ! add for blowing snow for NH
+   REAL*8,  POINTER     :: F_DI_N_MYI(:,:)   ! add for blowing snow for NH
+   REAL*8,  POINTER     :: F_DI_S_FYI(:,:)   ! add for blowing snow for SH
+   REAL*8,  POINTER     :: F_DI_S_MYI(:,:)   ! add for blowing snow for SH
+   REAL*8,  POINTER     :: F_DN_N_FYI(:,:)   ! add for blowing snow for NH 
+   REAL*8,  POINTER     :: F_DN_N_MYI(:,:)   ! add for blowing snow for NH 
+   REAL*8,  POINTER     :: F_DN_S_FYI(:,:)   ! add for blowing snow for SH
+   REAL*8,  POINTER     :: F_DN_S_MYI(:,:)   ! add for blowing snow for SH
+
 
    ! Number densities
    REAL(sp), POINTER   :: NDENS_SALA(:,:) => NULL()
    REAL(sp), POINTER   :: NDENS_SALC(:,:) => NULL()
    REAL(sp), POINTER   :: NDENS_MOPO(:,:) => NULL()
    REAL(sp), POINTER   :: NDENS_MOPI(:,:) => NULL()
+   REAL(sp), POINTER   :: MULTIICE(:,:)   => NULL() ! add for blowing snow
 
    ! MODIS Chlorophyll-A
    REAL(hp), POINTER   :: CHLR(:,:)       => NULL()
@@ -148,6 +167,16 @@ CONTAINS
 !        distribution of sea salt aerosols: New constraints from in situ and
 !        remote sensing observations", Atmos. Chem. Phys., 11, 3137-3157,
 !        doi:10.5194/acp-11-3137-2011.
+!  (5 ) Huang, J., Jaeglé, L., "Wintertime enhancements of sea salt aerosol in 
+!        polar regions consistent with a sea ice source from blowing snow." 
+!        Atmos. Chem. Phys. 17, 3699–3712. https://doi.org/10.5194/acp-17-3699-2017, 2017.
+!  (6 ) Huang, J., Jaeglé, L., Chen, Q., Alexander, B., Sherwen, T., 
+!        Evans, M. J., Theys, N., and Choi, S. "Evaluating the impact of 
+!        blowing snow sea salt aerosol on springtime BrO and O3 in the Arctic, 
+!        Atmos. Chem. Phys. Discuss., https://doi.org/10.5194/acp-2019-1094, 2020.
+!  (7 ) Tschudi, M., W. N. Meier, J. S. Stewart, C. Fowler, and J. Maslanik. 
+!        "EASE-Grid Sea Ice Age, Version 4." NASA National Snow and Ice Data Center 
+!        Distributed Active Archive Center. doi: https://doi.org/10.5067/UTAV7490FEPB., 2019.
 !
 ! !REVISION HISTORY:
 !  See https://github.com/geoschem/hemco for complete history
@@ -181,6 +210,45 @@ CONTAINS
     ! B. Gantt, M. Johnson (7,9/15)
     REAL*8                 :: OMSS1, OMSS2
 
+   ! New variables for blowing snow (huang, 04/09/20)
+    REAL*8                 :: SNOWSALT
+    REAL*8                 :: FROPEN, FRFIRST
+    REAL*8                 :: FRICTVEL, WVMR, TEMP
+    REAL*8                 :: PRESS, P_ICE, RH_ICE
+    REAL*8                 :: D, FK, FD
+    REAL*8                 :: PSI, QSPRIME, UT, APRIM
+    REAL*8                 :: QS, QSNOWICE_FYI, QSNOWICE_MYI,QBSALT, QB0
+    REAL*8                 :: SLNT, SLNT_FYI, SLNT_MYI
+    REAL*8                 :: AGE, ISFROST
+
+    ! New parameters for blowiung snow (huang, 04/09/20)
+    REAL*8, PARAMETER      :: LS = 2839d3    ! Latent heat of sublimation @ T=-30C (J/kg).
+                                             ! Varies very little with Temperature
+    REAL*8, PARAMETER      :: RV = 461.5d0   !J kg-1 K-1
+    REAL*8, PARAMETER      :: RHONACL = 2160.0d0    !kg/m3
+    REAL*8, PARAMETER      :: RHOICE  = 900.0d0     !kg/m3
+    REAL*8, PARAMETER      :: K  = 2.16d-2          !J m-1 s-1 K-1
+    REAL*8, PARAMETER      :: A0 = 3.78407d-1
+    REAL*8, PARAMETER      :: A1 = -8.64089d-2
+    REAL*8, PARAMETER      :: A2 = -1.60570d-2
+    REAL*8, PARAMETER      :: A3 = 7.25516d-4
+    REAL*8, PARAMETER      :: A4 = -1.25650d-1
+    REAL*8, PARAMETER      :: A5 = 2.48430d-2
+    REAL*8, PARAMETER      :: A6 = -9.56871d-4
+    REAL*8, PARAMETER      :: A7 = 1.24600d-2
+    REAL*8, PARAMETER      :: A8 = 1.56862d-3
+    REAL*8, PARAMETER      :: A9 = -2.93002d-4
+    REAL*8, PARAMETER      :: A_SALT = 2.0d0  !from Mann et al. 2000
+    REAL*8, PARAMETER      :: B_SALT = 37.5d0 !in um
+    REAL*8, PARAMETER      :: DDSNOW = 2.0d0  !in um for snow particle interval
+    LOGICAL, SAVE          :: FIRST = .TRUE.
+    LOGICAL, SAVE          :: FIRSTSAL = .TRUE.
+    CHARACTER(LEN=31)      :: FLDNME
+    INTEGER                :: NDAYS!, cYYYY, cMM, cDD
+    REAL(hp), TARGET       :: MULTI(HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET       :: SNOWSALA  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET       :: SNOWSALC  (HcoState%NX,HcoState%NY)
+
     ! Error handling
     LOGICAL                :: ERR
     CHARACTER(LEN=255)     :: MSG
@@ -204,7 +272,7 @@ CONTAINS
     CALL InstGet ( ExtState%SeaSalt, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find SeaSalt instance Nr. ', ExtState%SeaSalt
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -219,15 +287,31 @@ CONTAINS
     FLUXSALCCL = 0.0_hp
     FLUXSALAAL = 0.0_hp
     FLUXSALCAL = 0.0_hp
+    SNOWSALA   = 0.0_hp
+    SNOWSALC   = 0.0_hp
 
     ! If the marine POA option is on, get the HEMCO pointer to MODIS CHLR
     IF ( HcoState%MarinePOA ) THEN
        CALL HCO_EvalFld ( HcoState, 'MODIS_CHLR', Inst%CHLR, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           WRITE(MSG,*) 'Cannot find MODIS CHLR data for marine POA'
-          CALL HCO_ERROR(HcoState%Config%Err, MSG, RC)
+          CALL HCO_ERROR(MSG, RC)
           RETURN
        ENDIF
+    ENDIF
+
+    IF ( Inst%EmitSnowSS ) THEN
+      ! Read in distribution of multi-year sea ice from
+      ! remotely sensed observations of sea ice motion and sea
+      ! ice extent for the Arctic (Tschudi et al., 2019). For the 
+      ! Antarctic, the multi year sea ice extent is based on the minimum
+      ! MERRA-2 sea ice extent of the previous summer.
+      CALL HCO_EvalFld ( HcoState, 'MULTISEAICE', MULTI, RC )
+      IF ( RC /= HCO_SUCCESS ) THEN
+          WRITE(MSG,*) 'Cannot find MULTISEAICE data for blowing snow'
+          CALL HCO_ERROR(MSG, RC)
+          RETURN
+      ENDIF
     ENDIF
 
     !=================================================================
@@ -238,6 +322,11 @@ CONTAINS
 !$OMP PRIVATE( I, J, A_M2, W10M, SST, SCALE, N                       ) &
 !$OMP PRIVATE( SALT, SALT_N, R, SALT_NR, RC                          ) &
 !$OMP PRIVATE( OMSS1, OMSS2, CHLR                                    ) &
+!$OMP PRIVATE( FROPEN, SNOWSALT, AGE                                 ) &
+!$OMP PRIVATE( FRICTVEL, WVMR, TEMP, PRESS, P_ICE, RH_ICE            ) &
+!$OMP PRIVATE( D, FK, FD, PSI, QSPRIME, APRIM, UT, FRFIRST           ) &
+!$OMP PRIVATE( SLNT, SLNT_FYI, SLNT_MYI                              ) &
+!$OMP PRIVATE( QBSALT, QB0, QS, QSNOWICE_FYI, QSNOWICE_MYI           ) &
 !$OMP SCHEDULE( DYNAMIC )
 
     ! Loop over surface boxes
@@ -247,9 +336,9 @@ CONTAINS
        ! Grid box surface area on simulation grid [m2]
        A_M2 = HcoState%Grid%AREA_M2%Val( I, J )
 
-       ! Advance to next grid box if it's not over water
-       IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J), &
-                          ExtState%ALBD%Arr%Val(I,J) ) /= 0 ) CYCLE
+       ! Advance to next grid box if it's not over water or sea ice
+       IF ( ExtState%FROCEAN%Arr%Val(I,J)<=0d0 .and. &
+            ExtState%FRSEAICE%Arr%Val(I,J)<=0d0 ) CYCLE
 
        ! Wind speed at 10 m altitude [m/s]
        W10M = SQRT( ExtState%U10M%Arr%Val(I,J)**2 &
@@ -266,18 +355,158 @@ CONTAINS
        SCALE = 0.329d0 + 0.0904d0*SST - &
                0.00717d0*SST**2d0 + 0.000207d0*SST**3d0
 
+       ! Limit the SST scaling factor to 0.25 over cold SST (below 5C)
+       IF ( Inst%ColdSST .and. SST<= 5.0d0 ) SCALE = 0.25d0
+
        ! Reset to using original Gong (2003) emissions (jaegle 6/30/11)
        !SCALE = 1.0d0
 
+       ! Apply to only the open ocean fraction of the gridbox (Huang 06/12/20)
+       FROPEN = ExtState%FROCEAN%Arr%Val(I,J)-ExtState%FRSEAICE%Arr%Val(I,J)
+       IF ( FROPEN < 0d0 ) FROPEN = 0d0
+
        ! Eventually apply wind scaling factor.
-       SCALE = SCALE * Inst%WindScale
+       SCALE = SCALE * Inst%WindScale * FROPEN
+
+       !----------------------------------------------------------------
+       ! huang, 04/09/20: Add blowing snow emissions over sea ice
+       !----------------------------------------------------------------
+       IF ( Inst%EmitSnowSS ) THEN
+         IF ( ExtState%FRSEAICE%Arr%Val(I,J) > 0d0 )THEN
+          ! Friction velocity [m/s]
+          FRICTVEL = ExtState%USTAR%Arr%Val(I,J)
+          ! Convert specific humidity [g H2O/kg air] to water vapor mixing ratio [v/v]
+          ! QV2m is in kg H2O/kg air
+          WVMR = ExtState%QV2M%Arr%Val(I,J) * 28.973d0 / 18.0d0
+          ! Temperature at 2M in grid box (I,J) [K]
+          TEMP = ExtState%T2M%Arr%Val(I,J)
+          ! Surface pressure at grid box (I,J). Convert from [Pa] to [hPa]
+          PRESS = HcoState%Grid%PSFC%Val( I, J ) /100d0
+          ! Calculate saturation vapor pressure over ice [in Pa] at temperature
+          ! TS [K]
+          P_ICE = 10d0**(-2663.5d0/TEMP+12.537d0)
+          ! Calculate relative humidity with respect to ice [%]
+          RH_ICE = PRESS * WVMR / (P_ICE*0.01d0) *100.0d0
+          ! Limit RH to 100%
+          IF (RH_ICE > 100d0) RH_ICE =100.0d0
+          ! Coefficient of Diffusion of water vapor in air [m2/s]
+          ! Parameterization of Massman, W.J. "A review of teh molecular diffusivities of
+          ! H2O, CO2, CH4... in air, O2 and N2 near STP" Atmos. Env., 32, 6, 1111-1127, 1998.
+          D = 2.178d-5*(1000d0/PRESS)*(TEMP/273.15d0)**1.81
+          ! Heat conductivity and vapor diffusion terms [m s/kg]
+          ! Rogers and Yau "A short course in cloud physics", 1989, Eqn 9.4, with
+          !   RV =   461.5     [J/kg/K] Individual gas constant for water vapor
+          !   LS =  2839.0*1d3 [J/kg  ] Latent heat of sublimation @ T=-30C
+          !   K  =  2.16d-2    [J/(m s K)] Coeff of thermal conductivity of Air [Table 7.1 Rogers and Yau]
+          FK = ( LS / (RV * TEMP ) -1d0 ) * LS / (K * TEMP)
+          FD = ( RV * TEMP ) / (D * P_ICE)
+          ! Variable PSI [m2/s] Equation 11 from Dery and Yau (2001)
+          !  RHOICE = 900 kg/m3 Density of ice
+          PSI = (RH_ICE/100.d0 - 1d0)/(2d0 * RHOICE * (FK + FD))
+          ! Convert PSI from m2/s to units of -1x10d-12 m2/s
+          PSI = PSI * (-1.0d12)
+          ! Qs prime [mm/day snow water equivalent] Equation 11 Dery and Yau (2001)
+          QSPRIME = A0 + A1*PSI + A2*PSI**2d0 + A3*PSI**3d0 &
+                     + A4* W10M    + A5*PSI*W10M &
+                     + A6*W10M*PSI**2d0 + A7*W10M**2d0 &
+                     +  A8*PSI*W10M**2d0 + A9*W10M**3d0
+          IF ( QSPRIME < 0.0d0 ) QSPRIME = 0.0d0
+          !APRIM
+          IF ( HcoState%Grid%YEDGE%Val(I,J) .lt. 0 ) AGE = Inst%SAGE*24.0d0
+          IF ( HcoState%Grid%YEDGE%Val(I,J) .ge. 0 ) AGE = Inst%NAGE*24.0d0
+          APRIM = (1.038d0+0.03758d0*AGE-0.00014349d0*AGE**2d0 &
+                 + (1.911315d-7*AGE**3d0) )**(-1d0)
+          ! Threshold wind speed [m/s]
+          UT = 6.975d0 +  0.0033d0 * (TEMP - 273.15d0 + 27.27d0 )**2.0d0
+               !IF (W10M > UT) THEN
+               ! add RH<100 too
+
+          IF (W10M > UT .and. RH_ICE<100d0) THEN
+            QBSALT = 0.385d0*(1.0d0-Ut/W10M)**2.59d0/FRICTVEL
+            QB0 = 0.385d0*(1d0-6.975d0/W10M)**2.59d0/FRICTVEL
+            ! Snow sublimation rate [kg/m2/s] Equation 1 in Yang et al. (2008)
+            ! The constant 1.1574d-5 converts mm/day column integrated sublimation rate to kg m-2 s-1
+            QS = 1.1574d-5*APRIM*QSPRIME*QBSALT/QB0
+          ELSE
+            QS = 0d0
+          ENDIF
+          !set up the snow salinity
+          IF ( HcoState%Grid%YEDGE%Val(I,J) .lt. 0 ) SLNT_FYI = Inst%SSLNT_FYI
+          IF ( HcoState%Grid%YEDGE%Val(I,J) .lt. 0 ) SLNT_MYI = Inst%SSLNT_MYI
+          IF ( HcoState%Grid%YEDGE%Val(I,J) .ge. 0 ) SLNT_FYI = Inst%NSLNT_FYI
+          IF ( HcoState%Grid%YEDGE%Val(I,J) .ge. 0 ) SLNT_MYI = Inst%NSLNT_MYI
+          ! Sea ice fraction that is first year
+          FRFIRST = ExtState%FRSEAICE%Arr%Val(I,J) - MULTI(I,J)
+          IF ( FRFIRST < 0d0 ) FRFIRST = 0d0
+          ! Apply FYI salinity to FYI seaice fraction and MYI salinity to MYI fraction
+          !SLNT =  SLNT_FYI * FRFIRST + SLNT_MYI * MULTI(I,J)
+          ! Assume MYI salinity is 50% of FYI
+          !SLNT =  SLNT * FRFIRST  + SLNT * 0.5 * MULTI(I,J)
+          ! Convert snow sublimation rate to sea salt production rate [kg/m2/s]
+          ! Calculate it separately for FYI and MYI, scaled by their respective sea ice fraction
+          QSNOWICE_FYI = QS * SLNT_FYI * FRFIRST / 1000d0
+          QSNOWICE_MYI = QS * SLNT_MYI * MULTI(I,J) / 1000d0
+         ELSE
+          QSNOWICE_FYI = 0.0d0
+          QSNOWICE_MYI = 0.0d0
+         ENDIF
+       ENDIF
+       ! End of added blowing snow section
+       !-----------------------------------------------------------------
 
        ! Do for accumulation and coarse mode, and Marine POA if enabled
        DO N = 1,Inst%NSALT
 
-          ! Reset values for SALT and SALT_N
+          ! Reset values for SALT, SALT_N, and SNOWSALT
           SALT   = 0d0
           SALT_N = 0d0
+          SNOWSALT = 0d0
+
+          ! update seasalt from blowing snow - huang 1/4/18
+          IF (( Inst%EmitSnowSS ) .and. ( N .LT.3 )) THEN
+             IF ( HcoState%Grid%YEDGE%Val(I,J) .lt. 0 ) THEN
+                ! Southern Hemisphere
+                SALT = SALT + HcoState%TS_EMIS * A_M2 &
+                     * ( QSNOWICE_FYI * SUM( Inst%F_DI_S_FYI(:,N) ) +  &
+                         QSNOWICE_MYI * SUM( Inst%F_DI_S_MYI(:,N) ) ) * DDSNOW
+
+                SNOWSALT = SNOWSALT + HcoState%TS_EMIS * A_M2 &
+                     * ( QSNOWICE_FYI * SUM( Inst%F_DI_S_FYI(:,N) ) + & 
+                         QSNOWICE_MYI * SUM( Inst%F_DI_S_MYI(:,N) ) ) * DDSNOW
+
+                SALT_N = SALT_N + HcoState%TS_EMIS * A_M2 &
+                     * ( QSNOWICE_FYI * SUM( Inst%F_DN_S_FYI(:,N) ) + &
+                         QSNOWICE_MYI * SUM( Inst%F_DN_S_MYI(:,N) ) ) * DDSNOW
+              ELSE
+                ! Northern Hemisphere
+                SALT = SALT + HcoState%TS_EMIS * A_M2 &
+                    * ( QSNOWICE_FYI * SUM( Inst%F_DI_N_FYI(:,N) ) + &
+                        QSNOWICE_MYI * SUM( Inst%F_DI_N_MYI(:,N) ) ) * DDSNOW
+
+                SNOWSALT = SNOWSALT + HcoState%TS_EMIS * A_M2 &
+                    * ( QSNOWICE_FYI * SUM( Inst%F_DI_N_FYI(:,N) ) + &
+                        QSNOWICE_MYI * SUM( Inst%F_DI_N_MYI(:,N) ) ) * DDSNOW 
+
+                SALT_N = SALT_N + HcoState%TS_EMIS * A_M2 &
+                     * ( QSNOWICE_FYI * SUM( Inst%F_DN_N_FYI(:,N) ) + &
+                         QSNOWICE_MYI * SUM( Inst%F_DN_N_MYI(:,N) ) ) * DDSNOW
+              ENDIF
+! ewl: comment out for blowing snow since calcbr2 retired
+!              ! add bromine blowing snow 
+!              IF ( Inst%CalcBr2 ) THEN
+!                IF ( HcoState%Grid%YEDGE%Val(I,J) .lt. 0 ) THEN
+!                SSA_Br2 =  SSA_Br2 + HcoState%TS_EMIS * A_M2 &
+!                        * (QSNOWICE_FYI * SUM( Inst%F_DI_S_FYI(:,N) ) + &
+!                           QSNOWICE_MYI * SUM( Inst%F_DI_S_MYI(:,N) ) ) * DDSNOW &
+!                        * 0.00223d0 * 0.7d0 / 2.0d0
+!                ELSE
+!                SSA_Br2 =  SSA_Br2 + HcoState%TS_EMIS * A_M2 &
+!                        * (QSNOWICE_FYI * SUM( Inst%F_DI_N_FYI(:,N) ) + &
+!                           QSNOWICE_MYI * SUM( Inst%F_DI_N_MYI(:,N) ) ) * DDSNOW &
+!                        * 0.00223d0 * 0.7d0 / 2.0d0
+!                ENDIF
+!              ENDIF
+          ENDIF
 
           ! Loop over size bins
           DO R = 1, Inst%NR(N)
@@ -329,8 +558,10 @@ CONTAINS
           ! kg --> kg/m2/s
           IF     ( N == 1 ) THEN
              FLUXSALA(I,J) = SALT / A_M2 / HcoState%TS_EMIS
+             SNOWSALA(I,J) = SNOWSALT / A_M2 / HcoState%TS_EMIS
           ELSEIF ( N == 2 ) THEN
              FLUXSALC(I,J) = SALT / A_M2 / HcoState%TS_EMIS
+             SNOWSALC(I,J) = SNOWSALT / A_M2 / HcoState%TS_EMIS
           ELSEIF ( N == 3 ) THEN
              FLUXMOPO(I,J) = SALT / A_M2 / HcoState%TS_EMIS
           ELSEIF ( N == 4 ) THEN
@@ -373,7 +604,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXSALA, Inst%IDTSALA, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALA', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALA', RC )
           RETURN
        ENDIF
     ENDIF
@@ -385,7 +616,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXSALC, Inst%IDTSALC, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALC', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALC', RC )
           RETURN
        ENDIF
 
@@ -393,24 +624,24 @@ CONTAINS
 
     ! SALA Chloride, xnw 10/13/17
     IF ( Inst%IDTSALACL > 0 ) THEN
-       FLUXSALACL = FLUXSALA * 0.5504d0
+       FLUXSALACL = ( FLUXSALA + SNOWSALA ) * 0.5504d0
        ! Add flux to emission array
        CALL HCO_EmisAdd( HcoState, FLUXSALACL, Inst%IDTSALACL, &
                          RC,        ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALACL', RC)
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALACL', RC)
           RETURN
        ENDIF
     ENDIF
 
     ! SALC Chloride, xnw 11/17/17
     IF ( Inst%IDTSALCCL > 0 ) THEN
-        FLUXSALCCL = FLUXSALC * 0.5504d0
+        FLUXSALCCL = ( FLUXSALC + SNOWSALC ) * 0.5504d0
        ! Add flux to emission array
        CALL HCO_EmisAdd( HcoState, FLUXSALCCL, Inst%IDTSALCCL, &
                          RC,        ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALCCL', RC)
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALCCL', RC)
           RETURN
        ENDIF
     ENDIF
@@ -422,7 +653,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXSALAAL, Inst%IDTSALAAL, &
                          RC,        ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALAAL', RC)
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALAAL', RC)
           RETURN
        ENDIF
     ENDIF
@@ -434,7 +665,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXSALCAL, Inst%IDTSALCAL, &
                          RC,        ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALCAL', RC)
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALCAL', RC)
           RETURN
        ENDIF
     ENDIF
@@ -442,15 +673,17 @@ CONTAINS
     ! Bromine incorporated into sea salt
     IF ( Inst%CalcBrSalt ) THEN
 
-       ! Scale BrSalX emissions to SalX
-       FluxBrSalA = Inst%BrContent * FluxSalA
-       FluxBrSalC = Inst%BrContent * FluxSalC
+       ! Scale BrSalX emissions to SalX. 
+       ! Also add blowing snow Br emissions assuming a factor of 5 enrichment 
+       ! factor relative to seawater
+       FluxBrSalA = Inst%BrContent * (FluxSalA + SNOWSALA * 5.0d0)
+       FluxBrSalC = Inst%BrContent * (FluxSalC + SNOWSALC * 5.0d0)
 
        ! Add flux to emission array
        CALL HCO_EmisAdd( HcoState, FLUXBrSalA, Inst%IDTBrSalA, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXBrSalA', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXBrSalA', RC )
           RETURN
        ENDIF
 
@@ -458,7 +691,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXBrSalC, Inst%IDTBrSalC, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXBrSalC', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXBrSalC', RC )
           RETURN
        ENDIF
 
@@ -471,7 +704,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXMOPO, Inst%IDTMOPO, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXMOPO', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXMOPO', RC )
           RETURN
        ENDIF
 
@@ -484,7 +717,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, FLUXMOPI, Inst%IDTMOPI, &
                          RC,       ExtNr=Inst%ExtNrSS )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXMOPI', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXMOPI', RC )
           RETURN
        ENDIF
 
@@ -552,6 +785,15 @@ CONTAINS
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNamesSS(:)
     TYPE(MyInst), POINTER          :: Inst
 
+    ! Local variables for blowing snow
+    INTEGER                :: ND, IH !IH for different hemisphere
+    REAL*8                 :: D_SNOW, D_DRY
+    REAL*8, PARAMETER      :: A_SALT = 2.0d0  !from Mann et al. 2000
+    REAL*8, PARAMETER      :: B_SALT = 37.5d0 !in um
+    REAL*8, PARAMETER      :: DDSNOW = 2.0d0  !in um for snow particle interval
+    REAL*8, PARAMETER      :: RHONACL = 2160.0d0    !kg/m3
+    REAL*8, PARAMETER      :: RHOICE  = 900.0d0     !kg/m3
+
     !=================================================================
     ! HCOX_SeaSalt_Init begins here!
     !=================================================================
@@ -568,7 +810,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNrSS, ExtState%SeaSalt, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create SeaSalt instance', RC )
+       CALL HCO_ERROR ( 'Cannot create SeaSalt instance', RC )
        RETURN
     ENDIF
     ! Also fill ExtNrSS - this is the same as the parent ExtNr
@@ -601,7 +843,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
     IF ( nSpcSS < minLen ) THEN
        MSG = 'Not enough sea salt emission species set'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
     Inst%IDTSALA = HcoIDsSS(1)
@@ -632,6 +874,55 @@ CONTAINS
     CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SALC upper radius', &
                     OptValDp=SALC_REDGE_um(2), RC=RC )
     IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! fix scaling factor over cold water SST (<5 degC)
+    CALL GetExtOpt ( HcoState%Config, Inst%ExtNrSS, 'Reduce SS cold water', &
+                     OptValBool=Inst%ColdSST, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Add a SSA source from blowing snow (by J. Huang)
+    CALL GetExtOpt ( HcoState%Config, Inst%ExtNrSS, 'Blowing Snow SS', &
+                     OptValBool=Inst%EmitSnowSS, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Whether or not differentiate snow salinity on FYI and MYI (by J. Huang)
+    !CALL GetExtOpt ( HcoState%Config, Inst%ExtNrSS, 'Diff salinity on ice', &
+    !                 OptValBool=Inst%FYIsnow, RC=RC )
+    !IF ( RC /= HCO_SUCCESS ) RETURN
+
+    ! Add snow salinity (NH and SH), snow age and number of particles
+    ! per snowflake as external factor from configuration file
+    IF ( Inst%EmitSnowSS ) THEN
+       CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'NH FYI snow salinity', &
+                    OptValDp=Inst%NSLNT_FYI, RC=RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+       CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'NH MYI snow salinity', &
+                    OptValDp=Inst%NSLNT_MYI, RC=RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+       CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SH FYI snow salinity', &
+                    OptValDp=Inst%SSLNT_FYI, RC=RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+       CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SH MYI snow salinity', &
+                    OptValDp=Inst%SSLNT_MYI, RC=RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+       CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'NH snow age', &
+                    OptValDp=Inst%NAGE, RC=RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+       CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SH snow age', &
+                    OptValDp=Inst%SAGE, RC=RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+       CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'N per snowflake', &
+                    OptValDp=Inst%NP, RC=RC )
+       IF ( RC /= HCO_SUCCESS ) RETURN
+    ELSE
+       Inst%NSLNT_FYI = 0.1d0   ! default value 0.1 psu for NH FYI snow
+       Inst%NSLNT_MYI = 0.05d0  ! default value 0.05 psu for NH MYI snow
+       Inst%SSLNT_FYI = 0.03d0  ! default value 0.03 psu for SH FYI snow
+       Inst%SSLNT_FYI = 0.015d0 ! default value 0.015 psu for SH MYI snow
+       Inst%NAGE = 3.0d0   ! default value 3 days snow age in NH
+       Inst%SAGE = 1.5d0   ! default value 1.5 days snow age in SH
+       Inst%NP = 5.0d0     ! default value of 5 particles per snowflake
+    ENDIF
 
     ! Final BrSalt flag
     Inst%CalcBrSalt = ( Inst%CalcBrSalt .and. Inst%IDTBrSALA > 0 .and. Inst%IDTBrSALC > 0 )
@@ -672,6 +963,23 @@ CONTAINS
        WRITE(MSG,*) ' - wind scale factor: ', Inst%WindScale
        CALL HCO_MSG(HcoState%Config%Err,MSG)
 
+       IF ( Inst%EmitSnowSS ) THEN
+          WRITE(MSG,*) ' - Arctic Snow Salinity on FYI (psu): ', Inst%NSLNT_FYI
+          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          WRITE(MSG,*) ' - Arctic Snow Salinity on MYI (psu): ', Inst%NSLNT_MYI
+          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          WRITE(MSG,*) ' - Antarctic Snow Salinity on FYI (psu): ', Inst%SSLNT_FYI
+          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          WRITE(MSG,*) ' - Antarctic Snow Salinity on FYI (psu): ', Inst%SSLNT_MYI
+          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          WRITE(MSG,*) ' - Arctic Snow age (days): ', Inst%NAGE
+          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          WRITE(MSG,*) ' - Antarctic Snow age(days): ', Inst%SAGE
+          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          WRITE(MSG,*) ' - Number of particle per snowflake: ', Inst%NP
+          CALL HCO_MSG(HcoState%Config%Err,MSG)
+       ENDIF
+
        WRITE(MSG,*) 'Accumulation Chloride: ', TRIM(SpcNamesSS(3)),  &
                     ':', Inst%IDTSALACL
        CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -686,9 +994,9 @@ CONTAINS
        CALL HCO_MSG(HcoState%Config%Err,MSG)
 
        IF ( Inst%CalcBrSalt ) THEN
-          WRITE(MSG,*) 'BrSALA: ', TRIM(SpcNamesSS(8)), Inst%IDTBrSALA
+          WRITE(MSG,*) 'BrSALA: ', TRIM(SpcNamesSS(7)), Inst%IDTBrSALA
           CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) 'BrSALC: ', TRIM(SpcNamesSS(9)), Inst%IDTBrSALC
+          WRITE(MSG,*) 'BrSALC: ', TRIM(SpcNamesSS(8)), Inst%IDTBrSALC
           CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,*) 'Br- mass content: ', Inst%BrContent
           CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -696,11 +1004,11 @@ CONTAINS
 
        IF ( HcoState%MarinePOA ) THEN
           WRITE(MSG,*) 'Hydrophobic marine organic aerosol: ',        &
-                       TRIM(SpcNamesSS(10)), ':', Inst%IDTMOPO
+                       TRIM(SpcNamesSS(9)), ':', Inst%IDTMOPO
           CALL HCO_MSG(HcoState%Config%Err,MSG)
 
           WRITE(MSG,*) 'Hydrophilic marine organic aerosol: ',        &
-                       TRIM(SpcNamesSS(11)), ':', Inst%IDTMOPI
+                       TRIM(SpcNamesSS(10)), ':', Inst%IDTMOPI
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
     ENDIF
@@ -718,63 +1026,122 @@ CONTAINS
 
     ALLOCATE ( Inst%NR  ( Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate NR', RC )
+       CALL HCO_ERROR( 'Cannot allocate NR', RC )
        RETURN
     ENDIF
     Inst%NR = 0
 
     ALLOCATE ( Inst%SS_DEN  ( Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate SS_DEN', RC )
+       CALL HCO_ERROR( 'Cannot allocate SS_DEN', RC )
        RETURN
     ENDIF
     Inst%SS_DEN = 2200.d0
 
     ALLOCATE ( Inst%SRRC   ( NR_MAX,   Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate SRRC', RC )
+       CALL HCO_ERROR( 'Cannot allocate SRRC', RC )
        RETURN
     ENDIF
     Inst%SRRC = 0d0
     ALLOCATE ( Inst%SRRC_N ( NR_MAX,   Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate SRRC_N', RC )
+       CALL HCO_ERROR( 'Cannot allocate SRRC_N', RC )
        RETURN
     ENDIF
     Inst%SRRC_N = 0d0
     ALLOCATE ( Inst%RREDGE ( 0:NR_MAX, Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate RREDGE', RC )
+       CALL HCO_ERROR( 'Cannot allocate RREDGE', RC )
        RETURN
     ENDIF
     Inst%RREDGE = 0d0
     ALLOCATE ( Inst%RRMID  ( NR_MAX,   Inst%NSALT ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate RRMID', RC )
+       CALL HCO_ERROR( 'Cannot allocate RRMID', RC )
        RETURN
     ENDIF
     Inst%RRMID = 0d0
 
     ALLOCATE ( Inst%NDENS_SALA( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate NDENS_SALA', RC )
+       CALL HCO_ERROR( 'Cannot allocate NDENS_SALA', RC )
        RETURN
     ENDIF
     Inst%NDENS_SALA = 0.0_sp
 
     ALLOCATE ( Inst%NDENS_SALC( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate NDENS_SALC', RC )
+       CALL HCO_ERROR( 'Cannot allocate NDENS_SALC', RC )
        RETURN
     ENDIF
     Inst%NDENS_SALC = 0.0_sp
+
+    ! Allocate for blowing snow simulation
+    IF ( Inst%EmitSnowSS ) THEN
+        ALLOCATE ( Inst%F_DI_N_FYI( NR_MAX,   Inst%NSALT ), STAT=AS )
+        IF ( AS/=0 ) THEN
+           CALL HCO_ERROR( 'Cannot allocate F_DI_N_FYI', RC )
+           RETURN
+        ENDIF
+        Inst%F_DI_N_FYI = 0.0_sp
+
+        ALLOCATE ( Inst%F_DI_N_MYI( NR_MAX,   Inst%NSALT ), STAT=AS )
+        IF ( AS/=0 ) THEN
+           CALL HCO_ERROR( 'Cannot allocate F_DI_N_MYI', RC )
+           RETURN
+        ENDIF
+        Inst%F_DI_N_MYI = 0.0_sp
+
+        ALLOCATE ( Inst%F_DN_N_FYI( NR_MAX,   Inst%NSALT ), STAT=AS )
+        IF ( AS/=0 ) THEN
+           CALL HCO_ERROR( 'Cannot allocate F_DN_N_FYI', RC )
+           RETURN
+        ENDIF
+        Inst%F_DN_N_FYI = 0.0_sp
+
+        ALLOCATE ( Inst%F_DN_N_MYI( NR_MAX,   Inst%NSALT ), STAT=AS )
+        IF ( AS/=0 ) THEN
+           CALL HCO_ERROR( 'Cannot allocate F_DN_N_MYI', RC )
+           RETURN
+        ENDIF
+        Inst%F_DN_N_MYI = 0.0_sp
+
+        ALLOCATE ( Inst%F_DI_S_FYI( NR_MAX,   Inst%NSALT ), STAT=AS )
+        IF ( AS/=0 ) THEN
+           CALL HCO_ERROR( 'Cannot allocate F_DI_S_FYI', RC )
+           RETURN
+        ENDIF
+        Inst%F_DI_S_FYI = 0.0_sp
+
+        ALLOCATE ( Inst%F_DI_S_MYI( NR_MAX,   Inst%NSALT ), STAT=AS )
+        IF ( AS/=0 ) THEN
+           CALL HCO_ERROR( 'Cannot allocate F_DI_S_MYI', RC )
+           RETURN
+        ENDIF
+        Inst%F_DI_S_MYI = 0.0_sp
+
+        ALLOCATE ( Inst%F_DN_S_FYI( NR_MAX,   Inst%NSALT ), STAT=AS )
+        IF ( AS/=0 ) THEN
+           CALL HCO_ERROR( 'Cannot allocate F_DN_S_FYI', RC )
+           RETURN
+        ENDIF
+        Inst%F_DN_S_FYI = 0.0_sp
+
+        ALLOCATE ( Inst%F_DN_S_MYI( NR_MAX,   Inst%NSALT ), STAT=AS )
+        IF ( AS/=0 ) THEN
+           CALL HCO_ERROR( 'Cannot allocate F_DN_S_MYI', RC )
+           RETURN
+        ENDIF
+        Inst%F_DN_S_MYI = 0.0_sp
+    ENDIF
 
     IF ( HcoState%MarinePOA ) THEN
 
        ! Allocate density of phobic marine organic aerosols
        ALLOCATE ( Inst%NDENS_MOPO( HcoState%NX, HcoState%NY), STAT=AS )
        IF ( AS/=0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate NDENS_MOPO', RC )
+          CALL HCO_ERROR( 'Cannot allocate NDENS_MOPO', RC )
           RETURN
        ENDIF
        Inst%NDENS_MOPO = 0.0_sp
@@ -782,14 +1149,14 @@ CONTAINS
        ! Allocate density of philic marine organic aerosols
        ALLOCATE ( Inst%NDENS_MOPI( HcoState%NX, HcoState%NY), STAT=AS )
        IF ( AS/=0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate NDENS_MOPI', RC )
+          CALL HCO_ERROR( 'Cannot allocate NDENS_MOPI', RC )
           RETURN
        ENDIF
        Inst%NDENS_MOPI = 0.0_sp
 
        ALLOCATE ( Inst%CHLR( HcoState%NX, HcoState%NY), STAT=AS )
        IF ( AS/=0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate CHLR', RC )
+          CALL HCO_ERROR( 'Cannot allocate CHLR', RC )
           RETURN
        ENDIF
        Inst%CHLR = 0.0_hp
@@ -842,7 +1209,7 @@ CONTAINS
        ! Error check
        IF ( Inst%NR(N) > NR_MAX ) THEN
           MSG = 'Too many bins'
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
 
@@ -904,6 +1271,97 @@ CONTAINS
 !###           WRITE( 6, 100 ) R,RREDGE(R-1,N),RRMID(R,N),RREDGE(R,N),SRRC(R,N)
 !### 100        FORMAT( 'IR, R0, RRMID, R1: ', i3, 3f11.4,2x,es13.6 )
        ENDDO !R
+
+       !size bins for blowing snow - Huang 6/12/20
+       IF ( Inst%EmitSnowSS .and. N .LT. 3 ) THEN
+         !-------------- Define size distribution ---------------------
+         ! for southern hemisphere FYI
+         D_SNOW = 1.0d0
+         DO ND = 1, NR_MAX
+            D_DRY =  ( Inst%NSLNT_FYI * RHOICE / (1000.d0 &
+                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+
+            IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
+
+           !----------------------------------------------------------
+           ! NOTES:
+           ! For size distribution
+           ! define the two-parameter gamma probability density funtion here
+           ! Yang et al 2008 eq (6)
+           !----------------------------------------------------------
+           ! Midpoint of IRth bin
+               Inst%F_DI_N_FYI(ND, N) = EXP( - D_SNOW / B_SALT ) &
+                * D_SNOW**( A_SALT - 1.d0 ) &
+                / ( B_SALT**A_SALT * GAMMA( A_SALT ) )
+            ELSE
+               Inst%F_DI_N_FYI(ND, N) = 0d0
+            ENDIF
+            Inst%F_DN_N_FYI(ND, N) = Inst%F_DI_N_FYI(ND,N) / (4d0/3d0 * HcoState%Phys%PI &
+                      * 1.d-18 * Inst%SS_DEN( N ) * (D_DRY/2d0)**3)
+
+            D_SNOW = D_SNOW + DDSNOW
+         ENDDO
+
+         ! for southern hemisphere MYI
+         D_SNOW = 1.0d0
+         DO ND = 1, NR_MAX
+            D_DRY =  ( Inst%NSLNT_MYI * RHOICE / (1000.d0 &
+                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+
+            IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
+           ! Midpoint of IRth bin
+               Inst%F_DI_N_MYI(ND, N) = EXP( - D_SNOW / B_SALT ) &
+                * D_SNOW**( A_SALT - 1.d0 ) &
+                / ( B_SALT**A_SALT * GAMMA( A_SALT ) )
+            ELSE
+               Inst%F_DI_N_MYI(ND, N) = 0d0
+            ENDIF
+            Inst%F_DN_N_MYI(ND, N) = Inst%F_DI_N_MYI(ND,N) / (4d0/3d0 * HcoState%Phys%PI &
+                      * 1.d-18 * Inst%SS_DEN( N ) * (D_DRY/2d0)**3)
+
+            D_SNOW = D_SNOW + DDSNOW
+         ENDDO
+
+         ! for southern hemisphere FYI
+         D_SNOW = 1.0d0
+         DO ND = 1, NR_MAX
+            D_DRY =  ( Inst%SSLNT_FYI * RHOICE / (1000.d0 &
+                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+
+            IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
+          ! Midpoint of IRth bin
+               Inst%F_DI_S_FYI(ND, N) = EXP( - D_SNOW / B_SALT ) &
+                * D_SNOW**( A_SALT - 1.d0 ) &
+                / ( B_SALT**A_SALT * GAMMA( A_SALT ) )
+            ELSE
+               Inst%F_DI_S_FYI(ND, N) = 0d0
+            ENDIF
+            Inst%F_DN_S_FYI(ND, N) = Inst%F_DI_S_FYI(ND,N)/ (4d0/3d0 * HcoState%Phys%PI &
+                      * 1.d-18 * Inst%SS_DEN( N ) * (D_DRY/2d0)**3)
+            D_SNOW = D_SNOW + DDSNOW
+         ENDDO
+
+         ! for southern hemisphere MYI
+         D_SNOW = 1.0d0
+         DO ND = 1, NR_MAX
+            D_DRY =  ( Inst%SSLNT_MYI * RHOICE / (1000.d0 &
+                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+
+            IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
+          ! Midpoint of IRth bin
+               Inst%F_DI_S_MYI(ND, N) = EXP( - D_SNOW / B_SALT ) &
+                * D_SNOW**( A_SALT - 1.d0 ) &
+                / ( B_SALT**A_SALT * GAMMA( A_SALT ) )
+            ELSE
+               Inst%F_DI_S_MYI(ND, N) = 0d0
+            ENDIF
+            Inst%F_DN_S_MYI(ND, N) = Inst%F_DI_S_MYI(ND,N)/ (4d0/3d0 * HcoState%Phys%PI &
+                      * 1.d-18 * Inst%SS_DEN( N ) * (D_DRY/2d0)**3)
+            D_SNOW = D_SNOW + DDSNOW
+         ENDDO
+
+       ENDIF
+
     ENDDO !N
 
     !=======================================================================
@@ -979,11 +1437,18 @@ CONTAINS
     !=======================================================================
 
     ! Activate met fields used by this module
-    ExtState%WLI%DoUse   = .TRUE.
-    ExtState%ALBD%DoUse  = .TRUE.
     ExtState%TSKIN%DoUse = .TRUE.
     ExtState%U10M%DoUse  = .TRUE.
     ExtState%V10M%DoUse  = .TRUE.
+    ExtState%FROCEAN%DoUse  = .TRUE.
+    ExtState%FRSEAICE%DoUse = .TRUE.
+
+    ! for blowing snow 
+    IF ( Inst%EmitSnowSS ) THEN
+       ExtState%USTAR%DoUse    = .TRUE.
+       ExtState%T2M%DoUse      = .TRUE.
+       ExtState%QV2M%DoUse     = .TRUE.
+    ENDIF
 
     ! Return w/ success
     IF ( ALLOCATED(HcoIDsSS    ) ) DEALLOCATE(HcoIDsSS    )
@@ -1151,6 +1616,15 @@ CONTAINS
     Inst%CalcBrSalt    = .FALSE.
     Inst%BrContent     = 1.0
     Inst%WindScale     = 1.0
+    Inst%ColdSST       = .FALSE.
+    Inst%EmitSnowSS    = .FALSE.
+    Inst%NSLNT_FYI     = 0.0
+    Inst%NSLNT_MYI     = 0.0
+    Inst%SSLNT_FYI     = 0.0
+    Inst%SSLNT_MYI     = 0.0
+    Inst%NAGE          = 0.0
+    Inst%SAGE          = 0.0
+    Inst%NP            = 1.0
 
     ! Attach to instance list
     Inst%NextInst => AllInst
@@ -1225,6 +1699,15 @@ CONTAINS
           IF ( ASSOCIATED( Inst%NDENS_MOPO ) ) DEALLOCATE( Inst%NDENS_MOPO )
           IF ( ASSOCIATED( Inst%NDENS_MOPI ) ) DEALLOCATE( Inst%NDENS_MOPI )
           IF ( ASSOCIATED( Inst%CHLR       ) ) DEALLOCATE( Inst%CHLR       )
+          IF ( ASSOCIATED( Inst%F_DI_N_FYI ) ) DEALLOCATE( Inst%F_DI_N_FYI )
+          IF ( ASSOCIATED( Inst%F_DI_N_MYI ) ) DEALLOCATE( Inst%F_DI_N_MYI )
+          IF ( ASSOCIATED( Inst%F_DI_S_FYI ) ) DEALLOCATE( Inst%F_DI_S_FYI )
+          IF ( ASSOCIATED( Inst%F_DI_S_MYI ) ) DEALLOCATE( Inst%F_DI_S_MYI )
+          IF ( ASSOCIATED( Inst%F_DN_N_FYI ) ) DEALLOCATE( Inst%F_DN_N_FYI )
+          IF ( ASSOCIATED( Inst%F_DN_N_MYI ) ) DEALLOCATE( Inst%F_DN_N_MYI )
+          IF ( ASSOCIATED( Inst%F_DN_S_FYI ) ) DEALLOCATE( Inst%F_DN_S_FYI )
+          IF ( ASSOCIATED( Inst%F_DN_S_MYI ) ) DEALLOCATE( Inst%F_DN_S_MYI )
+          IF ( ASSOCIATED( Inst%MULTIICE   ) ) DEALLOCATE( Inst%MULTIICE   )
 
           PrevInst%NextInst => Inst%NextInst
        ELSE

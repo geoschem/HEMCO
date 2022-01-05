@@ -266,7 +266,7 @@ CONTAINS
     CALL InstGet ( ExtState%FINN, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find FINN instance Nr. ', ExtState%FINN
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -384,7 +384,7 @@ CONTAINS
           ELSEIF ( NF == 6 ) THEN
              THISTYP => Inst%VEGTYP9
           ELSE
-             CALL HCO_ERROR ( HcoState%Config%Err, 'Undefined emission factor', RC )
+             CALL HCO_ERROR ( 'Undefined emission factor', RC )
              RETURN
           ENDIF
 
@@ -495,7 +495,7 @@ CONTAINS
                          RC,       ExtNr=Inst%ExtNr, Cat=-1, Hier=-1 )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'HCO_EmisAdd error: ' // TRIM(HcoState%Spc(HcoID)%SpcName)
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
 
@@ -624,7 +624,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%FINN, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create FINN instance', RC )
+       CALL HCO_ERROR ( 'Cannot create FINN instance', RC )
        RETURN
     ENDIF
 
@@ -669,7 +669,7 @@ CONTAINS
          Inst%BCPIfrac < 0.0_sp .OR. Inst%BCPIfrac > 1.0_sp     ) THEN
        WRITE(MSG,*) 'hydrophilic fractions must be between 0-1: ', &
           Inst%OCPIfrac, Inst%BCPIfrac
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -688,7 +688,7 @@ CONTAINS
     ! FINN species names
     ALLOCATE ( Inst%FINN_SPEC_NAME ( N_SPEC ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate FINN_SPEC_NAME', RC )
+       CALL HCO_ERROR( 'Cannot allocate FINN_SPEC_NAME', RC )
        RETURN
     ENDIF
     Inst%FINN_SPEC_NAME = ''
@@ -697,7 +697,7 @@ CONTAINS
     ! scale factors for all FINN species.
     ALLOCATE ( Inst%FINN_EMFAC ( N_SPEC, N_EMFAC ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate FINN_EMFAC', RC )
+       CALL HCO_ERROR( 'Cannot allocate FINN_EMFAC', RC )
        RETURN
     ENDIF
     Inst%FINN_EMFAC = 0.0_dp
@@ -708,7 +708,7 @@ CONTAINS
                Inst%SpcScal(nSpcMax), Inst%SpcScalFldNme(nSpcMax), STAT=AS )
 
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate FinnIDs', RC )
+       CALL HCO_ERROR( 'Cannot allocate FinnIDs', RC )
        RETURN
     ENDIF
     Inst%nSpc             = 0
@@ -725,7 +725,7 @@ CONTAINS
                Inst%VEGTYP5(HcoState%NX,HcoState%NY), &
                Inst%VEGTYP9(HcoState%NX,HcoState%NY), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate VEGTYP', RC )
+       CALL HCO_ERROR( 'Cannot allocate VEGTYP', RC )
        RETURN
     ENDIF
     Inst%VEGTYP1 = 0.0_hp
@@ -847,7 +847,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) RETURN
     IF ( tnSpc == 0 ) THEN
        MSG = 'No FINN species specified'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -878,7 +878,7 @@ CONTAINS
              'This version of HEMCO expects species scale factors to be ' // &
              'set as `Scaling_XX` instead of `XX scale factor`. '         // &
              'Please update the FINN settings section accordingly.'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -942,7 +942,7 @@ CONTAINS
                 IF ( Inst%nSpc > nSpcMax ) THEN
                    MSG = 'nSpc greater than nSpcMax, please increase ' // &
                          'parameter `nSpcMax` in hcox_finn_mod.F90'
-                   CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC )
+                   CALL HCO_ERROR ( MSG, RC )
                    RETURN
                 ENDIF
 
@@ -1099,7 +1099,7 @@ CONTAINS
        ! in FINN.
        IF ( .NOT. Matched ) THEN
           MSG = 'Species '// TRIM(SpcName) //' not found in FINN'
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
     ENDDO !L

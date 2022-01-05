@@ -212,7 +212,6 @@ MODULE HCOX_MEGAN_MOD
      REAL(hp), POINTER       :: FLUXEOH(:,:)
          
      ! Emission arrays for use in diagnostics (kg/m2/s)
-!     REAL(sp), POINTER       :: FLUXACETmo(:,:)
      REAL(sp), POINTER       :: FLUXACETmb(:,:)
      REAL(sp), POINTER       :: FLUXACETbg(:,:)
      REAL(sp), POINTER       :: FLUXAPIN(:,:)
@@ -367,7 +366,7 @@ CONTAINS
     CALL InstGet ( ExtState%Megan, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find Megan instance Nr. ', ExtState%Megan
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -393,7 +392,6 @@ CONTAINS
     Inst%FLUXEOH    = 0.0_hp
     Inst%FLUXFAXX   = 0.0_hp
     Inst%FLUXAAXX   = 0.0_hp
-!    Inst%FLUXACETmo = 0.0_sp
     Inst%FLUXACETmb = 0.0_sp
     Inst%FLUXACETbg = 0.0_sp
     Inst%FLUXPRPE   = 0.0_sp
@@ -419,7 +417,7 @@ CONTAINS
     CALL CALC_AEF( HcoState, ExtState, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error encountered in MEGAN routine CALC_AEF!'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -427,7 +425,7 @@ CONTAINS
     CALL CALC_NORM_FAC( Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error encountered in MEGAN routine CALC_NORM_FAC!'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -435,7 +433,7 @@ CONTAINS
     CALL FILL_RESTART_VARS( HcoState, ExtState, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error encountered in MEGAN routine FILL_RESTART_VARS!'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -451,7 +449,7 @@ CONTAINS
        CALL CALC_AEF( HcoState, ExtState, Inst, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'Error encountered in MEGAN routine CALC_AEF!'
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -459,7 +457,7 @@ CONTAINS
        CALL CALC_NORM_FAC( Inst, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'Error encountered in MEGAN routine CALC_NORM_FAC!'
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -467,7 +465,7 @@ CONTAINS
        CALL FILL_RESTART_VARS( HcoState, ExtState, Inst, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'Error encountered in MEGAN routine FILL_RESTART_VARS!'
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
     ENDIF
@@ -546,7 +544,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst, &
                                  I, J, 'ISOP', EMIS_ISOP, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_ISOP', RC )
           ERR = .TRUE.
           EXIT
@@ -581,7 +579,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'APIN', EMIS_APIN, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_APIN', RC )
           ERR = .TRUE.
           EXIT
@@ -593,7 +591,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'BPIN', EMIS_BPIN, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_BPIN', RC )
           ERR = .TRUE.
           EXIT
@@ -605,7 +603,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'LIMO', EMIS_LIMO, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_LIMO', RC )
           ERR = .TRUE.
           EXIT
@@ -617,7 +615,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'SABI', EMIS_SABI, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_SABI', RC )
           ERR = .TRUE.
           EXIT
@@ -629,7 +627,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'MYRC', EMIS_MYRC, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_MYRC', RC )
           ERR = .TRUE.
           EXIT
@@ -641,7 +639,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'CARE', EMIS_CARE, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_CARE', RC )
           ERR = .TRUE.
           EXIT
@@ -653,7 +651,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'OCIM', EMIS_OCIM, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_OCIM', RC )
           ERR = .TRUE.
           EXIT
@@ -666,7 +664,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'OMON', EMIS_OMON, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_OMON', RC )
           ERR = .TRUE.
           EXIT
@@ -689,7 +687,7 @@ CONTAINS
           CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                     Inst, I, J, 'ALD2', EMIS_ALD2, RC)
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'GET_MEGAN_EMISSIONS_ALD2', RC )
              ERR = .TRUE.
              EXIT
@@ -705,7 +703,7 @@ CONTAINS
           CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                     Inst, I, J, 'MOH', EMIS_MOH, RC)
           IF ( RC /= HCO_SUCCESS ) THEN 
-             CALL HCO_ERROR( HcoState%Config%Err,  &
+             CALL HCO_ERROR(  &
                              'GET_MEGAN_EMISSIONS_MOH', RC )
              ERR = .TRUE.
              EXIT
@@ -721,7 +719,7 @@ CONTAINS
           CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                     Inst, I, J, 'EOH', EMIS_EOH, RC)
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'GET_MEGAN_EMISSIONS_EOH', RC )
              ERR = .TRUE.
              EXIT
@@ -742,7 +740,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'MBOX', EMIS_MBOX, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_MBOX', RC )
           ERR = .TRUE.
           EXIT
@@ -754,7 +752,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'FAXX', EMIS_FAXX, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_FAXX', RC )
           ERR = .TRUE.
           EXIT
@@ -766,7 +764,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'AAXX', EMIS_AAXX, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_AAXX', RC )
           ERR = .TRUE.
           EXIT
@@ -778,25 +776,6 @@ CONTAINS
        !--------------------------------------------------------------------
        IF ( Inst%IDTACET > 0 ) THEN
 
-!          !-----------------------------------------------------------------
-!          ! (1) BIOGENIC EMISSIONS OF ACETONE FROM MONOTERPENES
-!          !
-!          ! The yield for monoterpenes is .12 mol/mol from Reisell et.al.
-!          ! 1999 (this does not includes direct acetone emissions)
-!
-!          ! Apply yield from monoterpenes to get [kg ACET/m2/s]
-!          TMP = EMIS_MONO * YIELD_MO
-!          TMP = TMP * HcoState%Spc(Inst%IDTACET)%MW_g / &
-!                      HcoState%Spc(Inst%IDTMTPA)%MW_g
-!
-!          ! Scale to a posteriori source from Jacob et al 2001 (bdf, 9/5/01)
-!          TMP = TMP * MONO_SCALE
-!
-!          ! Add to total biogenic acetone emissions [kg ACET/m2/s]
-!          Inst%FLUXACETmo(I,J) = TMP
-!
-          !-----------------------------------------------------------------
-          ! (2) BIOGENIC ACETONE FROM METHYL BUTENOL -- NORTH AMERICA
           !
           ! Methyl Butenol (a.k.a. MBO) produces acetone with a molar yield
           ! of 0.6 [Alvarado (1999)].  The biogenic source of MBO is thought
@@ -830,7 +809,7 @@ CONTAINS
           CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                     Inst, I, J, 'ACET', EMIS_ACET, RC)
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'GET_MEGAN_EMISSIONS_ACET', RC )
              ERR = .TRUE.
              EXIT
@@ -865,7 +844,7 @@ CONTAINS
           CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                     Inst, I, J, 'PRPE', EMIS_PRPE, RC)
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'GET_MEGAN_EMISSIONS_PRPE', RC )
              ERR = .TRUE.
              EXIT
@@ -885,7 +864,7 @@ CONTAINS
           CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                     Inst, I, J, 'C2H4', EMIS_C2H4, RC)
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'GET_MEGAN_EMISSIONS_C2H4', RC )
              ERR = .TRUE.
              EXIT
@@ -959,7 +938,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'FARN', EMIS_FARN, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_FARN', RC )
           ERR = .TRUE.
           EXIT
@@ -971,7 +950,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'BCAR', EMIS_BCAR, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_BCAR', RC )
           ERR = .TRUE.
           EXIT
@@ -983,7 +962,7 @@ CONTAINS
        CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
                                  Inst, I, J, 'OSQT', EMIS_OSQT, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_OSQT', RC )
           ERR = .TRUE.
           EXIT
@@ -1068,7 +1047,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXISOP, Inst%IDTISOP, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXISOP', RC )
           RETURN
        ENDIF
@@ -1082,7 +1061,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXALD2, Inst%IDTALD2, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXALD2', RC )
           RETURN
        ENDIF
@@ -1096,7 +1075,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXMOH, Inst%IDTMOH, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXMOH', RC )
           RETURN 
        ENDIF
@@ -1110,7 +1089,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXEOH, Inst%IDTEOH, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXEOH', RC )
           RETURN
        ENDIF
@@ -1121,12 +1100,11 @@ CONTAINS
     IF ( Inst%IDTACET > 0 ) THEN
 
        ! Add flux to emission array
-       !Inst%FLUXACET = Inst%FLUXACETbg + Inst%FLUXACETmo + Inst%FLUXACETmb
        Inst%FLUXACET = Inst%FLUXACETbg + Inst%FLUXACETmb
        CALL HCO_EmisAdd( HcoState, Inst%FLUXACET, Inst%IDTACET, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXACET', RC )
           RETURN
        ENDIF
@@ -1140,7 +1118,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXSOAP, Inst%IDTSOAP, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXSOAP', RC )
           RETURN
        ENDIF
@@ -1155,7 +1133,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXSOAS, Inst%IDTSOAS, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXSOAS', RC )
           RETURN
        ENDIF
@@ -1170,7 +1148,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXPRPE, Inst%IDTPRPE, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXPRPE', RC )
           RETURN
        ENDIF
@@ -1185,7 +1163,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXC2H4, Inst%IDTC2H4, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXC2H4', RC )
           RETURN
        ENDIF
@@ -1200,7 +1178,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXMTPA, Inst%IDTMTPA, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXMTPA', RC )
           RETURN
        ENDIF
@@ -1215,7 +1193,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXMTPO, Inst%IDTMTPO, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXMTPO', RC )
           RETURN
        ENDIF
@@ -1230,7 +1208,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXLIMO, Inst%IDTLIMO, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXLIMO', RC )
           RETURN
        ENDIF
@@ -1245,7 +1223,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, Inst%FLUXSESQ, Inst%IDTSESQ, &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: FLUXSESQ', RC )
           RETURN
        ENDIF
@@ -1765,7 +1743,7 @@ CONTAINS
     ELSE
 
        MSG = 'Invalid compound name'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, &
+       CALL HCO_ERROR(MSG, RC, &
                       THISLOC='GET_MEGAN_PARAMS' )
        RETURN
 
@@ -1879,7 +1857,7 @@ CONTAINS
        EMFAC = Inst%AEF_OSQT(I,J)
     CASE DEFAULT
        MSG = 'Invalid compound name'
-       CALL HCO_ERROR(HcoState%Config%Err, MSG, &
+       CALL HCO_ERROR(MSG, &
                       RC, THISLOC='GET_MEGAN_AEF' )
        RETURN
     END SELECT
@@ -3432,7 +3410,7 @@ CONTAINS
     ! Create an instance for this extension
     CALL InstCreate ( ExtNr, ExtState%Megan, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, &
+       CALL HCO_ERROR ( &
                        'Cannot create MEGAN instance', RC )
        RETURN
     ENDIF
@@ -3485,7 +3463,7 @@ CONTAINS
        IF ( Inst%GLOBCO2 <  150.0_hp .OR. &
             Inst%GLOBCO2 > 1250.0_hp     ) THEN
           MSG = 'Global CO2 outside valid range of 150-1250 ppmv!'
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
     ENDIF
@@ -3699,7 +3677,7 @@ CONTAINS
           ENDIF
        CASE DEFAULT
           MSG = 'Invalid species names: ' // TRIM(SpcNames(I))
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        END SELECT
 
@@ -3761,42 +3739,42 @@ CONTAINS
 
     ALLOCATE( Inst%T_LAST24H( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'T_LAST24H', RC )
+       CALL HCO_ERROR( 'T_LAST24H', RC )
        RETURN
     ENDIF
     Inst%T_LAST24H = 0.0_hp
 
     ALLOCATE( Inst%T_LASTXDAYS( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'T_LASTXDAYS', RC )
+       CALL HCO_ERROR( 'T_LASTXDAYS', RC )
        RETURN
     ENDIF
     Inst%T_LASTXDAYS = 0.0_hp
 
     ALLOCATE( Inst%PARDR_LASTXDAYS( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'PARDR_LASTXDAYS', RC )
+       CALL HCO_ERROR( 'PARDR_LASTXDAYS', RC )
        RETURN
     ENDIF
     Inst%PARDR_LASTXDAYS = 0.0_hp
 
     ALLOCATE( Inst%PARDF_LASTXDAYS( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'PARDF_LASTXDAYS', RC )
+       CALL HCO_ERROR( 'PARDF_LASTXDAYS', RC )
        RETURN
     ENDIF
     Inst%PARDF_LASTXDAYS = 0.0_hp
 
     ALLOCATE( Inst%LAI_PREVDAY( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-      CALL HCO_ERROR( HcoState%Config%Err, 'LAI_PREVDAY', RC )
+      CALL HCO_ERROR( 'LAI_PREVDAY', RC )
       RETURN
     ENDIF
     Inst%LAI_PREVDAY = 0.0_sp
 
     ALLOCATE( Inst%ARRAY_16( NX, NY, 16 ), STAT=AS )
     IF ( AS /= 0 ) THEN
-      CALL HCO_ERROR( HcoState%Config%Err, 'ARRAY_16', RC )
+      CALL HCO_ERROR( 'ARRAY_16', RC )
       RETURN
     ENDIF
     Inst%ARRAY_16 = 0.0_hp
@@ -3806,343 +3784,336 @@ CONTAINS
     ! we calculate only 1 normalization factor for all compounds (dbm 11/2012)
     ALLOCATE( Inst%NORM_FAC( 1 ), STAT=AS )
     IF ( AS /= 0 ) THEN
-      CALL HCO_ERROR( HcoState%Config%Err, 'NORM_FAC', RC )
+      CALL HCO_ERROR( 'NORM_FAC', RC )
       RETURN
     ENDIF
     Inst%NORM_FAC = -99d0
 
     ALLOCATE( Inst%AEF_APIN( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_APIN', RC )
+       CALL HCO_ERROR( 'AEF_APIN', RC )
        RETURN
     ENDIF
     Inst%AEF_APIN = 0.0_hp
 
     ALLOCATE( Inst%AEF_MYRC( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_MYRC', RC )
+       CALL HCO_ERROR( 'AEF_MYRC', RC )
        RETURN
     ENDIF
     Inst%AEF_MYRC = 0.0_hp
 
     ALLOCATE( Inst%AEF_OMON( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_OMON', RC )
+       CALL HCO_ERROR( 'AEF_OMON', RC )
        RETURN
     ENDIF
     Inst%AEF_OMON = 0.0_hp
 
     ALLOCATE( Inst%AEF_FARN( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_FARN', RC )
+       CALL HCO_ERROR( 'AEF_FARN', RC )
        RETURN
     ENDIF
     Inst%AEF_FARN = 0.0_hp
 
     ALLOCATE( Inst%AEF_BCAR( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_BCAR', RC )
+       CALL HCO_ERROR( 'AEF_BCAR', RC )
        RETURN
     ENDIF
     Inst%AEF_BCAR = 0.0_hp
 
     ALLOCATE( Inst%AEF_OSQT( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_OSQT', RC )
+       CALL HCO_ERROR( 'AEF_OSQT', RC )
        RETURN
     ENDIF
     Inst%AEF_OSQT = 0.0_hp
 
     ALLOCATE( Inst%AEF_MOH( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_MOH', RC )
+       CALL HCO_ERROR( 'AEF_MOH', RC )
        RETURN
     ENDIF
     Inst%AEF_MOH = 0.0_hp
 
     ALLOCATE( Inst%AEF_ACET( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_ACET', RC )
+       CALL HCO_ERROR( 'AEF_ACET', RC )
        RETURN
     ENDIF
     Inst%AEF_ACET = 0.0_hp
 
     ALLOCATE( Inst%AEF_EOH( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_EOH', RC )
+       CALL HCO_ERROR( 'AEF_EOH', RC )
        RETURN
     ENDIF
     Inst%AEF_EOH = 0.0_hp
 
     ALLOCATE( Inst%AEF_CH2O( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_CH2O', RC )
+       CALL HCO_ERROR( 'AEF_CH2O', RC )
        RETURN
     ENDIF
     Inst%AEF_CH2O = 0.0_hp
 
     ALLOCATE( Inst%AEF_ALD2( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_ALD2', RC )
+       CALL HCO_ERROR( 'AEF_ALD2', RC )
        RETURN
     ENDIF
     Inst%AEF_ALD2 = 0.0_hp
 
     ALLOCATE( Inst%AEF_FAXX( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_FAXX', RC )
+       CALL HCO_ERROR( 'AEF_FAXX', RC )
        RETURN
     ENDIF
     Inst%AEF_FAXX = 0.0_hp
 
     ALLOCATE( Inst%AEF_AAXX( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_AAXX', RC )
+       CALL HCO_ERROR( 'AEF_AAXX', RC )
        RETURN
     ENDIF
     Inst%AEF_AAXX = 0.0_hp
 
     ALLOCATE( Inst%AEF_C2H4( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err,'AEF_C2H4', RC )
+       CALL HCO_ERROR( 'AEF_C2H4', RC )
        RETURN
     ENDIF
     Inst%AEF_C2H4 = 0.0_hp
 
     ALLOCATE( Inst%AEF_TOLU( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_TOLU', RC )
+       CALL HCO_ERROR( 'AEF_TOLU', RC )
        RETURN
     ENDIF
     Inst%AEF_TOLU = 0.0_hp
 
     ALLOCATE( Inst%AEF_HCNX( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_HCNX', RC )
+       CALL HCO_ERROR( 'AEF_HCNX', RC )
        RETURN
     ENDIF
     Inst%AEF_HCNX = 0.0_hp
 
     ALLOCATE( Inst%AEF_PRPE( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF_PRPE', RC )
+       CALL HCO_ERROR( 'AEF_PRPE', RC )
        RETURN
     ENDIF
     Inst%AEF_PRPE = 0.0_hp
 
     ALLOCATE( Inst%FLUXISOP( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXISOP', RC )
+       CALL HCO_ERROR( 'FLUXISOP', RC )
        RETURN
     ENDIF
     Inst%FLUXISOP = 0.0_hp
 
     ALLOCATE( Inst%FLUXMONO( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXMONO', RC )
+       CALL HCO_ERROR( 'FLUXMONO', RC )
        RETURN
     ENDIF
     Inst%FLUXMONO = 0.0_hp
 
     ALLOCATE( Inst%FLUXACET( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXACET', RC )
+       CALL HCO_ERROR( 'FLUXACET', RC )
        RETURN
     ENDIF
     Inst%FLUXACET = 0.0_hp
 
-!    ALLOCATE( Inst%FLUXACETmo( NX, NY ), STAT=AS )
-!    IF ( AS /= 0 ) THEN
-!       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXACETmo', RC )
-!       RETURN
-!    ENDIF
-!    Inst%FLUXACETmo = 0.0_sp
-
     ALLOCATE( Inst%FLUXACETmb( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err,'FLUXACETmb', RC )
+       CALL HCO_ERROR( 'FLUXACETmb', RC )
        RETURN
     ENDIF
     Inst%FLUXACETmb = 0.0_sp
 
     ALLOCATE( Inst%FLUXACETbg( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err,'FLUXACETbg', RC )
+       CALL HCO_ERROR( 'FLUXACETbg', RC )
        RETURN
     ENDIF
     Inst%FLUXACETbg = 0.0_sp
 
     ALLOCATE( Inst%FLUXPRPE( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXPRPE', RC )
+       CALL HCO_ERROR( 'FLUXPRPE', RC )
        RETURN
     ENDIF
     Inst%FLUXPRPE = 0.0_hp
 
     ALLOCATE( Inst%FLUXC2H4( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXC2H4', RC )
+       CALL HCO_ERROR( 'FLUXC2H4', RC )
        RETURN
     ENDIF
     Inst%FLUXC2H4 = 0.0_hp
 
     ALLOCATE( Inst%FLUXLIMO( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXLIMO', RC )
+       CALL HCO_ERROR( 'FLUXLIMO', RC )
        RETURN
     ENDIF
     Inst%FLUXLIMO = 0.0_hp
 
     ALLOCATE( Inst%FLUXMTPA( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXMTPA', RC )
+       CALL HCO_ERROR( 'FLUXMTPA', RC )
        RETURN
     ENDIF
     Inst%FLUXMTPA = 0.0_hp
 
     ALLOCATE( Inst%FLUXMTPO( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXMTPO', RC )
+       CALL HCO_ERROR( 'FLUXMTPO', RC )
        RETURN
     ENDIF
     Inst%FLUXMTPO = 0.0_hp
 
     ALLOCATE( Inst%FLUXSESQ( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXSESQ', RC )
+       CALL HCO_ERROR( 'FLUXSESQ', RC )
        RETURN
     ENDIF
     Inst%FLUXSESQ = 0.0_hp
 
     ALLOCATE( Inst%FLUXSOAP( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXSOAP', RC )
+       CALL HCO_ERROR( 'FLUXSOAP', RC )
        RETURN
     ENDIF
     Inst%FLUXSOAP = 0.0_hp
 
     ALLOCATE( Inst%FLUXSOAS( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXSOAS', RC )
+       CALL HCO_ERROR( 'FLUXSOAS', RC )
        RETURN
     ENDIF
     Inst%FLUXSOAS = 0.0_hp
 
     ALLOCATE( Inst%FLUXALD2( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXALD2', RC )
+       CALL HCO_ERROR( 'FLUXALD2', RC )
        RETURN
     ENDIF
     Inst%FLUXALD2 = 0.0_hp
 
     ALLOCATE( Inst%FLUXMOH( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXMOH', RC )
+       CALL HCO_ERROR( 'FLUXMOH', RC )
        RETURN
     ENDIF
     Inst%FLUXMOH = 0.0_hp
 
     ALLOCATE( Inst%FLUXEOH( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXEOH', RC )
+       CALL HCO_ERROR( 'FLUXEOH', RC )
        RETURN
     ENDIF
     Inst%FLUXEOH = 0.0_hp
 
     ALLOCATE( Inst%FLUXAPIN( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXAPIN', RC )
+       CALL HCO_ERROR( 'FLUXAPIN', RC )
        RETURN
     ENDIF
     Inst%FLUXAPIN = 0.0_sp
 
     ALLOCATE( Inst%FLUXBPIN( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXBPIN', RC )
+       CALL HCO_ERROR( 'FLUXBPIN', RC )
        RETURN
     ENDIF
     Inst%FLUXBPIN = 0.0_sp
 
     ALLOCATE( Inst%FLUXSABI( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXSABI', RC )
+       CALL HCO_ERROR( 'FLUXSABI', RC )
        RETURN
     ENDIF
     Inst%FLUXSABI = 0.0_sp
 
     ALLOCATE( Inst%FLUXMYRC( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXMYRC', RC )
+       CALL HCO_ERROR( 'FLUXMYRC', RC )
        RETURN
     ENDIF
     Inst%FLUXMYRC = 0.0_sp
 
     ALLOCATE( Inst%FLUXCARE( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXCARE', RC )
+       CALL HCO_ERROR( 'FLUXCARE', RC )
        RETURN
     ENDIF
     Inst%FLUXCARE = 0.0_sp
 
     ALLOCATE( Inst%FLUXOCIM( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXOCIM', RC )
+       CALL HCO_ERROR( 'FLUXOCIM', RC )
        RETURN
     ENDIF
     Inst%FLUXOCIM = 0.0_sp
 
     ALLOCATE( Inst%FLUXOMON( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err,  'FLUXOMON', RC )
+       CALL HCO_ERROR(  'FLUXOMON', RC )
        RETURN
     ENDIF
     Inst%FLUXOMON = 0.0_sp
 
     ALLOCATE( Inst%FLUXFARN( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXFARN', RC )
+       CALL HCO_ERROR( 'FLUXFARN', RC )
        RETURN
     ENDIF
     Inst%FLUXFARN = 0.0_sp
 
     ALLOCATE( Inst%FLUXBCAR( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXBCAR', RC )
+       CALL HCO_ERROR( 'FLUXBCAR', RC )
        RETURN
     ENDIF
     Inst%FLUXBCAR = 0.0_sp
 
     ALLOCATE( Inst%FLUXOSQT( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXOSQT', RC )
+       CALL HCO_ERROR( 'FLUXOSQT', RC )
        RETURN
     ENDIF
     Inst%FLUXOSQT = 0.0_sp
 
     ALLOCATE( Inst%FLUXMBOX( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXMBOX', RC )
+       CALL HCO_ERROR( 'FLUXMBOX', RC )
        RETURN
     ENDIF
     Inst%FLUXMBOX = 0.0_sp
 
     ALLOCATE( Inst%FLUXFAXX( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXFAXX', RC )
+       CALL HCO_ERROR( 'FLUXFAXX', RC )
        RETURN
     ENDIF
     Inst%FLUXFAXX = 0.0_sp
 
     ALLOCATE( Inst%FLUXAAXX( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'FLUXAAXX', RC )
+       CALL HCO_ERROR( 'FLUXAAXX', RC )
        RETURN
     ENDIF
     Inst%FLUXAAXX = 0.0_sp
 
     ALLOCATE( Inst%ARRAY_16( NX, NY, 16 ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'ARRAY_16', RC )
+       CALL HCO_ERROR( 'ARRAY_16', RC )
        RETURN
     ENDIF
     Inst%ARRAY_16 = 0.0_hp
@@ -4155,7 +4126,7 @@ CONTAINS
                Inst%AEF_OCIM ( NX, NY ), &
                Inst%AEF_SABI ( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'AEF allocation error', RC )
+       CALL HCO_ERROR( 'AEF allocation error', RC )
        RETURN
     ENDIF
     Inst%AEF_ISOP  = 0.0_hp
@@ -4169,19 +4140,6 @@ CONTAINS
     !=================================================================
     ! Create manual diagnostics
     !=================================================================
-!    CALL Diagn_Create( HcoState  = HcoState,              &
-!                       cName     = 'InvMEGAN_ACET_MONO',  &
-!                       ExtNr     = ExtNr,                 &
-!                       Cat       = -1,                    &
-!                       Hier      = -1,                    &
-!                       HcoID     = -1,                    &
-!                       SpaceDim  = 2,                     &
-!                       OutUnit   = 'kg/m2/s',             &
-!                       AutoFill  = 0,                     &
-!                       Trgt2D    = Inst%FLUXACETmo,       &
-!                       RC        = RC )
-!    IF ( RC /= HCO_SUCCESS ) RETURN
-
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_ACET_MBOX',  &
                        ExtNr     = ExtNr,                 &
@@ -4673,7 +4631,6 @@ CONTAINS
        IF ( ASSOCIATED( Inst%FLUXISOP    ) ) DEALLOCATE( Inst%FLUXISOP    )
        IF ( ASSOCIATED( Inst%FLUXMONO    ) ) DEALLOCATE( Inst%FLUXMONO    )
        IF ( ASSOCIATED( Inst%FLUXACET    ) ) DEALLOCATE( Inst%FLUXACET    )
-!       IF ( ASSOCIATED( Inst%FLUXACETmo  ) ) DEALLOCATE( Inst%FLUXACETmo  )
        IF ( ASSOCIATED( Inst%FLUXACETmb  ) ) DEALLOCATE( Inst%FLUXACETmb  )
        IF ( ASSOCIATED( Inst%FLUXACETbg  ) ) DEALLOCATE( Inst%FLUXACETbg  )
        IF ( ASSOCIATED( Inst%FLUXPRPE    ) ) DEALLOCATE( Inst%FLUXPRPE    )

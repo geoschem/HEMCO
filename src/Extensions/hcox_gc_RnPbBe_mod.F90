@@ -182,7 +182,7 @@ CONTAINS
     CALL InstGet ( ExtState%GC_RnPbBe, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find GC_RnPbBe instance Nr. ', ExtState%GC_RnPbBe
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -343,7 +343,7 @@ CONTAINS
                          RC,       ExtNr=Inst%ExtNr )
        Arr2D => NULL()
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: EmissRn222', RC )
           RETURN
        ENDIF
@@ -425,7 +425,7 @@ CONTAINS
                             RC,       ExtNr=Inst%ExtNr )
           Arr3D => NULL()
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'HCO_EmisAdd error: EmissBe7', RC )
              RETURN
           ENDIF
@@ -438,7 +438,7 @@ CONTAINS
                             RC,       ExtNr=Inst%ExtNr )
           Arr3D => NULL()
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'HCO_EmisAdd error: EmissBe7Strat', RC )
              RETURN
           ENDIF
@@ -451,7 +451,7 @@ CONTAINS
                             RC,       ExtNr=Inst%ExtNr )
           Arr3D => NULL()
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'HCO_EmisAdd error: EmissBe10', RC )
              RETURN
           ENDIF
@@ -464,7 +464,7 @@ CONTAINS
                             RC,       ExtNr=Inst%ExtNr )
           Arr3D => NULL()
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'HCO_EmisAdd error: EmissBe10Strat', RC )
              RETURN
           ENDIF
@@ -550,7 +550,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%GC_RnPbBe, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create GC_RnPbBe instance', RC )
+       CALL HCO_ERROR ( 'Cannot create GC_RnPbBe instance', RC )
        RETURN
     ENDIF
     ! Also fill Inst%ExtNr
@@ -611,7 +611,7 @@ CONTAINS
 
     ! ERROR: No tracer defined
     IF ( Inst%IDTRn222 <= 0 .AND. Inst%IDTBe7 <= 0 .AND. Inst%IDTBe10 <= 0) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, &
+       CALL HCO_ERROR( &
                        'Cannot use RnPbBe extension: no valid species!', RC )
     ENDIF
 
@@ -628,7 +628,7 @@ CONTAINS
     IF ( Inst%IDTRn222 > 0 ) THEN
        ALLOCATE( Inst%EmissRn222( HcoState%Nx, HcoState%NY ), STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate EmissRn222', RC )
           RETURN
        ENDIF
@@ -638,7 +638,7 @@ CONTAINS
        ALLOCATE( Inst%EmissBe7( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
                  STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate EmissBe7', RC )
           RETURN
        ENDIF
@@ -647,7 +647,7 @@ CONTAINS
        ! Array for latitudes (Lal & Peters data)
        ALLOCATE( Inst%LATSOU( 10 ), STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate LATSOU', RC )
           RETURN
        ENDIF
@@ -655,7 +655,7 @@ CONTAINS
        ! Array for pressures (Lal & Peters data)
        ALLOCATE( Inst%PRESOU( 33 ), STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate PRESOU', RC )
           RETURN
        ENDIF
@@ -663,7 +663,7 @@ CONTAINS
        ! Array for 7Be emissions ( Lal & Peters data)
        ALLOCATE( Inst%BESOU( 10, 33 ), STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate BESOU', RC )
           RETURN
        ENDIF
@@ -676,7 +676,7 @@ CONTAINS
        ALLOCATE( Inst%EmissBe7Strat( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
                  STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate EmissBe7Strat', RC )
           RETURN
        ENDIF
@@ -687,7 +687,7 @@ CONTAINS
        ALLOCATE( Inst%EmissBe10( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
                  STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate EmissBe10', RC )
           RETURN
        ENDIF
@@ -697,7 +697,7 @@ CONTAINS
        ALLOCATE( Inst%EmissBe10Strat( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
                  STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate EmissBe10Strat', RC )
           RETURN
        ENDIF

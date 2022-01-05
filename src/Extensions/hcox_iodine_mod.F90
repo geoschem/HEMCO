@@ -152,7 +152,7 @@ CONTAINS
     CALL InstGet ( ExtState%Inorg_Iodine, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find iodine instance Nr. ', ExtState%Inorg_Iodine
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -382,7 +382,7 @@ CONTAINS
     ! Create Instance
     CALL InstCreate ( ExtNr, ExtState%Inorg_Iodine, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create InorgIodine instance', RC )
+       CALL HCO_ERROR ( 'Cannot create InorgIodine instance', RC )
        RETURN
     ENDIF
 

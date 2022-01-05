@@ -716,7 +716,7 @@ CONTAINS
 
          ! Error check
          IF ( .NOT. Filled ) THEN
-            CALL HCO_ERROR(HcoState%Config%Err,'Cannot fill '//TRIM(FldName),RC)
+            CALL HCO_ERROR('Cannot fill '//TRIM(FldName),RC)
             ASSERT_(.FALSE.)
          ENDIF
 

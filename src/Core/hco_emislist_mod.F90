@@ -498,7 +498,7 @@ CONTAINS
        IF ( .NOT. FOUND ) THEN
           MSG = 'Cannot add emissions to target array: error in ' // &
                TRIM(Lct%Dct%cName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -533,33 +533,33 @@ CONTAINS
           ! Check extension number
           IF ( Lct%Dct%ExtNr /= TargetLct%Dct%ExtNr ) THEN
              MSG = 'Wrong ext. number: ' // TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
           ! Check data type
           IF ( Lct%Dct%DctType /= TargetLct%Dct%DctType ) THEN
              MSG = 'Wrong data type: ' // TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
           ! Check species ID
           IF ( Lct%Dct%HcoID /= TargetLct%Dct%HcoID ) THEN
              MSG = 'Wrong species ID: ' // TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
           ! Check for array dimensions
           IF ( Lct%Dct%Dta%SpaceDim /= TargetLct%Dct%Dta%SpaceDim ) THEN
              MSG = 'Wrong space dimension: ' // TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
           IF ( Lct%Dct%Dta%nt /= TargetLct%Dct%Dta%nt ) THEN
              MSG = 'Wrong time dim: ' // TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
           IF ( Lct%Dct%Dta%SpaceDim <= 2) THEN
@@ -590,21 +590,21 @@ CONTAINS
           ! Check operator
           IF ( Lct%Dct%Oper /= TargetLct%Dct%Oper ) THEN
              MSG = 'Wrong operator: ' // TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
           ! Check category
           IF ( Lct%Dct%Cat /= TargetLct%Dct%Cat ) THEN
              MSG = 'Wrong category: ' // TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
           ! Check hierarchy
           IF ( Lct%Dct%Hier /= TargetLct%Dct%Hier ) THEN
              MSG = 'Wrong hierarchy: ' // TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -613,7 +613,7 @@ CONTAINS
                Lct%Dct%Oper    == 3                       ) THEN
              MSG = 'Cannot add masks if operator is 3: ' // &
                   TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -763,7 +763,7 @@ CONTAINS
           RETURN
        ELSE
           MSG = 'Container not found: ' // TRIM(DctName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF
@@ -771,14 +771,14 @@ CONTAINS
     ! Check spatial dimension
     IF ( Lct%Dct%Dta%SpaceDim /= 3 ) THEN
        MSG = 'Container is not 3D: ' // TRIM(DctName)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
     ! Check time dimension
     IF ( Lct%Dct%Dta%nt < T ) THEN
        MSG = 'not enough time slices: ' // TRIM(DctName)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -790,7 +790,7 @@ CONTAINS
           Ptr3D  => NULL()
        ELSE
           MSG = 'Container data not filled: ' // TRIM(DctName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF
@@ -886,7 +886,7 @@ CONTAINS
           RETURN
        ELSE
           MSG = 'Container not found: ' // TRIM(DctName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF
@@ -895,14 +895,14 @@ CONTAINS
     IF ( (Lct%Dct%Dta%SpaceDim/=2) .AND. &
          (Lct%Dct%Dta%SpaceDim/=1)        ) THEN
        MSG = 'Container is not 2D: ' // TRIM(DctName)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
     ! Check time dimension
     IF ( Lct%Dct%Dta%nt < T ) THEN
        MSG = 'not enough time slices: ' // TRIM(DctName)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -914,7 +914,7 @@ CONTAINS
           Ptr2D  => NULL()
        ELSE
           MSG = 'Container data not filled: ' // TRIM(DctName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF

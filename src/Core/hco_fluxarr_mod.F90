@@ -213,7 +213,7 @@ CONTAINS
 
           ! Negative flag is 0: return w/ error
           ELSE
-             CALL HCO_ERROR ( HcoState%Config%Err, &
+             CALL HCO_ERROR ( &
                 'Negative values found!', &
                 RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
              RETURN
@@ -306,7 +306,7 @@ CONTAINS
 
           ! Negative flag is 0: return w/ error
           ELSE
-             CALL HCO_ERROR ( HcoState%Config%Err, &
+             CALL HCO_ERROR ( &
                'Negative values found!', &
                 RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
              RETURN
@@ -397,7 +397,7 @@ CONTAINS
 
           ! Negative flag is 0: return w/ error
           ELSE
-             CALL HCO_ERROR ( HcoState%Config%Err, &
+             CALL HCO_ERROR ( &
                'Negative values found!', &
                 RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
              RETURN
@@ -489,7 +489,7 @@ CONTAINS
 
           ! Negative flag is 0: return w/ error
           ELSE
-             CALL HCO_ERROR ( HcoState%Config%Err, &
+             CALL HCO_ERROR ( &
                'Negative values found!', &
                 RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
              RETURN
@@ -593,7 +593,7 @@ CONTAINS
 
           ! Negative flag is 0: return w/ error
           ELSE
-             CALL HCO_ERROR ( HcoState%Config%Err, &
+             CALL HCO_ERROR ( &
                'Negative values found!', &
                 RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
              RETURN
@@ -691,7 +691,7 @@ CONTAINS
 
           ! Negative flag is 0: return w/ error
           ELSE
-             CALL HCO_ERROR ( HcoState%Config%Err, &
+             CALL HCO_ERROR ( &
                'Negative values found!', &
                 RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
              RETURN
@@ -856,12 +856,12 @@ CONTAINS
     ! Check size dimensions
     IF ( I > HcoState%NX ) THEN
        MSG = 'Cannot add DP - i too high!'
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR ( MSG, RC )
        RETURN
     ENDIF
     IF ( J > HcoState%NY ) THEN
        MSG = 'Cannot add DP - j too high!'
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR ( MSG, RC )
        RETURN
     ENDIF
 
@@ -922,12 +922,12 @@ CONTAINS
     ! Check size dimensions
     IF ( I > HcoState%NX ) THEN
        MSG = 'Cannot add iVal - i too high!'
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR ( MSG, RC )
        RETURN
     ENDIF
     IF ( J > HcoState%NY ) THEN
        MSG = 'Cannot add iVal - j too high!'
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR ( MSG, RC )
        RETURN
     ENDIF
 

@@ -317,7 +317,7 @@ CONTAINS
             ( SIZE(FileDta%V2(1)%Val,1) /= nx ) .OR. &
             ( SIZE(FileDta%V2(1)%Val,2) /= ny )       ) THEN
           MSG = 'Wrong dimensions: ' // TRIM(FileDta%ncFile)
-          CALL HCO_ERROR ( HcoConfig%Err, MSG, RC )
+          CALL HCO_ERROR ( MSG, RC )
        ENDIF
        RETURN
     ENDIF
@@ -387,7 +387,7 @@ CONTAINS
             ( SIZE(FileDta%V3(1)%Val,2) /= ny ) .OR. &
             ( SIZE(FileDta%V3(1)%Val,3) /= nz )       ) THEN
           MSG = 'Wrong dimensions: ' // TRIM(FileDta%ncFile)
-          CALL HCO_ERROR ( HcoConfig%Err, MSG, RC )
+          CALL HCO_ERROR ( MSG, RC )
        ENDIF
        RETURN
     ENDIF
