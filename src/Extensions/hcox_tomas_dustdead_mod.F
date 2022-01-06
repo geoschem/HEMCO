@@ -2131,8 +2131,8 @@
       DO I = 1, HcoState%NX
 
          ! Set orography to land type
-         OROGRAPHY (I,J) = HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J),
-     &                                   ExtState%FRLANDIC%Arr%Val(I,J) )
+         OROGRAPHY (I,J) = HCO_LANDTYPE(ExtState%WLI%Arr%Val(I,J),
+     &                                  ExtState%FRLANDIC%Arr%Val(I,J))
 
       ENDDO
       ENDDO
