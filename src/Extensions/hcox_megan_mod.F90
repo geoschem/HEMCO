@@ -334,7 +334,7 @@ CONTAINS
     ! For diagnostics
     REAL(hp), POINTER   :: Arr2D(:,:)
     CHARACTER(LEN=63)   :: DiagnName
-    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=255)  :: MSG, LOC
 
     ! Conversion factors for acetone calculations
     REAL(hp), PARAMETER   :: YIELD_MO   = 0.116_hp
@@ -351,6 +351,7 @@ CONTAINS
     !=================================================================
     ! HCOX_Megan_Run begins here!
     !=================================================================
+    LOC = 'HCOX_Megan_Run (HCOX_MEGAN_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, &
@@ -1345,26 +1346,28 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    REAL(hp)  :: GAMMA_LAI
-    REAL(hp)  :: GAMMA_AGE
-    REAL(hp)  :: GAMMA_PAR
-    REAL(hp)  :: GAMMA_T_LD
-    REAL(hp)  :: GAMMA_T_LI
-    REAL(hp)  :: GAMMA_SM
-    REAL(hp)  :: GAMMA_CO2  ! (Tai, Jan 2013)
-    REAL(hp)  :: AEF
-    REAL(hp)  :: D_BTW_M
-    REAL(hp)  :: TS, SUNCOS
-    REAL(hp)  :: Q_DIR_2, Q_DIFF_2
-    REAL(hp)  :: BETA, LDF, CT1, CEO
-    REAL(hp)  :: ANEW, AGRO, AMAT, AOLD
-    REAL(hp)  :: ISOLAI, PMISOLAI, MISOLAI
-    REAL(hp)  :: PFTSUM
-    LOGICAL   :: BIDIR
+    REAL(hp)            :: GAMMA_LAI
+    REAL(hp)            :: GAMMA_AGE
+    REAL(hp)            :: GAMMA_PAR
+    REAL(hp)            :: GAMMA_T_LD
+    REAL(hp)            :: GAMMA_T_LI
+    REAL(hp)            :: GAMMA_SM
+    REAL(hp)            :: GAMMA_CO2  ! (Tai, Jan 2013)
+    REAL(hp)            :: AEF
+    REAL(hp)            :: D_BTW_M
+    REAL(hp)            :: TS, SUNCOS
+    REAL(hp)            :: Q_DIR_2, Q_DIFF_2
+    REAL(hp)            :: BETA, LDF, CT1, CEO
+    REAL(hp)            :: ANEW, AGRO, AMAT, AOLD
+    REAL(hp)            :: ISOLAI, PMISOLAI, MISOLAI
+    REAL(hp)            :: PFTSUM
+    LOGICAL             :: BIDIR
+    CHARACTER(LEN=255)  :: LOC
 
     !=================================================================
     ! GET_MEGAN_EMISSIONS begins here!
     !=================================================================
+    LOC = 'GET_MEGAN_EMISSIONS (HCOX_MEGAN_MOD.F90)'    
 
     ! Initialize parameters, gamma values, and return value
     MEGAN_EMIS = 0.0_hp
@@ -2938,6 +2941,8 @@ CONTAINS
     REAL(hp)  :: PFT_C3_NARC_GRSS(HcoState%NX,HcoState%NY)
     REAL(hp)  :: PFT_C4_GRSS(HcoState%NX,HcoState%NY)
     REAL(hp)  :: PFT_CROP(HcoState%NX,HcoState%NY)
+    
+    CHARACTER(LEN=255)      :: LOC
 
     ! Suffix
     CHARACTER(LEN=255)      :: SFX
@@ -2945,6 +2950,7 @@ CONTAINS
     !=================================================================
     ! CALC_AEF begins here!
     !=================================================================
+    LOC = 'CALC_AEF (HCOX_MEGAN_MOD.F90)'
 
     ! Suffix
     SFX = Inst%SUFFIX
@@ -3481,13 +3487,14 @@ CONTAINS
     REAL*8                         :: PI_180
     REAL(hp), POINTER              :: Ptr2D(:,:)
     TYPE(MyInst), POINTER          :: Inst
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
     LOGICAL                        :: Optfound
 
     !=================================================================
     ! HCOX_MEGAN_INIT begins here!
     !=================================================================
+    LOC = 'HCOX_MEGAN_INIT (HCOX_MEGAN_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
