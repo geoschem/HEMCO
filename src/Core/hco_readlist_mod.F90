@@ -99,11 +99,12 @@ CONTAINS
 !
     INTEGER            :: intv
     LOGICAL            :: verb
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     ! ================================================================
     ! ReadList_Set begins here
     ! ================================================================
+    LOC = 'ReadList_Set (HCO_READLIST_MOD.F90)'
 
     ! For error handling
     CALL HCO_ENTER (HcoState%Config%Err,'ReadList_Set (hco_readlist_mod.F90)', RC )
