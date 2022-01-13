@@ -21,6 +21,7 @@ pr:
   branches:
     include:
       - '*'
+  drafts: false
 
 # Basic agent and container set up
 pool:
