@@ -162,7 +162,7 @@ CONTAINS
     LOGICAL               :: ERR
 
     ! Strings
-    CHARACTER(LEN=255)    :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255)    :: ErrMsg, ThisLoc, LOC
 
     ! Arrays
     REAL(sp)              :: SO2degas(HcoState%NX,HcoState%NY,HcoState%NZ)
@@ -175,6 +175,7 @@ CONTAINS
     !=================================================================
     ! HCOX_VOLCANO_RUN begins here!
     !=================================================================
+    LOC = 'HCOX_VOLCANO_RUN (HCOX_VOLCANO_MOD.F90)'
 
     ! Assume success
     RC = HCO_SUCCESS
@@ -344,11 +345,12 @@ CONTAINS
     INTEGER                        :: ExtNr, N, Dum
     LOGICAL                        :: FOUND
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
-    CHARACTER(LEN=255)             :: MSG, Str
+    CHARACTER(LEN=255)             :: MSG, Str, LOC
 
     !=================================================================
     ! HCOX_VOLCANO_INIT begins here!
     !=================================================================
+    LOC = 'HCOX_VOLCANO_INIT (HCOX_VOLCANO_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
