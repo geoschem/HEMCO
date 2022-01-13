@@ -146,9 +146,11 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! HCO_RestartDefine_3D begins here
     ! ================================================================
+    LOC = 'HCO_RestartDefine_3D (HCO_RESTART_MOD.F90)'
 
     ! Define diagnostics array
     CALL Diagn_Create ( HcoState,                               &
@@ -218,9 +220,11 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! HCO_RestartDefine_2D begins here
     ! ================================================================
+    LOC = 'HCO_RestartDefine_2D (HCO_RESTART_MOD.F90)'
 
     ! Define diagnostics array
     CALL Diagn_Create ( HcoState,                               &
@@ -302,13 +306,14 @@ CONTAINS
 !
     REAL(sp), POINTER    :: Ptr3D(:,:,:)
     LOGICAL              :: FLD
-    CHARACTER(LEN=255)   :: MSG
+    CHARACTER(LEN=255)   :: MSG, LOC
 
     ! ================================================================
     ! HCO_RestartGet begins here
     ! ================================================================
 
     ! Init
+    LOC   = 'HCO_RestartGet (HCO_RESTART_MOD.F90)'
     Ptr3D => NULL()
 
     ! Is the output array filled yet?
@@ -462,13 +467,14 @@ CONTAINS
 !
     REAL(sp), POINTER    :: Ptr2D(:,:)
     LOGICAL              :: FLD
-    CHARACTER(LEN=255)   :: MSG
+    CHARACTER(LEN=255)   :: MSG, LOC
 
     ! ================================================================
     ! HCO_RestartGet_2D begins here
     ! ================================================================
 
     ! Init
+    LOC   = 'HCO_RestartGet_2D (HCO_RESTART_MOD.F90)'
     Ptr2D => NULL()
 
     ! Is the output array filled yet?
