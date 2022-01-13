@@ -2358,12 +2358,13 @@ CONTAINS
     LOGICAL                        :: TimeToWrite
     LOGICAL                        :: FOUND, CF
     LOGICAL                        :: SKIPZERO
+    CHARACTER(LEN=255)             :: LOC
 
     !======================================================================
     ! Diagn_Get begins here!
     !======================================================================
-
     ! Init
+    LOC      = 'Diagn_Get (HCO_DIAGN_MOD.F90)'
     FLAG     =  HCO_FAIL
     RC       =  HCO_SUCCESS
     CF       = .FALSE.
@@ -2520,12 +2521,14 @@ CONTAINS
     TYPE(DiagnCont),  POINTER  :: DgnCont
     INTEGER                    :: PS
     LOGICAL                    :: FND
+    CHARACTER(LEN=255)         :: LOC
 
     !======================================================================
     ! Diagn_TotalGet begins here!
     !======================================================================
 
     ! Init
+    LOC     = 'Diagn_TotalGet (HCO_DIAGN_MOD.F90)'
     RC      = HCO_FAIL
     Total   = 0.0_sp
     DgnCont => NULL()
@@ -2671,12 +2674,14 @@ CONTAINS
     TYPE(DiagnCollection), POINTER :: ThisColl
     INTEGER                        :: I, RC, PS
     LOGICAL                        :: InUse
+    CHARACTER(LEN=255)             :: LOC
 
     !======================================================================
     ! Diagn_AutoFillLevelDefined begins here!
     !======================================================================
 
     ! Initialize
+    LOC       = 'Diagn_AutoFillLevelDefined (HCO_DIAGN_MOD.F90)'
     IsDefined = .FALSE.
     ThisColl  => NULL()
 
@@ -2851,12 +2856,14 @@ CONTAINS
     TYPE(DiagnCollection), POINTER :: ThisColl
     INTEGER                        :: PS
     LOGICAL                        :: FOUND
+    CHARACTER(LEN=255)             :: LOC
 
     !======================================================================
     ! DiagnCollection_Set begins here!
     !======================================================================
-
+    
     ! Init
+    LOC      = 'DiagnCollection_Set (HCO_DIAGN_MOD.F90)'
     ThisColl => NULL()
     IF ( PRESENT(InUse    ) ) InUse     = .FALSE.
 
@@ -3346,12 +3353,14 @@ CONTAINS
     TYPE(DiagnCont),       POINTER     :: CurrCnt
     TYPE(DiagnCollection), POINTER     :: ThisColl
     LOGICAL                            :: IsMatch, InUse, Rsm
+    CHARACTER(LEN=255)                 :: LOC
 
     !======================================================================
     ! DiagnCont_Find begins here!
     !======================================================================
 
     ! Initialize
+    LOC      = 'DiagnCont_Find (HCO_DIAGN_MOD.F90)'
     FOUND    = .FALSE.
     CurrCnt  => NULL()
     ThisColl => NULL()
@@ -3719,7 +3728,7 @@ CONTAINS
 ! !ARGUMENTS:
 !
     TYPE(DiagnCollection), POINTER    :: ThisColl
-    CHARACTER(LEN=255)                :: MSG
+    CHARACTER(LEN=255)                :: MSG, LOC
     INTEGER                           :: RC, PS, nx, ny, nz
     REAL(sp)                          :: sm
 
@@ -3728,6 +3737,7 @@ CONTAINS
     ! ================================================================
 
     ! Initialize
+    LOC      = 'Diagn_Print (HCO_DIAGN_MOD.F90)'
     ThisColl => NULL()
 
     ! Get collection number
