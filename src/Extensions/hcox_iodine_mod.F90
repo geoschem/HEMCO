@@ -130,11 +130,12 @@ CONTAINS
 
     ! Error handling
     LOGICAL                :: ERR
-    CHARACTER(LEN=255)     :: MSG
+    CHARACTER(LEN=255)     :: MSG, LOC
 
     !=================================================================
     ! HCOX_Iodine_Run begins here!
     !=================================================================
+    LOC = 'HCOX_Iodine_Run (HCOX_IODINE_MOD.F90)'
 
     ! Return if extension disabled
     IF ( ExtState%Inorg_Iodine <= 0 ) RETURN
@@ -359,7 +360,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER                        :: ExtNr, N, R, AS
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     INTEGER                        :: nSpc, minLen
     LOGICAL                        :: FOUND
     INTEGER, ALLOCATABLE           :: HcoIDs(:)
@@ -369,6 +370,7 @@ CONTAINS
     !=================================================================
     ! HCOX_Iodine_Init begins here!
     !=================================================================
+    LOC = 'HCOX_Iodine_Init (HCOX_IODINE_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
