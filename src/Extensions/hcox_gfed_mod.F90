@@ -212,6 +212,7 @@ CONTAINS
     INTEGER             :: N, M
     REAL(hp), POINTER   :: TmpPtr(:,:)
     CHARACTER(LEN=63)   :: MSG
+    CHARACTER(LEN=255)  :: LOC
 
     REAL(hp), TARGET    :: SpcArr(HcoState%NX,HcoState%NY)
     REAL(hp), TARGET    :: TypArr(HcoState%NX,HcoState%NY)
@@ -231,6 +232,7 @@ CONTAINS
     !=================================================================
     ! HCOX_GFED_Run begins here!
     !=================================================================
+    LOC = 'HCOX_GFED_Run (HCOX_GFED_MOD.F90)'
 
     ! Return if extension disabled
     IF ( ExtState%GFED <= 0 ) RETURN
@@ -566,7 +568,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255) :: MSG, ScalFile
+    CHARACTER(LEN=255) :: MSG, ScalFile, LOC
     INTEGER            :: ExtNr, tmpNr, AS, IU_FILE, IOS
     INTEGER            :: nSpc, N, M, NDUM, NCHAR
     CHARACTER(LEN=31)  :: tmpName
@@ -588,6 +590,7 @@ CONTAINS
     !=================================================================
     ! HCOX_GFED_Init begins here!
     !=================================================================
+    LOC = 'HCOX_GFED_Init (HCOX_GFED_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
