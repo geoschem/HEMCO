@@ -133,7 +133,7 @@ CONTAINS
 !
 ! !LOcAL VARIABLES:
 !
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
     CHARACTER(LEN=1023)   :: MSG_LONG
     INTEGER               :: tidx1a
     INTEGER               :: nTime,  T, CNT, NCRC
@@ -147,6 +147,7 @@ CONTAINS
     !=================================================================
     ! GET_TIMEIDX begins here
     !=================================================================
+    LOC = 'GET_TIMEIDX (HCOIO_UTIL_MOD.F90)'
 
     ! Init
     CALL HCO_ENTER( HcoState%Config%Err, &
@@ -1542,7 +1543,7 @@ CONTAINS
     INTEGER :: origYr,  origMt, origDy, origHr
     LOGICAL :: hasFile, hasYr,  hasMt,  hasDy, hasHr
     LOGICAL :: nextTyp
-    CHARACTER(LEN=1023)  :: MSG
+    CHARACTER(LEN=1023) :: MSG, LOC
     CHARACTER(LEN=1023) :: srcFileOrig
 
     ! maximum # of iterations for file search
@@ -1553,6 +1554,7 @@ CONTAINS
     !=================================================================
 
     ! Initialize
+    LOC     = 'SrcFile_Parse (HCOIO_UTIL_MOD.F90)'
     RC      = HCO_SUCCESS
     found   = .FALSE.
     srcFile = Lct%Dct%Dta%ncFile
@@ -2145,11 +2147,12 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     !======================================================================
     ! HCOIO_ReadOther begins here
     !======================================================================
+    LOC = 'HCOIO_ReadOther (HCOIO_UTIL_MOD.F90)'
 
     ! Error check: data must be in local time
     IF ( .NOT. Lct%Dct%Dta%IsLocTime ) THEN
