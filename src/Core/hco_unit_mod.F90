@@ -174,11 +174,13 @@ CONTAINS
 !
 ! LOCAL VARIABLES:
 !
-    REAL(hp)     :: Factor
+    REAL(hp)            :: Factor
+    CHARACTER(LEN=255)  :: LOC
 
     !=================================================================
     ! HCO_UNIT_CHANGE_SP begins here
     !=================================================================
+    LOC = 'HCO_UNIT_CHANGE_SP (HCO_UNIT_MOD.F90)'
 
     CALL HCO_Unit_Factor( HcoConfig, UNITS, MW, YYYY, MM, AreaFlag, TimeFlag, &
                           Factor, RC )
@@ -252,11 +254,13 @@ CONTAINS
 !
 ! LOCAL VARIABLES:
 !
-    REAL(hp)     :: Factor
+    REAL(hp)            :: Factor
+    CHARACTER(LEN=255)  :: LOC
 
     !=================================================================
     ! HCO_UNIT_CHANGE_DP begins here
     !=================================================================
+    LOC = 'HCO_UNIT_CHANGE_DP (HCO_UNIT_MOD.F90)'
 
     CALL HCO_Unit_Factor( HcoConfig, UNITS, MW, YYYY, MM, AreaFlag, TimeFlag, &
                           Factor, RC )
