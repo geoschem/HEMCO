@@ -120,10 +120,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! tIDx_Init begins here!
     !======================================================================
+    LOC = 'tIDx_Init (HCO_TIDX_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, 'tIDx_Init (hco_tidx_mod.F90)', RC )
@@ -350,13 +355,15 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER            :: HH, WD, MM, RC
-    REAL(hp)           :: LonHH
-    REAL(dp)           :: frac
+    INTEGER             :: HH, WD, MM, RC
+    REAL(hp)            :: LonHH
+    REAL(dp)            :: frac
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! tIDx_GetIndx begins here!
     !======================================================================
+    LOC = 'tIDx_GetIndx (HCO_TIDX_MOD.F90)'
 
     ! Default value (=> This will cause the code to crash!)
     Indx = -1
@@ -492,11 +499,12 @@ CONTAINS
 !
     INTEGER            :: nx, ny, nt, ntexp, dt
     INTEGER            :: cTypeID
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     !-----------------------------------
     ! tIDx_Assign begins here!
     !-----------------------------------
+    LOC = 'tIDx_Assign (HCO_TIDX_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, &
@@ -777,12 +785,14 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER   :: cYr, cMt, cDy, cWd, cHr, cMn, sYr
-    LOGICAL   :: InRange
+    INTEGER             :: cYr, cMt, cDy, cWd, cHr, cMn, sYr
+    LOGICAL             :: InRange
+    CHARACTER(LEN=255)  :: LOC
 
     !-----------------------------------
     ! HCO_GetPrefTimeAttr begins here!
     !-----------------------------------
+    LOC = 'HCO_GetPrefTimeAttr (HCO_TIDX_MOD.F90)'
 
     ! Init
     RC = HCO_SUCCESS
