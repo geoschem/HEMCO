@@ -2439,11 +2439,12 @@ CONTAINS
     INTEGER                      :: ThisCover, ThisHcoID, FLAG
     INTEGER                      :: lon1, lon2, lat1, lat2
     INTEGER                      :: cpux1, cpux2, cpuy1, cpuy2
-    CHARACTER(LEN=255)           :: MSG
+    CHARACTER(LEN=255)           :: MSG, LOC
 
     !=================================================================
     ! RegisterPrepare begins here!
     !=================================================================
+    LOC = 'RegisterPrepare (HCO_CONFIG_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, 'RegisterPrepare', RC )
@@ -2814,13 +2815,14 @@ CONTAINS
 
     ! Scalars
     INTEGER                   :: cID, FLAG
-    CHARACTER(LEN=255)        :: MSG
+    CHARACTER(LEN=255)        :: MSG, LOC
     CHARACTER(LEN=  5)        :: strID
     INTEGER                   :: ThisScalID
 
     !======================================================================
     ! Register_Scal begins here
     !======================================================================
+    LOC = 'Register_Scal (HCO_CONFIG_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, 'Register_Scal (hco_config_mod.F90)', RC )
@@ -2979,12 +2981,13 @@ CONTAINS
     INTEGER                   :: tmpID
     INTEGER                   :: I, J, FLAG1, tmpCov
     LOGICAL                   :: found, sameCont
-    CHARACTER(LEN=255)        :: MSG
+    CHARACTER(LEN=255)        :: MSG, LOC
     CHARACTER(LEN=  7)        :: strID
 
     !======================================================================
     ! Get_targetID begins here
     !======================================================================
+    LOC = 'Get_targetID (HCO_CONFIG_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, 'Get_targetID (hco_config_mod.F90)', RC )
