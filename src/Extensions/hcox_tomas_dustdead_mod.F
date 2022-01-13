@@ -278,7 +278,10 @@
       ! Enter
       CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_TOMAS_DustDead_Run
      & (hcox_tomas_dustdead_mod.F)', RC )
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       ! Get instance
       Inst => NULL()
@@ -313,35 +316,59 @@
       !IF ( HcoClock_First(HcoState%Clock,.TRUE.) ) THEN
          CALL HCO_EvalFld( HcoState, 'DEAD_EF_GEO',
      &                     Inst%ERD_FCT_GEO, RC)
-         IF ( RC /= HCO_SUCCESS ) RETURN
+         IF ( RC /= HCO_SUCCESS ) THEN
+             CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+             RETURN
+         ENDIF
 
          CALL HCO_EvalFld( HcoState, 'DEAD_LF_DRY',
      &                     Inst%LND_FRC_DRY, RC)
-         IF ( RC /= HCO_SUCCESS ) RETURN
+         IF ( RC /= HCO_SUCCESS ) THEN
+             CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+             RETURN
+         ENDIF
 
          CALL HCO_EvalFld( HcoState, 'DEAD_MF_CACO3',
      &                     Inst%MSS_FRC_CACO3,  RC )
-         IF ( RC /= HCO_SUCCESS ) RETURN
+         IF ( RC /= HCO_SUCCESS ) THEN
+             CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+             RETURN
+         ENDIF
 
          CALL HCO_EvalFld( HcoState, 'DEAD_MF_CLY',
      &                     Inst%MSS_FRC_CLY, RC)
-         IF ( RC /= HCO_SUCCESS ) RETURN
+         IF ( RC /= HCO_SUCCESS ) THEN
+             CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+             RETURN
+         ENDIF
 
          CALL HCO_EvalFld( HcoState, 'DEAD_MF_SND',
      &                     Inst%MSS_FRC_SND, RC)
-         IF ( RC /= HCO_SUCCESS ) RETURN
+         IF ( RC /= HCO_SUCCESS ) THEN
+             CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+             RETURN
+         ENDIF
 
          CALL HCO_EvalFld( HcoState, 'DEAD_SFC_TYP',
      &                     Inst%SFC_TYP, RC )
-         IF ( RC /= HCO_SUCCESS ) RETURN
+         IF ( RC /= HCO_SUCCESS ) THEN
+             CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+             RETURN
+         ENDIF
 
          CALL HCO_EvalFld( HcoState, 'DEAD_GOC_SRC',
      &                     Inst%SRCE_FUNC, RC )
-         IF ( RC /= HCO_SUCCESS ) RETURN
+         IF ( RC /= HCO_SUCCESS ) THEN
+             CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+             RETURN
+         ENDIF
 
          CALL HCO_EvalFld( HcoState, 'DEAD_VAI',
      &                     Inst%VAI_DST, RC )
-         IF ( RC /= HCO_SUCCESS ) RETURN
+         IF ( RC /= HCO_SUCCESS ) THEN
+             CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+             RETURN
+         ENDIF
 
 !         FIRST = .FALSE.
       !ENDIF
@@ -352,14 +379,20 @@
 
       ! Make OROGRAPHY array from GEOS-CHEM LWI
       CALL GET_ORO( HcoState, ExtState, OROGRAPHY, RC )
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       ! Get emissions time step
       DTSRCE = HcoState%TS_EMIS
 
       ! Get day of year, convert to real!!
       CALL HcoClock_Get( HcoState%Clock, cDOY = intDOY, RC=RC )
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
       DOY = intDOY
 
       ! Init
@@ -606,7 +639,10 @@
       ! Enter
       CALL HCO_ENTER(HcoState%Config%Err,'HCOX_TOMAS_DustDead_Init
      & (hcox_tomas_dustdead_mod.F)', RC )
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       ! Create AeroCom instance for this simulation
       Inst => NULL()
@@ -630,7 +666,10 @@
 
       CALL HCO_GetExtHcoID( HcoState, ExtNr, Inst%HcoIDs,
      &                      SpcNames, nSpc, RC)
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       ! Sanity check
       IF ( nSpc /= NBINS ) THEN
@@ -645,7 +684,10 @@
       CALL GetExtOpt( HcoState%Config, ExtNr,
      &                 'Mass tuning factor',
      &                 OptValDp=TmpScal, Found=FOUND, RC=RC )
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       ! Set parameter FLX_MSS_FDG_FCT to specified tuning factor as
       ! defined in configuration file
@@ -905,7 +947,10 @@
      &                          Inst%GSD_ANL_SRC,   NBINS,
      &                          Inst%DMT_MIN,  Inst%DMT_MAX,
      &                          Inst%OVR_SRC_SNK_FRC, RC )
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       !=================================================================
       ! Compute OVR_SRC_SNK_MSS, the fraction of dust transported, given
@@ -1252,7 +1297,10 @@
       ! Get LSM Surface type (0..28)
       CALL SFC_TYP_GET( HcoState, ExtState, Inst,
      &                  LAT_IDX,  SFC_TYP_SLICE, RC )
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       ! Get erodability and mass fractions
       CALL SOI_TXT_GET(
@@ -1318,7 +1366,10 @@
      &    TPT_SOI_FRZ,         ! I [K] Temperature of frozen soil
      &    VAI_DST_SLICE,       ! I [m2 m-2] Vegetation area index, one-sided
      &    RC )
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       ! Much ado about nothing
       if (mbl_nbr == 0) then
@@ -1368,7 +1419,10 @@
      &       SNW_FRC,        ! I [frc] Fraction of surface covered by snow
      &       WND_RFR,
      &       RC )       ! I [m s-1] 10 m wind speed
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       !=================================================================
       ! Introduce Ustar and Z0 from GEOS data
@@ -1401,7 +1455,10 @@
      &    MNO_LNG,             ! O [m] Monin-Obukhov length
      &    WND_FRC,
      &    RC )                 ! O [m s-1] Surface friction velocity, U*
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       !=================================================================
       ! Factor by which surface roughness increases threshold friction
@@ -1462,7 +1519,10 @@
      &    DNS_MDP,             ! I [kg m-3] Midlayer density
      &    WND_FRC_THR_SLT,     ! O [m s-1] Threshold friction velocity
      &    RC )
-      IF ( RC /= HCO_SUCCESS ) RETURN
+      IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+          RETURN
+      ENDIF
 
       ! Adjust threshold friction velocity to account
       ! for moisture and roughness
@@ -1579,7 +1639,10 @@
      &        MSS_FRC_CLY_SLICE,   ! I [frc] Mass fraction of clay
      &        MSS_FRC_SND_SLICE,   ! I [frc] Mass fraction of sand
      &        RC )
-         IF ( RC /= HCO_SUCCESS ) RETURN
+         IF ( RC /= HCO_SUCCESS ) THEN
+             CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
+             RETURN
+         ENDIF
       endif
 
       ! Now, flx_mss_vrt_dst has units of kg/m2/sec

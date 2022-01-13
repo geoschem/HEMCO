@@ -259,7 +259,10 @@ CONTAINS
                                    SpcName,   ExtNr,   Cat,   Hier, &
                                    SpaceDim,  OutUnit, EOF,   RC,   &
                                    lName=lName, UnitName=UnitName )
-            IF ( RC /= HCO_SUCCESS ) RETURN
+            IF ( RC /= HCO_SUCCESS ) THEN
+                CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+                RETURN
+            ENDIF
 
             ! Leave here if end of file
             IF ( EOF ) EXIT

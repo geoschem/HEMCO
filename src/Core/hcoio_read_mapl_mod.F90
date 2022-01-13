@@ -102,7 +102,10 @@ CONTAINS
     ! For error handling
     Iam = LOC
     CALL HCO_ENTER( HcoState%Config%Err,  LOC, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Point to ESMF IMPORT object
     IMPORT => HcoState%IMPORT
@@ -146,7 +149,10 @@ CONTAINS
           ! Use pointer if types match
           CALL FileData_ArrInit( Lct%Dct%Dta, TT, 0, 0, 0, RC )
           !CALL FileData_ArrInit( Lct%Dct%Dta, TT, II, JJ, LL, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! Pointer to data. HEMCO expects data to have surface level at
@@ -185,7 +191,10 @@ CONTAINS
        IF ( .NOT. ASSOCIATED(Lct%Dct%Dta%V2) ) THEN
           CALL FileData_ArrInit( Lct%Dct%Dta, TT, 0, 0, RC )
           !CALL FileData_ArrInit( Lct%Dct%Dta, TT, II, JJ, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! Pointer to data

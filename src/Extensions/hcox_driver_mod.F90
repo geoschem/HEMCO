@@ -153,7 +153,10 @@ CONTAINS
 
     ! Error handling
     CALL HCO_ENTER(HcoState%Config%Err,'HCOX_INIT (hcox_driver_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !=======================================================================
     ! Initialize extensions
@@ -460,11 +463,17 @@ CONTAINS
 
     ! For error handling
     CALL HCO_ENTER( HcoState%Config%Err,'HCOX_RUN (hcox_driver_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Is it time for emissions?
     CALL HcoClock_Get ( HcoState%Clock, IsEmisTime=IsEmisTime, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Can leave here if it's not time for emissions
     IF ( .NOT. IsEmisTime ) THEN
@@ -997,7 +1006,10 @@ CONTAINS
 !       IF ( RC /= HCO_SUCCESS ) RETURN
 !
        CALL DgnDefine ( HcoState, 'HCO_LAI', DGN_LAI, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
 !       CALL DgnDefine ( HcoState, 'HCO_U10M', DGN_U10M, RC )
 !       IF ( RC /= HCO_SUCCESS ) RETURN
@@ -1027,13 +1039,22 @@ CONTAINS
 !       IF ( RC /= HCO_SUCCESS ) RETURN
 
        CALL DgnDefine ( HcoState, 'HCO_SUNCOS', DGN_SUNCOS, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL DgnDefine ( HcoState, 'DRY_TOTN', DGN_DRYTOTN, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL DgnDefine ( HcoState, 'WET_TOTN', DGN_WETTOTN, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
     ENDIF
 
@@ -1085,7 +1106,10 @@ CONTAINS
                         Trgt2D     = Trgt2D,            &
                         COL = HcoState%Diagn%HcoDiagnIDDefault, &
                         RC         = RC                  )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS

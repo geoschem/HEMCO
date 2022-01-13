@@ -142,7 +142,10 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err,   &
                      'HCOX_Iodine_Run (hcox_iodine_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Exit status
     ERR = .FALSE.
@@ -374,7 +377,10 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err,   &
                      'HCOX_iodine_Init (hcox_iodine_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Init
     Inst => NULL()
@@ -395,11 +401,17 @@ CONTAINS
     !       the config. file!
     CALL GetExtOpt ( HcoState%Config, Inst%ExtNr, 'Emit I2',  &
                      OptValBool=Inst%CalcI2, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL GetExtOpt ( HcoState%Config, Inst%ExtNr, 'Emit HOI', &
                      OptValBool=Inst%CalcHOI, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set minimum length and update if CalcI2/CalcHOI==True
     minLen = 0
@@ -411,7 +423,10 @@ CONTAINS
     ENDIF
     ! Get HEMCO species IDs
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, HcoIDs, SpcNames, nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( nSpc < minLen ) THEN
        MSG = 'Not enough iodine emission species set'
        CALL HCO_ERROR ( MSG, RC )

@@ -325,7 +325,10 @@ CONTAINS
     ! If not associated yet:
     ! Initialize vector and corresponding arrays.
     CALL FileData_ArrInit ( FileDta, nt, nx, ny, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
   END SUBROUTINE FileData_ArrCheck2D
 !EOC
@@ -395,7 +398,10 @@ CONTAINS
     ! If not associated yet:
     ! Initialize vector and corresponding arrays.
     CALL FileData_ArrInit( FileDta, nt, nx, ny, nz, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
   END SUBROUTINE FileData_ArrCheck3D
 !EOC
@@ -553,7 +559,10 @@ CONTAINS
 
     ! Initialize vector and corresponding arrays.
     CALL HCO_ArrInit( FileDta%V2, nt, nx, ny, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Update nt
     FileDta%nt = nt
@@ -614,7 +623,10 @@ CONTAINS
 
     ! Initialize vector and corresponding arrays.
     CALL HCO_ArrInit( FileDta%V3, nt, nx, ny, nz, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Update nt
     FileDta%nt = nt

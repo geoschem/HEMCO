@@ -148,7 +148,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, 'HCOX_TOMAS_Jeagle_Run (hcox_TOMAS_Jeagle_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get instance
     Inst   => NULL()
@@ -372,7 +375,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_TOMAS_Jeagle_Init (hcox_tomas_jeagle_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create Instance
     Inst => NULL()
@@ -391,7 +397,10 @@ CONTAINS
     ! Get HEMCO species IDs
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, Inst%HcoIDs, SpcNames, &
                           nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( nSpc < HcoState%MicroPhys%nBins ) THEN
        MSG = 'Not enough sea salt emission species set'
        CALL HCO_ERROR(MSG, RC )

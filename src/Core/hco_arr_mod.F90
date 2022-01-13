@@ -214,7 +214,10 @@ CONTAINS
     NULLIFY (Arr)
     ALLOCATE(Arr)
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave
     RC = HCO_SUCCESS
@@ -262,7 +265,10 @@ CONTAINS
     NULLIFY (Arr)
     ALLOCATE(Arr)
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave
     RC = HCO_SUCCESS
@@ -310,7 +316,10 @@ CONTAINS
     NULLIFY (Arr)
     ALLOCATE(Arr)
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave
     RC = HCO_SUCCESS
@@ -358,7 +367,10 @@ CONTAINS
     NULLIFY (Arr)
     ALLOCATE(Arr)
     CALL HCO_ValInit( Arr%Val, nx, ny, nz, Arr%Alloc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave
     RC = HCO_SUCCESS
@@ -406,7 +418,10 @@ CONTAINS
     NULLIFY (Arr)
     ALLOCATE(Arr)
     CALL HCO_ValInit( Arr%Val, nx, ny, nz, Arr%Alloc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave
     RC = HCO_SUCCESS

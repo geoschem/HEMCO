@@ -114,7 +114,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_Custom_Run (hcox_custom_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set error flag
     ERR = .FALSE.
@@ -188,7 +191,10 @@ CONTAINS
        ! Emissions array
        CALL HCO_EmisAdd( HcoState, FLUXWIND, Inst%OcWindIDs(N), &
                          RC,       ExtNr=Inst%ExtNr )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDDO !N
 
     ! Add ice fluxes to emission arrays & diagnostics
@@ -197,7 +203,10 @@ CONTAINS
        ! Emissions array
        CALL HCO_EmisAdd( HcoState, FLUXICE, Inst%IceSrcIDs(N), &
                          RC,       ExtNr=Inst%ExtNr )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDDO !N
 
     ! Return w/ success
@@ -262,7 +271,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_Custom_Init (hcox_custom_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     verb = HCO_IsVerb(HcoState%Config%Err,1)
 
     Inst => NULL()
@@ -274,7 +286,10 @@ CONTAINS
 
     ! Set species IDs
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, HcoIDs, SpcNames, nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Assume first half are 'wind species', second half are ice.
     IF ( MOD(nSpc,2) /= 0 ) THEN

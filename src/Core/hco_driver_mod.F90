@@ -106,7 +106,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCO_RUN (hco_driver_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Define a local convenience variable to negate HcoState%Options%isDryRun
     notDryRun = ( .not. HcoState%Options%isDryRun )
@@ -122,7 +125,10 @@ CONTAINS
     ! 1. Check if it's time for emissions
     !--------------------------------------------------------------
     CALL HcoClock_Get ( HcoState%Clock, IsEmisTime=IsEmisTime, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !--------------------------------------------------------------
     ! 2. Write HEMCO diagnostics. Do this only if the corresponding
@@ -131,7 +137,10 @@ CONTAINS
     !--------------------------------------------------------------
     IF ( HcoState%Options%HcoWritesDiagn .and. notDryRun ) THEN
        CALL HcoDiagn_Write( HcoState, .FALSE., RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     ! Check if this is the last timestep of simulation. If so, return
@@ -182,7 +191,10 @@ CONTAINS
 
        ! Use emission data only
        CALL HCO_CalcEmis( HcoState, .FALSE., RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Use concentration data only
        ! This is currently not being used. Concentrations can be read

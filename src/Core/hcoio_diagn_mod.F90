@@ -250,7 +250,10 @@ CONTAINS
                            RC,                      &
                            OnlyIfFirst=OnlyIfFirst, &
                            COL=COL                   )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
 #else
     !-----------------------------------------------------------------
@@ -263,7 +266,10 @@ CONTAINS
                           UsePrevTime =UsePrevTime, &
                           OnlyIfFirst =OnlyIfFirst, &
                           COL         = COL          )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
 #endif
 

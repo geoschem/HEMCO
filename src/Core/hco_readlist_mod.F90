@@ -107,7 +107,10 @@ CONTAINS
 
     ! For error handling
     CALL HCO_ENTER (HcoState%Config%Err,'ReadList_Set (hco_readlist_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Verbose mode
     verb = HCO_IsVerb( HcoState%Config%Err, 2 )

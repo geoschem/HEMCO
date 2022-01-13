@@ -392,7 +392,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'cIDList_Create (hco_datacont_mod.F)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set verbose flag
     verbose = HCO_IsVerb ( HcoState%Config%Err, 3 )

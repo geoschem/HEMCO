@@ -188,7 +188,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER(HcoState%Config%Err,'HCOX_DustGinoux_Run (hcox_dustginoux_mod.F90)',RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get instance
     Inst   => NULL()
@@ -221,15 +224,24 @@ CONTAINS
 
        ! Sand
        CALL HCO_EvalFld( HcoState, 'GINOUX_SAND', Inst%SRCE_SAND, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Silt
        CALL HCO_EvalFld( HcoState, 'GINOUX_SILT', Inst%SRCE_SILT, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Clay
        CALL HCO_EvalFld( HcoState, 'GINOUX_CLAY', Inst%SRCE_CLAY, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     !ENDIF
 
     !=================================================================
@@ -486,7 +498,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER(HcoState%Config%Err,'HCOX_DustGinoux_Init (hcox_dustginoux_mod.F90)',RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get the expected number of dust species
     Inst%NBINS = HcoState%nDust
@@ -494,13 +509,19 @@ CONTAINS
     ! Get the actual number of dust species defined for DustGinoux extension
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, Inst%HcoIDs, &
                           SpcNames, nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get the dust alkalinity species defined for DustAlk option
     IF ( Inst%ExtNrAlk > 0 ) THEN
        CALL HCO_GetExtHcoID( HcoState,    Inst%ExtNrAlk, Inst%HcoIDsAlk, &
                              SpcNamesAlk, nSpcAlk,  RC)
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     ! Make sure the # of dust species is as expected
@@ -517,7 +538,10 @@ CONTAINS
     ! based upon compiler switches.
     CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'Mass tuning factor', &
                      OptValDp=TmpScal, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set parameter FLX_MSS_FDG_FCT to specified tuning factor. Get from
     ! wrapper routine if not defined in configuration file

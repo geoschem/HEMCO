@@ -173,7 +173,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_GC_RnPbBe_Run (hcox_gc_RnPbBe_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set error flag
     !ERR = .FALSE.
@@ -572,7 +575,10 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err,                                     &
                     'HcoX_GC_RnPbBe_Init (hcox_gc_RnPbBe_mod.F90)', RC      )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create Instance
     Inst => NULL()

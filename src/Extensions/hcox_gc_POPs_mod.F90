@@ -242,7 +242,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_GC_POPs_Run (hcox_gc_POPs_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get instance
     Inst => NULL()
@@ -264,19 +267,34 @@ CONTAINS
     IF ( HcoClock_First(HcoState%Clock,.TRUE.) ) THEN
 
        CALL HCO_GetPtr( HcoState, 'TOT_POP',     Inst%POP_TOT_EM, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL HCO_GetPtr( HcoState, 'GLOBAL_OC',   Inst%C_OC,       RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL HCO_GetPtr( HcoState, 'GLOBAL_BC',   Inst%C_BC,       RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL HCO_GetPtr( HcoState, 'SURF_POP',    Inst%POP_SURF,   RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL HCO_GetPtr( HcoState, 'SOIL_CARBON', Inst%F_OC_SOIL,  RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Convert F_OC_SOIL from kg/m2 to fraction
        DO J=1, HcoState%NY
@@ -1624,7 +1642,10 @@ CONTAINS
 
     ! Enter HEMCO
     CALL HCO_ENTER( HcoState%Config%Err, 'HcoX_GC_POPs_Init (hcox_gc_POPs_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create Instance
     Inst => NULL()
@@ -1638,7 +1659,10 @@ CONTAINS
 
     ! Set species IDs
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, HcoIDs, SpcNames, nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
@@ -1900,7 +1924,10 @@ CONTAINS
                           AutoFill  = 0,                 &
                           Trgt2D    = Target2D,          &
                           RC        = RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        Target2D => NULL()
 
     ENDDO

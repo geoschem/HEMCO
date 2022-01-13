@@ -118,7 +118,10 @@ CONTAINS
        iName = 'EmisScale_'//TRIM(HcoState%Spc(N)%SpcName)
        CALL GetExtOpt( HcoState%Config, -999, iName, OptValHp=ScalFactor, &
                        FOUND=FOUND, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! If there is a scale factor, update scale vector accordingly
        IF ( FOUND ) THEN

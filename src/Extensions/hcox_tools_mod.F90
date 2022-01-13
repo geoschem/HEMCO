@@ -96,7 +96,10 @@ CONTAINS
 
        ! Get mask field
        CALL HCO_EvalFld ( HcoState, TRIM(SCALENAME), SCAL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Set array to zero outside of mask region
        Arr = Arr * SCAL
@@ -156,7 +159,10 @@ CONTAINS
 
        ! Get mask field
        CALL HCO_EvalFld ( HcoState, TRIM(SCALENAME), SCAL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Number of levels
        NZ = SIZE(Arr,3)
@@ -220,7 +226,10 @@ CONTAINS
 
        ! Get mask field
        CALL HCO_EvalFld ( HcoState, TRIM(SCALENAME), SCAL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Set array to zero outside of mask region
        Arr = Arr * SCAL
@@ -281,7 +290,10 @@ CONTAINS
 
        ! Get mask field
        CALL HCO_EvalFld ( HcoState, TRIM(SCALENAME), SCAL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Number of levels
        NZ = SIZE(Arr,3)

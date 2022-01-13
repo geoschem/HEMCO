@@ -1504,7 +1504,10 @@ CONTAINS
        CALL HCO_VertGrid_Define( HcoState%Config, &
                                  HcoState%Grid%zGrid, NZ, RC=RC )
     ENDIF
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set pointers to grid variables
     HcoState%Grid%XMID%Val      => XMID   (:,:,1)
@@ -2138,7 +2141,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, ThisLoc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! First call?
     FIRST = HcoClock_First ( HcoState%Clock, .FALSE. )
@@ -2758,7 +2764,10 @@ CONTAINS
 
     ! Attempt to calculate vertical grid quantities
     CALL HCO_CalcVertGrid( HcoState, PSFC, ZSFC, TK, BXHEIGHT, PEDGE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Reset pointers
     PSFC     => NULL()
@@ -3024,7 +3033,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_Enter( HcoState%Config%Err, ThisLoc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !=======================================================================
     ! Initialize dry-run fields of the HEMCO state object
@@ -3106,7 +3118,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_Enter( HcoState%Config%Err, ThisLoc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Only do the following for the dry-run simulation
     IF ( HcoState%Options%IsDryRun ) THEN

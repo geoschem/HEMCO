@@ -182,7 +182,10 @@ CONTAINS
 
     CALL HCO_Unit_Factor( HcoConfig, UNITS, MW, YYYY, MM, AreaFlag, TimeFlag, &
                           Factor, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Apply correction factor
     IF ( Factor /= 1.0_hp ) THEN
@@ -257,7 +260,10 @@ CONTAINS
 
     CALL HCO_Unit_Factor( HcoConfig, UNITS, MW, YYYY, MM, AreaFlag, TimeFlag, &
                           Factor, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Apply correction factor
     IF ( Factor /= 1.0_hp ) THEN

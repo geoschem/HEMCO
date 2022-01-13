@@ -163,7 +163,10 @@ CONTAINS
                         AutoFill   = 0,                         &
                         Trgt3D     = Arr3D,                     &
                         RC         = RC                          )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -232,7 +235,10 @@ CONTAINS
                         AutoFill   = 0,                         &
                         Trgt2D     = Arr2D,                     &
                         RC         = RC                          )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -314,7 +320,10 @@ CONTAINS
 #if defined(ESMF_)
     CALL HCO_CopyFromIntnal_ESMF( HcoState, TRIM(Name),   &
                                   1,        FLD,      RC, Arr3D=Arr3D )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! If field is all zero assume it to be not filled
     IF ( FLD ) THEN
@@ -337,7 +346,10 @@ CONTAINS
 
        ! Try to get pointer from HEMCO configuration
        CALL HCO_GetPtr( HcoState, TRIM(Name), Ptr3D, RC, FILLED=FLD )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Eventually pass data
        IF ( FLD ) THEN
@@ -468,7 +480,10 @@ CONTAINS
 #if defined(ESMF_)
     CALL HCO_CopyFromIntnal_ESMF( HcoState, TRIM(Name),   &
                                   1,        FLD,      RC, Arr2D=Arr2D )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! If field is all zero assume it to be not filled
     IF ( FLD ) THEN
@@ -492,7 +507,10 @@ CONTAINS
 
        ! Try to get pointer from HEMCO configuration
        CALL HCO_GetPtr( HcoState, TRIM(Name), Ptr2D, RC, FOUND=FLD )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Eventually pass data
        IF ( FLD ) THEN

@@ -256,7 +256,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_FINN_RUN (hcox_finn_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Init
     THISTYP => NULL()
@@ -290,27 +293,45 @@ CONTAINS
 
        FLDNME = TRIM(PREFIX) // 'VEGTYP1'
        CALL HCO_EvalFld( HcoState, TRIM(FLDNME), Inst%VEGTYP1, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        FLDNME = TRIM(PREFIX) // 'VEGTYP2'
        CALL HCO_EvalFld( HcoState, TRIM(FLDNME), Inst%VEGTYP2, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        FLDNME = TRIM(PREFIX) // 'VEGTYP3'
        CALL HCO_EvalFld( HcoState, TRIM(FLDNME), Inst%VEGTYP3, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        FLDNME = TRIM(PREFIX) // 'VEGTYP4'
        CALL HCO_EvalFld( HcoState, TRIM(FLDNME), Inst%VEGTYP4, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        FLDNME = TRIM(PREFIX) // 'VEGTYP5'
        CALL HCO_EvalFld( HcoState, TRIM(FLDNME), Inst%VEGTYP5, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        FLDNME = TRIM(PREFIX) // 'VEGTYP9'
        CALL HCO_EvalFld( HcoState, TRIM(FLDNME), Inst%VEGTYP9, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
 !       FIRST = .FALSE.
     !ENDIF
@@ -405,7 +426,10 @@ CONTAINS
 
        ! Check for masking
        CALL HCOX_SCALE( HcoState, SpcArr, TRIM(Inst%SpcScalFldNme(N)), RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        SELECT CASE ( Inst%SpcNames(N) )
           CASE ( 'OCPI' )
@@ -618,7 +642,10 @@ CONTAINS
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_FINN_INIT (hcox_finn_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create local instance for this simulation
     Inst => NULL()
@@ -647,7 +674,10 @@ CONTAINS
     ! Try to read hydrophilic fractions of BC. Defaults to 0.2.
     CALL GetExtOpt( HcoState%Config, ExtNr, 'hydrophilic BC', &
                      OptValSp=ValSp, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        Inst%BCPIfrac = 0.2
     ELSE
@@ -657,7 +687,10 @@ CONTAINS
     ! Try to read hydrophilic fractions of OC. Defaults to 0.5.
     CALL GetExtOpt( HcoState%Config, ExtNr, 'hydrophilic OC', &
                      OptValSp=ValSp, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        Inst%OCPIfrac = 0.5
     ELSE
@@ -676,7 +709,10 @@ CONTAINS
     ! Use daily data?
     CALL GetExtOpt( HcoState%Config, ExtNr, 'FINN_daily', &
                      OptValBool=Inst%UseDay, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        Inst%UseDay = .FALSE.
     ENDIF
@@ -844,7 +880,10 @@ CONTAINS
 
     ! Get HEMCO species IDs of all species specified in configuration file
     CALL HCO_GetExtHcoID( HcoState, ExtNr, tHcoIDs, tSpcNames, tnSpc, RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( tnSpc == 0 ) THEN
        MSG = 'No FINN species specified'
        CALL HCO_ERROR(MSG, RC )
@@ -854,12 +893,18 @@ CONTAINS
     ! Get species scale factors
     CALL GetExtSpcVal( HcoState%Config, ExtNr, tnSpc, &
                        tSpcNames, 'Scaling', 1.0_sp, tSpcScal, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get species mask fields
     CALL GetExtSpcVal( HcoState%Config, ExtNr, tnSpc, &
                        tSpcNames, 'ScaleField', HCOX_NOSCALE, tSpcScalFldNme, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Error trap: in previous versions, CO, POA and NAP scale factor were given as
     ! 'CO scale factor', etc. Make sure those attributes do not exist any more!

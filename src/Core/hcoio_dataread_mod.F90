@@ -195,7 +195,10 @@ CONTAINS
     ! Denote we are entering this routine
     CALL HCO_ENTER( HcoState%Config%Err,                                     &
                     'HCOIO_DataRead (hcoio_dataread_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Call the HEMCO Data Input Layer
     ! Selection of which HCOIO module to be used is performed at compile level
