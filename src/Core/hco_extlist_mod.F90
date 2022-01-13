@@ -292,12 +292,13 @@ CONTAINS
 ! !INTERNAL VARIABLES:
 !
     INTEGER               :: IDX
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
     CHARACTER(LEN=OPTLEN) :: TmpStr, OptName, OptValue
 
     !======================================================================
     ! AddExtOpt begins here
     !======================================================================
+    LOC = 'AddExtOpt (HCO_EXTLIST_MOD.F90)'
 
     ! Parse option name and option value. These must be separated by colon.
     IDX = INDEX( TRIM(Opt), ':' )
@@ -1481,11 +1482,13 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     CHARACTER(LEN=OPTLEN)     :: DUM
+    CHARACTER(LEN=255)        :: LOC
     LOGICAL                   :: FOUND
 
     !=================================================================
     ! HCO_SetDefaultToken begins here!
     !=================================================================
+    LOC = 'HCO_SetDefaultToken (HCO_EXTLIST_MOD)'
 
     IF ( Trim(CF%MetField) == 'GEOSFP' ) THEN
        DEF_MET_UC = 'GEOSFP'
