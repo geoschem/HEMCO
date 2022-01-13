@@ -153,7 +153,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     CHARACTER(LEN=255)            :: thisUnit, LevUnit, LevName
-    CHARACTER(LEN=1023)           :: MSG
+    CHARACTER(LEN=1023)           :: MSG, LOC
     CHARACTER(LEN=1023)           :: srcFile, srcFile2
     INTEGER                       :: NX, NY
     INTEGER                       :: NCRC, Flag, AS
@@ -200,6 +200,7 @@ CONTAINS
     !=================================================================
     ! HCOIO_READ begins here
     !=================================================================
+    LOC = 'HCOIO_READ (HCOIO_READ_STD_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOIO_READ (hcoio_read_std_mod.F90)' , RC )
