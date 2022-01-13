@@ -381,11 +381,12 @@ CONTAINS
     INTEGER                   :: II
     TYPE(ListCont), POINTER   :: TmpLct
     LOGICAL                   :: verbose
-    CHARACTER(LEN=255)        :: MSG
+    CHARACTER(LEN=255)        :: MSG, LOC
 
     !======================================================================
     ! cIDList_Create begins here
     !======================================================================
+    LOC = 'cIDList_Create (HCO_DATACONT_MOD.F90)'
 
     ! Initialize
     TmpLct => NULL()
