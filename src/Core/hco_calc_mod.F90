@@ -197,7 +197,7 @@ CONTAINS
     LOGICAL             :: Found, DoDiagn, EOL, UpdateCat
 
     ! For error handling & verbose mode
-    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=255)  :: MSG, LOC
 
     ! testing / debugging
     integer :: ix,iy
@@ -211,6 +211,7 @@ CONTAINS
     iy = 34
 
     ! Initialize
+    LOC = 'HCO_CalcEmis (HCO_CALC_MOD.F90)'
     Lct => NULL()
     Dct => NULL()
 
@@ -2327,12 +2328,14 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER  :: EmisLUnit
-    REAL(hp) :: EmisL
+    INTEGER             :: EmisLUnit
+    REAL(hp)            :: EmisL
+    CHARACTER(LEN=255)  :: LOC
 
     !=======================================================================
     ! GetVertIndx begins here
     !=======================================================================
+    LOC = 'GetVertIndx (HCO_CALC_MOD.F90)'
 
     !-----------------------------------------------------------------------
     ! Get vertical extension of base emission array.
