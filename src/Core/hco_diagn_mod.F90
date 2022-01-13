@@ -2768,12 +2768,14 @@ CONTAINS
     TYPE(DiagnCollection), POINTER :: ThisColl
     INTEGER                        :: PS
     LOGICAL                        :: FOUND
+    CHARACTER(LEN=255)             :: LOC
 
     !======================================================================
     ! DiagnCollection_Get begins here!
     !======================================================================
 
     ! Init
+    LOC = 'DiagnCollection_Get (HCO_DIAGN_MOD.F90)'
     ThisColl => NULL()
     IF ( PRESENT(Prefix      ) ) Prefix       = ''
     IF ( PRESENT(InUse       ) ) InUse        = .FALSE.
