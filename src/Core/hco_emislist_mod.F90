@@ -93,12 +93,13 @@ CONTAINS
 !
     TYPE(ListCont), POINTER                 :: Lct
     LOGICAL                                 :: FOUND, VERBOSE, NEW
-    CHARACTER(LEN=255)                      :: MSG
+    CHARACTER(LEN=255)                      :: MSG, LOC
     CHARACTER(LEN= 31)                      :: TempRes
 
     !======================================================================
     ! EmisList_Add begins here!
     !======================================================================
+    LOC = 'EmisList_Add (HCO_EMISLIST.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, &
@@ -193,7 +194,7 @@ CONTAINS
 !
     ! Scalars
     INTEGER                   :: NEWCAT, NEWHIR, NEWSPC
-    CHARACTER(LEN=255)        :: MSG
+    CHARACTER(LEN=255)        :: MSG, LOC
 
     ! Pointers
     TYPE(ListCont), POINTER   :: TmpLct => NULL()
@@ -201,6 +202,7 @@ CONTAINS
     !======================================================================
     ! Add2EmisList begins here!
     !======================================================================
+    LOC = 'Add2EmisList (HCO_EMISLIST_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, 'Add2EmisList', RC )
@@ -456,11 +458,12 @@ CONTAINS
     ! Scalars
     INTEGER                   :: I, J, L, T
     LOGICAL                   :: FOUND, verb, Add
-    CHARACTER(LEN=255)        :: MSG
+    CHARACTER(LEN=255)        :: MSG, LOC
 
     ! ================================================================
     ! EmisList_Pass begins here
     ! ================================================================
+    LOC = 'EmisList_Pass (HCO_EMISLIST_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, &
