@@ -302,11 +302,12 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER            :: I, AS
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     ! ================================================================
     ! FileData_ArrCheck2D begins here
     ! ================================================================
+    LOC = 'FileData_ArrCheck2D (HCO_FILEDATA_MOD.F90)'
 
     ! Assume success until otherwise
     RC = HCO_SUCCESS
@@ -374,11 +375,12 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER            :: I, AS
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     ! ================================================================
     ! FileData_ArrCheck3D begins here
     ! ================================================================
+    LOC = 'FileData_ArrCheck3D (HCO_FILEDATA_MOD.F90)'
 
     ! Assume success until otherwise
     RC = HCO_SUCCESS
@@ -550,9 +552,11 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! FileData_ArrInit2D begins here
     ! ================================================================
+    LOC = 'FileData_ArrInit2D (HCO_FILEDATA_MOD.F90)'
 
     ! Assume success until otherwise
     RC = HCO_SUCCESS
@@ -614,9 +618,11 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! FileData_ArrInit3D begins here
     ! ================================================================
+    LOC = 'FileData_ArrInit3D (HCO_FILEDATA_MOD.F90)'
 
     ! Assume success until otherwise
     RC = HCO_SUCCESS
