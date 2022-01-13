@@ -170,7 +170,7 @@ CONTAINS
     REAL*8            :: SRCE_P, REYNOL, ALPHA,  BETA
     REAL*8            :: GAMMA,  CW,     DTSRCE, A_M2,  G
     REAL              :: DSRC
-    CHARACTER(LEN=63) :: MSG
+    CHARACTER(LEN=63) :: MSG, LOC
 
     ! Arrays
     REAL*8            :: DUST_EMI_TOTAL(HcoState%NX, HcoState%NY)
@@ -182,6 +182,7 @@ CONTAINS
     !=======================================================================
     ! HCOX_DUSTGINOUX_RUN begins here!
     !=======================================================================
+    LOC = 'HCOX_DUSTGINOUX_RUN (HCOX_DUSTGINOUX_MOD.F90)'
 
     ! Return if extension is disabled
     IF ( ExtState%DustGinoux <= 0 ) RETURN
@@ -464,7 +465,7 @@ CONTAINS
 !
     ! Scalars
     INTEGER                        :: N, AS, nSpc, nSpcAlk, ExtNr
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     REAL(dp)                       :: Mp, Rp, TmpScal
     LOGICAL                        :: FOUND
 
@@ -478,6 +479,7 @@ CONTAINS
     !=======================================================================
     ! HCOX_DUSTGINOUX_INIT begins here!
     !=======================================================================
+    LOC = 'HCOX_DUSTGINOUX_INIT (HCOX_DUSTGINOUX_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
