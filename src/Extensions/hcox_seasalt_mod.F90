@@ -251,11 +251,12 @@ CONTAINS
 
     ! Error handling
     LOGICAL                :: ERR
-    CHARACTER(LEN=255)     :: MSG
+    CHARACTER(LEN=255)     :: MSG, LOC
 
     !=================================================================
     ! HCOX_SeaSalt_Run begins here!
     !=================================================================
+    LOC = 'HCOX_SeaSalt_Run (HCOX_SEASALT_MOD.F90)'
 
     ! Return if extension disabled
     IF ( ExtState%SeaSalt <= 0 ) RETURN
@@ -779,7 +780,7 @@ CONTAINS
     INTEGER                        :: N, R, AS
     REAL*8                         :: A, B, R0, R1
     REAL*8                         :: CONST_N
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     INTEGER                        :: nSpcSS, minLen
     REAL*8                         :: SALA_REDGE_um(2), SALC_REDGE_um(2)
     REAL(dp)                       :: tmpScale
@@ -800,6 +801,7 @@ CONTAINS
     !=================================================================
     ! HCOX_SeaSalt_Init begins here!
     !=================================================================
+    LOC = 'HCOX_SeaSalt_Init (HCOX_SEASALT_MOD.F90)'
 
     ! Extension number for seasalt
     ExtNrSS = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
