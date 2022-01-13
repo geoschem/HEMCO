@@ -183,11 +183,13 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Strings
-    CHARACTER(LEN=512) :: MSG
+    CHARACTER(LEN=512) :: MSG 
+    CHARACTER(LEN=255) :: LOC
 
     !=======================================================================
     ! HCOIO_DATAREAD begins here
     !=======================================================================
+    LOC = 'HCOIO_DATAREAD (HCOIO_DATAREAD_MOD.F90)'
 
     ! Assume success until proven otherwise
     RC = HCO_SUCCESS
