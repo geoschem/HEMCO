@@ -250,7 +250,7 @@
       TYPE(MyInst), POINTER  :: Inst
 
       ! Strings
-      CHARACTER(LEN=255)     :: MSG
+      CHARACTER(LEN=255)     :: MSG, LOC
 !
 ! !DEFINED PARAMETERS:
 !
@@ -266,6 +266,7 @@
       !=================================================================
       ! HCOX_DUSTDEAD_RUN begins here!
       !=================================================================
+      LOC = 'HCOX_DUSTDEAD_RUN (HCOX_DUSTDEAD_MOD.F)'
 
       ! Return if extension disabled
       IF ( ExtState%DustDead <= 0 ) RETURN
@@ -594,7 +595,7 @@
 !
 ! !LOCAL VARIABLES:
 !
-      CHARACTER(LEN=255)             :: MSG
+      CHARACTER(LEN=255)             :: MSG, LOC
       INTEGER                        :: I, J, N, AS
       INTEGER                        :: ExtNr, nSpc
       INTEGER                        :: nSpcAlk
@@ -607,6 +608,7 @@
       !=================================================================
       ! HCOX_DUST_DEAD_INIT begins here!
       !=================================================================
+      LOC = 'HCOX_DUST_DEAD_INIT (HCOX_DUSTDEAD_MOD.F)'
 
       ! Extension Nr.
       ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
@@ -1185,11 +1187,12 @@
       REAL(dp) :: TMP
 
       ! For error handling
-      CHARACTER(LEN=255)   :: MSG
+      CHARACTER(LEN=255)   :: MSG, LOC
 
       !=================================================================
       ! DST_MBL begins here!
       !=================================================================
+      LOC = 'DST_MBL (HCOX_DUSTDEAD_MOD.F)'
 
       ! Start
       RC = HCO_SUCCESS
