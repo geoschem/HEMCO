@@ -153,10 +153,12 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER                  :: AS
+    CHARACTER(LEN=255)       :: LOC
 
     !======================================================================
     ! HcoClock_Init begins here!
     !======================================================================
+    LOC = 'HcoClock_Init (HCO_CLOCK_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, 'HcoClock_Init (HCO_CLOCK_MOD.F90)', RC )
@@ -1463,15 +1465,17 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER  :: I,      MtLastDay
-    REAL(sp) :: LocDt, DECloc
-    REAL(sp) :: ThisLocHour
-    INTEGER  :: ThisLocYear, ThisLocMonth
-    INTEGER  :: ThisLocDay,  ThisLocWD
+    INTEGER             :: I,      MtLastDay
+    REAL(sp)            :: LocDt, DECloc
+    REAL(sp)            :: ThisLocHour
+    INTEGER             :: ThisLocYear, ThisLocMonth
+    INTEGER             :: ThisLocDay,  ThisLocWD
+    CHARACTER(LEN=255)  :: LOC
 
     !-----------------------------------
     ! SET_LOCALTIME begins here!
     !-----------------------------------
+    LOC = 'SET_LOCALTIME (HCO_CLOCK_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, 'SET_LOCALTIME (HCO_CLOCK_MOD.F90)', RC )
@@ -1661,10 +1665,12 @@ CONTAINS
     INTEGER                   :: YYYYMMDD, HHMMSS
     INTEGER                   :: Yr, Mt, Dy, Hr, Mn, Sc
     REAL(dp)                  :: DAY, UTC, JD
+    CHARACTER(LEN=255)        :: LOC
 
     !-----------------------------------
     ! HcoClock_Increase begins here!
     !-----------------------------------
+    LOC = 'HcoClock_Increase (HCO_CLOCK_MOD.F90)'
 
     ! Get pointer to HEMCO clock
     Clock => HcoState%Clock
