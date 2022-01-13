@@ -278,9 +278,11 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     !======================================================================
     ! ExtStateInit begins here
     !======================================================================
+    LOC = 'ExtStateInit (HCOX_STATE_MOD.F90)'
 
     ! Allocate object
     IF ( .NOT. ASSOCIATED ( ExtState ) ) ALLOCATE ( ExtState )
@@ -761,10 +763,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     ! ================================================================
     ! ExtDat_Init_2R begins here
     ! ================================================================
+    LOC = 'ExtDat_Init_2R (HCOX_STATE_MOD.F90)'
 
     ExtDat     => NULL()
     ALLOCATE(ExtDat)
@@ -810,10 +817,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     ! ================================================================
     ! ExtDat_Init_2S begins here
     ! ================================================================
+    LOC = 'ExtDat_Init_2S (HCOX_STATE_MOD.F90)'
 
     ExtDat     => NULL()
     ALLOCATE(ExtDat)
@@ -859,10 +871,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     ! ================================================================
     ! ExtDat_Init_2I begins here
     ! ================================================================
+    LOC = 'ExtDat_Init_2I (HCOX_STATE_MOD.F90)'
 
     ExtDat => NULL()
     ALLOCATE(ExtDat)
@@ -908,9 +925,14 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! ExtDat_Init_3R begins here
     ! ================================================================
+    LOC = 'ExtDat_Init_3R (HCOX_STATE_MOD.F90)'
 
     ExtDat => NULL()
     ALLOCATE(ExtDat)
@@ -956,9 +978,14 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! ExtDat_Init_3S begins here
     ! ================================================================
+    LOC = 'ExtDat_Init_3S (HCOX_STATE_MOD.F90)'
 
     ExtDat => NULL()
     ALLOCATE(ExtDat)
