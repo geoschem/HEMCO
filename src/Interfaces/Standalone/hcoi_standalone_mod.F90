@@ -2113,7 +2113,7 @@ CONTAINS
     LOGICAL            :: FIRST
 
     ! Strings
-    CHARACTER(LEN=255) :: Name, ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: Name, ErrMsg, ThisLoc, LOC
 
     ! Pointers
     REAL(hp), POINTER  :: PSFC    (:,:  )
@@ -2127,6 +2127,7 @@ CONTAINS
     !========================================================================
 
     ! Initialize
+    LOC      = 'ExtState_SetFields (HCOI_STANDALONE_MOD.F90)'
     RC       = HCO_SUCCESS
     ErrMsg   = ''
     ThisLoc  = &
@@ -3019,13 +3020,14 @@ CONTAINS
     INTEGER            :: nArg,   ArgLen
 
     ! Strings
-    CHARACTER(LEN=255) :: ArgVal, ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: ArgVal, ErrMsg, ThisLoc, LOC
 
     !=======================================================================
     ! Init_Dry_Run begins here!
     !=======================================================================
 
     ! Initialize
+    LOC     = 'Init_Dry_Run (HCOI_STANDALONE_MOD.F90)'
     RC      = HCO_SUCCESS
     ErrMsg  = ''
     ThisLoc = &
@@ -3104,14 +3106,15 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Strings
-    CHARACTER(LEN=255 ) :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255 ) :: ErrMsg, ThisLoc, LOC
 
     !=======================================================================
     ! Cleanup_Dry_Run begins here!
     !=======================================================================
 
     ! Initialize
-    RC     = HCO_SUCCESS
+    LOC     = 'Cleanup_Dry_Run (HCOI_STANDALONE_MOD.F90)'
+    RC      = HCO_SUCCESS
     ErrMsg  = ''
     ThisLoc = &
        ' -> at Cleanup_Dry_Run (in HEMCO/Interfaces/hcoi_standalone_mod.F90)'
