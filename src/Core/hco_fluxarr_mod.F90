@@ -189,10 +189,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     !=====================================================================
     ! HCO_EmisAdd_3D_Dp begins here!
     !=====================================================================
+    LOC = 'HCO_EmisAdd_3D_Dp (HCO_FLUXARR_MOD.F90)'
 
     ! Make sure target flux array in HcoState is allocated
     CALL HCO_ArrAssert ( HcoState%Spc(HcoID)%Emis, &
@@ -288,10 +293,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     !=====================================================================
     ! HCO_EmisAdd_3D_Sp begins here!
     !=====================================================================
+    LOC = 'HCO_EmisAdd_3D_Sp (HCO_FLUXARR_MOD.F90)'
 
     ! Make sure target flux array in HcoState is allocated
     CALL HCO_ArrAssert ( HcoState%Spc(HcoID)%Emis, &
@@ -385,10 +395,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     !=====================================================================
     ! HCO_EmisAdd_2D_Dp begins here!
     !=====================================================================
+    LOC = 'HCO_EmisAdd_2D_Dp (HCO_FLUXARR_MOD)'
 
     ! Make sure target flux array in HcoState is allocated
     CALL HCO_ArrAssert ( HcoState%Spc(HcoID)%Emis, &
@@ -483,10 +498,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     !=====================================================================
     ! HCO_EmisAdd_2D_Sp begins here!
     !=====================================================================
+    LOC = 'HCO_EmisAdd_2D_Sp (HCO_FLUXARR_MOD.F90)'
 
     ! Make sure target flux array in HcoState is allocated
     CALL HCO_ArrAssert ( HcoState%Spc(HcoID)%Emis, &
@@ -575,11 +595,12 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     !=====================================================================
     ! HCO_EmisAdd_Dp begins here!
     !=====================================================================
+    LOC = 'HCO_EmisAdd_Dp (HCO_FLUXARR_MOD.F90)'
 
     ! Check size dimensions
     IF ( I > HcoState%NX ) THEN
@@ -676,11 +697,12 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     !=====================================================================
     ! HCO_EmisAdd_Sp begins here!
     !=====================================================================
+    LOC = 'HCO_EmisAdd_Sp (HCO_FLUXARR_MOD.F90)'
 
     ! Check size dimensions
     IF ( I > HcoState%NX ) THEN
@@ -1030,13 +1052,15 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: AFL, XT, CT, HR
+    INTEGER             :: AFL, XT, CT, HR
+    CHARACTER(LEN=255)  :: LOC
 
     !=====================================================================
     ! DiagnCheck begins here!
     !=====================================================================
 
     ! Initialize values
+    LOC = 'DiagnCheck (HCO_FLUXARR_MOD.F90)'
 
     ! Autofill level:
     ! 1=species level, 2=ExtNr level, 3=Cat level, 4=Hier level
