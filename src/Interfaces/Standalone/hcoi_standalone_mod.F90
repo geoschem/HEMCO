@@ -500,13 +500,14 @@ CONTAINS
     INTEGER            :: YR, MT, DY, HR, MN, SC
 
     ! Strings
-    CHARACTER(LEN=255) :: Msg, ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: Msg, ErrMsg, ThisLoc, LOC
 
     !=======================================================================
     ! HCOI_SA_RUN begins here!
     !=======================================================================
 
     ! Initialize
+    LOC       = 'HCOI_SA_RUN (HCOI_STANDALONE_MOD.F90)'
     RC        = HCO_SUCCESS
     notDryRun = ( .not. HcoState%Options%IsDryRun )
     ErrMsg    = ''
@@ -536,10 +537,15 @@ CONTAINS
           CALL HcoClock_Set ( HcoState,  YRS(1), MTS(1), &
                               DYS(1),    HRS(1), MNS(1), SCS(1), &
                               IsEmisTime=.TRUE., RC=RC)
-          IF ( RC /= HCO_SUCCESS) RETURN
-       ELSE
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR ( 'ERROR 0', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
+
           CALL HcoClock_Increase ( HcoState, HcoState%TS_EMIS, .TRUE., RC=RC )
-          IF ( RC /= HCO_SUCCESS) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR ( 'ERROR 1', RC, THISLOC=LOC )
+          ENDIF
        ENDIF
 
        ! Get current time
@@ -1505,7 +1511,7 @@ CONTAINS
                                  HcoState%Grid%zGrid, NZ, RC=RC )
     ENDIF
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -2143,7 +2149,7 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, ThisLoc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -2766,7 +2772,7 @@ CONTAINS
     ! Attempt to calculate vertical grid quantities
     CALL HCO_CalcVertGrid( HcoState, PSFC, ZSFC, TK, BXHEIGHT, PEDGE, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -3036,7 +3042,7 @@ CONTAINS
     ! Enter
     CALL HCO_Enter( HcoState%Config%Err, ThisLoc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -3122,7 +3128,7 @@ CONTAINS
     ! Enter
     CALL HCO_Enter( HcoState%Config%Err, ThisLoc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
