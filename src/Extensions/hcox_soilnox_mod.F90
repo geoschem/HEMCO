@@ -295,12 +295,13 @@ CONTAINS
     LOGICAL                  :: FIRST
     LOGICAL                  :: aIR, FOUND
     CHARACTER(LEN= 31)       :: DiagnName
-    CHARACTER(LEN=255)       :: MSG, DMY
+    CHARACTER(LEN=255)       :: MSG, DMY, LOC
     TYPE(MyInst),    POINTER :: Inst
 
     !=================================================================
     ! HCOX_SoilNOx_RUN begins here!
     !=================================================================
+    LOC = 'HCOX_SoilNOx_RUN (HCOX_SOILNOX_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_SoilNox_Run (hcox_soilnox_mod.F90)', RC )
