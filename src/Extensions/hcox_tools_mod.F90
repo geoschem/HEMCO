@@ -87,10 +87,12 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     REAL(hp)            :: SCAL(HcoState%NX,HcoState%NY)
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! HCOX_SCALE_sp2D begins here
     !======================================================================
+    LOC = 'HCOX_SCALE_sp2D (HCOX_TOOLS_MOD.F90)'
 
     IF ( TRIM(SCALENAME) /= TRIM(HCOX_NOSCALE) ) THEN
 
@@ -150,10 +152,12 @@ CONTAINS
 !
     REAL(hp)            :: SCAL(HcoState%NX,HcoState%NY)
     INTEGER             :: I, NZ
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! HCOX_SCALE_sp3D begins here
     !======================================================================
+    LOC = 'HCOX_SCALE_sp3D (HCOX_TOOLS_MOD.F90)'
 
     IF ( TRIM(SCALENAME) /= TRIM(HCOX_NOSCALE) ) THEN
 
@@ -217,10 +221,12 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     REAL(hp)            :: SCAL(HcoState%NX,HcoState%NY)
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! HCOX_SCALE_dp2D begins here
     !======================================================================
+    LOC = 'HCOX_SCALE_dp2D (HCOX_TOOLS_MOD.F90)'
 
     IF ( TRIM(SCALENAME) /= TRIM(HCOX_NOSCALE) ) THEN
 
@@ -281,10 +287,12 @@ CONTAINS
 !
     REAL(hp)            :: SCAL(HcoState%NX,HcoState%NY)
     INTEGER             :: I, NZ
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! HCOX_SCALE_dp3D begins here
     !======================================================================
+    LOC = 'HCOX_SCALE_dp3D (HCOX_TOOLS_MOD.F90)'
 
     IF ( TRIM(SCALENAME) /= TRIM(HCOX_NOSCALE) ) THEN
 
