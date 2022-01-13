@@ -139,11 +139,12 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255) :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: ErrMsg, ThisLoc, LOC
 
     !=======================================================================
     ! HCOX_INIT begins here!
     !=======================================================================
+    LOC = 'HCOX_INIT (HCOX_DRIVER_MOD.F90)'
 
     ! Initialize
     RC      = HCO_SUCCESS
@@ -449,7 +450,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255) :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: ErrMsg, ThisLoc, LOC
     LOGICAL            :: IsEmisTime
 
     !=======================================================================
@@ -457,6 +458,7 @@ CONTAINS
     !=======================================================================
 
     ! Initialize
+    LOC     = 'HCOX_RUN (HCOX_DRIVER_MOD.F90)'
     RC      = HCO_SUCCESS
     ErrMsg  = ''
     ThisLoc = ' -> at HCOX_RUN (in module HEMCO/Extensions/hcox_driver_mod.F90'
@@ -1093,6 +1095,13 @@ CONTAINS
 !  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
+
+    LOC = 'DgnDefine (HCOX_DRIVER_MOD.F90)'
 
     CALL Diagn_Create ( HcoState   = HcoState,          &
                         cName      = TRIM(DgnName),     &
