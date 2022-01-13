@@ -169,11 +169,12 @@ CONTAINS
     TYPE(MyInst), POINTER :: Inst
     INTEGER               :: Yr, Mt
     LOGICAL               :: FOUND
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
 
     !=================================================================
     ! HCOX_LIGHTNOX_RUN begins here!
     !=================================================================
+    LOC = 'HCOX_LIGHTNOX_RUN (HCOX_LIGHTNOX_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_LightNOx_Run (hcox_lightnox_mod.F90)', RC )
@@ -272,32 +273,34 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER           :: I, J, L
-    INTEGER           :: LTOP
-    INTEGER           :: MONTH
-    INTEGER           :: MTYPE
-    REAL*8            :: A_M2
-    REAL*8            :: A_KM2
-    REAL*8            :: H0
-    REAL*8            :: IC_CG_RATIO
-    REAL*8            :: RATE
-    REAL*8            :: RATE_SAVE
-    REAL*8            :: TOTAL
-    REAL*8            :: TOTAL_CG
-    REAL*8            :: TOTAL_IC
-    REAL*8            :: X
-    REAL*8            :: YMID
-    REAL*8            :: XMID
-    REAL*8            :: VERTPROF(HcoState%NZ)
-    INTEGER           :: LMAX
-    INTEGER           :: LNDTYPE
-    INTEGER           :: SFCTYPE
-    REAL(hp)          :: TROPP
-    REAL(dp)          :: TmpScale
+    INTEGER             :: I, J, L
+    INTEGER             :: LTOP
+    INTEGER             :: MONTH
+    INTEGER             :: MTYPE
+    REAL*8              :: A_M2
+    REAL*8              :: A_KM2
+    REAL*8              :: H0
+    REAL*8              :: IC_CG_RATIO
+    REAL*8              :: RATE
+    REAL*8              :: RATE_SAVE
+    REAL*8              :: TOTAL
+    REAL*8              :: TOTAL_CG
+    REAL*8              :: TOTAL_IC
+    REAL*8              :: X
+    REAL*8              :: YMID
+    REAL*8              :: XMID
+    REAL*8              :: VERTPROF(HcoState%NZ)
+    INTEGER             :: LMAX
+    INTEGER             :: LNDTYPE
+    INTEGER             :: SFCTYPE
+    REAL(hp)            :: TROPP
+    REAL(dp)            :: TmpScale
+    CHARACTER(LEN=255)  :: LOC
 
     !=================================================================
     ! LIGHTNOX begins here!
     !=================================================================
+    LOC = 'LIGHTNOX (HCOX_LIGHTNOX_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'LightNOx (hcox_lightnox_mod.F90)', RC )
