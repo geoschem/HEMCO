@@ -168,7 +168,7 @@ CONTAINS
     REAL(hp), TARGET      :: SINK  (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET      :: SeaConc(HcoState%NX,HcoState%NY)
     CHARACTER(LEN=255)    :: ContName
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
     LOGICAL               :: VERBOSE
 
     ! Pointers
@@ -177,6 +177,7 @@ CONTAINS
     !=================================================================
     ! HCOX_SeaFlux_Run begins here!
     !=================================================================
+    LOC = 'HCOX_SeaFlux_Run (HCOX_SEAFLUX_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_SeaFlux_Run (hcox_seaflux_mod.F90)', RC )
@@ -374,11 +375,12 @@ CONTAINS
     REAL(dp), PARAMETER :: TMAX = 318.15_dp
 
     ! Error handling
-    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=255)  :: MSG, LOC
 
     !=================================================================
     ! CALC_SEAFLUX begins here!
     !=================================================================
+    LOC = 'CALC_SEAFLUX (HCOX_SEAFLUX_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'Calc_SeaFlux (hcox_seaflux_mod.F90)', RC )
@@ -664,7 +666,7 @@ CONTAINS
     ! Scalars
     TYPE(MyInst), POINTER          :: Inst
     INTEGER                        :: ExtNr, I, J, nSpc
-    CHARACTER(LEN=255)             :: NAME_OC, MSG, ERR
+    CHARACTER(LEN=255)             :: NAME_OC, MSG, ERR, LOC
 
     ! Arrays
     INTEGER,           ALLOCATABLE :: HcoIDs(:)
@@ -673,6 +675,7 @@ CONTAINS
     !=================================================================
     ! HCOX_SeaFlux_Init begins here!
     !=================================================================
+    LOC = 'HCOX_SeaFlux_Init (HCOX_SEAFLUX_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
