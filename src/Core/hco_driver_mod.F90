@@ -98,11 +98,12 @@ CONTAINS
     LOGICAL            :: ItIsEndStep
 
     ! Strings
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     !=================================================================
     ! HCO_RUN begins here!
     !=================================================================
+    LOC = 'HCO_RUN (HCO_DRIVER_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCO_RUN (hco_driver_mod.F90)', RC )
