@@ -188,7 +188,7 @@ CONTAINS
 !    LOGICAL, SAVE       :: FIRST = .TRUE.
     LOGICAL             :: aIR
     LOGICAL             :: IS_SNOW_OR_ICE,   IS_LAND_OR_ICE
-    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=255)  :: MSG, LOC
 
     ! Delta H for POP [kJ/mol]. Delta H is enthalpy of phase transfer
     ! from gas phase to OC. For now we use Delta H for phase transfer
@@ -236,6 +236,7 @@ CONTAINS
     !=======================================================================
     ! HCOX_GC_POPs_RUN begins here!
     !=======================================================================
+    LOC = 'HCOX_GC_POPs_RUN (HCOX_GC_POPS_MOD.F90)'
 
     ! Return if extension not turned on
     IF ( ExtState%GC_POPs <= 0 ) RETURN
@@ -1620,7 +1621,7 @@ CONTAINS
 !
     ! Scalars
     INTEGER                        :: I, N, nSpc, ExtNr
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     CHARACTER(LEN=255)             :: DiagnName
     CHARACTER(LEN=255)             :: OutUnit
 
@@ -1635,6 +1636,7 @@ CONTAINS
     !=======================================================================
     ! HCOX_GC_POPs_INIT begins here!
     !=======================================================================
+    LOC = 'HCOX_GC_POPS_INIT (HCOX_GC_POPS_MOD.F90)'
 
     ! Get the extension number
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
