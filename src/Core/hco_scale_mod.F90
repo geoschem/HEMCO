@@ -101,12 +101,13 @@ CONTAINS
 !
     INTEGER            :: N
     LOGICAL            :: FOUND
-    CHARACTER(LEN=255) :: iName, MSG
+    CHARACTER(LEN=255) :: iName, MSG, LOC
     REAL(hp)           :: ScalFactor
 
     !--------------------------
     ! HCO_ScaleInit begins here
     !--------------------------
+    LOC = 'HCO_ScaleInit (HCO_SCALE_MOD.F90)'
 
     ! Allocate scale factors and initialize all scale factors to 1.0
     IF ( ALLOCATED(SpcScal) ) DEALLOCATE(SpcScal)
