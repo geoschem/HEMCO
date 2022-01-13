@@ -182,11 +182,12 @@ CONTAINS
     INTEGER            :: I, AS
     INTEGER            :: UnitTolerance
     LOGICAL            :: FOUND
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     !=====================================================================
     ! HcoState_Init begins here!
     !=====================================================================
+    LOC = 'HcoState_Init (HCO_STATE_MOD.F90)'
 
     ! For error handling
     CALL HCO_ENTER (HcoConfig%Err,'Init_HCO_State (hco_state_mod.F90)', RC )
