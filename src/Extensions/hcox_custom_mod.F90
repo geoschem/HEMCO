@@ -99,7 +99,7 @@ CONTAINS
     REAL(hp), ALLOCATABLE :: FLUXICE(:,:)
     REAL(hp), ALLOCATABLE :: FLUXWIND(:,:)
     LOGICAL               :: ERR
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
 
     TYPE(MyInst), POINTER :: Inst
 !
@@ -111,6 +111,7 @@ CONTAINS
     !=================================================================
     ! HCOX_CUSTOM_RUN begins here!
     !=================================================================
+    LOC = 'HCOX_CUSTOM_RUN (HCOX_CUSTOM_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_Custom_Run (hcox_custom_mod.F90)', RC )
@@ -258,12 +259,13 @@ CONTAINS
     INTEGER,           ALLOCATABLE :: HcoIDs(:)
     LOGICAL                        :: verb
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     TYPE(MyInst), POINTER          :: Inst
 
     !=================================================================
     ! HCOX_CUSTOM_INIT begins here!
     !=================================================================
+    LOC = 'HCOX_CUSTOM_INIT (HCOX_CUSTOM_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
