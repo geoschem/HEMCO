@@ -225,7 +225,7 @@ CONTAINS
     CHARACTER(LEN=31)   :: PREFIX, FLDNME
     INTEGER             :: NDAYS, cYYYY, cMM, cDD
     REAL(dp)            :: TOTAL
-    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=255)  :: MSG, LOC
 
     ! Arrays
     REAL(hp), TARGET    :: SpcArr(HcoState%NX,HcoState%NY)
@@ -250,6 +250,7 @@ CONTAINS
     !=======================================================================
     ! HCOX_FINN_Run begins here!
     !=======================================================================
+    LOC = 'HCOX_FINN_Run (HCOX_FINN_MOD.F90)'
 
     ! Return if extension disabled
     IF ( ExtState%FINN <= 0 ) RETURN
@@ -614,7 +615,7 @@ CONTAINS
     REAL*8                :: C_MOLEC
     REAL(dp)              :: AdjFact
     REAL(sp)              :: ValSp
-    CHARACTER(LEN=255)    :: MSG, EF_CO2_FILE, VOC_SPEC_FILE
+    CHARACTER(LEN=255)    :: MSG, EF_CO2_FILE, VOC_SPEC_FILE, LOC
 
     ! Temporary variables. These values will be passed to module
     ! array nSpc, SpcNames, etc.
@@ -635,6 +636,7 @@ CONTAINS
     !=======================================================================
     ! HCOX_FINN_INIT begins here!
     !=======================================================================
+    LOC = 'HCOX_FINN_INIT (HCOX_FINN_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
