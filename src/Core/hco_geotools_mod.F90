@@ -418,9 +418,12 @@ CONTAINS
     REAL(hp),  PARAMETER :: B2 = 0.000907e+0_hp
     REAL(hp),  PARAMETER :: B3 = 0.000148e+0_hp
 
+    CHARACTER(LEN=255) :: LOC
+
     !-------------------------------
     ! HCO_GetSUNCOS starts here!
     !-------------------------------
+    LOC = 'HCO_GetSUNCOS (HCO_GEOTOOLS_MOD.F90)'
 
     ! Get current time information
     CALL HcoClock_Get( HcoState%Clock, cDOY=DOY, cH=HOUR, RC=RC )
