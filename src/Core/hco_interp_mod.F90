@@ -652,11 +652,12 @@ CONTAINS
     INTEGER                 :: G5T4
     LOGICAL                 :: verb, infl, clps
     LOGICAL                 :: DONE
-    CHARACTER(LEN=255)      :: MSG
+    CHARACTER(LEN=255)      :: MSG, LOC
 
     !=================================================================
     ! ModelLev_Interpolate begins here
     !=================================================================
+    LOC = 'ModelLev_Interpolate (HCO_INTERP_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER (HcoState%Config%Err,&
