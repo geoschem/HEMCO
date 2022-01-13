@@ -217,12 +217,13 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     LOGICAL               :: DefScaleEmis
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
     TYPE(MyInst), POINTER :: Inst
 
     !=================================================================
     ! HCOX_PARANOX_RUN begins here!
     !=================================================================
+    LOC = 'HCOX_PARANOX_RUN (HCOX_PARANOX_MOD.F90)'
 
     ! Return if extension disabled
     IF ( ExtState%ParaNOx <= 0 ) RETURN
@@ -350,7 +351,7 @@ CONTAINS
     LOGICAL                  :: FIRST
     LOGICAL                  :: DefScaleEmis
     REAL(hp)                 :: iFlx, TMP
-    CHARACTER(LEN=255)       :: MSG
+    CHARACTER(LEN=255)       :: MSG, LOC
     CHARACTER(LEN=1)         :: CHAR1
 
     ! Arrays
@@ -388,6 +389,7 @@ CONTAINS
     !=================================================================
     ! EVOLVE_PLUME begins here!
     !=================================================================
+    LOC = 'EVOLVE_PLUE (HCOX_PARANOX_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER(HcoState%Config%Err,'Evolve_Plume (hcox_paranox_mod.F90)', RC)
@@ -1816,12 +1818,13 @@ CONTAINS
 ! !LOCAL VARIABLES:
    INTEGER             :: IOS
    CHARACTER(LEN=255)  :: FILENAME
-   CHARACTER(LEN=255)  :: MSG
+   CHARACTER(LEN=255)  :: MSG, LOC
    INTEGER             :: fID
 
    !=================================================================
    ! READ_PARANOX_LUT_TXT begins here
    !=================================================================
+   LOC = 'READ_PARANOX_LUT_TXT (HCOX_PARANOX_MOD.F90)'
 
    ! Clear FILENAME
    FILENAME = ''
