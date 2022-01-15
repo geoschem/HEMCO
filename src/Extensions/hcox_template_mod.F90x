@@ -109,15 +109,15 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     TYPE(MyInst), POINTER :: Inst => NULL()
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
 
     !=================================================================
     ! HCOX_<yourname>_RUN begins here!
     !=================================================================
+    LOC = 'HCOX_<yourname>_RUN (HCOX_<yourname>_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, &
-       'HCOX_<yourname>_Run (hcox_<yourname>_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -188,18 +188,19 @@ CONTAINS
 !
     TYPE(MyInst), POINTER          :: Inst => NULL()
     INTEGER                        :: ExtNr, N
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
 
     !=================================================================
     ! HCOX_<yourname>_INIT begins here!
     !=================================================================
+    LOC = 'HCOX_<yourname>_INIT (HCOX_<yourname>_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_<yourname>_Init (hcox_<yourname>_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
         RETURN
