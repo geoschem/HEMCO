@@ -106,7 +106,7 @@ CONTAINS
     LOC = 'HCO_RUN (HCO_DRIVER_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCO_RUN (hco_driver_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
