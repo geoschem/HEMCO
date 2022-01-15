@@ -242,7 +242,7 @@ CONTAINS
     IF ( ExtState%GC_POPs <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_GC_POPs_Run (hcox_gc_POPs_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -1636,14 +1636,14 @@ CONTAINS
     !=======================================================================
     ! HCOX_GC_POPs_INIT begins here!
     !=======================================================================
-    LOC = 'HCOX_GC_POPS_INIT (HCOX_GC_POPS_MOD.F90)'
+    LOC = 'HCOX_GC_POPs_INIT (HCOX_GC_POPS_MOD.F90)'
 
     ! Get the extension number
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter HEMCO
-    CALL HCO_ENTER( HcoState%Config%Err, 'HcoX_GC_POPs_Init (hcox_gc_POPs_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
         RETURN
