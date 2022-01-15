@@ -461,14 +461,15 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=255)  :: MSG, LOC
 
     !======================================================================
     ! SetReadList begins here
     !======================================================================
+    LOC = 'SetReadList (HCO_CONFIG_MOD.F90)'
 
     ! Init
-    CALL HCO_ENTER ( HcoState%Config%Err, 'SetReadList (hco_config_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        PRINT *,'Error in HCO_ENTER called from HEMCO SetReadList'
        RETURN
@@ -490,7 +491,7 @@ CONTAINS
        ! Initialize ReadList
        CALL ReadList_Init ( HcoState%ReadLists, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          PRINT *,'Error in HCO_ENTER called from HEMCO SetReadList'
+          PRINT *,'Error in ReadList_Init called from HEMCO SetReadList'
           RETURN
        ENDIF
 
@@ -2447,7 +2448,7 @@ CONTAINS
     LOC = 'RegisterPrepare (HCO_CONFIG_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'RegisterPrepare', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 41', RC, THISLOC=LOC )
         RETURN
@@ -2619,14 +2620,15 @@ CONTAINS
     INTEGER               :: N, cID, HcoID
     INTEGER               :: targetID, FLAG
     LOGICAL               :: Ignore, Add
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
 
     !======================================================================
     ! Register_Base begins here
     !======================================================================
+    LOC = 'Register_Base (HCO_CONFIG_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'Register_Base (hco_config_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        PRINT *,'Error in HCO_ENTER called from Register_Base'
        RETURN
@@ -2825,7 +2827,7 @@ CONTAINS
     LOC = 'Register_Scal (HCO_CONFIG_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'Register_Scal (hco_config_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 42', RC, THISLOC=LOC )
         RETURN
@@ -2990,7 +2992,7 @@ CONTAINS
     LOC = 'Get_targetID (HCO_CONFIG_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'Get_targetID (hco_config_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 45', RC, THISLOC=LOC )
         RETURN
