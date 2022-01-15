@@ -184,8 +184,7 @@ CONTAINS
     IF ( ExtState%Volcano <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_Enter( HcoState%Config%Err,                                     &
-                    'HCOX_Volcano_Run (hcox_volcano_mod.F90)', RC           )
+    CALL HCO_Enter( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -361,8 +360,7 @@ CONTAINS
     ENDIF
 
     ! Enter
-    CALL HCO_Enter( HcoState%Config%Err,                                     &
-                    'HCOX_Volcano_Init (hcox_volcano_mod.F90)', RC          )
+    CALL HCO_Enter( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
         RETURN
