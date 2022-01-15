@@ -153,7 +153,7 @@ CONTAINS
        ' -> at HCOX_INIT (in module HEMCO/Extensions/hcox_driver_mod.F90'
 
     ! Error handling
-    CALL HCO_ENTER(HcoState%Config%Err,'HCOX_INIT (hcox_driver_mod.F90)', RC )
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -464,7 +464,7 @@ CONTAINS
     ThisLoc = ' -> at HCOX_RUN (in module HEMCO/Extensions/hcox_driver_mod.F90'
 
     ! For error handling
-    CALL HCO_ENTER( HcoState%Config%Err,'HCOX_RUN (hcox_driver_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
         RETURN
