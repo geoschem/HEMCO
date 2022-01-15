@@ -102,8 +102,7 @@ CONTAINS
     LOC = 'EmisList_Add (HCO_EMISLIST.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, &
-                     'EmisList_Add (hco_emislist_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! Set verbose flag
@@ -205,7 +204,7 @@ CONTAINS
     LOC = 'Add2EmisList (HCO_EMISLIST_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'Add2EmisList', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
         RETURN
@@ -466,8 +465,7 @@ CONTAINS
     LOC = 'EmisList_Pass (HCO_EMISLIST_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, &
-                     'EmisList_Pass (hco_emislist_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! Init
