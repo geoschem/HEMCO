@@ -392,7 +392,7 @@ CONTAINS
     TmpLct => NULL()
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'cIDList_Create (hco_datacont_mod.F)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
