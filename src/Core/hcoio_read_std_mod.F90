@@ -203,7 +203,7 @@ CONTAINS
     LOC = 'HCOIO_READ (HCOIO_READ_STD_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOIO_READ (hcoio_read_std_mod.F90)' , RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
