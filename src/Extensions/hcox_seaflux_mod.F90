@@ -180,7 +180,7 @@ CONTAINS
     LOC = 'HCOX_SeaFlux_Run (HCOX_SEAFLUX_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_SeaFlux_Run (hcox_seaflux_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -383,7 +383,7 @@ CONTAINS
     LOC = 'CALC_SEAFLUX (HCOX_SEAFLUX_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'Calc_SeaFlux (hcox_seaflux_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
         RETURN
@@ -682,7 +682,7 @@ CONTAINS
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_SeaFlux_Init (hcox_seaflux_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
         RETURN
