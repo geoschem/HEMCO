@@ -122,7 +122,7 @@ CONTAINS
     REAL(sp)          :: FOCEAN, W10M, DTEMIS
     REAL(dp)          :: F100,   W, A_M2, FEMIS, NUMBER, MASS, NUMBER_TOT
     REAL(dp)          :: rwet, dfo, B, A, SST, SCALE
-    CHARACTER(LEN=255):: MSG
+    CHARACTER(LEN=255):: MSG, LOC
 
     REAL*8, PARAMETER :: BETHA=2.22d0   !wet diameter (80% Rel Hum) to dry diam
 
@@ -142,12 +142,13 @@ CONTAINS
     !=================================================================
     ! SRCSALT30 begins here!
     !=================================================================
+    LOC = 'SRCSALT30 (HCOX_TOMAS_JEAGLE_MOD.F90)'
 
     ! Return if extension disabled
     IF ( ExtState%TOMAS_Jeagle <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'HCOX_TOMAS_Jeagle_Run (hcox_TOMAS_Jeagle_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -356,7 +357,7 @@ CONTAINS
     REAL*8                         :: A, B, R0, R1
     REAL*8                         :: CONST_N
     INTEGER                        :: nSpc, minLen
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
 
     ! Arrays
 !    INTEGER,           ALLOCATABLE :: HcoIDs(:)
@@ -368,13 +369,14 @@ CONTAINS
     !=================================================================
     ! HCOX_TOMAS_Jeagle_Init begins here!
     !=================================================================
+    LOC = 'HCOX_TOMAS_Jeagle_Init (HCOX_TOMAS_JEAGLE_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_TOMAS_Jeagle_Init (hcox_tomas_jeagle_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
         RETURN
