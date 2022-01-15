@@ -263,7 +263,7 @@
       REAL*8, PARAMETER      :: RGAS    = 8314.3d0 / 28.97d0
       REAL*8, PARAMETER      :: AKAP    = RGAS     / CP
       REAL*8, PARAMETER      :: P1000   = 1000d0
-      CHARACTER(LEN=255)     :: MSG
+      CHARACTER(LEN=255)     :: MSG, LOC
 
       ! temp debugging - jkodros
       INTEGER                :: jj=30, ii=40
@@ -271,13 +271,13 @@
       !=================================================================
       ! HCOX_DUSTDEAD_RUN begins here!
       !=================================================================
+      LOC = 'HCOX_DUSTDEAD_RUN (HCOX_TOMAS_DUSTDEAD_MOD.F)'
 
       ! Return if extension disabled
       IF ( ExtState%TOMAS_DustDead <= 0 ) RETURN
 
       ! Enter
-      CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_TOMAS_DustDead_Run
-     & (hcox_tomas_dustdead_mod.F)', RC )
+      CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
           CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
           RETURN
@@ -620,7 +620,7 @@
 !
 ! !LOCAL VARIABLES:
 !
-      CHARACTER(LEN=255)             :: MSG
+      CHARACTER(LEN=255)             :: MSG, LOC
       INTEGER                        :: I, J, N, AS, k
       INTEGER                        :: ExtNr, nSpc
       CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
@@ -631,14 +631,14 @@
       !=================================================================
       ! HCOX_DUST_DEAD_INIT begins here!
       !=================================================================
+      LOC = 'HCOX_DUST_DEAD_INIT (HCOX_TOMAS_DUSTDEAD_MOD.F)'
 
       ! Extension Nr.
       ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
       IF ( ExtNr <= 0 ) RETURN
 
       ! Enter
-      CALL HCO_ENTER(HcoState%Config%Err,'HCOX_TOMAS_DustDead_Init
-     & (hcox_tomas_dustdead_mod.F)', RC )
+      CALL HCO_ENTER(HcoState%Config%Err, LOC, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
           CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
           RETURN
@@ -1218,11 +1218,12 @@
       REAL(dp) :: TMP
 
       ! For error handling
-      CHARACTER(LEN=255)   :: MSG
+      CHARACTER(LEN=255)   :: MSG, LOC
 
       !=================================================================
       ! DST_MBL begins here!
       !=================================================================
+      LOC = 'DST_MBL (HCOX_TOMAS_DUSTDEAD_MOD.F)'
 
       ! Start
       RC = HCO_SUCCESS
