@@ -161,7 +161,7 @@ CONTAINS
     LOC = 'HcoClock_Init (HCO_CLOCK_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'HcoClock_Init (HCO_CLOCK_MOD.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -1478,7 +1478,7 @@ CONTAINS
     LOC = 'SET_LOCALTIME (HCO_CLOCK_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'SET_LOCALTIME (HCO_CLOCK_MOD.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
         RETURN
