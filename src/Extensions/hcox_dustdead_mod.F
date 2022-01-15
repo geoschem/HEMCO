@@ -272,8 +272,7 @@
       IF ( ExtState%DustDead <= 0 ) RETURN
 
       ! Enter
-      CALL HCO_ENTER( HcoState%Config%Err,
-     &               'HCOX_DustDead_Run (hcox_dustdead_mod.F90)', RC )
+      CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
           CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
           RETURN
@@ -615,8 +614,7 @@
       IF ( ExtNr <= 0 ) RETURN
 
       ! Enter
-      CALL HCO_ENTER ( HcoState%Config%Err,
-     &                'HCOX_DustDead_Init (hcox_dustdead_mod.F90)', RC )
+      CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
           CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
           RETURN
