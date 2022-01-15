@@ -190,7 +190,7 @@ CONTAINS
     LOC = 'HcoState_Init (HCO_STATE_MOD.F90)'
 
     ! For error handling
-    CALL HCO_ENTER (HcoConfig%Err,'Init_HCO_State (hco_state_mod.F90)', RC )
+    CALL HCO_ENTER (HcoConfig%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
