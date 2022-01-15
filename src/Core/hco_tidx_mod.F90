@@ -131,7 +131,7 @@ CONTAINS
     LOC = 'tIDx_Init (HCO_TIDX_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'tIDx_Init (hco_tidx_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -507,8 +507,7 @@ CONTAINS
     LOC = 'tIDx_Assign (HCO_TIDX_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, &
-                   'tIDx_Assign (hco_tidx_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
         RETURN
