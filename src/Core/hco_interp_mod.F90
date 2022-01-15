@@ -660,8 +660,7 @@ CONTAINS
     LOC = 'ModelLev_Interpolate (HCO_INTERP_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER (HcoState%Config%Err,&
-                   'ModelLev_Interpolate (hco_interp_mod.F90)' , RC )
+    CALL HCO_ENTER (HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
         RETURN
