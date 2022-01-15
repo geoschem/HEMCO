@@ -354,8 +354,7 @@ CONTAINS
     LOC = 'HCOX_Megan_Run (HCOX_MEGAN_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, &
-                    'HCOX_Megan_Run (hcox_megan_mod.F)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -3501,8 +3500,7 @@ CONTAINS
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, &
-                    'HCOX_Megan_Init (hcox_megan_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 31', RC, THISLOC=LOC )
         RETURN
