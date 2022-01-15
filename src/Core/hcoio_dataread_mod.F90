@@ -195,8 +195,7 @@ CONTAINS
     RC = HCO_SUCCESS
 
     ! Denote we are entering this routine
-    CALL HCO_ENTER( HcoState%Config%Err,                                     &
-                    'HCOIO_DataRead (hcoio_dataread_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
