@@ -229,7 +229,7 @@ CONTAINS
     IF ( ExtState%ParaNOx <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'HCOX_ParaNOx_Run (hcox_paranox_mod.F90)', RC)
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -392,7 +392,7 @@ CONTAINS
     LOC = 'EVOLVE_PLUE (HCOX_PARANOX_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'Evolve_Plume (hcox_paranox_mod.F90)', RC)
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
         RETURN
@@ -881,6 +881,7 @@ CONTAINS
    !========================================================================
    ! HCOX_PARANOX_INIT begins here!
    !========================================================================
+   LOC = 'HCOX_PARANOX_INIT (HCOX_PARANOX_MOD.F90)'
 
    ! Assume success
    RC = HCO_SUCCESS
@@ -890,8 +891,7 @@ CONTAINS
    IF ( ExtNr <= 0 ) RETURN
 
    ! Enter
-   CALL HCO_ENTER( HcoState%Config%Err,                                      &
-                   'HCOX_ParaNOx_Init (hcox_paranox_mod.F90)', RC           )
+   CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
    IF ( RC /= HCO_SUCCESS ) THEN
        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
        RETURN
