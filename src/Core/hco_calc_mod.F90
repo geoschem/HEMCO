@@ -216,7 +216,7 @@ CONTAINS
     Dct => NULL()
 
     ! Enter routine
-    CALL HCO_ENTER (HcoState%Config%Err,'HCO_CalcEmis (HCO_CALC_MOD.F90)', RC )
+    CALL HCO_ENTER (HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     !-----------------------------------------------------------------
@@ -866,7 +866,7 @@ CONTAINS
     LOC     = 'GET_CURRENT_EMISSIONS (hco_calc_mod.F90)'
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS', RC )
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! Check if container contains data
@@ -1471,9 +1471,10 @@ CONTAINS
     ! Initialize
     ScalDct => NULL()
     MaskDct => NULL()
+    LOC     = 'GET_CURRENT_EMISSIONS_B (HCO_CALC_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS_B', RC )
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! testing only
@@ -2876,7 +2877,7 @@ END FUNCTION GetEmisLUnit
     LOC     = 'GET_CURRENT_EMISSIONS_ADJ (hco_calc_mod.F90)'
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS_ADJ', RC )
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! testing only:
