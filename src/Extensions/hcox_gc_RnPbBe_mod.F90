@@ -173,7 +173,7 @@ CONTAINS
     IF ( ExtState%GC_RnPbBe <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_GC_RnPbBe_Run (hcox_gc_RnPbBe_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -575,8 +575,7 @@ CONTAINS
     ExtNrZhang = GetExtNr( HcoState%Config%ExtList, 'ZHANG_Rn222' )
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err,                                     &
-                    'HcoX_GC_RnPbBe_Init (hcox_gc_RnPbBe_mod.F90)', RC      )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
         RETURN
