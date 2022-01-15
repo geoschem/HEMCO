@@ -188,7 +188,7 @@ CONTAINS
     IF ( ExtState%DustGinoux <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'HCOX_DustGinoux_Run (hcox_dustginoux_mod.F90)',RC)
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -499,7 +499,7 @@ CONTAINS
     Inst%ExtNrAlk = GetExtNr( HcoState%Config%ExtList, 'DustAlk' )
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'HCOX_DustGinoux_Init (hcox_dustginoux_mod.F90)',RC)
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
         RETURN
