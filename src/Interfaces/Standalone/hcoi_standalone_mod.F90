@@ -2147,7 +2147,7 @@ CONTAINS
     PEDGE    => NULL()
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, ThisLoc, RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
         RETURN
@@ -3040,7 +3040,7 @@ CONTAINS
         ' -> at Init_Dry_Run (in HEMCO/Interfaces/hcoi_standalone_mod.F90)'
 
     ! Enter
-    CALL HCO_Enter( HcoState%Config%Err, ThisLoc, RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
         RETURN
@@ -3126,7 +3126,7 @@ CONTAINS
        ' -> at Cleanup_Dry_Run (in HEMCO/Interfaces/hcoi_standalone_mod.F90)'
 
     ! Enter
-    CALL HCO_Enter( HcoState%Config%Err, ThisLoc, RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
         RETURN
