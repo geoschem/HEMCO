@@ -250,14 +250,16 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     !=================================================================
     ! HCO_INIT begins here!
     !=================================================================
+    LOC = 'HCO_INIT (HCO_DRIVER_MOD.F90)'
 
     ! Enter
-    CALL HCO_Enter( HcoState%Config%Err, 'HCO_INIT (hco_driver_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       PRINT *, "Error in HCO_Enter called from HCO_Init"
+       PRINT *, "Error in HCO_ENTER called from HCO_Init"
        RETURN
     ENDIF
 
