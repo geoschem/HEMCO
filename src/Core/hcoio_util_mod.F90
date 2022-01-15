@@ -150,8 +150,7 @@ CONTAINS
     LOC = 'GET_TIMEIDX (HCOIO_UTIL_MOD.F90)'
 
     ! Init
-    CALL HCO_ENTER( HcoState%Config%Err, &
-                    'GET_TIMEIDX (hcoio_util_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
