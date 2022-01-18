@@ -403,9 +403,6 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
     hco_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
 endif()
 
-# Enable OpenMP
-target_link_libraries(${this} PRIVATE OpenMP::OpenMP_Fortran)
-
 #-----------------------------------------------------------------------------
 # Add source code directory
 #-----------------------------------------------------------------------------
