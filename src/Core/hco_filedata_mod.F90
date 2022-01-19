@@ -302,11 +302,12 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER            :: I, AS
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     ! ================================================================
     ! FileData_ArrCheck2D begins here
     ! ================================================================
+    LOC = 'FileData_ArrCheck2D (HCO_FILEDATA_MOD.F90)'
 
     ! Assume success until otherwise
     RC = HCO_SUCCESS
@@ -325,7 +326,10 @@ CONTAINS
     ! If not associated yet:
     ! Initialize vector and corresponding arrays.
     CALL FileData_ArrInit ( FileDta, nt, nx, ny, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
   END SUBROUTINE FileData_ArrCheck2D
 !EOC
@@ -371,11 +375,12 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER            :: I, AS
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     ! ================================================================
     ! FileData_ArrCheck3D begins here
     ! ================================================================
+    LOC = 'FileData_ArrCheck3D (HCO_FILEDATA_MOD.F90)'
 
     ! Assume success until otherwise
     RC = HCO_SUCCESS
@@ -395,7 +400,10 @@ CONTAINS
     ! If not associated yet:
     ! Initialize vector and corresponding arrays.
     CALL FileData_ArrInit( FileDta, nt, nx, ny, nz, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
   END SUBROUTINE FileData_ArrCheck3D
 !EOC
@@ -544,16 +552,21 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! FileData_ArrInit2D begins here
     ! ================================================================
+    LOC = 'FileData_ArrInit2D (HCO_FILEDATA_MOD.F90)'
 
     ! Assume success until otherwise
     RC = HCO_SUCCESS
 
     ! Initialize vector and corresponding arrays.
     CALL HCO_ArrInit( FileDta%V2, nt, nx, ny, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Update nt
     FileDta%nt = nt
@@ -605,16 +618,21 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! FileData_ArrInit3D begins here
     ! ================================================================
+    LOC = 'FileData_ArrInit3D (HCO_FILEDATA_MOD.F90)'
 
     ! Assume success until otherwise
     RC = HCO_SUCCESS
 
     ! Initialize vector and corresponding arrays.
     CALL HCO_ArrInit( FileDta%V3, nt, nx, ny, nz, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Update nt
     FileDta%nt = nt

@@ -418,13 +418,19 @@ CONTAINS
     REAL(hp),  PARAMETER :: B2 = 0.000907e+0_hp
     REAL(hp),  PARAMETER :: B3 = 0.000148e+0_hp
 
+    CHARACTER(LEN=255) :: LOC
+
     !-------------------------------
     ! HCO_GetSUNCOS starts here!
     !-------------------------------
+    LOC = 'HCO_GetSUNCOS (HCO_GEOTOOLS_MOD.F90)'
 
     ! Get current time information
     CALL HcoClock_Get( HcoState%Clock, cDOY=DOY, cH=HOUR, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Add time adjustment
     HOUR = HOUR + DT
@@ -865,12 +871,18 @@ CONTAINS
     ELSEIF ( EVAL_TK ) THEN
        ALLOCATE(TmpTK(HcoState%NX,HcoState%NY,HcoState%NZ))
        CALL HCO_EvalFld( HcoState, 'TK', TmpTK, RC, FOUND=FoundTK )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! TK is sometimes listed as TMPU, so look for that too (bmy, 3/5/21)
        IF ( .not. FoundTK ) THEN
           CALL HCO_EvalFld( HcoState, 'TMPU', TmpTK, RC, FOUND=FoundTK )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        EVAL_TK = FoundTK
@@ -892,7 +904,10 @@ CONTAINS
     ! PSFC
     ! ------------------------------------------------------------------
     CALL HCO_ArrAssert( HcoState%Grid%PSFC, HcoState%NX, HcoState%NY, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! If associated, make sure that array size is correct
     ! and pass to HEMCO surface pressure field
@@ -920,13 +935,19 @@ CONTAINS
     ELSEIF ( EVAL_PSFC ) THEN
        CALL HCO_EvalFld( HcoState, 'PSFC', HcoState%Grid%PSFC%Val, RC, &
             FOUND=FoundPSFC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! PSFC is sometimes listed as PS, so look for that too (bmy, 3/4/21)
        IF ( .not. FoundPSFC ) THEN
           CALL HCO_EvalFld( HcoState, 'PS', HcoState%Grid%PSFC%Val, RC, &
                FOUND=FoundPSFC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        EVAL_PSFC = FoundPSFC
@@ -947,7 +968,10 @@ CONTAINS
     ! ZSFC
     ! ------------------------------------------------------------------
     CALL HCO_ArrAssert( HcoState%Grid%ZSFC, HcoState%NX, HcoState%NY, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! If associated, make sure that array size is correct
     ! and pass to HEMCO surface pressure field
@@ -974,7 +998,10 @@ CONTAINS
     ! Otherwise, try to read from HEMCO configuration file
     ELSEIF ( EVAL_ZSFC ) THEN
        CALL HCO_EvalFld ( HcoState, 'ZSFC', HcoState%Grid%ZSFC%Val, RC, FOUND=FoundZSFC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        EVAL_ZSFC = FoundZSFC
 
        ! Verbose
@@ -994,7 +1021,10 @@ CONTAINS
     ! ------------------------------------------------------------------
     CALL HCO_ArrAssert( HcoState%Grid%PEDGE, HcoState%NX, &
                         HcoState%NY,         HcoState%NZ+1, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     IF ( ASSOCIATED( PEDGE ) ) THEN
 
@@ -1021,7 +1051,10 @@ CONTAINS
     ELSEIF ( EVAL_PEDGE ) THEN
        CALL HCO_EvalFld ( HcoState, 'PEDGE', &
                           HcoState%Grid%PEDGE%Val, RC, FOUND=FoundPEDGE )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        EVAL_PEDGE = FoundPEDGE
 
        ! Verbose
@@ -1041,7 +1074,10 @@ CONTAINS
     ! ------------------------------------------------------------------
     CALL HCO_ArrAssert( HcoState%Grid%BXHEIGHT_M, HcoState%NX, &
                         HcoState%NY,              HcoState%NZ, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     IF ( ASSOCIATED( BXHEIGHT ) ) THEN
 
@@ -1069,7 +1105,10 @@ CONTAINS
     ELSEIF ( EVAL_BXHEIGHT ) THEN
        CALL HCO_EvalFld ( HcoState, 'BXHEIGHT_M', &
                           HcoState%Grid%BXHEIGHT_M%Val, RC, FOUND=FoundBXHEIGHT )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        EVAL_BXHEIGHT = FoundBXHEIGHT
 
        ! Verbose
@@ -1175,7 +1214,10 @@ CONTAINS
           ! Make sure box height is initialized if it will be calculated
           CALL HCO_ArrAssert( HcoState%Grid%BXHEIGHT_M, HcoState%NX, &
                               HcoState%NY,              HcoState%NZ, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           !$OMP PARALLEL DO                &
           !$OMP DEFAULT( SHARED          ) &
@@ -1349,13 +1391,19 @@ CONTAINS
     ! Make sure size is ok. Allocate if unallocated.
     CALL HCO_ArrAssert( HcoState%Grid%PBLHEIGHT, &
                         HcoState%NX, HcoState%NY, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Try to read from file first
     IF ( PRESENT( FldName ) ) THEN
        CALL HCO_EvalFld ( HcoState, FldName, &
           HcoState%Grid%PBLHEIGHT%Val, RC, FOUND=FOUND )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Verbose
        IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err,2) ) THEN
@@ -1399,7 +1447,10 @@ CONTAINS
           ! Make sure size is ok
           CALL HCO_ArrAssert( HcoState%Grid%PBLHEIGHT, &
                               HcoState%NX, HcoState%NY, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Pass data
           HcoState%Grid%PBLHEIGHT%Val = DefVal

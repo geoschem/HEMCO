@@ -153,7 +153,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     CHARACTER(LEN=255)            :: thisUnit, LevUnit, LevName
-    CHARACTER(LEN=1023)           :: MSG
+    CHARACTER(LEN=1023)           :: MSG, LOC
     CHARACTER(LEN=1023)           :: srcFile, srcFile2
     INTEGER                       :: NX, NY
     INTEGER                       :: NCRC, Flag, AS
@@ -200,10 +200,14 @@ CONTAINS
     !=================================================================
     ! HCOIO_READ begins here
     !=================================================================
+    LOC = 'HCOIO_READ (HCOIO_READ_STD_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOIO_READ (hcoio_read_std_mod.F90)' , RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Initialize pointers
     ncArr   => NULL()
@@ -450,7 +454,10 @@ CONTAINS
                        ncLun,     tidx1,    tidx2,    &
                        wgt1,      wgt2,     oYMDhm1,  &
                        YMDhma,    YMDhm1,   RC        )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !-----------------------------------------------------------------
     ! Check for negative tidx1. tidx1 can still be negative if:
@@ -564,7 +571,10 @@ CONTAINS
 
     ! Make sure longitude is steadily increasing.
     CALL HCO_ValidateLon( HcoState, nlon, LonMid, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Extract latitude midpoints
     CALL NC_READ_VAR ( ncLun, 'lat', nlat, thisUnit, LatMid, NCRC )
@@ -657,7 +667,10 @@ CONTAINS
           ! IsModelLev will stay True if is was set so in NC_ISMODELLEVEL
           ! above. (ckeller, 9/29/15)
           CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Override IsModelLevel if the long_name contains
           ! "atmospheric_hybrid_sigma_pressure_coordinate"
@@ -716,7 +729,10 @@ CONTAINS
     ! set.
     ! ----------------------------------------------------------------
     CALL GetArbDimIndex( HcoState, ncLun, Lct, ArbIdx, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! ----------------------------------------------------------------
     ! Read data
@@ -782,7 +798,10 @@ CONTAINS
           ENDIF
           CALL SrcFile_Parse ( HcoState,  Lct, srcFile2, &
                                FOUND, RC, Direction = Direction )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! If found, read data. Assume that all meta-data is the same.
@@ -798,7 +817,10 @@ CONTAINS
                              ncLun2,    tidx1,    tidx2,   &
                              wgt1,      wgt2,     oYMDhm2, &
                              YMDhmb,    YMDhm1,   RC       )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Always read first time slice
           tidx1 = 1
@@ -887,7 +909,10 @@ CONTAINS
        ! cYr is the current simulation year
        CALL HcoClock_Get( HcoState%Clock, cYYYY=cYr, cMM=cMt, cDD=cDy, &
                           cH=cHr, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Determine year range to be read:
        ! By default, we would like to average between the year range given
@@ -921,7 +946,10 @@ CONTAINS
              ! Get file name for this year
              CALL SrcFile_Parse ( HcoState, Lct, srcFile2, &
                                   FOUND, RC, Year=iYear )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! If found, read data. Assume that all meta-data is the same.
              IF ( .NOT. FOUND ) THEN
@@ -940,7 +968,10 @@ CONTAINS
                                 wgt1,      wgt2,     oYMDhm2, &
                                 YMDhmb,    YMDhm1,   RC,      &
                                 Year=iYear                    )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! Do not perform weights
              wgt1  = -1.0_sp
@@ -1091,11 +1122,17 @@ CONTAINS
 
        IF ( ncYr == 0 ) THEN
           CALL HcoClock_Get( HcoState%Clock, cYYYY = ncYr, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
        IF ( ncMt == 0 ) THEN
           CALL HcoClock_Get( HcoState%Clock, cMM   = ncMt, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! Verbose mode
@@ -1190,7 +1227,10 @@ CONTAINS
           ! Now normalize data by area calculated from lat edges.
           CALL NORMALIZE_AREA( HcoState, ncArr,   nlon, &
                                LatEdge,  srcFile, RC     )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
        ! All other combinations are invalid
        ELSE
@@ -1214,7 +1254,10 @@ CONTAINS
        RETURN
     ENDIF
     CALL HCO_ValidateLon( HcoState, nlonEdge, LonEdge, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get latitude edges (only if they have not been read yet
     ! for unit conversion)
@@ -1369,7 +1412,10 @@ CONTAINS
 
           ! Interpolate onto edges
           CALL SigmaMidToEdges ( HcoState, SigLev, SigEdge, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Sigma levels are not needed anymore
           IF ( ASSOCIATED(SigLev) ) DEALLOCATE(SigLev)
@@ -1394,7 +1440,10 @@ CONTAINS
        CALL HCO_MESSY_REGRID ( HcoState,  NcArr,                 &
                                LonEdge,   LatEdge,      SigEdge, &
                                Lct,       IsModelLevel, RC        )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Cleanup
        IF ( ASSOCIATED(SigEdge) ) DEALLOCATE(SigEdge)
@@ -1409,7 +1458,10 @@ CONTAINS
        ENDIF
 
        CALL REGRID_MAPA2A ( HcoState, NcArr, LonEdge, LatEdge, Lct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
     ENDIF
 
@@ -1421,13 +1473,19 @@ CONTAINS
           IF ( ASSOCIATED(Lct%Dct%Dta%V3(1)%Val) ) THEN
              CALL Diagn_Update ( HcoState, cName=TRIM(Lct%Dct%cName), &
                                  Array3D=Lct%Dct%Dta%V3(1)%Val, COL=-1, RC=RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
           ENDIF
        ELSEIF ( Lct%Dct%Dta%SpaceDim == 2 .AND. ASSOCIATED(Lct%Dct%Dta%V2) ) THEN
           IF ( ASSOCIATED(Lct%Dct%Dta%V2(1)%Val) ) THEN
              CALL Diagn_Update ( HcoState, cName=TRIM(Lct%Dct%cName), &
                                  Array2D=Lct%Dct%Dta%V2(1)%Val, COL=-1, RC=RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
           ENDIF
        ENDIF
     ENDIF

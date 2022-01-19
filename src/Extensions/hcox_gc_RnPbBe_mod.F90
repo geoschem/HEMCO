@@ -157,7 +157,7 @@ CONTAINS
     REAL*8            :: F_WATER,  F_BELOW_70, F_BELOW_60, F_ABOVE_60
     REAL*8            :: DENOM
     REAL(hp)          :: LAT_TMP,  P_TMP,      Be_TMP
-    CHARACTER(LEN=255):: MSG
+    CHARACTER(LEN=255):: MSG, LOC
 
     ! Pointers
     TYPE(MyInst), POINTER :: Inst
@@ -167,13 +167,17 @@ CONTAINS
     !=======================================================================
     ! HCOX_GC_RnPbBe_RUN begins here!
     !=======================================================================
+    LOC = 'HCOX_GC_RnPbBe_RUN (HCOX_GC_RNPBBE_MOD.F90)'
 
     ! Return if extension not turned on
     IF ( ExtState%GC_RnPbBe <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_GC_RnPbBe_Run (hcox_gc_RnPbBe_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set error flag
     !ERR = .FALSE.
@@ -549,7 +553,7 @@ CONTAINS
 !
     ! Scalars
     INTEGER                        :: N, nSpc, ExtNr, ExtNrZhang
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
 
     ! Arrays
     INTEGER,           ALLOCATABLE :: HcoIDs(:)
@@ -561,6 +565,7 @@ CONTAINS
     !=======================================================================
     ! HCOX_GC_RnPbBe_INIT begins here!
     !=======================================================================
+    LOC = 'HCOX_GC_RNPBBE_INIT (HCOX_GC_RNPBBE_MOD.F90)'
 
     ! Get the main extension number
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
@@ -570,9 +575,11 @@ CONTAINS
     ExtNrZhang = GetExtNr( HcoState%Config%ExtList, 'ZHANG_Rn222' )
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err,                                     &
-                    'HcoX_GC_RnPbBe_Init (hcox_gc_RnPbBe_mod.F90)', RC      )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create Instance
     Inst => NULL()

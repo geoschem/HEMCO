@@ -139,11 +139,12 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255) :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: ErrMsg, ThisLoc, LOC
 
     !=======================================================================
     ! HCOX_INIT begins here!
     !=======================================================================
+    LOC = 'HCOX_INIT (HCOX_DRIVER_MOD.F90)'
 
     ! Initialize
     RC      = HCO_SUCCESS
@@ -152,8 +153,11 @@ CONTAINS
        ' -> at HCOX_INIT (in module HEMCO/Extensions/hcox_driver_mod.F90'
 
     ! Error handling
-    CALL HCO_ENTER(HcoState%Config%Err,'HCOX_INIT (hcox_driver_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !=======================================================================
     ! Initialize extensions
@@ -446,7 +450,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255) :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: ErrMsg, ThisLoc, LOC
     LOGICAL            :: IsEmisTime
 
     !=======================================================================
@@ -454,17 +458,24 @@ CONTAINS
     !=======================================================================
 
     ! Initialize
+    LOC     = 'HCOX_RUN (HCOX_DRIVER_MOD.F90)'
     RC      = HCO_SUCCESS
     ErrMsg  = ''
     ThisLoc = ' -> at HCOX_RUN (in module HEMCO/Extensions/hcox_driver_mod.F90'
 
     ! For error handling
-    CALL HCO_ENTER( HcoState%Config%Err,'HCOX_RUN (hcox_driver_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Is it time for emissions?
     CALL HcoClock_Get ( HcoState%Clock, IsEmisTime=IsEmisTime, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Can leave here if it's not time for emissions
     IF ( .NOT. IsEmisTime ) THEN
@@ -997,7 +1008,10 @@ CONTAINS
 !       IF ( RC /= HCO_SUCCESS ) RETURN
 !
        CALL DgnDefine ( HcoState, 'HCO_LAI', DGN_LAI, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
 !       CALL DgnDefine ( HcoState, 'HCO_U10M', DGN_U10M, RC )
 !       IF ( RC /= HCO_SUCCESS ) RETURN
@@ -1027,13 +1041,22 @@ CONTAINS
 !       IF ( RC /= HCO_SUCCESS ) RETURN
 
        CALL DgnDefine ( HcoState, 'HCO_SUNCOS', DGN_SUNCOS, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL DgnDefine ( HcoState, 'DRY_TOTN', DGN_DRYTOTN, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL DgnDefine ( HcoState, 'WET_TOTN', DGN_WETTOTN, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
     ENDIF
 
@@ -1072,6 +1095,13 @@ CONTAINS
 !  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
+
+    LOC = 'DgnDefine (HCOX_DRIVER_MOD.F90)'
 
     CALL Diagn_Create ( HcoState   = HcoState,          &
                         cName      = TRIM(DgnName),     &
@@ -1085,7 +1115,10 @@ CONTAINS
                         Trgt2D     = Trgt2D,            &
                         COL = HcoState%Diagn%HcoDiagnIDDefault, &
                         RC         = RC                  )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS

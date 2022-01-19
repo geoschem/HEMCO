@@ -146,9 +146,11 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! HCO_RestartDefine_3D begins here
     ! ================================================================
+    LOC = 'HCO_RestartDefine_3D (HCO_RESTART_MOD.F90)'
 
     ! Define diagnostics array
     CALL Diagn_Create ( HcoState,                               &
@@ -163,7 +165,10 @@ CONTAINS
                         AutoFill   = 0,                         &
                         Trgt3D     = Arr3D,                     &
                         RC         = RC                          )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -215,9 +220,11 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! HCO_RestartDefine_2D begins here
     ! ================================================================
+    LOC = 'HCO_RestartDefine_2D (HCO_RESTART_MOD.F90)'
 
     ! Define diagnostics array
     CALL Diagn_Create ( HcoState,                               &
@@ -232,7 +239,10 @@ CONTAINS
                         AutoFill   = 0,                         &
                         Trgt2D     = Arr2D,                     &
                         RC         = RC                          )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -296,13 +306,14 @@ CONTAINS
 !
     REAL(sp), POINTER    :: Ptr3D(:,:,:)
     LOGICAL              :: FLD
-    CHARACTER(LEN=255)   :: MSG
+    CHARACTER(LEN=255)   :: MSG, LOC
 
     ! ================================================================
     ! HCO_RestartGet begins here
     ! ================================================================
 
     ! Init
+    LOC   = 'HCO_RestartGet (HCO_RESTART_MOD.F90)'
     Ptr3D => NULL()
 
     ! Is the output array filled yet?
@@ -314,7 +325,10 @@ CONTAINS
 #if defined(ESMF_)
     CALL HCO_CopyFromIntnal_ESMF( HcoState, TRIM(Name),   &
                                   1,        FLD,      RC, Arr3D=Arr3D )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! If field is all zero assume it to be not filled
     IF ( FLD ) THEN
@@ -337,7 +351,10 @@ CONTAINS
 
        ! Try to get pointer from HEMCO configuration
        CALL HCO_GetPtr( HcoState, TRIM(Name), Ptr3D, RC, FILLED=FLD )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Eventually pass data
        IF ( FLD ) THEN
@@ -450,13 +467,14 @@ CONTAINS
 !
     REAL(sp), POINTER    :: Ptr2D(:,:)
     LOGICAL              :: FLD
-    CHARACTER(LEN=255)   :: MSG
+    CHARACTER(LEN=255)   :: MSG, LOC
 
     ! ================================================================
     ! HCO_RestartGet_2D begins here
     ! ================================================================
 
     ! Init
+    LOC   = 'HCO_RestartGet_2D (HCO_RESTART_MOD.F90)'
     Ptr2D => NULL()
 
     ! Is the output array filled yet?
@@ -468,7 +486,10 @@ CONTAINS
 #if defined(ESMF_)
     CALL HCO_CopyFromIntnal_ESMF( HcoState, TRIM(Name),   &
                                   1,        FLD,      RC, Arr2D=Arr2D )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! If field is all zero assume it to be not filled
     IF ( FLD ) THEN
@@ -492,7 +513,10 @@ CONTAINS
 
        ! Try to get pointer from HEMCO configuration
        CALL HCO_GetPtr( HcoState, TRIM(Name), Ptr2D, RC, FOUND=FLD )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Eventually pass data
        IF ( FLD ) THEN

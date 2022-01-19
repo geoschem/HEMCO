@@ -183,19 +183,23 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Strings
-    CHARACTER(LEN=512) :: MSG
+    CHARACTER(LEN=512) :: MSG 
+    CHARACTER(LEN=255) :: LOC
 
     !=======================================================================
     ! HCOIO_DATAREAD begins here
     !=======================================================================
+    LOC = 'HCOIO_DATAREAD (HCOIO_DATAREAD_MOD.F90)'
 
     ! Assume success until proven otherwise
     RC = HCO_SUCCESS
 
     ! Denote we are entering this routine
-    CALL HCO_ENTER( HcoState%Config%Err,                                     &
-                    'HCOIO_DataRead (hcoio_dataread_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Call the HEMCO Data Input Layer
     ! Selection of which HCOIO module to be used is performed at compile level

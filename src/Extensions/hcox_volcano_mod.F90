@@ -162,7 +162,7 @@ CONTAINS
     LOGICAL               :: ERR
 
     ! Strings
-    CHARACTER(LEN=255)    :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255)    :: ErrMsg, ThisLoc, LOC
 
     ! Arrays
     REAL(sp)              :: SO2degas(HcoState%NX,HcoState%NY,HcoState%NZ)
@@ -175,6 +175,7 @@ CONTAINS
     !=================================================================
     ! HCOX_VOLCANO_RUN begins here!
     !=================================================================
+    LOC = 'HCOX_VOLCANO_RUN (HCOX_VOLCANO_MOD.F90)'
 
     ! Assume success
     RC = HCO_SUCCESS
@@ -183,9 +184,11 @@ CONTAINS
     IF ( ExtState%Volcano <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_Enter( HcoState%Config%Err,                                     &
-                    'HCOX_Volcano_Run (hcox_volcano_mod.F90)', RC           )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Define strings for error messgaes
     ErrMsg = ''
@@ -341,11 +344,12 @@ CONTAINS
     INTEGER                        :: ExtNr, N, Dum
     LOGICAL                        :: FOUND
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
-    CHARACTER(LEN=255)             :: MSG, Str
+    CHARACTER(LEN=255)             :: MSG, Str, LOC
 
     !=================================================================
     ! HCOX_VOLCANO_INIT begins here!
     !=================================================================
+    LOC = 'HCOX_VOLCANO_INIT (HCOX_VOLCANO_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
@@ -356,9 +360,11 @@ CONTAINS
     ENDIF
 
     ! Enter
-    CALL HCO_Enter( HcoState%Config%Err,                                     &
-                    'HCOX_Volcano_Init (hcox_volcano_mod.F90)', RC          )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create Volcano instance for this simulation
     Inst => NULL()
@@ -372,7 +378,10 @@ CONTAINS
     ! Get species IDs.
     CALL HCO_GetExtHcoID( HcoState, ExtNr,     Inst%SpcIDs,                  &
                           SpcNames, Inst%nSpc, RC                           )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! There must be at least one species
     IF ( Inst%nSpc == 0 ) THEN
@@ -386,13 +395,19 @@ CONTAINS
     ! Scaling_<SpcName>.
     CALL GetExtSpcVal( HcoState%Config, ExtNr,  Inst%nSpc,   SpcNames,       &
                        'Scaling',       1.0_sp, Inst%SpcScl, RC             )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get species mask fields
     CALL GetExtSpcVal( HcoState%Config,    ExtNr,        Inst%nSpc,          &
                        SpcNames,           'ScaleField', HCOX_NOSCALE,       &
                        Inst%SpcScalFldNme, RC                               )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Add conversion factor from kg S to kg species
     DO N = 1, Inst%nSpc
@@ -429,7 +444,10 @@ CONTAINS
     Inst%VolcSource = 'AeroCom'
     CALL GetExtOpt( HcoState%Config, ExtNr,       'Volcano_Source',          &
                     OptValChar=Str,  FOUND=FOUND, RC=RC                     )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( FOUND ) Inst%VolcSource = Str
 
     ! See if eruptive and degassing hierarchies are given
@@ -437,11 +455,17 @@ CONTAINS
     Inst%CatDegas = 52
     CALL GetExtOpt( HcoState%Config, ExtNr,       'Cat_Degassing',           &
                     OptValInt=Dum,   FOUND=FOUND, RC=RC                     )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( FOUND ) Inst%CatDegas = Dum
     CALL GetExtOpt( HcoState%Config, ExtNr,       'Cat_Eruptive',            &
                     OptValInt=Dum,   FOUND=FOUND, RC=RC                    )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( FOUND ) Inst%CatErupt = Dum
 
     ! Verbose mode
@@ -568,7 +592,10 @@ CONTAINS
 
        ! Get current year, month, day
        CALL HcoClock_Get ( HcoState%Clock, cYYYY=YYYY, cMM=MM, cDD=DD, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
 #if defined( MODEL_GEOS )
        ! Error trap: skip leap days
@@ -578,7 +605,10 @@ CONTAINS
        ! Get file name
        ThisFile = Inst%FileName
        CALL HCO_CharParse( HcoState%Config, ThisFile, YYYY, MM, DD, 0, 0, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        !--------------------------------------------------------------------
        ! In dry-run mode, print file path to dryrun log and exit.
@@ -609,7 +639,10 @@ CONTAINS
           ThisFile = Inst%ClimFile
           CALL HCO_CharParse( HcoState%Config, ThisFile, &
                               YYYY, MM, DD, 0, 0, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Test if the file exists
           INQUIRE( FILE=TRIM( ThisFile ), EXIST=FileExists )
@@ -664,7 +697,10 @@ CONTAINS
        nVolc = 0
        DO
           CALL GetNextLine( LUN, ThisLine, EOF, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           IF ( EOF ) EXIT
 
           ! Skip any entries that contain '::'
@@ -726,7 +762,10 @@ CONTAINS
           N = 0
           DO
              CALL GetNextLine( LUN, ThisLine, EOF, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
              IF ( EOF ) EXIT
 
              ! Skip any entries that contain '::'
@@ -745,7 +784,10 @@ CONTAINS
              CALL HCO_CharSplit( TRIM(ThisLine), ' ', &
                                  HCO_GetOpt(HcoState%Config%ExtList,'Wildcard'), &
                                  Dum, nCol, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! Allow for 5 or 7 values
              IF ( nCol /= 5 .and. nCol /= 7 ) THEN
@@ -787,7 +829,10 @@ CONTAINS
        IF ( nVolc > 0 ) THEN
           CALL HCO_GetHorzIJIndex( HcoState, nVolc, VolcLon, &
                                    VolcLat, Inst%VolcIdx, Inst%VolcJdx, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! Save # of volcanoes in archive
@@ -885,7 +930,10 @@ CONTAINS
 
     ! Get current hour, minute and save as hhmmss
     CALL HcoClock_Get ( HcoState%Clock, cH=HH, cM=MN, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     hhmmss = HH*10000 + MN*100
 
     ! Do for every volcano

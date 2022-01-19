@@ -207,7 +207,10 @@ CONTAINS
     ! Create current time stamps (to be used to archive time stamps)
     CALL HcoClock_Get( HcoState%Clock,sYYYY=YYYY,sMM=MM,&
                        sDD=DD,sH=h,sM=m,sS=s,RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     lymd = YYYY*10000 + MM*100 + DD
     lhms = h   *10000 + m *100 + s
 
@@ -242,7 +245,10 @@ CONTAINS
     NoLevDim = .FALSE.
     CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnNoLevDim', &
                      OptValBool=NoLevDim, Found=Found, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( Found ) THEN
        IF ( NoLevDim ) THEN
 
@@ -254,7 +260,10 @@ CONTAINS
              ! diagnostics container that contains content.
              CALL Diagn_Get ( HcoState, EOI, &
                               ThisDiagn, FLAG, RC, COL=PS )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
              IF ( FLAG /= HCO_SUCCESS ) EXIT
 
              ! If this is a 3D diagnostics, we must write the level
@@ -288,7 +297,10 @@ CONTAINS
     ! (if not present) obtained from the HEMCO configuration file.
     CALL ConstructTimeStamp ( HcoState, PS, PrevTime, &
                               YYYY, MM, DD, h, m, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Write datetime
     WRITE( Yrs, '(i4.4)' ) YYYY
@@ -302,7 +314,10 @@ CONTAINS
        Pfx = PREFIX
     ELSE
        CALL DiagnCollection_Get( HcoState%Diagn, PS, PREFIX=Pfx, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
     ncFile = TRIM(Pfx)//'.'//Yrs//Mts//Dys//hrs//mns//'.nc'
 
@@ -550,7 +565,10 @@ CONTAINS
     ! Check if reference time is given in HEMCO configuration file
     CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnRefTime', &
                      OptValChar=RefTime, Found=Found, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Use specified reference time (if available)
     IF ( Found ) THEN
@@ -559,7 +577,10 @@ CONTAINS
        CALL NC_GET_REFDATETIME( timeunit, refYYYY, refMM, refDD, refh, &
                                 refm, refs, RC )
        refs = 0
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        GMT      = REAL(MAX(refh,0),dp) + (REAL(MAX(refm,0),dp)/60.0_dp) + &
                   (REAL(MAX(refs,0),dp)/3600.0_dp)
        THISDAY  = refDD + ( GMT / 24.0_dp )
@@ -674,7 +695,10 @@ CONTAINS
        ! Get next diagnostics in list. This will return the next
        ! diagnostics container that contains content.
        CALL Diagn_Get ( HcoState, EOI, ThisDiagn, FLAG, RC, COL=PS )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        IF ( FLAG /= HCO_SUCCESS ) EXIT
 
        ! Only write diagnostics if this is the first Diagn_Get call for
@@ -853,17 +877,26 @@ CONTAINS
     IF ( .NOT. PrevTime ) THEN
        CALL HcoClock_Get(HcoState%Clock,sYYYY=Y2,sMM=M2,&
                          sDD=D2,sH=h2,sM=n2,sS=s2,RC=RC)
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ELSE
        CALL HcoClock_Get(HcoState%Clock,pYYYY=Y2,pMM=M2,&
                          pDD=D2,pH=h2,pM=n2,pS=s2,RC=RC)
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     ! Get timestamp location for this collection
     CALL DiagnCollection_Get( HcoState%Diagn, PS, OutTimeStamp=OutTimeStamp, &
                               LastYMD=LastYMD, LastHMS=LastHMS, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Determine dates to be used:
 

@@ -174,15 +174,20 @@ CONTAINS
 !
 ! LOCAL VARIABLES:
 !
-    REAL(hp)     :: Factor
+    REAL(hp)            :: Factor
+    CHARACTER(LEN=255)  :: LOC
 
     !=================================================================
     ! HCO_UNIT_CHANGE_SP begins here
     !=================================================================
+    LOC = 'HCO_UNIT_CHANGE_SP (HCO_UNIT_MOD.F90)'
 
     CALL HCO_Unit_Factor( HcoConfig, UNITS, MW, YYYY, MM, AreaFlag, TimeFlag, &
                           Factor, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Apply correction factor
     IF ( Factor /= 1.0_hp ) THEN
@@ -249,15 +254,20 @@ CONTAINS
 !
 ! LOCAL VARIABLES:
 !
-    REAL(hp)     :: Factor
+    REAL(hp)            :: Factor
+    CHARACTER(LEN=255)  :: LOC
 
     !=================================================================
     ! HCO_UNIT_CHANGE_DP begins here
     !=================================================================
+    LOC = 'HCO_UNIT_CHANGE_DP (HCO_UNIT_MOD.F90)'
 
     CALL HCO_Unit_Factor( HcoConfig, UNITS, MW, YYYY, MM, AreaFlag, TimeFlag, &
                           Factor, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Apply correction factor
     IF ( Factor /= 1.0_hp ) THEN

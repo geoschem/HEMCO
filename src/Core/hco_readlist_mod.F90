@@ -99,15 +99,19 @@ CONTAINS
 !
     INTEGER            :: intv
     LOGICAL            :: verb
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     ! ================================================================
     ! ReadList_Set begins here
     ! ================================================================
+    LOC = 'ReadList_Set (HCO_READLIST_MOD.F90)'
 
     ! For error handling
-    CALL HCO_ENTER (HcoState%Config%Err,'ReadList_Set (hco_readlist_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER (HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Verbose mode
     verb = HCO_IsVerb( HcoState%Config%Err, 2 )
@@ -257,8 +261,7 @@ CONTAINS
     ! ================================================================
 
     ! For error handling
-    CALL HCO_ENTER ( HcoState%Config%Err, &
-                    'ReadList_Read (hco_readlist_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error in HCO_ENTER called from HEMCO ReadList_Read'
        CALL HCO_ERROR( MSG, RC, THISLOC = LOC )
@@ -446,8 +449,7 @@ CONTAINS
     ! ================================================================
 
     ! For error handling
-    CALL HCO_ENTER (HcoState%Config%Err,&
-                   'ReadList_Fill (hco_readlist_mod.F90)', RC )
+    CALL HCO_ENTER (HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error in HCO_ENTER called from HEMCO ReadList_Fill'
        CALL HCO_ERROR( MSG, RC, THISLOC = LOC )

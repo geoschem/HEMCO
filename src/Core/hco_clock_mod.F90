@@ -153,14 +153,19 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER                  :: AS
+    CHARACTER(LEN=255)       :: LOC
 
     !======================================================================
     ! HcoClock_Init begins here!
     !======================================================================
+    LOC = 'HcoClock_Init (HCO_CLOCK_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'HcoClock_Init (HCO_CLOCK_MOD.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Eventually allocate clock object and set all values to -1
     IF ( .NOT. ASSOCIATED ( HcoState%Clock ) ) THEN
@@ -251,7 +256,10 @@ CONTAINS
 
        ! Initialize TIMEZONES array. Initialize as pointer (dims=0)
        CALL HCO_ArrInit( HcoState%Clock%TIMEZONES, 0, 0, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
     ENDIF
 
@@ -1457,19 +1465,24 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER  :: I,      MtLastDay
-    REAL(sp) :: LocDt, DECloc
-    REAL(sp) :: ThisLocHour
-    INTEGER  :: ThisLocYear, ThisLocMonth
-    INTEGER  :: ThisLocDay,  ThisLocWD
+    INTEGER             :: I,      MtLastDay
+    REAL(sp)            :: LocDt, DECloc
+    REAL(sp)            :: ThisLocHour
+    INTEGER             :: ThisLocYear, ThisLocMonth
+    INTEGER             :: ThisLocDay,  ThisLocWD
+    CHARACTER(LEN=255)  :: LOC
 
     !-----------------------------------
     ! SET_LOCALTIME begins here!
     !-----------------------------------
+    LOC = 'SET_LOCALTIME (HCO_CLOCK_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'SET_LOCALTIME (HCO_CLOCK_MOD.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Loop over all time zones to account for different local times.
     DO I = 1, Clock%ntz
@@ -1652,10 +1665,12 @@ CONTAINS
     INTEGER                   :: YYYYMMDD, HHMMSS
     INTEGER                   :: Yr, Mt, Dy, Hr, Mn, Sc
     REAL(dp)                  :: DAY, UTC, JD
+    CHARACTER(LEN=255)        :: LOC
 
     !-----------------------------------
     ! HcoClock_Increase begins here!
     !-----------------------------------
+    LOC = 'HcoClock_Increase (HCO_CLOCK_MOD.F90)'
 
     ! Get pointer to HEMCO clock
     Clock => HcoState%Clock
@@ -1683,7 +1698,10 @@ CONTAINS
     ! Update HEMCO clock to new values
     CALL HcoClock_Set ( HcoState, Yr, Mt, Dy, Hr, Mn, Sc, &
                         IsEmisTime=EmisTime, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Cleanup
     Clock => NULL()

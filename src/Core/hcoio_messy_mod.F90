@@ -157,7 +157,10 @@ MODULE HCOIO_MESSY_MOD
     ! For error handling
     LOC = 'HCO_MESSY_REGRID (HCOIO_MESSY_MOD.F90)'
     CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Init
     narr_src => NULL()
@@ -303,12 +306,18 @@ MODULE HCOIO_MESSY_MOD
        CALL FileData_ArrCheck( HcoState%Config, &
                                Lct%Dct%Dta, HcoState%NX, HcoState%NY, &
                                NTIME,       RC                         )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ELSEIF ( Lct%Dct%Dta%SpaceDim == 3 ) THEN
        CALL FileData_ArrCheck( HcoState%Config, &
                                Lct%Dct%Dta, HcoState%NX, HcoState%NY, &
                                NZOUT,       NTIME,       RC            )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     !-----------------------------------------------------------------
@@ -352,7 +361,10 @@ MODULE HCOIO_MESSY_MOD
     sigma => LevEdge
 
     CALL AXIS_CREATE( HcoState, lon, lat, sigma, axis_src, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Free pointer
     lon   => NULL()
@@ -370,7 +382,10 @@ MODULE HCOIO_MESSY_MOD
     IF( ASSOCIATED(LevEdge) ) sigma => sigout(:,:,1:NZOUT+1)
 
     CALL AXIS_CREATE( HcoState, lon, lat, sigma, axis_dst, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Free pointer
     lon   => NULL()
@@ -436,7 +451,10 @@ MODULE HCOIO_MESSY_MOD
        ! stored as individual vector elements of narr_src.
        !-----------------------------------------------------------------
        CALL HCO2MESSY( HcoState, ArrIn, narr_src, axis_src, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        !-----------------------------------------------------------------
        ! Do the regridding
@@ -449,7 +467,10 @@ MODULE HCOIO_MESSY_MOD
        ! HEMCO list container or onto the temporary array ArrOut.
        !-----------------------------------------------------------------
        CALL MESSY2HCO( HcoState, narr_dst, Lct, I, ArrOut, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Cleanup
        ArrIn => NULL()
@@ -461,7 +482,10 @@ MODULE HCOIO_MESSY_MOD
     !-----------------------------------------------------------------
     IF ( ASSOCIATED(ArrOut) ) THEN
        CALL ModelLev_Interpolate( HcoState, ArrOut, Lct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        DEALLOCATE(ArrOut)
     ENDIF
 
@@ -499,7 +523,10 @@ MODULE HCOIO_MESSY_MOD
     rg_type => NULL()
 
     CALL AXIS_DELETE( axis_src, axis_dst, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     CALL HCO_LEAVE ( HcoState%Config%Err, RC )
@@ -563,7 +590,10 @@ MODULE HCOIO_MESSY_MOD
     ! For error handling
     LOC = 'AXIS_CREATE (HCOIO_MESSY_MOD.F90)'
     CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! ----------------------------------------------------------------
     ! Pass horizontal grid dimensions to local variables. For now,

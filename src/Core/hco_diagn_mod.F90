@@ -341,12 +341,18 @@ CONTAINS
     ! Default diagnostics
     ! ------------------------------------------------------------------
     CALL DiagnCollection_GetDefaultDelta ( HcoState, deltaYMD, deltaHMS, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Try to get prefix from configuration file
     CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnPrefix', &
                      OptValChar=DiagnPrefix, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
 #if defined( MODEL_GEOS )
        DiagnPrefix = 'HEMCO_Diagnostics.$YYYY$MM$DD$HH$MN.nc'
@@ -358,7 +364,10 @@ CONTAINS
     ! Output time stamp location
     CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnTimeStamp', &
                      OptValChar=OutTimeStampChar, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        OutTimeStamp = HcoDiagnStart
     ELSE
@@ -392,7 +401,10 @@ CONTAINS
                                  deltaHMS     = deltaHMS,                  &
                                  OutTimeStamp = OutTimeStamp,              &
                                  RC           = RC                          )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Pass this collection ID to fixed variable for easy further
     ! reference to this collection
@@ -425,7 +437,10 @@ CONTAINS
                                  deltaHMS     = deltaHMS,                  &
                                  OutTimeStamp = HcoDiagnEnd,               &
                                  RC           = RC                          )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Pass this collection ID to fixed variable for easy further
     ! reference to this collection
@@ -437,12 +452,18 @@ CONTAINS
     ! ------------------------------------------------------------------
     CALL DiagnCollection_GetDefaultDelta ( HcoState, &
                                            deltaYMD,  deltaHMS, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Try to get prefix from configuration file
     CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnPrefix', &
                      OptValChar=DiagnPrefix, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
 #if defined( MODEL_GEOS )
        DiagnPrefix = 'HEMCO_Diagnostics.$YYYY$MM$DD$HH$MN.nc'
@@ -454,7 +475,10 @@ CONTAINS
     ! Output time stamp location
     CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnTimeStamp', &
                      OptValChar=OutTimeStampChar, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        OutTimeStamp = HcoDiagnStart
     ELSE
@@ -488,7 +512,10 @@ CONTAINS
                                  deltaHMS     = deltaHMS,                  & 
                                  OutTimeStamp = OutTimeStamp,              & 
                                  RC           = RC                          )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Pass this collection ID to fixed variable for easy further 
     ! reference to this collection
@@ -522,7 +549,10 @@ CONTAINS
                                  deltaYMD  = deltaYMD,                  &
                                  deltaHMS  = deltaHMS,                  &
                                  RC        = RC                          )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Pass this collection ID to fixed variable for easy further
     ! reference to this collection
@@ -535,7 +565,10 @@ CONTAINS
     ! into the default HEMCO collection.
     ! ------------------------------------------------------------------
     CALL Diagn_DefineFromConfig( HcoState, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -623,7 +656,10 @@ CONTAINS
 
     ! Load DiagnFile into buffer
     CALL DiagnFileOpen( HcoState%Config, LUN, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! If defined, sequentially get all entries
     IF ( LUN > 0 ) THEN
@@ -636,7 +672,10 @@ CONTAINS
                                  SpcName,         ExtNr,   Cat, Hier,  &
                                  SpaceDim,        OutUnit, EOF, RC,    &
                                  lName=lName )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Leave here if end of file
           IF ( EOF ) EXIT
@@ -684,7 +723,10 @@ CONTAINS
 #ifdef ADJOINT
           endif
 #endif
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
        ENDDO
 
@@ -739,7 +781,10 @@ CONTAINS
                              AutoFill  = 1,                                &
                              COL       = HcoState%Diagn%HcoDiagnIDDefault, &
                              RC        = RC                                 )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDDO
     ENDIF
 
@@ -868,7 +913,10 @@ CONTAINS
     LOC = 'Diagn_Create (hco_diagn_mod.F90)'
     CALL DiagnCollection_DefineID( HcoState%Diagn, PS, RC, COL=COL, &
                                    HcoState=HcoState, InUse=FOUND, ThisColl=ThisColl )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Error if collection does not exist
     IF ( .NOT. FOUND ) THEN
@@ -941,12 +989,18 @@ CONTAINS
     IF ( PRESENT(Trgt2D) ) THEN
        CALL DiagnCont_Link_2D( ThisDiagn, ThisColl, Trgt2D, RC, &
                                HcoState=HcoState )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
     IF ( PRESENT(Trgt3D) ) THEN
        CALL DiagnCont_Link_3D( ThisDiagn, ThisColl, Trgt3D, RC, &
                                HcoState=HcoState )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     ! Update module variable AF_LevelDefined. For all AutoFill diagnostics,
@@ -1742,7 +1796,10 @@ CONTAINS
     ! Get collection number.
     CALL DiagnCollection_DefineID( HcoState%Diagn, PS, RC, COL=COL, DEF=-1, &
            OKIfAll=.TRUE., InUse=InUse, ThisColl=ThisColl, HcoState=HcoState )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Check if we need to scan through all collections. This is only the
     ! case if PS is set to -1
@@ -1779,7 +1836,10 @@ CONTAINS
 
     ! Get the update time ID.
     CALL HcoClock_Get( HcoState%Clock, nSteps=ThisUpdateID, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Count # of containers that are updated
     CNT = 0
@@ -1985,7 +2045,10 @@ CONTAINS
                 ! By default, write into single precision array
                 CALL HCO_ArrAssert( ThisDiagn%Arr3D, ThisColl%NX,   &
                                     ThisColl%NY,     ThisColl%NZ, RC )
-                IF ( RC /= HCO_SUCCESS ) RETURN
+                IF ( RC /= HCO_SUCCESS ) THEN
+                    CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
+                    RETURN
+                ENDIF
 
                 ! Pass array to diagnostics: reset to zero if counter
                 ! is zero, add to it otherwise.
@@ -2020,7 +2083,10 @@ CONTAINS
                 ! Make sure dimensions agree and diagnostics array is allocated
                 CALL HCO_ArrAssert( ThisDiagn%Arr2D, ThisColl%NX, &
                                     ThisColl%NY,     RC            )
-                IF ( RC /= HCO_SUCCESS ) RETURN
+                IF ( RC /= HCO_SUCCESS ) THEN
+                    CALL HCO_ERROR( 'ERROR 21', RC, THISLOC=LOC )
+                    RETURN
+                ENDIF
 
                 ! Pass array to diagnostics: ignore existing data if counter
                 ! is zero, add to it otherwise.
@@ -2292,12 +2358,13 @@ CONTAINS
     LOGICAL                        :: TimeToWrite
     LOGICAL                        :: FOUND, CF
     LOGICAL                        :: SKIPZERO
+    CHARACTER(LEN=255)             :: LOC
 
     !======================================================================
     ! Diagn_Get begins here!
     !======================================================================
-
     ! Init
+    LOC      = 'Diagn_Get (HCO_DIAGN_MOD.F90)'
     FLAG     =  HCO_FAIL
     RC       =  HCO_SUCCESS
     CF       = .FALSE.
@@ -2306,7 +2373,10 @@ CONTAINS
     ! Get collection number
     CALL DiagnCollection_DefineID( HcoState%Diagn, PS, RC, COL=COL, &
                                    ThisColl=ThisColl, HcoState=HcoState )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 22', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set AutoFill flag
     AF = -1
@@ -2388,7 +2458,10 @@ CONTAINS
     ! Before returning container, make sure its data is ready for output.
     IF ( ASSOCIATED (DgnCont ) ) THEN
        CALL DiagnCont_PrepareOutput ( HcoState, DgnCont, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 23', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        FLAG = HCO_SUCCESS
 
        ! Increase number of times this container has been called by
@@ -2448,12 +2521,14 @@ CONTAINS
     TYPE(DiagnCont),  POINTER  :: DgnCont
     INTEGER                    :: PS
     LOGICAL                    :: FND
+    CHARACTER(LEN=255)         :: LOC
 
     !======================================================================
     ! Diagn_TotalGet begins here!
     !======================================================================
 
     ! Init
+    LOC     = 'Diagn_TotalGet (HCO_DIAGN_MOD.F90)'
     RC      = HCO_FAIL
     Total   = 0.0_sp
     DgnCont => NULL()
@@ -2464,7 +2539,10 @@ CONTAINS
 
     ! Get collection number
     CALL DiagnCollection_DefineID( Diagn, PS, RC, COL=COL )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 24', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! If container name is given, search for diagnostics with
     ! the given name.
@@ -2596,19 +2674,24 @@ CONTAINS
     TYPE(DiagnCollection), POINTER :: ThisColl
     INTEGER                        :: I, RC, PS
     LOGICAL                        :: InUse
+    CHARACTER(LEN=255)             :: LOC
 
     !======================================================================
     ! Diagn_AutoFillLevelDefined begins here!
     !======================================================================
 
     ! Initialize
+    LOC       = 'Diagn_AutoFillLevelDefined (HCO_DIAGN_MOD.F90)'
     IsDefined = .FALSE.
     ThisColl  => NULL()
 
     ! Get collection number
     CALL DiagnCollection_DefineID( Diagn, PS, RC, COL=COL, DEF=-1, &
             OKIfAll=.TRUE., InUse=InUse, ThisColl=ThisColl )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 25', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Nothing to do if collection is not in use
     IF ( .NOT. InUse ) RETURN
@@ -2685,12 +2768,14 @@ CONTAINS
     TYPE(DiagnCollection), POINTER :: ThisColl
     INTEGER                        :: PS
     LOGICAL                        :: FOUND
+    CHARACTER(LEN=255)             :: LOC
 
     !======================================================================
     ! DiagnCollection_Get begins here!
     !======================================================================
 
     ! Init
+    LOC = 'DiagnCollection_Get (HCO_DIAGN_MOD.F90)'
     ThisColl => NULL()
     IF ( PRESENT(Prefix      ) ) Prefix       = ''
     IF ( PRESENT(InUse       ) ) InUse        = .FALSE.
@@ -2703,7 +2788,10 @@ CONTAINS
 
     ! Get collection number
     CALL DiagnCollection_DefineID( Diagn, PS, RC, COL=COL, InUse=FOUND, ThisColl=ThisColl )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 26', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     IF ( PRESENT(InUse) ) THEN
        InUse = FOUND
@@ -2770,18 +2858,23 @@ CONTAINS
     TYPE(DiagnCollection), POINTER :: ThisColl
     INTEGER                        :: PS
     LOGICAL                        :: FOUND
+    CHARACTER(LEN=255)             :: LOC
 
     !======================================================================
     ! DiagnCollection_Set begins here!
     !======================================================================
-
+    
     ! Init
+    LOC      = 'DiagnCollection_Set (HCO_DIAGN_MOD.F90)'
     ThisColl => NULL()
     IF ( PRESENT(InUse    ) ) InUse     = .FALSE.
 
     ! Get collection number
     CALL DiagnCollection_DefineID( Diagn, PS, RC, COL=COL, InUse=FOUND, ThisColl=ThisColl )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 27', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     IF ( PRESENT(InUse) ) THEN
        InUse = FOUND
@@ -2999,7 +3092,10 @@ CONTAINS
     !-----------------------------------------------------------------------
     CALL DiagnCollection_Find( HcoState%Diagn, DgnCont%CollectionID, &
                                FOUND, RC, ThisColl=ThisColl )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 28', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! This should never happen
     IF ( .NOT. FOUND .OR. .NOT. ASSOCIATED(ThisColl) ) THEN
@@ -3018,7 +3114,10 @@ CONTAINS
        IF ( DgnCont%SpaceDim == 2 ) THEN
           CALL HCO_ArrAssert( DgnCont%Arr2D, ThisColl%NX, &
                               ThisColl%NY,   RC            )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 29', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Make sure it's zero
           DgnCont%Arr2D%Val = 0.0_sp
@@ -3026,7 +3125,10 @@ CONTAINS
        ELSEIF ( DgnCont%SpaceDim == 3 ) THEN
           CALL HCO_ArrAssert( DgnCont%Arr3D, ThisColl%NX, &
                               ThisColl%NY,   ThisColl%NZ, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 30', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Make sure it's zero
           DgnCont%Arr3D%Val = 0.0_sp
@@ -3072,7 +3174,10 @@ CONTAINS
 
        ! Get current month and year
        CALL HcoClock_Get( HcoState%Clock, cYYYY=YYYY, cMM=MM, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 31', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Days per year
        IF ( (MOD(YYYY,4) == 0) .AND. (MOD(YYYY,400) /= 0) ) THEN
@@ -3250,12 +3355,14 @@ CONTAINS
     TYPE(DiagnCont),       POINTER     :: CurrCnt
     TYPE(DiagnCollection), POINTER     :: ThisColl
     LOGICAL                            :: IsMatch, InUse, Rsm
+    CHARACTER(LEN=255)                 :: LOC
 
     !======================================================================
     ! DiagnCont_Find begins here!
     !======================================================================
 
     ! Initialize
+    LOC      = 'DiagnCont_Find (HCO_DIAGN_MOD.F90)'
     FOUND    = .FALSE.
     CurrCnt  => NULL()
     ThisColl => NULL()
@@ -3264,7 +3371,10 @@ CONTAINS
     CALL DiagnCollection_DefineID( Diagn, PS, RC, COL=COL, Def=-1, &
                       InUse=InUse, OkIfAll=.TRUE., ThisColl=ThisColl )
 
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 32', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave if collection not in use
     IF ( .NOT. InUse ) RETURN
@@ -3450,7 +3560,10 @@ CONTAINS
 
     ! Define 2D array pointer
     CALL HCO_ArrInit( DgnCont%Arr2D, 0, 0, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 33', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Point to data
     DgnCont%Arr2D%Val => Trgt2D
@@ -3562,7 +3675,10 @@ CONTAINS
 
     ! Define 3D array pointer
     CALL HCO_ArrInit( DgnCont%Arr3D, 0, 0, 0, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 34', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Point to data
     DgnCont%Arr3D%Val => Trgt3D
@@ -3614,7 +3730,7 @@ CONTAINS
 ! !ARGUMENTS:
 !
     TYPE(DiagnCollection), POINTER    :: ThisColl
-    CHARACTER(LEN=255)                :: MSG
+    CHARACTER(LEN=255)                :: MSG, LOC
     INTEGER                           :: RC, PS, nx, ny, nz
     REAL(sp)                          :: sm
 
@@ -3623,12 +3739,16 @@ CONTAINS
     ! ================================================================
 
     ! Initialize
+    LOC      = 'Diagn_Print (HCO_DIAGN_MOD.F90)'
     ThisColl => NULL()
 
     ! Get collection number
     CALL DiagnCollection_DefineID( HcoState%Diagn, PS, RC, &
        COL=Dgn%CollectionID, ThisColl=ThisColl, HcoState=HcoState )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 35', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     sm = 0.0_sp
     nx = 0
@@ -3972,7 +4092,10 @@ CONTAINS
 
        ! Try to find collection
        CALL DiagnCollection_Find( Diagn, PS, FOUND, RC, ThisColl=ThisColl )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 36', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Eventually fill argumnet
        IF ( PRESENT(InUse) ) THEN
@@ -4127,7 +4250,10 @@ CONTAINS
     CALL GetExtOpt ( HcoState%Config, CoreNr, 'DiagnFreq', &
                      OptValChar=WriteFreq, FOUND=FOUND, RC=RC )
 
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 37', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Determine output frequency from given output frequency
     IF ( FOUND ) THEN
@@ -4255,12 +4381,18 @@ CONTAINS
     ! Get collection time interval
     CALL DiagnCollection_Get( HcoState%Diagn, PS, DeltaYMD=dymd, &
                    LastYMD=lymd, DeltaHMS=dhms, LastHMS=lhms, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 38', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get current simulation date
     CALL HcoClock_Get( HcoState%Clock, IsLast=IsLast, &
                        sYYYY=YYYY,sMM=MM,sDD=DD,sH=h,sM=m,sS=s,RC=RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 39', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Check for last time step
     IF ( IsLast .AND. dymd == 99999999 .AND. dhms == 999999 ) THEN
@@ -4331,7 +4463,10 @@ CONTAINS
     LastTimesSet = .FALSE.
 
     CALL DiagnCollection_Get( Diagn, PS, LastYMD=lymd, LastHMS=lhms, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 40', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Last time stamp is defined if either of the values is greater equal zero.
     IF ( lymd >= 0 .OR. lhms >= 0 ) LastTimesSet = .TRUE.
@@ -4544,7 +4679,10 @@ CONTAINS
 
     ! Get next line
     CALL GetNextLine( LUN, LINE, EOF, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 41', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave here if end of file
     IF ( .NOT. EOF ) THEN
