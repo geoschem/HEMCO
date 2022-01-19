@@ -2779,7 +2779,7 @@ END FUNCTION GetEmisLUnit
        ! Since model layers have different depths, this will result in differnt
        ! total emissions per layer.
        ELSE
-#ifdef MODEL_GEOS
+
           ! Get fractional layer indeces for lower and upper level. This makes 
           ! sure that only fractions of the lower and upper level are being
           ! considered, so that double-counting is avoided if a model layer serves
@@ -2807,11 +2807,6 @@ END FUNCTION GetEmisLUnit
              DilFact = 1.0_hp / (UppLLR-LowLLR)
           ENDIF
 
-#else
-          MSG = 'GetDilFact h2 not greater than h1'
-          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
-          RETURN
-#endif
        ENDIF
 
     ! Approximate dilution factor otherwise
