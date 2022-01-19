@@ -779,6 +779,8 @@ CONTAINS
        !--------------------------------------------------------------------
        IF ( Inst%IDTACET > 0 ) THEN
 
+          !-----------------------------------------------------------------
+          ! (1) BIOGENIC ACETONE FROM METHYL BUTENOL -- NORTH AMERICA
           !
           ! Methyl Butenol (a.k.a. MBO) produces acetone with a molar yield
           ! of 0.6 [Alvarado (1999)].  The biogenic source of MBO is thought
