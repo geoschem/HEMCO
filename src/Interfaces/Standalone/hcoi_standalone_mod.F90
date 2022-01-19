@@ -1062,6 +1062,7 @@ CONTAINS
     !=================================================================
 
     ! Initialize
+    LOC     = 'SET_GRID (HCOI_STANDALONE_MOD.F90)'
     RC      = HCO_SUCCESS
     Msg     = ''
     ErrMsg  = ''

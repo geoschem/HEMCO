@@ -136,6 +136,7 @@ CONTAINS
       CHARACTER(LEN=127)         :: LNAME
       CHARACTER(LEN=63), POINTER :: Spc(:)
       TYPE(ListCont),    POINTER :: CurrCont
+      CHARACTER(LEN=255)         :: LOC
 
       ! ================================================================
       ! HCO_SetServices begins here
@@ -145,6 +146,7 @@ CONTAINS
       __Iam__('HCO_SetServices (HCOI_ESMF_MOD.F90)')
 
       ! Init
+      LOC      = 'HCO_SetServices (HCOI_ESMF_MOD.F90)'
       Spc      => NULL()
       CurrCont => NULL()
 

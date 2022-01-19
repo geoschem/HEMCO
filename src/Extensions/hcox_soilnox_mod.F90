@@ -304,7 +304,7 @@ CONTAINS
     LOC = 'HCOX_SoilNOx_RUN (HCOX_SOILNOX_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_SoilNox_Run (hcox_soilnox_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
@@ -744,13 +744,14 @@ CONTAINS
     !=================================================================
     ! HCOX_SoilNOx_INIT begins here!
     !=================================================================
+    LOC = 'HCOX_SoilNOx_INIT (HCOX_SOILNOX_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_SoilNOx_Init (hcox_soilnox_mod.F90)', RC )
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 39', RC, THISLOC=LOC )
         RETURN
