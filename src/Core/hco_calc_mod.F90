@@ -943,11 +943,7 @@ CONTAINS
           RETURN
        ENDIF
     ELSE
-#ifdef MODEL_GEOS
-       LevDct1_Unit = HCO_EMISL_LEV
-#else
        LevDct1_Unit = -1
-#endif
     ENDIF
 
     ! Get the units of LevDct2 (if it exists)
@@ -959,11 +955,7 @@ CONTAINS
           RETURN
        ENDIF
     ELSE
-#ifdef MODEL_GEOS
-       LevDct2_Unit = HCO_EMISL_LEV
-#else
        LevDct2_Unit = -1
-#endif
     ENDIF
 
     ! Throw an error if boxheight is missing and the units are in meters
