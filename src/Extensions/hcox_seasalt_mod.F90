@@ -251,18 +251,22 @@ CONTAINS
 
     ! Error handling
     LOGICAL                :: ERR
-    CHARACTER(LEN=255)     :: MSG
+    CHARACTER(LEN=255)     :: MSG, LOC
 
     !=================================================================
     ! HCOX_SeaSalt_Run begins here!
     !=================================================================
+    LOC = 'HCOX_SeaSalt_Run (HCOX_SEASALT_MOD.F90)'
 
     ! Return if extension disabled
     IF ( ExtState%SeaSalt <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_SeaSalt_Run (hcox_seasalt_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Exit status
     ERR = .FALSE.
@@ -337,8 +341,8 @@ CONTAINS
        A_M2 = HcoState%Grid%AREA_M2%Val( I, J )
 
        ! Advance to next grid box if it's not over water or sea ice
-       IF ( ExtState%FROCEAN%Arr%Val(I,J)<=0d0 .and. &
-            ExtState%FRSEAICE%Arr%Val(I,J)<=0d0 ) CYCLE
+       IF ( ExtState%FROCEAN%Arr%Val(I,J)  <= 0d0  .and. &
+            ExtState%FRSEAICE%Arr%Val(I,J) <= 0d0 ) CYCLE
 
        ! Wind speed at 10 m altitude [m/s]
        W10M = SQRT( ExtState%U10M%Arr%Val(I,J)**2 &
@@ -776,7 +780,7 @@ CONTAINS
     INTEGER                        :: N, R, AS
     REAL*8                         :: A, B, R0, R1
     REAL*8                         :: CONST_N
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     INTEGER                        :: nSpcSS, minLen
     REAL*8                         :: SALA_REDGE_um(2), SALC_REDGE_um(2)
     REAL(dp)                       :: tmpScale
@@ -797,14 +801,18 @@ CONTAINS
     !=================================================================
     ! HCOX_SeaSalt_Init begins here!
     !=================================================================
+    LOC = 'HCOX_SeaSalt_Init (HCOX_SEASALT_MOD.F90)'
 
     ! Extension number for seasalt
     ExtNrSS = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNrSS <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_SeaSalt_Init (hcox_seasalt_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create Instance
     Inst => NULL()
@@ -829,7 +837,10 @@ CONTAINS
        minLen = 4
        CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'Br- mass ratio', &
        	    OptValDp=Inst%BrContent, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ELSE
        minLen = 2
        Inst%IDTBrSALA = -1
@@ -840,7 +851,10 @@ CONTAINS
     ! Get HEMCO species IDs
     CALL HCO_GetExtHcoID( HcoState,   Inst%ExtNrSS, HcoIDsSS,     &
                           SpcNamesSS, nSpcSS,  RC           )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( nSpcSS < minLen ) THEN
        MSG = 'Not enough sea salt emission species set'
        CALL HCO_ERROR(MSG, RC )
@@ -864,26 +878,44 @@ CONTAINS
     SALC_REDGE_um(:) = 0.0d0
     CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SALA lower radius', &
                     OptValDp=SALA_REDGE_um(1), RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SALA upper radius', &
                     OptValDp=SALA_REDGE_um(2), RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SALC lower radius', &
                     OptValDp=SALC_REDGE_um(1), RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SALC upper radius', &
                     OptValDp=SALC_REDGE_um(2), RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! fix scaling factor over cold water SST (<5 degC)
     CALL GetExtOpt ( HcoState%Config, Inst%ExtNrSS, 'Reduce SS cold water', &
                      OptValBool=Inst%ColdSST, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Add a SSA source from blowing snow (by J. Huang)
     CALL GetExtOpt ( HcoState%Config, Inst%ExtNrSS, 'Blowing Snow SS', &
                      OptValBool=Inst%EmitSnowSS, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Whether or not differentiate snow salinity on FYI and MYI (by J. Huang)
     !CALL GetExtOpt ( HcoState%Config, Inst%ExtNrSS, 'Diff salinity on ice', &
@@ -895,25 +927,46 @@ CONTAINS
     IF ( Inst%EmitSnowSS ) THEN
        CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'NH FYI snow salinity', &
                     OptValDp=Inst%NSLNT_FYI, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'NH MYI snow salinity', &
                     OptValDp=Inst%NSLNT_MYI, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SH FYI snow salinity', &
                     OptValDp=Inst%SSLNT_FYI, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SH MYI snow salinity', &
                     OptValDp=Inst%SSLNT_MYI, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'NH snow age', &
                     OptValDp=Inst%NAGE, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'SH snow age', &
                     OptValDp=Inst%SAGE, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'N per snowflake', &
                     OptValDp=Inst%NP, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ELSE
        Inst%NSLNT_FYI = 0.1d0   ! default value 0.1 psu for NH FYI snow
        Inst%NSLNT_MYI = 0.05d0  ! default value 0.05 psu for NH MYI snow
@@ -934,7 +987,10 @@ CONTAINS
     ! Now check first if this factor is specified in configuration file
     CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'Wind scale factor', &
                     OptValDp=tmpScale, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        tmpScale = 1.0d0
     ENDIF
@@ -1383,7 +1439,10 @@ CONTAINS
                         Trgt2D     = Inst%NDENS_SALA,       &
                         COL = HcoState%Diagn%HcoDiagnIDManual, &
                         RC         = RC                      )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create ( HcoState   = HcoState,              &
                         cName      = 'SEASALT_DENS_COARSE', &
@@ -1397,7 +1456,10 @@ CONTAINS
                         Trgt2D     = Inst%NDENS_SALC,       &
                         COL = HcoState%Diagn%HcoDiagnIDManual, &
                         RC         = RC                      )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create marine density diagnostics only if marine POA enabled
     IF ( HcoState%MarinePOA ) THEN
@@ -1414,7 +1476,10 @@ CONTAINS
                            Trgt2D     = Inst%NDENS_MOPO,       &
                            COL = HcoState%Diagn%HcoDiagnIDManual, &
                            RC         = RC                      )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL Diagn_Create ( HcoState   = HcoState,              &
                            cName      = 'SEASALT_DENS_PHILIC', &
@@ -1428,7 +1493,10 @@ CONTAINS
                            Trgt2D     = Inst%NDENS_MOPI,       &
                            COL = HcoState%Diagn%HcoDiagnIDManual, &
                            RC         = RC                      )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 21', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
     ENDIF
 
@@ -1437,17 +1505,18 @@ CONTAINS
     !=======================================================================
 
     ! Activate met fields used by this module
-    ExtState%TSKIN%DoUse = .TRUE.
-    ExtState%U10M%DoUse  = .TRUE.
-    ExtState%V10M%DoUse  = .TRUE.
+    ExtState%WLI%DoUse      = .TRUE.
+    ExtState%TSKIN%DoUse    = .TRUE.
+    ExtState%U10M%DoUse     = .TRUE.
+    ExtState%V10M%DoUse     = .TRUE.
     ExtState%FROCEAN%DoUse  = .TRUE.
     ExtState%FRSEAICE%DoUse = .TRUE.
 
     ! for blowing snow 
     IF ( Inst%EmitSnowSS ) THEN
-       ExtState%USTAR%DoUse    = .TRUE.
-       ExtState%T2M%DoUse      = .TRUE.
-       ExtState%QV2M%DoUse     = .TRUE.
+       ExtState%USTAR%DoUse = .TRUE.
+       ExtState%T2M%DoUse   = .TRUE.
+       ExtState%QV2M%DoUse  = .TRUE.
     ENDIF
 
     ! Return w/ success

@@ -182,15 +182,19 @@ CONTAINS
     INTEGER            :: I, AS
     INTEGER            :: UnitTolerance
     LOGICAL            :: FOUND
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     !=====================================================================
     ! HcoState_Init begins here!
     !=====================================================================
+    LOC = 'HcoState_Init (HCO_STATE_MOD.F90)'
 
     ! For error handling
-    CALL HCO_ENTER (HcoConfig%Err,'Init_HCO_State (hco_state_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER (HcoConfig%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !=====================================================================
     ! Allocate emission field vectors
@@ -233,13 +237,22 @@ CONTAINS
        ! Will specify the arrays in HEMCO-model interface routine
        ! or when writing to them for the first time.
        CALL Hco_ArrInit( HcoState%Spc(I)%Emis, 0, 0, 0, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL Hco_ArrInit( HcoState%Spc(I)%Conc, 0, 0, 0, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL Hco_ArrInit( HcoState%Spc(I)%Depv, 0, 0, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDDO !I
 
     !=====================================================================
@@ -258,32 +271,68 @@ CONTAINS
 
     ! Initialize grid arrays.
     CALL HCO_ArrInit ( HcoState%Grid%XMID,       0, 0,    RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL HCO_ArrInit ( HcoState%Grid%YMID,       0, 0,    RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL HCO_ArrInit ( HcoState%Grid%XEDGE,      0, 0,    RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL HCO_ArrInit ( HcoState%Grid%YEDGE,      0, 0,    RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL HCO_ArrInit ( HcoState%Grid%PEDGE,      0, 0, 0, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL HCO_ArrInit ( HcoState%Grid%YSIN,       0, 0,    RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL HCO_ArrInit ( HcoState%Grid%AREA_M2,    0, 0,    RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL HCO_ArrInit ( HcoState%Grid%PBLHEIGHT,  0, 0,    RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL HCO_ArrInit ( HcoState%Grid%BXHEIGHT_M, 0, 0, 0, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL HCO_ArrInit ( HcoState%Grid%ZSFC,       0, 0,    RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL HCO_ArrInit ( HcoState%Grid%PSFC,       0, 0,    RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Initialize vertical grid
     HcoState%Grid%ZGRID => NULL()
     CALL HCO_VertGrid_Init( HcoState%Grid%ZGRID, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !=====================================================================
     ! Set misc. parameter
@@ -356,51 +405,75 @@ CONTAINS
     ! Get negative flag value from configuration file. If not found, set to 0.
     CALL GetExtOpt ( HcoConfig, CoreNr, 'Negative values', &
                      OptValInt=HcoState%Options%NegFlag, Found=Found, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. Found ) HcoState%Options%NegFlag = 0
 
     ! Get PBL_DRYDEP flag from configuration file. If not found, set to default
     ! value of false.
     CALL GetExtOpt ( HcoConfig, CoreNr, 'PBL dry deposition', &
                      OptValBool=HcoState%Options%PBL_DRYDEP, Found=Found, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. Found ) HcoState%Options%PBL_DRYDEP = .FALSE.
 
     ! Apply uniform scale factors specified in HEMCO_Config.rc?
     CALL GetExtOpt ( HcoConfig, CoreNr, 'Scale emissions', &
                      OptValBool=HcoState%Options%ScaleEmis, Found=Found, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. Found ) HcoState%Options%ScaleEmis = .TRUE.
 
     ! Only shift hh/mm when applying time shift?
     CALL GetExtOpt ( HcoConfig, CoreNr, 'Cap time shift', &
                      OptValBool=HcoState%Options%TimeShiftCap, &
                      Found=Found, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. Found ) HcoState%Options%TimeShiftCap = .FALSE.
 
     ! Get MaxDepExp from configuration file. If not found, set to default
     ! value of 20.
     CALL GetExtOpt ( HcoConfig, CoreNr, 'Maximum dep x ts', &
                      OptValHp=HcoState%Options%MaxDepExp, Found=Found, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. Found ) HcoState%Options%MaxDepExp = 20.0_hp
 
     ! Get binary mask flag from configuration file. If not found, set to default
     ! value of TRUE.
     CALL GetExtOpt ( HcoConfig, CoreNr, 'Mask fractions', &
                      OptValBool=HcoState%Options%MaskFractions, Found=Found, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 21', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. Found ) HcoState%Options%MaskFractions = .FALSE.
 
     CALL GetExtOpt ( HcoConfig, CoreNr, 'ConfigField to diagnostics', &
                      OptValBool=HcoState%Options%Field2Diagn, Found=Found, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 22', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. Found ) HcoState%Options%Field2Diagn = .FALSE.
 
     CALL GetExtOpt ( HcoConfig, CoreNr, 'Vertical weights', &
                      OptValBool=HcoState%Options%VertWeight, Found=Found, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 23', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. Found ) HcoState%Options%VertWeight = .TRUE.
 
     ! Make sure ESMF pointers are not dangling
@@ -721,7 +794,10 @@ CONTAINS
 
     ! Get all species names belonging to extension Nr. ExtNr
     CALL GetExtSpcStr( HcoState%Config, ExtNr, SpcStr, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 24', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Split character into species string.
     CALL STRSPLIT( SpcStr, HCO_GetOpt(HcoState%Config%ExtList,'Separator'), SUBSTR, nSpc )

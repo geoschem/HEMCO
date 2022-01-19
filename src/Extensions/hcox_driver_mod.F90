@@ -108,7 +108,6 @@ CONTAINS
     USE HCOX_Finn_Mod,          ONLY : HCOX_FINN_Init
     USE HCOX_GC_RnPbBe_Mod,     ONLY : HCOX_GC_RnPbBe_Init
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Init
-    USE HCOX_CH4WetLand_MOD,    ONLY : HCOX_CH4WETLAND_Init
     USE HCOX_Volcano_Mod,       ONLY : HCOX_Volcano_Init
     USE HCOX_Iodine_Mod,        ONLY : HCOX_Iodine_Init
 #if defined( TOMAS )
@@ -140,11 +139,12 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255) :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: ErrMsg, ThisLoc, LOC
 
     !=======================================================================
     ! HCOX_INIT begins here!
     !=======================================================================
+    LOC = 'HCOX_INIT (HCOX_DRIVER_MOD.F90)'
 
     ! Initialize
     RC      = HCO_SUCCESS
@@ -153,8 +153,11 @@ CONTAINS
        ' -> at HCOX_INIT (in module HEMCO/Extensions/hcox_driver_mod.F90'
 
     ! Error handling
-    CALL HCO_ENTER(HcoState%Config%Err,'HCOX_INIT (hcox_driver_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !=======================================================================
     ! Initialize extensions
@@ -330,16 +333,6 @@ CONTAINS
        ENDIF
 
        !--------------------------------------------------------------------
-       ! CH4 wetland emissions
-       !--------------------------------------------------------------------
-       CALL HCOX_CH4Wetland_Init( HcoState, 'CH4_WETLANDS', ExtState,  RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in "HCOX_CH4Wetland_Init"!'
-          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
-          RETURN
-       ENDIF
-
-       !--------------------------------------------------------------------
        ! Ocean inorganic iodine emissions
        !--------------------------------------------------------------------
        CALL HCOX_Iodine_Init( HcoState, 'Inorg_Iodine', ExtState,  RC )
@@ -429,7 +422,6 @@ CONTAINS
     USE HCOX_FINN_Mod,          ONLY : HCOX_FINN_Run
     USE HCOX_GC_RnPbBe_Mod,     ONLY : HCOX_GC_RnPbBe_Run
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Run
-    USE HCOX_CH4WetLand_mod,    ONLY : HCOX_CH4Wetland_Run
     USE HCOX_Volcano_Mod,       ONLY : HCOX_Volcano_Run
     USE HCOX_Iodine_Mod,        ONLY : HCOX_Iodine_Run
 #if defined( TOMAS )
@@ -458,7 +450,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255) :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: ErrMsg, ThisLoc, LOC
     LOGICAL            :: IsEmisTime
 
     !=======================================================================
@@ -466,17 +458,24 @@ CONTAINS
     !=======================================================================
 
     ! Initialize
+    LOC     = 'HCOX_RUN (HCOX_DRIVER_MOD.F90)'
     RC      = HCO_SUCCESS
     ErrMsg  = ''
     ThisLoc = ' -> at HCOX_RUN (in module HEMCO/Extensions/hcox_driver_mod.F90'
 
     ! For error handling
-    CALL HCO_ENTER( HcoState%Config%Err,'HCOX_RUN (hcox_driver_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Is it time for emissions?
     CALL HcoClock_Get ( HcoState%Clock, IsEmisTime=IsEmisTime, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Can leave here if it's not time for emissions
     IF ( .NOT. IsEmisTime ) THEN
@@ -680,18 +679,6 @@ CONTAINS
           ENDIF
        ENDIF
 
-       !--------------------------------------------------------------------
-       ! CH4 wetland emissions
-       !--------------------------------------------------------------------
-       IF ( ExtState%Wetland_CH4 > 0 ) THEN
-          CALL HCOX_CH4Wetland_Run( ExtState, HcoState, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-             ErrMsg = 'Error encountered in "HCOX_CH4Wetland_Run"!'
-             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
-             RETURN
-          ENDIF
-       ENDIF
-
 #ifdef TOMAS
        !--------------------------------------------------------------------
        ! TOMAS sectional sea salt emissions
@@ -778,7 +765,6 @@ CONTAINS
     USE HCOX_FINN_Mod,          ONLY : HCOX_FINN_Final
     USE HCOX_GC_RnPbBe_Mod,     ONLY : HCOX_GC_RnPbBe_Final
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Final
-    USE HCOX_CH4WetLand_Mod,    ONLY : HCOX_CH4Wetland_Final
     USE HCOX_Volcano_Mod,       ONLY : HCOX_Volcano_Final
     USE HCOX_Iodine_Mod,        ONLY : HCOX_Iodine_Final
 #if defined( TOMAS )
@@ -880,10 +866,6 @@ CONTAINS
 
           IF ( ExtState%GC_POPs > 0  ) THEN
              CALL HCOX_GC_POPs_Final( ExtState )
-          ENDIF
-
-          IF ( ExtState%Wetland_CH4 > 0 ) THEN
-             CALL HCOX_CH4Wetland_Final( ExtState )
           ENDIF
 
           IF ( ExtState%Volcano > 0 ) THEN
@@ -1026,7 +1008,10 @@ CONTAINS
 !       IF ( RC /= HCO_SUCCESS ) RETURN
 !
        CALL DgnDefine ( HcoState, 'HCO_LAI', DGN_LAI, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
 !       CALL DgnDefine ( HcoState, 'HCO_U10M', DGN_U10M, RC )
 !       IF ( RC /= HCO_SUCCESS ) RETURN
@@ -1056,13 +1041,22 @@ CONTAINS
 !       IF ( RC /= HCO_SUCCESS ) RETURN
 
        CALL DgnDefine ( HcoState, 'HCO_SUNCOS', DGN_SUNCOS, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL DgnDefine ( HcoState, 'DRY_TOTN', DGN_DRYTOTN, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL DgnDefine ( HcoState, 'WET_TOTN', DGN_WETTOTN, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
     ENDIF
 
@@ -1101,6 +1095,13 @@ CONTAINS
 !  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
+
+    LOC = 'DgnDefine (HCOX_DRIVER_MOD.F90)'
 
     CALL Diagn_Create ( HcoState   = HcoState,          &
                         cName      = TRIM(DgnName),     &
@@ -1114,7 +1115,10 @@ CONTAINS
                         Trgt2D     = Trgt2D,            &
                         COL = HcoState%Diagn%HcoDiagnIDDefault, &
                         RC         = RC                  )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS

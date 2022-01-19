@@ -188,7 +188,7 @@ CONTAINS
 !    LOGICAL, SAVE       :: FIRST = .TRUE.
     LOGICAL             :: aIR
     LOGICAL             :: IS_SNOW_OR_ICE,   IS_LAND_OR_ICE
-    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=255)  :: MSG, LOC
 
     ! Delta H for POP [kJ/mol]. Delta H is enthalpy of phase transfer
     ! from gas phase to OC. For now we use Delta H for phase transfer
@@ -236,13 +236,17 @@ CONTAINS
     !=======================================================================
     ! HCOX_GC_POPs_RUN begins here!
     !=======================================================================
+    LOC = 'HCOX_GC_POPs_RUN (HCOX_GC_POPS_MOD.F90)'
 
     ! Return if extension not turned on
     IF ( ExtState%GC_POPs <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_GC_POPs_Run (hcox_gc_POPs_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get instance
     Inst => NULL()
@@ -264,19 +268,34 @@ CONTAINS
     IF ( HcoClock_First(HcoState%Clock,.TRUE.) ) THEN
 
        CALL HCO_GetPtr( HcoState, 'TOT_POP',     Inst%POP_TOT_EM, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL HCO_GetPtr( HcoState, 'GLOBAL_OC',   Inst%C_OC,       RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL HCO_GetPtr( HcoState, 'GLOBAL_BC',   Inst%C_BC,       RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL HCO_GetPtr( HcoState, 'SURF_POP',    Inst%POP_SURF,   RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        CALL HCO_GetPtr( HcoState, 'SOIL_CARBON', Inst%F_OC_SOIL,  RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Convert F_OC_SOIL from kg/m2 to fraction
        DO J=1, HcoState%NY
@@ -1517,9 +1536,9 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-      ! LWI=1 and ALBEDO less than 69.5% is a LAND box
+      ! LWI=1 and FRLANDIC less than 50% is a LAND box
       LAND = ( NINT( ExtState%WLI%Arr%Val(I,J) ) == 1   .and. &
-                     ExtState%ALBD%Arr%Val(I,J)  <  0.695e+0_hp )
+                     ExtState%FRLANDIC%Arr%Val(I,J)  <  0.5e+0_hp )
 
       END FUNCTION IS_LAND
 !EOC
@@ -1555,9 +1574,9 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-      ! LWI=2 or ALBEDO > 69.5% is ice
+      ! LWI=2 or FRLANDIC > 50%
       ICE = ( NINT( ExtState%WLI%Arr%Val(I,J) ) == 2       .or. &
-                    ExtState%ALBD%Arr%Val(I,J)  >= 0.695e+0_hp )
+                    ExtState%FRLANDIC%Arr%Val(I,J)  >= 0.5+0_hp )
 
       END FUNCTION IS_ICE
 !EOC
@@ -1602,7 +1621,7 @@ CONTAINS
 !
     ! Scalars
     INTEGER                        :: I, N, nSpc, ExtNr
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     CHARACTER(LEN=255)             :: DiagnName
     CHARACTER(LEN=255)             :: OutUnit
 
@@ -1617,14 +1636,18 @@ CONTAINS
     !=======================================================================
     ! HCOX_GC_POPs_INIT begins here!
     !=======================================================================
+    LOC = 'HCOX_GC_POPs_INIT (HCOX_GC_POPS_MOD.F90)'
 
     ! Get the extension number
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter HEMCO
-    CALL HCO_ENTER( HcoState%Config%Err, 'HcoX_GC_POPs_Init (hcox_gc_POPs_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create Instance
     Inst => NULL()
@@ -1638,7 +1661,10 @@ CONTAINS
 
     ! Set species IDs
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, HcoIDs, SpcNames, nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
@@ -1694,7 +1720,7 @@ CONTAINS
 
     ! Activate met fields required by this extension
     ExtState%POPG%DoUse        = .TRUE.
-    ExtState%ALBD%DoUse        = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%AIRVOL%DoUse      = .TRUE.
     ExtState%AIRDEN%DoUse      = .TRUE.
     ExtState%FRAC_OF_PBL%DoUse = .TRUE.
@@ -1900,7 +1926,10 @@ CONTAINS
                           AutoFill  = 0,                 &
                           Trgt2D    = Target2D,          &
                           RC        = RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        Target2D => NULL()
 
     ENDDO

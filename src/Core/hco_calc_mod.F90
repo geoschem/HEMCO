@@ -197,7 +197,7 @@ CONTAINS
     LOGICAL             :: Found, DoDiagn, EOL, UpdateCat
 
     ! For error handling & verbose mode
-    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=255)  :: MSG, LOC
 
     ! testing / debugging
     integer :: ix,iy
@@ -211,11 +211,12 @@ CONTAINS
     iy = 34
 
     ! Initialize
+    LOC = 'HCO_CalcEmis (HCO_CALC_MOD.F90)'
     Lct => NULL()
     Dct => NULL()
 
     ! Enter routine
-    CALL HCO_ENTER (HcoState%Config%Err,'HCO_CalcEmis (HCO_CALC_MOD.F90)', RC )
+    CALL HCO_ENTER (HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     !-----------------------------------------------------------------
@@ -415,14 +416,20 @@ CONTAINS
              CALL Diagn_Update( HcoState,    ExtNr=ExtNr,   &
                                 Cat=PrevCat, Hier=-1,  HcoID=PrevSpc, &
                                 AutoFill=1,  Array3D=CatFlx, COL=-1, RC=RC ) 
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 #ifdef ADJOINT
              IF (HcoState%IsAdjoint) THEN
                 CALL Diagn_Update( HcoState,    ExtNr=ExtNr,             &
                                    Cat=PrevCat, Hier=-1,  HcoID=PrevSpc, &
                                    AutoFill=1,  Array3D=CatFlx,          &
                                    COL=HcoState%Diagn%HcoDiagnIDAdjoint, RC=RC ) 
-                IF ( RC /= HCO_SUCCESS ) RETURN
+                IF ( RC /= HCO_SUCCESS ) THEN
+                    CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+                    RETURN
+                ENDIF
              ENDIF
 #endif
           ENDIF
@@ -469,14 +476,20 @@ CONTAINS
              CALL Diagn_Update( HcoState,  ExtNr=ExtNr,  &
                                 Cat=-1,    Hier=-1,  HcoID=PrevSpc, &
                                AutoFill=1,Array3D=SpcFlx, COL=-1, RC=RC ) 
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 #ifdef ADJOINT
              IF (HcoState%IsAdjoint) THEN
                 CALL Diagn_Update( HcoState,  ExtNr=ExtNr,             &
                                    Cat=-1,    Hier=-1,  HcoID=PrevSpc, &
                                    AutoFill=1,Array3D=SpcFlx,          &
                                    COL=HcoState%Diagn%HcoDiagnIDAdjoint, RC=RC ) 
-                IF ( RC /= HCO_SUCCESS ) RETURN
+                IF ( RC /= HCO_SUCCESS ) THEN
+                    CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+                    RETURN
+                ENDIF
              ENDIF
 #endif
           ENDIF
@@ -538,14 +551,20 @@ CONTAINS
              IF ( UseConc ) THEN
                 CALL HCO_ArrAssert( HcoState%Spc(ThisSpc)%Conc, &
                                     nI, nJ, nL, RC             )
-                IF ( RC /= HCO_SUCCESS ) RETURN
+                IF ( RC /= HCO_SUCCESS ) THEN
+                    CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+                    RETURN
+                ENDIF
                 OutArr => HcoState%Spc(ThisSpc)%Conc%Val
 
              ! For emissions:
              ELSE
                 CALL HCO_ArrAssert( HcoState%Spc(ThisSpc)%Emis, &
                                     nI, nJ, nL, RC             )
-                IF ( RC /= HCO_SUCCESS ) RETURN
+                IF ( RC /= HCO_SUCCESS ) THEN
+                    CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+                    RETURN
+                ENDIF
                 OutArr => HcoState%Spc(ThisSpc)%Emis%Val
              ENDIF
 
@@ -565,11 +584,17 @@ CONTAINS
        !--------------------------------------------------------------------
        TmpFlx(:,:,:) = 0.0_hp
        CALL GET_CURRENT_EMISSIONS( HcoState, Dct, nI, nJ, nL, TmpFlx, Mask, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Eventually add universal scale factor
        CALL HCO_ScaleArr( HcoState, ThisSpc, TmpFlx, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Check for negative values according to the corresponding setting
        ! in the configuration file: 2 means allow negative values, 1 means
@@ -640,7 +665,10 @@ CONTAINS
                              Cat=ThisCat,Hier=ThisHir,   HcoID=ThisSpc, &
                              AutoFill=1, Array3D=TmpFlx, &
                              COL=-1, RC=RC ) 
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 #ifdef ADJOINT
           IF (HcoState%IsAdjoint) THEN
              ! I don't know why I chose collection=-1 instead of
@@ -651,7 +679,10 @@ CONTAINS
                                 Cat=ThisCat,Hier=ThisHir,   HcoID=ThisSpc, &
                                 AutoFill=1, Array3D=TmpFlx,                &
                                 COL=-1, RC=RC ) 
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
           ENDIF
 
 #endif
@@ -835,7 +866,7 @@ CONTAINS
     LOC     = 'GET_CURRENT_EMISSIONS (hco_calc_mod.F90)'
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS', RC )
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! Check if container contains data
@@ -881,13 +912,19 @@ CONTAINS
     !-----------------------------------------------------------------
     IF ( BaseDct%levScalID1 > 0 ) THEN
        CALL Pnt2DataCont( HcoState, BaseDct%levScalID1, LevDct1, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ELSE
        LevDct1 => NULL()
     ENDIF
     IF ( BaseDct%levScalID2 > 0 ) THEN
        CALL Pnt2DataCont( HcoState, BaseDct%levScalID2, LevDct2, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ELSE
        LevDct2 => NULL()
     ENDIF
@@ -1070,7 +1107,10 @@ CONTAINS
 
        ! Point to data container with the given container ID
        CALL Pnt2DataCont( HcoState, IDX, ScalDct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Sanity check: scale field cannot be a base field
        IF ( (ScalDct%DctType == HCO_DCTTYPE_BASE) ) THEN
@@ -1110,7 +1150,10 @@ CONTAINS
        ! region.
        IF ( ASSOCIATED(ScalDct%Scal_cID) ) THEN
           CALL Pnt2DataCont( HcoState, ScalDct%Scal_cID(1), MaskDct, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Must be mask field
           IF ( MaskDct%DctType /= HCO_DCTTYPE_MASK ) THEN
@@ -1438,9 +1481,10 @@ CONTAINS
     ! Initialize
     ScalDct => NULL()
     MaskDct => NULL()
+    LOC     = 'GET_CURRENT_EMISSIONS_B (HCO_CALC_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS_B', RC )
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! testing only
@@ -1884,7 +1928,10 @@ CONTAINS
     ! Calculate emissions for base container
     CALL GET_CURRENT_EMISSIONS( HcoState, Lct%Dct, &
                                 nI, nJ, nL, Arr3D,    Mask, RC  )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! All done
     IF (ALLOCATED(MASK) ) DEALLOCATE(MASK)
@@ -2007,7 +2054,10 @@ CONTAINS
     ! Calculate emissions for base container
     CALL GET_CURRENT_EMISSIONS( HcoState, Lct%Dct, &
                                 nI, nJ, nL, Arr3D, Mask, RC, UseLL=UseLL )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Place 3D array into 2D array. UseLL returns the vertical level into which
     ! emissions have been added within GET_CURRENT_EMISSIONS. This should be
@@ -2289,12 +2339,14 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER  :: EmisLUnit
-    REAL(hp) :: EmisL
+    INTEGER             :: EmisLUnit
+    REAL(hp)            :: EmisL
+    CHARACTER(LEN=255)  :: LOC
 
     !=======================================================================
     ! GetVertIndx begins here
     !=======================================================================
+    LOC = 'GetVertIndx (HCO_CALC_MOD.F90)'
 
     !-----------------------------------------------------------------------
     ! Get vertical extension of base emission array.
@@ -2331,7 +2383,10 @@ CONTAINS
        EmisLUnit = Dct%Dta%EmisL1Unit
     ENDIF
     CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, LowLL, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Upper level
     IF ( isLevDct2 ) THEN
@@ -2346,7 +2401,10 @@ CONTAINS
        EmisLUnit = Dct%Dta%EmisL2Unit
     ENDIF
     CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, UppLL, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Upper level must not be lower than lower level
     UppLL = MAX(LowLL, UppLL)
@@ -2875,7 +2933,7 @@ END FUNCTION GetEmisLUnit
     LOC     = 'GET_CURRENT_EMISSIONS_ADJ (hco_calc_mod.F90)'
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'GET_CURRENT_EMISSIONS_ADJ', RC )
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! testing only:
@@ -2913,13 +2971,19 @@ END FUNCTION GetEmisLUnit
     ! Check for level index containers
     IF ( BaseDct%levScalID1 > 0 ) THEN
        CALL Pnt2DataCont( HcoState, BaseDct%levScalID1, LevDct1, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ELSE
        LevDct1 => NULL()
     ENDIF
     IF ( BaseDct%levScalID2 > 0 ) THEN
        CALL Pnt2DataCont( HcoState, BaseDct%levScalID2, LevDct2, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ELSE
        LevDct2 => NULL()
     ENDIF
@@ -3082,7 +3146,10 @@ END FUNCTION GetEmisLUnit
 
        ! Point to data container with the given container ID
        CALL Pnt2DataCont( HcoState, IDX, ScalDct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Sanity check: scale field cannot be a base field 
        IF ( (ScalDct%DctType == HCO_DCTTYPE_BASE) ) THEN
@@ -3122,7 +3189,10 @@ END FUNCTION GetEmisLUnit
        ! region.
        IF ( ASSOCIATED(ScalDct%Scal_cID) ) THEN
           CALL Pnt2DataCont( HcoState, ScalDct%Scal_cID(1), MaskDct, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 21', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
  
           ! Must be mask field
           IF ( MaskDct%DctType /= HCO_DCTTYPE_MASK ) THEN

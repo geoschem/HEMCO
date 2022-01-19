@@ -133,7 +133,7 @@ CONTAINS
 !
 ! !LOcAL VARIABLES:
 !
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
     CHARACTER(LEN=1023)   :: MSG_LONG
     INTEGER               :: tidx1a
     INTEGER               :: nTime,  T, CNT, NCRC
@@ -147,11 +147,14 @@ CONTAINS
     !=================================================================
     ! GET_TIMEIDX begins here
     !=================================================================
+    LOC = 'GET_TIMEIDX (HCOIO_UTIL_MOD.F90)'
 
     ! Init
-    CALL HCO_ENTER( HcoState%Config%Err, &
-                    'GET_TIMEIDX (hcoio_util_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     verb = HCO_IsVerb(HcoState%Config%Err,3)
 
     ! Initialize
@@ -1539,7 +1542,7 @@ CONTAINS
     INTEGER :: origYr,  origMt, origDy, origHr
     LOGICAL :: hasFile, hasYr,  hasMt,  hasDy, hasHr
     LOGICAL :: nextTyp
-    CHARACTER(LEN=1023)  :: MSG
+    CHARACTER(LEN=1023) :: MSG, LOC
     CHARACTER(LEN=1023) :: srcFileOrig
 
     ! maximum # of iterations for file search
@@ -1550,6 +1553,7 @@ CONTAINS
     !=================================================================
 
     ! Initialize
+    LOC     = 'SrcFile_Parse (HCOIO_UTIL_MOD.F90)'
     RC      = HCO_SUCCESS
     found   = .FALSE.
     srcFile = Lct%Dct%Dta%ncFile
@@ -1563,24 +1567,39 @@ CONTAINS
     ! Get preferred dates (to be passed to parser)
     CALL HCO_GetPrefTimeAttr ( HcoState, Lct, &
                                prefYr, prefMt, prefDy, prefHr, prefMn, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Make sure dates are not negative
     IF ( prefYr <= 0 ) THEN
        CALL HcoClock_Get( HcoState%Clock, cYYYY = prefYr, RC = RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
     IF ( prefMt <= 0 ) THEN
        CALL HcoClock_Get( HcoState%Clock, cMM   = prefMt, RC = RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
     IF ( prefDy <= 0 ) THEN
        CALL HcoClock_Get( HcoState%Clock, cDD   = prefDy, RC = RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
     IF ( prefHr <  0 ) THEN
        CALL HcoClock_Get( HcoState%Clock, cH    = prefHr, RC = RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     ! Eventually replace default preferred year with specified one
@@ -1589,7 +1608,10 @@ CONTAINS
     ! Call the parser
     CALL HCO_CharParse ( HcoState%Config, srcFile, prefYr, prefMt, &
                          prefDy, prefHr, prefMn, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     srcFileOrig = TRIM(srcFile)
 
     ! Check if file exists
@@ -1793,7 +1815,10 @@ CONTAINS
              ! Call the parser with adjusted values
              CALL HCO_CharParse ( HcoState%Config, srcFile, prefYr, &
                                   prefMt, prefDy, prefHr, prefMn, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! Check if this file exists
              INQUIRE( FILE=TRIM(srcFile), EXIST=HasFile )
@@ -2037,7 +2062,10 @@ CONTAINS
        CALL GetExtOpt ( HcoState%Config, ExtNr=-999, &
                         OptName=TRIM(ArbDimVal), &
                         OptValInt=TargetVal, FOUND=Found, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        IF ( .NOT. Found ) THEN
           WRITE(MSG,*) 'Cannot evaluate additional dimension value ', &
              TRIM(ArbDimVal), '. This does not seem to be a number nor ', &
@@ -2118,11 +2146,12 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     !======================================================================
     ! HCOIO_ReadOther begins here
     !======================================================================
+    LOC = 'HCOIO_ReadOther (HCOIO_UTIL_MOD.F90)'
 
     ! Error check: data must be in local time
     IF ( .NOT. Lct%Dct%Dta%IsLocTime ) THEN
@@ -2135,12 +2164,18 @@ CONTAINS
     ! Read an ASCII file as country values
     IF ( INDEX( TRIM(Lct%Dct%Dta%ncFile), '.txt' ) > 0 ) THEN
        CALL HCOIO_ReadCountryValues( HcoState, Lct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
     ! Directly read from configuration file otherwise
     ELSE
        CALL HCOIO_ReadFromConfig( HcoState, Lct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     ! Return w/ success
@@ -2252,7 +2287,10 @@ CONTAINS
 
           ! Get pointer to mask. Convert to integer
           CALL HCO_GetPtr( HcoState, TRIM(LINE), CNTR, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           ALLOCATE( CIDS(HcoState%NX, HcoState%NY), STAT=IOS )
           IF ( IOS /= 0 ) THEN
              CALL HCO_ERROR( 'Cannot allocate CIDS', RC, THISLOC=LOC )
@@ -2297,13 +2335,19 @@ CONTAINS
        ID2  = LEN(LINE)
        LINE = LINE(ID1:ID2)
        CALL GetDataVals( HcoState, Lct, LINE, Vals, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Check data / array dimensions
        NT = SIZE(Vals,1)
        CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, &
                                HcoState%NX, HcoState%NY, NT, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Pass to data array. If the country ID is larger than zero, fill
        ! only those grid boxes. Otherwise, fill all grid boxes that have
@@ -2429,7 +2473,10 @@ CONTAINS
     ! Get data values for this time step.
     !-------------------------------------------------------------------
     CALL GetDataVals( HcoState, Lct, Lct%Dct%Dta%ncFile, Vals, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !-------------------------------------------------------------------
     ! Copy data into array.
@@ -2445,11 +2492,17 @@ CONTAINS
        ! Make sure data is allocated
        CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, &
                                HcoState%NX, HcoState%NY, 1, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Fill array: 1.0 within grid box, 0.0 outside.
        CALL FillMaskBox( HcoState, Lct, Vals, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Data is 2D
        Lct%Dct%Dta%SpaceDim = 2
@@ -2459,7 +2512,10 @@ CONTAINS
     ELSE
 
        CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, 1, 1, NT, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        DO I = 1, NT
           Lct%Dct%Dta%V2(I)%Val(1,1) = Vals(I)
 !==============================================================================
@@ -2695,7 +2751,10 @@ CONTAINS
     ! Evaluate math expression if string starts with 'MATH:'
     IF ( IsMath ) THEN
        CALL ReadMath ( HcoState, Lct, ValStr, FileVals, N, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
     ! Use regular string parser otherwise
     ELSE
@@ -2703,7 +2762,10 @@ CONTAINS
                             HCO_GetOpt(HcoState%Config%ExtList,'Separator'), &
                             HCO_GetOpt(HcoState%Config%ExtList,'Wildcard'), &
                             FileVals, N, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     ! Return w/ error if no scale factor defined
@@ -2718,7 +2780,10 @@ CONTAINS
     ! or hour (as specified in the configuration file).
     CALL HCO_GetPrefTimeAttr( HcoState, Lct, &
                               prefYr, prefMt, prefDy, prefHr, prefMn, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! ----------------------------------------------------------------
     ! For masks, assume that values represent the corners of the mask
@@ -2786,7 +2851,10 @@ CONTAINS
              ENDIF
 
              CALL GetSliceIdx ( HcoState, Lct, 1, prefYr, IDX1, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 21', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
              IDX2 = IDX1
              NUSE = 1
 
@@ -2802,7 +2870,10 @@ CONTAINS
              ENDIF
 
              CALL GetSliceIdx ( HcoState, Lct, 2, prefMt, IDX1, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 22', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
              IDX2 = IDX1
              NUSE = 1
 
@@ -2817,7 +2888,10 @@ CONTAINS
              ENDIF
 
              CALL GetSliceIdx ( HcoState, Lct, 3, prefDy, IDX1, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 23', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
              IDX2 = IDX1
              NUSE = 1
 
@@ -2916,7 +2990,10 @@ CONTAINS
                              TimeFlag      = TimeFlag,                   &
                              FACT          = UnitFactor,                 &
                              RC            = RC                           )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 24', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Verbose mode
        IF ( UnitFactor /= 1.0_hp ) THEN
@@ -3223,13 +3300,19 @@ CONTAINS
     ! Get preferred time stamps
     CALL HCO_GetPrefTimeAttr( HcoState, Lct, &
                               prefYr, prefMt, prefDy, prefHr, prefMn, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 25', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get some other current time stamps
     CALL HcoClock_Get( HcoState%Clock,  cS=prefS,     cH=cHr, &
                        cWEEKDAY=prefWD, cDOY=prefDOY, LMD=LMD,      &
                        nSteps=nSteps,   RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 26', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! GetPrefTimeAttr can return -999 for hour. In this case set to current
     ! simulation hour
@@ -3239,7 +3322,10 @@ CONTAINS
     ! actual token values. (ckeller, 7/7/17)
     CALL HCO_CharParse ( HcoState%Config, func, &
                          prefYr, prefMt, prefDy, prefHr, prefMn, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 27', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Elapsed hours and seconds since start time
     ELS = HcoState%TS_DYN * nSteps

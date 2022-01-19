@@ -334,7 +334,7 @@ CONTAINS
     ! For diagnostics
     REAL(hp), POINTER   :: Arr2D(:,:)
     CHARACTER(LEN=63)   :: DiagnName
-    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=255)  :: MSG, LOC
 
     ! Conversion factors for acetone calculations
     REAL(hp), PARAMETER   :: YIELD_MO   = 0.116_hp
@@ -351,11 +351,14 @@ CONTAINS
     !=================================================================
     ! HCOX_Megan_Run begins here!
     !=================================================================
+    LOC = 'HCOX_Megan_Run (HCOX_MEGAN_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, &
-                    'HCOX_Megan_Run (hcox_megan_mod.F)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     ERR = .FALSE.
 
     ! Nullify
@@ -1237,27 +1240,42 @@ CONTAINS
     ! LAI_PREVDAY
     CALL HCO_RestartWrite( HcoState, &
                            'LAI_PREVDAY', Inst%LAI_PREVDAY, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! T_LAST24H
     CALL HCO_RestartWrite( HcoState, &
                            'T_PREVDAY',  Inst%T_LAST24H, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! T_LASTXDAYS
     CALL HCO_RestartWrite( HcoState, &
                            'T_DAVG',     Inst%T_LASTXDAYS, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! PARDR_LASTXDAYS
     CALL HCO_RestartWrite( HcoState, &
                            'PARDR_DAVG', Inst%PARDR_LASTXDAYS, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! PARDF_LASTXDAYS
     CALL HCO_RestartWrite( HcoState, &
                            'PARDF_DAVG', Inst%PARDF_LASTXDAYS, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !=================================================================
     ! ALL DONE!
@@ -1325,26 +1343,28 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    REAL(hp)  :: GAMMA_LAI
-    REAL(hp)  :: GAMMA_AGE
-    REAL(hp)  :: GAMMA_PAR
-    REAL(hp)  :: GAMMA_T_LD
-    REAL(hp)  :: GAMMA_T_LI
-    REAL(hp)  :: GAMMA_SM
-    REAL(hp)  :: GAMMA_CO2  ! (Tai, Jan 2013)
-    REAL(hp)  :: AEF
-    REAL(hp)  :: D_BTW_M
-    REAL(hp)  :: TS, SUNCOS
-    REAL(hp)  :: Q_DIR_2, Q_DIFF_2
-    REAL(hp)  :: BETA, LDF, CT1, CEO
-    REAL(hp)  :: ANEW, AGRO, AMAT, AOLD
-    REAL(hp)  :: ISOLAI, PMISOLAI, MISOLAI
-    REAL(hp)  :: PFTSUM
-    LOGICAL   :: BIDIR
+    REAL(hp)            :: GAMMA_LAI
+    REAL(hp)            :: GAMMA_AGE
+    REAL(hp)            :: GAMMA_PAR
+    REAL(hp)            :: GAMMA_T_LD
+    REAL(hp)            :: GAMMA_T_LI
+    REAL(hp)            :: GAMMA_SM
+    REAL(hp)            :: GAMMA_CO2  ! (Tai, Jan 2013)
+    REAL(hp)            :: AEF
+    REAL(hp)            :: D_BTW_M
+    REAL(hp)            :: TS, SUNCOS
+    REAL(hp)            :: Q_DIR_2, Q_DIFF_2
+    REAL(hp)            :: BETA, LDF, CT1, CEO
+    REAL(hp)            :: ANEW, AGRO, AMAT, AOLD
+    REAL(hp)            :: ISOLAI, PMISOLAI, MISOLAI
+    REAL(hp)            :: PFTSUM
+    LOGICAL             :: BIDIR
+    CHARACTER(LEN=255)  :: LOC
 
     !=================================================================
     ! GET_MEGAN_EMISSIONS begins here!
     !=================================================================
+    LOC = 'GET_MEGAN_EMISSIONS (HCOX_MEGAN_MOD.F90)'    
 
     ! Initialize parameters, gamma values, and return value
     MEGAN_EMIS = 0.0_hp
@@ -1396,14 +1416,20 @@ CONTAINS
     CALL GET_MEGAN_PARAMS ( HcoState,                         &
                             CMPD, BETA, LDF,  CT1,  CEO,      &
                             ANEW, AGRO, AMAT, AOLD, BIDIR, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! --------------------------------------------
     ! Get base emission factor for this compound and grid square
     ! Units: kg/m2/s
     ! --------------------------------------------
     CALL GET_MEGAN_AEF ( HcoState, Inst, I, J, CMPD, AEF, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !-----------------------------------------------------
     ! Only interested in terrestrial biosphere
@@ -2912,6 +2938,8 @@ CONTAINS
     REAL(hp)  :: PFT_C3_NARC_GRSS(HcoState%NX,HcoState%NY)
     REAL(hp)  :: PFT_C4_GRSS(HcoState%NX,HcoState%NY)
     REAL(hp)  :: PFT_CROP(HcoState%NX,HcoState%NY)
+    
+    CHARACTER(LEN=255)      :: LOC
 
     ! Suffix
     CHARACTER(LEN=255)      :: SFX
@@ -2919,6 +2947,7 @@ CONTAINS
     !=================================================================
     ! CALC_AEF begins here!
     !=================================================================
+    LOC = 'CALC_AEF (HCOX_MEGAN_MOD.F90)'
 
     ! Suffix
     SFX = Inst%SUFFIX
@@ -2937,31 +2966,52 @@ CONTAINS
     !-----------------------------------------------------------------
     CALL HCO_EvalFld( HcoState, 'MEGAN_AEF_ISOP'//TRIM(SFX), &
                       Inst%AEF_ISOP, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, 'MEGAN_AEF_MBOX'//TRIM(SFX), &
                       Inst%AEF_MBOX, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, 'MEGAN_AEF_BPIN'//TRIM(SFX), &
                       Inst%AEF_BPIN, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, 'MEGAN_AEF_CARE'//TRIM(SFX), &
                       Inst%AEF_CARE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, 'MEGAN_AEF_LIMO'//TRIM(SFX), &
                       Inst%AEF_LIMO, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, 'MEGAN_AEF_OCIM'//TRIM(SFX), &
                       Inst%AEF_OCIM, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, 'MEGAN_AEF_SABI'//TRIM(SFX), &
                       Inst%AEF_SABI, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !-----------------------------------------------------------------
     ! Point to PFT fractions
@@ -2989,82 +3039,130 @@ CONTAINS
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_BARE'//TRIM(SFX), &
                       PFT_BARE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_NDLF_EVGN_TMPT_TREE'//TRIM(SFX), &
                       PFT_NDLF_EVGN_TMPT_TREE, RC ) 
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_NDLF_EVGN_BORL_TREE'//TRIM(SFX), &
                       PFT_NDLF_EVGN_BORL_TREE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_NDLF_DECD_BORL_TREE'//TRIM(SFX), &
                       PFT_NDLF_DECD_BORL_TREE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_BDLF_EVGN_TROP_TREE'//TRIM(SFX), &
                       PFT_BDLF_EVGN_TROP_TREE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_BDLF_EVGN_TMPT_TREE'//TRIM(SFX), &
                       PFT_BDLF_EVGN_TMPT_TREE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_BDLF_DECD_TROP_TREE'//TRIM(SFX), &
                       PFT_BDLF_DECD_TROP_TREE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 21', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_BDLF_DECD_TMPT_TREE'//TRIM(SFX), &
                       PFT_BDLF_DECD_TMPT_TREE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 22', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_BDLF_DECD_BORL_TREE'//TRIM(SFX), &
                       PFT_BDLF_DECD_BORL_TREE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 23', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_BDLF_EVGN_SHRB'//TRIM(SFX), &
                       PFT_BDLF_EVGN_SHRB, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 24', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_BDLF_DECD_TMPT_SHRB'//TRIM(SFX), &
                       PFT_BDLF_DECD_TMPT_SHRB, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 25', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_BDLF_DECD_BORL_SHRB'//TRIM(SFX), &
                       PFT_BDLF_DECD_BORL_SHRB, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 26', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_C3_ARCT_GRSS'//TRIM(SFX), &
                       PFT_C3_ARCT_GRSS, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 27', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_C3_NARC_GRSS'//TRIM(SFX), &
                       PFT_C3_NARC_GRSS, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 28', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_C4_GRSS'//TRIM(SFX), &
                       PFT_C4_GRSS, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 29', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_EvalFld( HcoState, &
                       'CLM4_PFT_CROP'//TRIM(SFX), &
                       PFT_CROP, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 30', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Copy PFTs into ARRAY_16
     Inst%ARRAY_16(:,:, 1) = PFT_BARE
@@ -3386,22 +3484,25 @@ CONTAINS
     REAL*8                         :: PI_180
     REAL(hp), POINTER              :: Ptr2D(:,:)
     TYPE(MyInst), POINTER          :: Inst
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
     LOGICAL                        :: Optfound
 
     !=================================================================
     ! HCOX_MEGAN_INIT begins here!
     !=================================================================
+    LOC = 'HCOX_MEGAN_INIT (HCOX_MEGAN_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, &
-                    'HCOX_Megan_Init (hcox_megan_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 31', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Nullify
     Ptr2D => NULL()
@@ -3420,7 +3521,10 @@ CONTAINS
     Inst%OFFLINE_BIOGENICVOC = .FALSE.
     CALL GetExtOpt( HcoState%Config, 0, 'OFFLINE_BIOGENICVOC', &
                     OptValBool=OptFound, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 32', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( FOUND ) Inst%OFFLINE_BIOGENICVOC = OptFound
 
     ! Verbose mode
@@ -3440,20 +3544,32 @@ CONTAINS
     !       the config. file!
     CALL GetExtOpt( HcoState%Config, ExtNr, 'Isoprene scaling', &
                     OptValHp=Inst%ISOP_SCALING, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 33', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL GetExtOpt( HcoState%Config, ExtNr, 'CO2 inhibition', &
                     OptValBool=Inst%LISOPCO2, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 34', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     CALL GetExtOpt( HcoState%Config, ExtNr, 'CO2 conc (ppmv)', &
                     OptValHp=Inst%GLOBCO2, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 35', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Normalize LAI by PFT? Default setting is 'yes'
     ! ckeller, 7/17/17.
     Inst%NORMLAI = .TRUE.
     CALL GetExtOpt( HcoState%Config, ExtNr, 'Normalize LAI', &
                     OptValBool=OptFound, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 36', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( FOUND ) Inst%NORMLAI = OptFound
 
     ! Check GLOBCO2 if CO2 inhibition is turned on (LISOPCO2 = .TRUE.)
@@ -3472,7 +3588,10 @@ CONTAINS
     !optional arguments for SOAP
     CALL GetExtOpt ( HcoState%Config, ExtNr, 'Isoprene to SOAP', &
                      OptValHp=Inst%ISOPTOSOAP, FOUND=Optfound, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 37', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( Optfound ) THEN
        !convert from carbon basis to mass basis
        Inst%ISOPTOSOAP = Inst%ISOPTOSOAP * 1.134
@@ -3485,7 +3604,10 @@ CONTAINS
     !optional arguments for SOAS
     CALL GetExtOpt ( HcoState%Config, ExtNr, 'Isoprene to SOAS', &
                      OptValHp=Inst%ISOPTOSOAS, FOUND=Optfound, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 38', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( Optfound ) THEN
        !convert from carbon basis to mass basis
        Inst%ISOPTOSOAS = Inst%ISOPTOSOAS * 1.134
@@ -3497,7 +3619,10 @@ CONTAINS
     Optfound = .FALSE.
     CALL GetExtOpt ( HcoState%Config, Inst%ExtNr, 'Monoterp to SOAP', &
                      OptValHp=Inst%MONOTOSOAP, FOUND=Optfound, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 39', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( Optfound ) THEN
        !convert from carbon basis to mass basis
        Inst%MONOTOSOAP = Inst%MONOTOSOAP ! * 1.134
@@ -3509,7 +3634,10 @@ CONTAINS
     Optfound = .FALSE.
     CALL GetExtOpt ( HcoState%Config, Inst%ExtNr, 'Monoterp to SOAS', &
                      OptValHp=Inst%MONOTOSOAS, FOUND=Optfound, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 40', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( Optfound ) THEN
        !convert from carbon basis to mass basis
        Inst%MONOTOSOAS = Inst%MONOTOSOAS ! * 1.134
@@ -3521,7 +3649,10 @@ CONTAINS
     Optfound = .FALSE.
     CALL GetExtOpt ( HcoState%Config, Inst%ExtNr, 'Othrterp to SOAP', &
                      OptValHp=Inst%OTHRTOSOAP, FOUND=Optfound, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 41', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( Optfound ) THEN
        !convert from carbon basis to mass basis
        Inst%OTHRTOSOAP = Inst%OTHRTOSOAP * 1.134
@@ -3533,7 +3664,10 @@ CONTAINS
     Optfound = .FALSE.
     CALL GetExtOpt ( HcoState%Config, Inst%ExtNr, 'Othrterp to SOAS', &
                      OptValHp=Inst%OTHRTOSOAS, FOUND=Optfound, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 42', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( Optfound ) THEN
        !convert from carbon basis to mass basis
        Inst%OTHRTOSOAS = Inst%OTHRTOSOAS * 1.134
@@ -3556,7 +3690,10 @@ CONTAINS
     ! --> Assume that species are ordered ISOP, ACET, PRPE, C2H4 in
     !     config. file!
     CALL HCO_GetExtHcoID( HcoState, ExtNr, HcoIDs, SpcNames, nSpc, RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 43', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Assign species IDs
     Inst%IDTISOP = -1
@@ -3726,7 +3863,10 @@ CONTAINS
 
     CALL GetExtOpt( HcoState%Config, ExtNr, 'MEGAN_SUFFIX', &
                     OptValChar=Inst%SUFFIX, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 44', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) Inst%SUFFIX = ''
 
     !-----------------------------------------------------------------
@@ -4151,7 +4291,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXACETmb,       &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 45', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_ACET_DIRECT',&
@@ -4164,7 +4307,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXACETbg,       &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 46', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_APIN',       &
@@ -4177,7 +4323,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXAPIN,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 47', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_BPIN',       &
@@ -4190,7 +4339,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXBPIN,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 48', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_SABI',       &
@@ -4203,7 +4355,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXSABI,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 49', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_MYRC',       &
@@ -4216,7 +4371,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXMYRC,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 50', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_CARE',       &
@@ -4229,7 +4387,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXCARE,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 51', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_OCIM',       &
@@ -4242,7 +4403,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXOCIM,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 52', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_OMON',       &
@@ -4255,7 +4419,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXOMON,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 53', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_FARN',       &
@@ -4268,7 +4435,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXFARN,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 54', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_BCAR',       &
@@ -4281,7 +4451,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXBCAR,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 55', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_OSQT',       &
@@ -4294,7 +4467,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXOSQT,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 56', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_MBOX',       &
@@ -4307,7 +4483,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXMBOX,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 57', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_FAXX',       &
@@ -4320,7 +4499,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXFAXX,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 58', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL Diagn_Create( HcoState  = HcoState,              &
                        cName     = 'InvMEGAN_AAXX',       &
@@ -4333,7 +4515,10 @@ CONTAINS
                        AutoFill  = 0,                     &
                        Trgt2D    = Inst%FLUXAAXX,         &
                        RC        = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 59', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !=================================================================
     ! Initialize internal diagnostics. These are the restart variables
@@ -4341,23 +4526,38 @@ CONTAINS
     !=================================================================
     CALL HCO_RestartDefine ( HcoState, 'LAI_PREVDAY', &
                              Inst%LAI_PREVDAY, '1', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 60', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_RestartDefine ( HcoState, 'T_PREVDAY', &
                              Inst%T_LAST24H,   'K', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 61', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_RestartDefine ( HcoState, 'T_DAVG', &
                              Inst%T_LASTXDAYS, 'K', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 62', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_RestartDefine (  HcoState, 'PARDR_DAVG', &
                              Inst%PARDR_LASTXDAYS, 'W/m2', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 63', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL HCO_RestartDefine ( HcoState, 'PARDF_DAVG', &
                              Inst%PARDF_LASTXDAYS, 'W/m2', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 64', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !=================================================================
     ! The original MEGAN code used to read the emission factors here.

@@ -93,16 +93,16 @@ CONTAINS
 !
     TYPE(ListCont), POINTER                 :: Lct
     LOGICAL                                 :: FOUND, VERBOSE, NEW
-    CHARACTER(LEN=255)                      :: MSG
+    CHARACTER(LEN=255)                      :: MSG, LOC
     CHARACTER(LEN= 31)                      :: TempRes
 
     !======================================================================
     ! EmisList_Add begins here!
     !======================================================================
+    LOC = 'EmisList_Add (HCO_EMISLIST.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, &
-                     'EmisList_Add (hco_emislist_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! Set verbose flag
@@ -137,7 +137,10 @@ CONTAINS
     ! according to data type, species ID, hierarchy, and category.
     ! ----------------------------------------------------------------
     CALL Add2EmisList ( HcoState, Lct, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! ----------------------------------------------------------------
     ! Verbose mode
@@ -190,7 +193,7 @@ CONTAINS
 !
     ! Scalars
     INTEGER                   :: NEWCAT, NEWHIR, NEWSPC
-    CHARACTER(LEN=255)        :: MSG
+    CHARACTER(LEN=255)        :: MSG, LOC
 
     ! Pointers
     TYPE(ListCont), POINTER   :: TmpLct => NULL()
@@ -198,10 +201,14 @@ CONTAINS
     !======================================================================
     ! Add2EmisList begins here!
     !======================================================================
+    LOC = 'Add2EmisList (HCO_EMISLIST_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'Add2EmisList', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Update number of containers in EmisList
     HcoState%nnEmisCont = HcoState%nnEmisCont + 1
@@ -450,15 +457,15 @@ CONTAINS
     ! Scalars
     INTEGER                   :: I, J, L, T
     LOGICAL                   :: FOUND, verb, Add
-    CHARACTER(LEN=255)        :: MSG
+    CHARACTER(LEN=255)        :: MSG, LOC
 
     ! ================================================================
     ! EmisList_Pass begins here
     ! ================================================================
+    LOC = 'EmisList_Pass (HCO_EMISLIST_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, &
-                     'EmisList_Pass (hco_emislist_mod.F90)', RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! Init
@@ -656,7 +663,10 @@ CONTAINS
     ! ----------------------------------------------------------------
     IF ( Add ) THEN
        CALL EmisList_Add( Lct%Dct, HcoState, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     ! ----------------------------------------------------------------

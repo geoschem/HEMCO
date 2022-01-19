@@ -500,13 +500,14 @@ CONTAINS
     INTEGER            :: YR, MT, DY, HR, MN, SC
 
     ! Strings
-    CHARACTER(LEN=255) :: Msg, ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: Msg, ErrMsg, ThisLoc, LOC
 
     !=======================================================================
     ! HCOI_SA_RUN begins here!
     !=======================================================================
 
     ! Initialize
+    LOC       = 'HCOI_SA_RUN (HCOI_STANDALONE_MOD.F90)'
     RC        = HCO_SUCCESS
     notDryRun = ( .not. HcoState%Options%IsDryRun )
     ErrMsg    = ''
@@ -536,10 +537,15 @@ CONTAINS
           CALL HcoClock_Set ( HcoState,  YRS(1), MTS(1), &
                               DYS(1),    HRS(1), MNS(1), SCS(1), &
                               IsEmisTime=.TRUE., RC=RC)
-          IF ( RC /= HCO_SUCCESS) RETURN
-       ELSE
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR ( 'ERROR 0', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
+
           CALL HcoClock_Increase ( HcoState, HcoState%TS_EMIS, .TRUE., RC=RC )
-          IF ( RC /= HCO_SUCCESS) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR ( 'ERROR 1', RC, THISLOC=LOC )
+          ENDIF
        ENDIF
 
        ! Get current time
@@ -1056,6 +1062,7 @@ CONTAINS
     !=================================================================
 
     ! Initialize
+    LOC     = 'SET_GRID (HCOI_STANDALONE_MOD.F90)'
     RC      = HCO_SUCCESS
     Msg     = ''
     ErrMsg  = ''
@@ -1504,7 +1511,10 @@ CONTAINS
        CALL HCO_VertGrid_Define( HcoState%Config, &
                                  HcoState%Grid%zGrid, NZ, RC=RC )
     ENDIF
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set pointers to grid variables
     HcoState%Grid%XMID%Val      => XMID   (:,:,1)
@@ -2110,7 +2120,7 @@ CONTAINS
     LOGICAL            :: FIRST
 
     ! Strings
-    CHARACTER(LEN=255) :: Name, ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: Name, ErrMsg, ThisLoc, LOC
 
     ! Pointers
     REAL(hp), POINTER  :: PSFC    (:,:  )
@@ -2124,6 +2134,7 @@ CONTAINS
     !========================================================================
 
     ! Initialize
+    LOC      = 'ExtState_SetFields (HCOI_STANDALONE_MOD.F90)'
     RC       = HCO_SUCCESS
     ErrMsg   = ''
     ThisLoc  = &
@@ -2137,8 +2148,11 @@ CONTAINS
     PEDGE    => NULL()
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, ThisLoc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! First call?
     FIRST = HcoClock_First ( HcoState%Clock, .FALSE. )
@@ -2758,7 +2772,10 @@ CONTAINS
 
     ! Attempt to calculate vertical grid quantities
     CALL HCO_CalcVertGrid( HcoState, PSFC, ZSFC, TK, BXHEIGHT, PEDGE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Reset pointers
     PSFC     => NULL()
@@ -3010,21 +3027,25 @@ CONTAINS
     INTEGER            :: nArg,   ArgLen
 
     ! Strings
-    CHARACTER(LEN=255) :: ArgVal, ErrMsg, ThisLoc
+    CHARACTER(LEN=255) :: ArgVal, ErrMsg, ThisLoc, LOC
 
     !=======================================================================
     ! Init_Dry_Run begins here!
     !=======================================================================
 
     ! Initialize
+    LOC     = 'Init_Dry_Run (HCOI_STANDALONE_MOD.F90)'
     RC      = HCO_SUCCESS
     ErrMsg  = ''
     ThisLoc = &
         ' -> at Init_Dry_Run (in HEMCO/Interfaces/hcoi_standalone_mod.F90)'
 
     ! Enter
-    CALL HCO_Enter( HcoState%Config%Err, ThisLoc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !=======================================================================
     ! Initialize dry-run fields of the HEMCO state object
@@ -3092,21 +3113,25 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Strings
-    CHARACTER(LEN=255 ) :: ErrMsg, ThisLoc
+    CHARACTER(LEN=255 ) :: ErrMsg, ThisLoc, LOC
 
     !=======================================================================
     ! Cleanup_Dry_Run begins here!
     !=======================================================================
 
     ! Initialize
-    RC     = HCO_SUCCESS
+    LOC     = 'Cleanup_Dry_Run (HCOI_STANDALONE_MOD.F90)'
+    RC      = HCO_SUCCESS
     ErrMsg  = ''
     ThisLoc = &
        ' -> at Cleanup_Dry_Run (in HEMCO/Interfaces/hcoi_standalone_mod.F90)'
 
     ! Enter
-    CALL HCO_Enter( HcoState%Config%Err, ThisLoc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Only do the following for the dry-run simulation
     IF ( HcoState%Options%IsDryRun ) THEN

@@ -159,7 +159,10 @@ CONTAINS
        !    IF ( RC /= HCO_SUCCESS) WRITE(*,*) "Fail! RC: ", RC, "   Flag: ", FLAG
        ! ENDIF
 
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        IF ( FLAG /= HCO_SUCCESS ) EXIT
 
        ! Only write diagnostics if this is the first Diagn_Get call for

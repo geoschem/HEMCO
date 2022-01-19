@@ -206,15 +206,23 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     ! ================================================================
     ! HCO_ArrInit_2D_Hp begins here
     ! ================================================================
+    LOC = 'HCO_ArrInit_2D_Hp (HCO_ARR_MOD.F90)'
 
     NULLIFY (Arr)
     ALLOCATE(Arr)
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave
     RC = HCO_SUCCESS
@@ -254,15 +262,23 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     ! ================================================================
     ! HCO_ArrInit_2D_Sp begins here
     ! ================================================================
+    LOC = 'HCO_ArrInit_2D_Sp (HCO_ARR_MOD.F90)'
 
     NULLIFY (Arr)
     ALLOCATE(Arr)
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave
     RC = HCO_SUCCESS
@@ -302,15 +318,23 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     ! ================================================================
     ! HCO_ArrInit_2D_I begins here
     ! ================================================================
+    LOC = 'HCO_ArrInit_2D_I (HCO_ARR_MOD.F90)'
 
     NULLIFY (Arr)
     ALLOCATE(Arr)
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave
     RC = HCO_SUCCESS
@@ -351,14 +375,22 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! HCO_ArrInit_3D_Hp begins here
     ! ================================================================
+    LOC = 'HCO_ArrInit_3D_Hp (HCO_ARR_MOD.F90)'
 
     NULLIFY (Arr)
     ALLOCATE(Arr)
     CALL HCO_ValInit( Arr%Val, nx, ny, nz, Arr%Alloc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave
     RC = HCO_SUCCESS
@@ -399,14 +431,22 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! HCO_ArrInit_3D_Hp begins here
     ! ================================================================
+    LOC = 'HCO_ArrInit_3D_Hp (HCO_ARR_MOD.F90)'
 
     NULLIFY (Arr)
     ALLOCATE(Arr)
     CALL HCO_ValInit( Arr%Val, nx, ny, nz, Arr%Alloc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Leave
     RC = HCO_SUCCESS

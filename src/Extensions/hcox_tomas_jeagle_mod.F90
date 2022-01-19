@@ -122,7 +122,7 @@ CONTAINS
     REAL(sp)          :: FOCEAN, W10M, DTEMIS
     REAL(dp)          :: F100,   W, A_M2, FEMIS, NUMBER, MASS, NUMBER_TOT
     REAL(dp)          :: rwet, dfo, B, A, SST, SCALE
-    CHARACTER(LEN=255):: MSG
+    CHARACTER(LEN=255):: MSG, LOC
 
     REAL*8, PARAMETER :: BETHA=2.22d0   !wet diameter (80% Rel Hum) to dry diam
 
@@ -142,13 +142,17 @@ CONTAINS
     !=================================================================
     ! SRCSALT30 begins here!
     !=================================================================
+    LOC = 'SRCSALT30 (HCOX_TOMAS_JEAGLE_MOD.F90)'
 
     ! Return if extension disabled
     IF ( ExtState%TOMAS_Jeagle <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'HCOX_TOMAS_Jeagle_Run (hcox_TOMAS_Jeagle_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get instance
     Inst   => NULL()
@@ -184,7 +188,7 @@ CONTAINS
 
        ! Get the fraction of the box that is over water
        IF ( HCO_LandType( ExtState%WLI%Arr%Val(I,J),              &
-                          ExtState%ALBD%Arr%Val(I,J) ) == 0 ) THEN
+                          ExtState%FRLANDIC%Arr%Val(I,J) ) == 0 ) THEN
           FOCEAN = 1d0 - ExtState%FRCLND%Arr%Val(I,J)
        ELSE
           FOCEAN = 0.d0
@@ -353,7 +357,7 @@ CONTAINS
     REAL*8                         :: A, B, R0, R1
     REAL*8                         :: CONST_N
     INTEGER                        :: nSpc, minLen
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
 
     ! Arrays
 !    INTEGER,           ALLOCATABLE :: HcoIDs(:)
@@ -365,14 +369,18 @@ CONTAINS
     !=================================================================
     ! HCOX_TOMAS_Jeagle_Init begins here!
     !=================================================================
+    LOC = 'HCOX_TOMAS_Jeagle_Init (HCOX_TOMAS_JEAGLE_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_TOMAS_Jeagle_Init (hcox_tomas_jeagle_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create Instance
     Inst => NULL()
@@ -391,7 +399,10 @@ CONTAINS
     ! Get HEMCO species IDs
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, Inst%HcoIDs, SpcNames, &
                           nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( nSpc < HcoState%MicroPhys%nBins ) THEN
        MSG = 'Not enough sea salt emission species set'
        CALL HCO_ERROR(MSG, RC )
@@ -548,7 +559,7 @@ CONTAINS
 
     ! Activate met fields
     ExtState%WLI%DoUse         = .TRUE.
-    ExtState%ALBD%DoUse        = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%TSKIN%DoUse       = .TRUE.
     ExtState%U10M%DoUse        = .TRUE.
     ExtState%V10M%DoUse        = .TRUE.

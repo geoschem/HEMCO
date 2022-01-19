@@ -109,16 +109,19 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     TYPE(MyInst), POINTER :: Inst => NULL()
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
 
     !=================================================================
     ! HCOX_<yourname>_RUN begins here!
     !=================================================================
+    LOC = 'HCOX_<yourname>_RUN (HCOX_<yourname>_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, &
-       'HCOX_<yourname>_Run (hcox_<yourname>_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get pointer to this instance. Varible Inst contains all module
     ! variables for the current instance. The instance number is
@@ -185,19 +188,23 @@ CONTAINS
 !
     TYPE(MyInst), POINTER          :: Inst => NULL()
     INTEGER                        :: ExtNr, N
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
 
     !=================================================================
     ! HCOX_<yourname>_INIT begins here!
     !=================================================================
+    LOC = 'HCOX_<yourname>_INIT (HCOX_<yourname>_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_<yourname>_Init (hcox_<yourname>_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create instance for this simulation. Link instance number to the ExtState object
     ! for future reference to the instance. See InstCreate for more details.
@@ -209,7 +216,10 @@ CONTAINS
 
     ! Get species IDs.
     CALL HCO_GetExtHcoID( HcoState, ExtNr, Inst%SpcIDs, Inst%SpcNames, Inst%nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! There must be at least one species
     IF ( Inst%nSpc == 0 ) THEN
@@ -222,12 +232,18 @@ CONTAINS
     ! Scaling_<SpcName>.
     CALL GetExtSpcVal( HcoState%Config, ExtNr, Inst%nSpc, &
                        Inst%SpcNames, 'Scaling', 1.0_sp, Inst%SpcScl, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get species mask fields
     CALL GetExtSpcVal( HcoState%Config, ExtNr, Inst%nSpc, &
                        Inst%SpcNames, 'ScaleField', HCOX_NOSCALE, Inst%SpcScalFldNme, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Add conversion factor from kg S to kg of emitted species
     DO N = 1, Inst%nSpc
