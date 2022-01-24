@@ -79,6 +79,7 @@ set(HEMCO_Fortran_FLAGS_RELWITHDEBINFO_GNU
 set(HEMCO_Fortran_FLAGS_DEBUG_GNU
    -g -gdwarf-2 -gstrict-dwarf -O0 -Wall -Wextra -Wconversion -Warray-temporaries 
    -fcheck=array-temps -ffpe-trap=invalid,zero,overflow -finit-real=snan -fcheck=bounds -fcheck=pointer
+   -fcheck=no-recursion
    CACHE STRING "HEMCO compiler flags for build type debug with GNU compilers"
 )
 
