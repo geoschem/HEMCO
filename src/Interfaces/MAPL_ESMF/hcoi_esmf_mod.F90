@@ -20,7 +20,8 @@ MODULE HCOI_ESMF_MOD
 #if defined (ESMF_)
 #include "MAPL_Generic.h"
   USE ESMF
-  USE MAPL_Mod
+  USE MAPLBase_Mod
+  USE MAPL_GenericMod
 
   IMPLICIT NONE
   PRIVATE

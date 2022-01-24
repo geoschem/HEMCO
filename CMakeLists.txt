@@ -284,9 +284,11 @@ endif()
 if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
     target_link_libraries(HEMCOBuildProperties
         INTERFACE $<LINK_ONLY:MAPL.base>
+        INTERFACE $<LINK_ONLY:MAPL.generic>
     )
     target_include_directories(HEMCOBuildProperties 
         INTERFACE $<TARGET_PROPERTY:MAPL.base,INTERFACE_INCLUDE_DIRECTORIES>
+        INTERFACE $<TARGET_PROPERTY:MAPL.generic,INTERFACE_INCLUDE_DIRECTORIES>
     )
     target_compile_definitions(HEMCOBuildProperties
         INTERFACE ESMF_
