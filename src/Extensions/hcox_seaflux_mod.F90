@@ -168,7 +168,7 @@ CONTAINS
     REAL(hp), TARGET      :: SINK  (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET      :: SeaConc(HcoState%NX,HcoState%NY)
     CHARACTER(LEN=255)    :: ContName
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
     LOGICAL               :: VERBOSE
 
     ! Pointers
@@ -177,10 +177,14 @@ CONTAINS
     !=================================================================
     ! HCOX_SeaFlux_Run begins here!
     !=================================================================
+    LOC = 'HCOX_SeaFlux_Run (HCOX_SEAFLUX_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_SeaFlux_Run (hcox_seaflux_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return if extension disabled
     IF ( ExtState%SeaFlux <= 0 ) RETURN
@@ -196,7 +200,7 @@ CONTAINS
     CALL InstGet ( ExtState%SeaFlux, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find SeaFlux instance Nr. ', ExtState%SeaFlux
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -227,27 +231,39 @@ CONTAINS
        ! Get seawater concentration of given compound (from HEMCO core).
        ContName = TRIM(Inst%OcSpecs(OcID)%OcDataName)
        CALL HCO_EvalFld ( HcoState, ContName, SeaConc, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Calculate oceanic source (kg/m2/s) as well as the deposition
        ! velocity (1/s).
        CALL Calc_SeaFlux ( HcoState, ExtState, Inst,    &
                            SOURCE,   SINK,     SeaConc, &
                            OcID,     HcoID,    RC       )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Set flux in HEMCO object [kg/m2/s]
        CALL HCO_EmisAdd ( HcoState, SOURCE, HcoID, RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'HCO_EmisAdd error: ' // TRIM(Inst%OcSpecs(OcID)%OcSpcName)
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Set deposition velocity in HEMCO object [1/s]
        CALL HCO_DepvAdd ( HcoState, SINK, HcoID, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Free pointers
        !SeaConc => NULL()
@@ -296,6 +312,7 @@ CONTAINS
 !
 ! !USES:
 !
+    USE ieee_arithmetic,    ONLY : ieee_is_finite
     USE Ocean_ToolBox_Mod,  ONLY : CALC_KG
     USE Hco_Henry_Mod,      ONLY : CALC_KH, CALC_HEFF
     USE HCO_CALC_MOD,       ONLY : HCO_CheckDepv
@@ -358,15 +375,19 @@ CONTAINS
     REAL(dp), PARAMETER :: TMAX = 318.15_dp
 
     ! Error handling
-    CHARACTER(LEN=255)  :: MSG
+    CHARACTER(LEN=255)  :: MSG, LOC
 
     !=================================================================
     ! CALC_SEAFLUX begins here!
     !=================================================================
+    LOC = 'CALC_SEAFLUX (HCOX_SEAFLUX_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'Calc_SeaFlux (hcox_seaflux_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Init
     SOURCE  = 0.0_hp
@@ -411,16 +432,9 @@ CONTAINS
        ! Make sure we have no negative seawater concentrations
        IF ( SeaConc(I,J) < 0.0_hp ) SeaConc(I,J) = 0.0_hp
 
-       ! Kludge: Do not check albedo for HEMCO within CESM because CESM
-       ! enforces nighttime "albedo" value to be 1.0 (hplin, 5/7/21)
-#if !defined( HEMCO_CESM )
-       ! Assume no air-sea exchange over snow/ice (ALBEDO > 0.4)
-       IF ( ExtState%ALBD%Arr%Val(I,J) > 0.4_hp ) CYCLE
-#endif
-
        ! Do only over the ocean:
        IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J), &
-                          ExtState%ALBD%Arr%Val(I,J) ) == 0 ) THEN
+                          ExtState%FRLANDIC%Arr%Val(I,J) ) == 0 ) THEN
 
           !-----------------------------------------------------------
           ! Get grid box and species specific quantities
@@ -540,7 +554,7 @@ CONTAINS
 
     ! Check exit status
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -652,7 +666,7 @@ CONTAINS
     ! Scalars
     TYPE(MyInst), POINTER          :: Inst
     INTEGER                        :: ExtNr, I, J, nSpc
-    CHARACTER(LEN=255)             :: NAME_OC, MSG, ERR
+    CHARACTER(LEN=255)             :: NAME_OC, MSG, ERR, LOC
 
     ! Arrays
     INTEGER,           ALLOCATABLE :: HcoIDs(:)
@@ -661,20 +675,24 @@ CONTAINS
     !=================================================================
     ! HCOX_SeaFlux_Init begins here!
     !=================================================================
+    LOC = 'HCOX_SeaFlux_Init (HCOX_SEAFLUX_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_SeaFlux_Init (hcox_seaflux_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     ERR = 'nOcSpc too low!'
 
     ! Create instance for this simulation
     CALL InstCreate ( ExtNr, ExtState%SeaFlux, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create SeaFlux instance', RC )
+       CALL HCO_ERROR ( 'Cannot create SeaFlux instance', RC )
        RETURN
     ENDIF
 
@@ -712,7 +730,7 @@ CONTAINS
 
     I = I + 1
     IF ( I > Inst%nOcSpc ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, ERR, RC )
+       CALL HCO_ERROR ( ERR, RC )
        RETURN
     ENDIF
 
@@ -727,7 +745,7 @@ CONTAINS
 
     I = I + 1
     IF ( I > Inst%nOcSpc ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, ERR, RC )
+       CALL HCO_ERROR ( ERR, RC )
        RETURN
     ENDIF
 
@@ -742,7 +760,7 @@ CONTAINS
 
     I = I + 1
     IF ( I > Inst%nOcSpc ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, ERR, RC )
+       CALL HCO_ERROR ( ERR, RC )
        RETURN
     ENDIF
 
@@ -757,7 +775,7 @@ CONTAINS
 
     I = I + 1
     IF ( I > Inst%nOcSpc ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, ERR, RC )
+       CALL HCO_ERROR ( ERR, RC )
        RETURN
     ENDIF
 
@@ -818,7 +836,10 @@ CONTAINS
 
     ! HEMCO species IDs of species names defined in config. file
     CALL HCO_GetExtHcoID( HcoState, ExtNr, HcoIDs, SpcNames, nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set information in module variables
     DO I = 1, Inst%nOcSpc
@@ -851,7 +872,7 @@ CONTAINS
     ExtState%U10M%DoUse        = .TRUE.
     ExtState%V10M%DoUse        = .TRUE.
     ExtState%TSKIN%DoUse       = .TRUE.
-    ExtState%ALBD%DoUse        = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%WLI%DoUse         = .TRUE.
     IF ( HcoState%Options%PBL_DRYDEP ) THEN
        ExtState%FRAC_OF_PBL%DoUse = .TRUE.

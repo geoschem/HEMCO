@@ -136,6 +136,7 @@ CONTAINS
       CHARACTER(LEN=127)         :: LNAME
       CHARACTER(LEN=63), POINTER :: Spc(:)
       TYPE(ListCont),    POINTER :: CurrCont
+      CHARACTER(LEN=255)         :: LOC
 
       ! ================================================================
       ! HCO_SetServices begins here
@@ -145,6 +146,7 @@ CONTAINS
       __Iam__('HCO_SetServices (HCOI_ESMF_MOD.F90)')
 
       ! Init
+      LOC      = 'HCO_SetServices (HCOI_ESMF_MOD.F90)'
       Spc      => NULL()
       CurrCont => NULL()
 
@@ -259,7 +261,10 @@ CONTAINS
                                    SpcName,   ExtNr,   Cat,   Hier, &
                                    SpaceDim,  OutUnit, EOF,   RC,   &
                                    lName=lName, UnitName=UnitName )
-            IF ( RC /= HCO_SUCCESS ) RETURN
+            IF ( RC /= HCO_SUCCESS ) THEN
+                CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+                RETURN
+            ENDIF
 
             ! Leave here if end of file
             IF ( EOF ) EXIT
@@ -716,7 +721,7 @@ CONTAINS
 
          ! Error check
          IF ( .NOT. Filled ) THEN
-            CALL HCO_ERROR(HcoState%Config%Err,'Cannot fill '//TRIM(FldName),RC)
+            CALL HCO_ERROR('Cannot fill '//TRIM(FldName),RC)
             ASSERT_(.FALSE.)
          ENDIF
 

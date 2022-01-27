@@ -130,19 +130,22 @@ CONTAINS
 
     ! Error handling
     LOGICAL                :: ERR
-    CHARACTER(LEN=255)     :: MSG
+    CHARACTER(LEN=255)     :: MSG, LOC
 
     !=================================================================
     ! HCOX_Iodine_Run begins here!
     !=================================================================
+    LOC = 'HCOX_Iodine_Run (HCOX_IODINE_MOD.F90)'
 
     ! Return if extension disabled
     IF ( ExtState%Inorg_Iodine <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err,   &
-                     'HCOX_Iodine_Run (hcox_iodine_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Exit status
     ERR = .FALSE.
@@ -152,7 +155,7 @@ CONTAINS
     CALL InstGet ( ExtState%Inorg_Iodine, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find iodine instance Nr. ', ExtState%Inorg_Iodine
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -170,7 +173,7 @@ CONTAINS
        ! further check needed for ocean, but not available
        ! ( as parameterisation of iodide based on ocean data)
        IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J), &
-                          ExtState%ALBD%Arr%Val(I,J) ) /= 0 ) CYCLE
+                          ExtState%FRLANDIC%Arr%Val(I,J) ) /= 0 ) CYCLE
 
        ! Grid box surface area on simulation grid [m2]
        A_M2 = HcoState%Grid%AREA_M2%Val( I, J )
@@ -356,7 +359,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER                        :: ExtNr, N, R, AS
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     INTEGER                        :: nSpc, minLen
     LOGICAL                        :: FOUND
     INTEGER, ALLOCATABLE           :: HcoIDs(:)
@@ -366,15 +369,18 @@ CONTAINS
     !=================================================================
     ! HCOX_Iodine_Init begins here!
     !=================================================================
+    LOC = 'HCOX_Iodine_Init (HCOX_IODINE_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err,   &
-                     'HCOX_iodine_Init (hcox_iodine_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Init
     Inst => NULL()
@@ -382,7 +388,7 @@ CONTAINS
     ! Create Instance
     CALL InstCreate ( ExtNr, ExtState%Inorg_Iodine, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create InorgIodine instance', RC )
+       CALL HCO_ERROR ( 'Cannot create InorgIodine instance', RC )
        RETURN
     ENDIF
 
@@ -395,11 +401,17 @@ CONTAINS
     !       the config. file!
     CALL GetExtOpt ( HcoState%Config, Inst%ExtNr, 'Emit I2',  &
                      OptValBool=Inst%CalcI2, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL GetExtOpt ( HcoState%Config, Inst%ExtNr, 'Emit HOI', &
                      OptValBool=Inst%CalcHOI, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set minimum length and update if CalcI2/CalcHOI==True
     minLen = 0
@@ -411,7 +423,10 @@ CONTAINS
     ENDIF
     ! Get HEMCO species IDs
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, HcoIDs, SpcNames, nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( nSpc < minLen ) THEN
        MSG = 'Not enough iodine emission species set'
        CALL HCO_ERROR ( MSG, RC )
@@ -447,7 +462,7 @@ CONTAINS
 
     ! Activate met fields used by this module
     ExtState%WLI%DoUse   = .TRUE.
-    ExtState%ALBD%DoUse  = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%TSKIN%DoUse = .TRUE.
     ExtState%U10M%DoUse  = .TRUE.
     ExtState%V10M%DoUse  = .TRUE.

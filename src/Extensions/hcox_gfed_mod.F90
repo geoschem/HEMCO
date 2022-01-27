@@ -212,6 +212,7 @@ CONTAINS
     INTEGER             :: N, M
     REAL(hp), POINTER   :: TmpPtr(:,:)
     CHARACTER(LEN=63)   :: MSG
+    CHARACTER(LEN=255)  :: LOC
 
     REAL(hp), TARGET    :: SpcArr(HcoState%NX,HcoState%NY)
     REAL(hp), TARGET    :: TypArr(HcoState%NX,HcoState%NY)
@@ -231,20 +232,24 @@ CONTAINS
     !=================================================================
     ! HCOX_GFED_Run begins here!
     !=================================================================
+    LOC = 'HCOX_GFED_Run (HCOX_GFED_MOD.F90)'
 
     ! Return if extension disabled
     IF ( ExtState%GFED <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_GFED_Run (hcox_gfed_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get instance
     Inst => NULL()
     CALL InstGet ( ExtState%GFED, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find GFED instance Nr. ', ExtState%GFED
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -263,29 +268,53 @@ CONTAINS
 
     IF ( Inst%IsGFED4 ) THEN
           CALL HCO_EvalFld ( HcoState, 'GFED_SAVA', Inst%GFED_SAVA, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           CALL HCO_EvalFld ( HcoState, 'GFED_BORF', Inst%GFED_BORF, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           CALL HCO_EvalFld ( HcoState, 'GFED_TEMP', Inst%GFED_TEMP, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           CALL HCO_EvalFld ( HcoState, 'GFED_DEFO', Inst%GFED_DEFO, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           CALL HCO_EvalFld ( HcoState, 'GFED_PEAT', Inst%GFED_PEAT, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           CALL HCO_EvalFld ( HcoState, 'GFED_AGRI', Inst%GFED_AGRI, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! Also point to scale factors if needed
        IF ( Inst%DoDay ) THEN
           CALL HCO_EvalFld ( HcoState, 'GFED_FRAC_DAY', &
                              Inst%DAYSCAL,   RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
        IF ( Inst%Do3Hr ) THEN
           CALL HCO_EvalFld ( HcoState, 'GFED_FRAC_3HOUR', &
                              Inst%HRSCAL,    RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        FIRST = .FALSE.
@@ -327,7 +356,7 @@ CONTAINS
              CASE( 6 )
                 TMPPTR => Inst%GFED_AGRI
              CASE DEFAULT
-                CALL HCO_ERROR ( HcoState%Config%Err, 'Undefined emission factor', RC )
+                CALL HCO_ERROR ( 'Undefined emission factor', RC )
                 RETURN
           END SELECT
 
@@ -400,7 +429,10 @@ CONTAINS
 
        ! Check for masking
        CALL HCOX_SCALE( HcoState, SpcArr, TRIM(Inst%SpcScalFldNme(N)), RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
 !==============================================================================
 ! This code is required for the vertical distribution of biomass burning emiss.
@@ -480,7 +512,7 @@ CONTAINS
        CALL HCO_EmisAdd( HcoState, SpcArr, Inst%HcoIDs(N), RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'HCO_EmisAdd error: ' // TRIM(HcoState%Spc(Inst%HcoIDs(N))%SpcName)
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
 
@@ -536,7 +568,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255) :: MSG, ScalFile
+    CHARACTER(LEN=255) :: MSG, ScalFile, LOC
     INTEGER            :: ExtNr, tmpNr, AS, IU_FILE, IOS
     INTEGER            :: nSpc, N, M, NDUM, NCHAR
     CHARACTER(LEN=31)  :: tmpName
@@ -558,20 +590,24 @@ CONTAINS
     !=================================================================
     ! HCOX_GFED_Init begins here!
     !=================================================================
+    LOC = 'HCOX_GFED_Init (HCOX_GFED_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_GFED_Init (hcox_gfed_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create local instance for this simulation
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%GFED, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create GFED instance', RC )
+       CALL HCO_ERROR ( 'Cannot create GFED instance', RC )
        RETURN
     ENDIF
 
@@ -586,7 +622,7 @@ CONTAINS
     IF ( .NOT. Inst%IsGFED4  ) THEN
        MSG = 'GFED is enabled but no GFED version is selected. ' // &
              'Please set GFED4 in HEMCO configuration file.'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -607,7 +643,10 @@ CONTAINS
     ! Try to read hydrophilic fractions of BC. Defaults to 0.2.
     CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'hydrophilic BC', &
                      OptValSp=ValSp, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        Inst%BCPIfrac = 0.2
     ELSE
@@ -617,7 +656,10 @@ CONTAINS
     ! Try to read hydrophilic fractions of OC. Defaults to 0.5.
     CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'hydrophilic OC', &
                      OptValSp=ValSp, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        Inst%OCPIfrac = 0.5
     ELSE
@@ -627,7 +669,10 @@ CONTAINS
     ! Try to read POG1 fraction of SVOC. Defaults to 0.49.
     CALL GetExtOpt ( HcoState%Config, ExtNr, 'fraction POG1', &
                      OptValSp=ValSp, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        Inst%POG1frac = 0.49
     ELSE
@@ -636,7 +681,10 @@ CONTAINS
 
     CALL GetExtOpt( HcoState%Config, ExtNr, 'CO to SOAP', &
                      OptValSp=ValSp, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        Inst%SOAPfrac = 0.0
     ELSE
@@ -650,14 +698,17 @@ CONTAINS
          Inst%POG1frac < 0.0_sp .OR. Inst%POG1frac > 1.0_sp     ) THEN
        WRITE(MSG,*) 'fractions must be between 0-1: ', &
           Inst%OCPIfrac, Inst%BCPIfrac, Inst%POG1frac, Inst%SOAPfrac
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
     ! Use daily scale factors?
     CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'GFED_daily', &
                      OptValBool=Inst%DoDay, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        Inst%DoDay = .FALSE.
     ENDIF
@@ -665,7 +716,10 @@ CONTAINS
     ! Use 3-hourly scale factors?
     CALL GetExtOpt( HcoState%Config, ExtNr, 'GFED_3hourly', &
                      OptValBool=Inst%Do3Hr, FOUND=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) THEN
        Inst%Do3Hr = .FALSE.
     ENDIF
@@ -677,7 +731,7 @@ CONTAINS
     ! Allocate scale factors table
     ALLOCATE ( Inst%GFED4_EMFAC ( N_SPEC, N_EMFAC ), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate GFED_EMFAC', RC )
+       CALL HCO_ERROR( 'Cannot allocate GFED_EMFAC', RC )
        RETURN
     ENDIF
     Inst%GFED4_EMFAC = 0.0_hp
@@ -732,10 +786,13 @@ CONTAINS
 
     ! Get HEMCO species IDs of all species specified in configuration file
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, HcoIDs, SpcNames, Inst%nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( Inst%nSpc == 0 ) THEN
        MSG = 'No GFED species specified'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
     ALLOCATE(Inst%HcoIDs(Inst%nSpc),Inst%SpcNames(Inst%nSpc))
@@ -746,12 +803,18 @@ CONTAINS
     ! Get species scale factors
     CALL GetExtSpcVal( HcoState%Config, Inst%ExtNr, Inst%nSpc, &
                        Inst%SpcNames, 'Scaling', 1.0_sp, SpcScal, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get species mask fields
     CALL GetExtSpcVal( HcoState%Config, Inst%ExtNr, Inst%nSpc, &
                        Inst%SpcNames, 'ScaleField', HCOX_NOSCALE, SpcScalFldNme, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Pass to instance
     nSpc = Inst%nSpc
@@ -777,14 +840,14 @@ CONTAINS
              'This version of HEMCO expects species scale factors to be ' // &
              'set as `Scaling_XX` instead of `XX scale factor`. '         // &
              'Please update the GFED settings section accordingly.'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
     ! GFEDIDS are the matching indeces of the HEMCO species in GFED_EMFAC.
     ALLOCATE ( Inst%GfedIDs(Inst%nSpc), STAT=AS )
     IF ( AS/=0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate GfedIDs', RC )
+       CALL HCO_ERROR( 'Cannot allocate GfedIDs', RC )
        RETURN
     ENDIF
     Inst%GfedIDs = -1
@@ -849,7 +912,7 @@ CONTAINS
        ENDDO
        IF ( .NOT. Matched ) THEN
           MSG = 'Species '// TRIM(SpcName) //' not found in GFED'
-          CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+          CALL HCO_ERROR(MSG, RC )
           RETURN
        ENDIF
     ENDDO !N

@@ -79,8 +79,6 @@ MODULE HCO_TYPES_MOD
      INTEGER                 :: ModID      ! Model species ID
      CHARACTER(LEN= 31)      :: SpcName    ! species names
      REAL(hp)                :: MW_g       ! species molecular weight [g/mol]
-     REAL(hp)                :: EmMW_g     ! emission molecular wt.**1 (g/mol)
-     REAL(hp)                :: MolecRatio ! molecule emission ratio**2 (-)
      REAL(hp)                :: HenryK0    ! liq. over gas Henry const [M/atm]
      REAL(hp)                :: HenryCR    ! K0 temp. dependency [K]
      REAL(hp)                :: HenryPKA   ! pKa for Henry const. correction

@@ -170,7 +170,7 @@ CONTAINS
     REAL*8            :: SRCE_P, REYNOL, ALPHA,  BETA
     REAL*8            :: GAMMA,  CW,     DTSRCE, A_M2,  G
     REAL              :: DSRC
-    CHARACTER(LEN=63) :: MSG
+    CHARACTER(LEN=63) :: MSG, LOC
 
     ! Arrays
     REAL*8            :: DUST_EMI_TOTAL(HcoState%NX, HcoState%NY)
@@ -182,20 +182,24 @@ CONTAINS
     !=======================================================================
     ! HCOX_DUSTGINOUX_RUN begins here!
     !=======================================================================
+    LOC = 'HCOX_DUSTGINOUX_RUN (HCOX_DUSTGINOUX_MOD.F90)'
 
     ! Return if extension is disabled
     IF ( ExtState%DustGinoux <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'HCOX_DustGinoux_Run (hcox_dustginoux_mod.F90)',RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get instance
     Inst   => NULL()
     CALL InstGet ( ExtState%DustGinoux, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find DustGinoux instance Nr. ', ExtState%DustGinoux
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -221,15 +225,24 @@ CONTAINS
 
        ! Sand
        CALL HCO_EvalFld( HcoState, 'GINOUX_SAND', Inst%SRCE_SAND, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Silt
        CALL HCO_EvalFld( HcoState, 'GINOUX_SILT', Inst%SRCE_SILT, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Clay
        CALL HCO_EvalFld( HcoState, 'GINOUX_CLAY', Inst%SRCE_CLAY, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     !ENDIF
 
     !=================================================================
@@ -375,7 +388,7 @@ CONTAINS
                             Inst%HcoIDs(N), RC,       ExtNr=Inst%ExtNr   )
           IF ( RC /= HCO_SUCCESS ) THEN
              WRITE(MSG,*) 'HCO_EmisAdd error: dust bin ', N
-             CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+             CALL HCO_ERROR(MSG, RC )
              RETURN
           ENDIF
 
@@ -391,7 +404,7 @@ CONTAINS
                                Inst%HcoIDsAlk(N), RC, ExtNr=Inst%ExtNrAlk)
              IF ( RC /= HCO_SUCCESS ) THEN
                 WRITE(MSG,*) 'HCO_EmisAdd error: dust alkalinity bin ', N
-                CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+                CALL HCO_ERROR(MSG, RC )
                 RETURN
              ENDIF
           ENDIF
@@ -452,7 +465,7 @@ CONTAINS
 !
     ! Scalars
     INTEGER                        :: N, AS, nSpc, nSpcAlk, ExtNr
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     REAL(dp)                       :: Mp, Rp, TmpScal
     LOGICAL                        :: FOUND
 
@@ -466,6 +479,7 @@ CONTAINS
     !=======================================================================
     ! HCOX_DUSTGINOUX_INIT begins here!
     !=======================================================================
+    LOC = 'HCOX_DUSTGINOUX_INIT (HCOX_DUSTGINOUX_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
@@ -475,7 +489,7 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%DustGinoux, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create DustGinoux instance', RC )
+       CALL HCO_ERROR ( 'Cannot create DustGinoux instance', RC )
        RETURN
     ENDIF
     ! Also fill Inst%ExtNr
@@ -485,8 +499,11 @@ CONTAINS
     Inst%ExtNrAlk = GetExtNr( HcoState%Config%ExtList, 'DustAlk' )
 
     ! Enter
-    CALL HCO_ENTER(HcoState%Config%Err,'HCOX_DustGinoux_Init (hcox_dustginoux_mod.F90)',RC)
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get the expected number of dust species
     Inst%NBINS = HcoState%nDust
@@ -494,13 +511,19 @@ CONTAINS
     ! Get the actual number of dust species defined for DustGinoux extension
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, Inst%HcoIDs, &
                           SpcNames, nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get the dust alkalinity species defined for DustAlk option
     IF ( Inst%ExtNrAlk > 0 ) THEN
        CALL HCO_GetExtHcoID( HcoState,    Inst%ExtNrAlk, Inst%HcoIDsAlk, &
                              SpcNamesAlk, nSpcAlk,  RC)
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     ! Make sure the # of dust species is as expected
@@ -508,7 +531,7 @@ CONTAINS
        WRITE( MSG, 100 ) Inst%NBINS, nSpc
  100   FORMAT( 'Expected ', i3, ' DustGinoux species but only found ', i3, &
                ' in the HEMCO configuration file!  Exiting...' )
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -517,7 +540,10 @@ CONTAINS
     ! based upon compiler switches.
     CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'Mass tuning factor', &
                      OptValDp=TmpScal, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set parameter FLX_MSS_FDG_FCT to specified tuning factor. Get from
     ! wrapper routine if not defined in configuration file
@@ -573,7 +599,7 @@ CONTAINS
                Inst%SRCE_CLAY ( HcoState%NX, HcoState%NY ), &
                STAT = AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR(HcoState%Config%Err,'Allocation error', RC )
+       CALL HCO_ERROR('Allocation error', RC )
        RETURN
     ENDIF
 
@@ -601,7 +627,7 @@ CONTAINS
 
 #if !defined( TOMAS )
        MSG = 'Cannot have > 4 GINOUX dust bins unless you are using TOMAS!'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
 #endif
 
@@ -731,7 +757,7 @@ CONTAINS
     ELSE
 
        ! Stop w/ error message
-       CALL HCO_ERROR( HcoState%Config%Err, 'Wrong number of TOMAS dust bins!', RC )
+       CALL HCO_ERROR( 'Wrong number of TOMAS dust bins!', RC )
 
     ENDIF
 

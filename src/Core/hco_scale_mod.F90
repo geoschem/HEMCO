@@ -101,12 +101,13 @@ CONTAINS
 !
     INTEGER            :: N
     LOGICAL            :: FOUND
-    CHARACTER(LEN=255) :: iName, MSG
+    CHARACTER(LEN=255) :: iName, MSG, LOC
     REAL(hp)           :: ScalFactor
 
     !--------------------------
     ! HCO_ScaleInit begins here
     !--------------------------
+    LOC = 'HCO_ScaleInit (HCO_SCALE_MOD.F90)'
 
     ! Allocate scale factors and initialize all scale factors to 1.0
     IF ( ALLOCATED(SpcScal) ) DEALLOCATE(SpcScal)
@@ -118,7 +119,10 @@ CONTAINS
        iName = 'EmisScale_'//TRIM(HcoState%Spc(N)%SpcName)
        CALL GetExtOpt( HcoState%Config, -999, iName, OptValHp=ScalFactor, &
                        FOUND=FOUND, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! If there is a scale factor, update scale vector accordingly
        IF ( FOUND ) THEN

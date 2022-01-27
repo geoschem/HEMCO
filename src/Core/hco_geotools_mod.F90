@@ -70,18 +70,18 @@ CONTAINS
 ! !IROUTINE: HCO_LandType_Sp
 !
 ! !DESCRIPTION: Function HCO\_LANDTYPE returns the land type based upon
-!  the land water index (0=water,1=land,2=ice) and the surface albedo.
+!  the land water index (0=water,1=land,2=ice) and the fraction of land ice.
 !  Inputs are in single precision.
 !\\
 !\\
 ! !INTERFACE:
 !
-  FUNCTION HCO_LandType_Sp( WLI, Albedo ) Result ( LandType )
+  FUNCTION HCO_LandType_Sp( WLI, FRLANDIC ) Result ( LandType )
 !
 ! !INPUT PARAMETERS:
 !
     REAL(sp), INTENT(IN) :: WLI       ! Land type: 0=water,1=land,2=ice
-    REAL(sp), INTENT(IN) :: Albedo    ! Surface albedo
+    REAL(sp), INTENT(IN) :: FRLANDIC  ! Fraction of grid-box covered in land ice
 !
 ! !RETURN VALUE
 !
@@ -98,25 +98,24 @@ CONTAINS
 !BOC
 !
 ! !DEFINED PARAMETERS:
-!
-    ! Set threshold for albedo over ice. All surfaces w/ an albedo above
-    ! this value will be classified as ice.
-    REAL(sp), PARAMETER :: albd_ice = 0.695_sp
+!   
+    ! Threshold at which a grid-box is considered ice
+    REAL(sp), PARAMETER :: frac_classify_land_ice_as_ice = 0.5_sp
 
     !--------------------------
     ! HCO_LANDTYPE begins here
     !--------------------------
 
     ! Water:
-    IF ( NINT(WLI) == 0 .AND. Albedo < albd_ice ) THEN
+    IF ( NINT(WLI) == 0 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
        LandType = 0
 
     ! Land:
-    ELSEIF ( NINT(WLI) == 1 .AND. Albedo < albd_ice ) THEN
+    ELSEIF ( NINT(WLI) == 1 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
        LandType = 1
 
     ! Ice:
-    ELSEIF ( NINT(WLI) == 2 .OR. Albedo >= albd_ice ) THEN
+    ELSEIF ( NINT(WLI) == 2 .OR. FRLANDIC >= frac_classify_land_ice_as_ice ) THEN
        LandType = 2
     ENDIF
 
@@ -130,18 +129,18 @@ CONTAINS
 ! !IROUTINE: HCO_LandType_Dp
 !
 ! !DESCRIPTION: Function HCO\_LandType\_Dp returns the land type based upon
-! the land water index (0=water,1=land,2=ice) and the surface albedo.
+! the land water index (0=water,1=land,2=ice) and the fraction of land ice.
 ! Inputs are in double precision.
 !\\
 !\\
 ! !INTERFACE:
 !
-  FUNCTION HCO_LandType_Dp( WLI, Albedo ) Result ( LandType )
+  FUNCTION HCO_LandType_Dp( WLI, FRLANDIC ) Result ( LandType )
 !
 ! !INPUT PARAMETERS:
 !
     REAL(dp), INTENT(IN) :: WLI       ! Land type: 0=water,1=land,2=ice
-    REAL(dp), INTENT(IN) :: Albedo    ! Surface albedo
+    REAL(dp), INTENT(IN) :: FRLANDIC    ! Surface albedo
 !
 ! !RETURN VALUE:
 !
@@ -159,9 +158,8 @@ CONTAINS
 !
 ! !DEFINED PARAMETERS::
 !
-    ! Set threshold for albedo over ice. All surfaces w/ an albedo above
-    ! this value will be classified as ice.
-    REAL(dp), PARAMETER :: albd_ice = 0.695_dp
+    ! Threshold at which a grid-box is considered ice
+    REAL(dp), PARAMETER :: frac_classify_land_ice_as_ice = 0.5_dp
 
     !--------------------------
     ! HCO_LANDTYPE begins here
@@ -172,7 +170,7 @@ CONTAINS
 
     ! Water:
 #if !defined( HEMCO_CESM )
-    IF ( NINT(WLI) == 0 .AND. Albedo < albd_ice ) THEN
+    IF ( NINT(WLI) == 0 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
 #else
     IF ( NINT(WLI) == 0 ) THEN
 #endif
@@ -181,14 +179,14 @@ CONTAINS
     ! Land:
 
 #if !defined( HEMCO_CESM )
-    ELSEIF ( NINT(WLI) == 1 .AND. Albedo < albd_ice ) THEN
+    ELSEIF ( NINT(WLI) == 1 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
 #else
     ELSEIF ( NINT(WLI) == 1 ) THEN
 #endif
        LandType = 1
 
     ! Ice:
-    ELSEIF ( NINT(WLI) == 2 .OR. Albedo >= albd_ice ) THEN
+    ELSEIF ( NINT(WLI) == 2 .OR. FRLANDIC >= frac_classify_land_ice_as_ice ) THEN
        LandType = 2
     ENDIF
 
@@ -248,7 +246,7 @@ CONTAINS
        ! Exit w/ error after 10 iterations
        CNT = CNT + 1
        IF ( CNT > MAXIT ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, '>10 iterations', RC, &
+          CALL HCO_ERROR ( '>10 iterations', RC, &
                            THISLOC='HCO_ValidateLon (HCO_GEOTOOLS_MOD.F90)' )
           RETURN
        ENDIF
@@ -330,7 +328,7 @@ CONTAINS
        ! Exit w/ error after 10 iterations
        CNT = CNT + 1
        IF ( CNT > MAXIT ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, '>10 iterations', RC, &
+          CALL HCO_ERROR ( '>10 iterations', RC, &
                            THISLOC='HCO_ValidateLon (HCO_GEOTOOLS_MOD.F90)' )
           RETURN
        ENDIF
@@ -420,13 +418,19 @@ CONTAINS
     REAL(hp),  PARAMETER :: B2 = 0.000907e+0_hp
     REAL(hp),  PARAMETER :: B3 = 0.000148e+0_hp
 
+    CHARACTER(LEN=255) :: LOC
+
     !-------------------------------
     ! HCO_GetSUNCOS starts here!
     !-------------------------------
+    LOC = 'HCO_GetSUNCOS (HCO_GEOTOOLS_MOD.F90)'
 
     ! Get current time information
     CALL HcoClock_Get( HcoState%Clock, cDOY=DOY, cH=HOUR, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Add time adjustment
     HOUR = HOUR + DT
@@ -524,7 +528,7 @@ CONTAINS
 
     ! Check error status
     IF ( ERR ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, &
+       CALL HCO_ERROR ( &
          'Cannot calculate SZA', RC, &
           THISLOC='HCO_GetSUNCOS (hco_geotools_mod.F90)' )
        RETURN
@@ -850,7 +854,7 @@ CONTAINS
             NZ /= HcoState%NZ ) THEN
           WRITE(MSG,*) 'Wrong TK array size: ', NX, NY, NZ, &
                        '; should be: ', HcoState%NX, HcoState%NY, HcoState%NZ
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -867,12 +871,18 @@ CONTAINS
     ELSEIF ( EVAL_TK ) THEN
        ALLOCATE(TmpTK(HcoState%NX,HcoState%NY,HcoState%NZ))
        CALL HCO_EvalFld( HcoState, 'TK', TmpTK, RC, FOUND=FoundTK )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! TK is sometimes listed as TMPU, so look for that too (bmy, 3/5/21)
        IF ( .not. FoundTK ) THEN
           CALL HCO_EvalFld( HcoState, 'TMPU', TmpTK, RC, FOUND=FoundTK )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        EVAL_TK = FoundTK
@@ -894,7 +904,10 @@ CONTAINS
     ! PSFC
     ! ------------------------------------------------------------------
     CALL HCO_ArrAssert( HcoState%Grid%PSFC, HcoState%NX, HcoState%NY, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! If associated, make sure that array size is correct
     ! and pass to HEMCO surface pressure field
@@ -904,7 +917,7 @@ CONTAINS
        IF ( NX /= HcoState%NX .OR. NY /= HcoState%NY ) THEN
           WRITE(MSG,*) 'Wrong PSFC array size: ', NX, NY, &
                        '; should be: ', HcoState%NX, HcoState%NY
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -922,13 +935,19 @@ CONTAINS
     ELSEIF ( EVAL_PSFC ) THEN
        CALL HCO_EvalFld( HcoState, 'PSFC', HcoState%Grid%PSFC%Val, RC, &
             FOUND=FoundPSFC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! PSFC is sometimes listed as PS, so look for that too (bmy, 3/4/21)
        IF ( .not. FoundPSFC ) THEN
           CALL HCO_EvalFld( HcoState, 'PS', HcoState%Grid%PSFC%Val, RC, &
                FOUND=FoundPSFC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        EVAL_PSFC = FoundPSFC
@@ -949,7 +968,10 @@ CONTAINS
     ! ZSFC
     ! ------------------------------------------------------------------
     CALL HCO_ArrAssert( HcoState%Grid%ZSFC, HcoState%NX, HcoState%NY, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! If associated, make sure that array size is correct
     ! and pass to HEMCO surface pressure field
@@ -959,7 +981,7 @@ CONTAINS
        IF ( NX /= HcoState%NX .OR. NY /= HcoState%NY ) THEN
           WRITE(MSG,*) 'Wrong ZSFC array size: ', NX, NY, &
                        '; should be: ', HcoState%NX, HcoState%NY
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -976,7 +998,10 @@ CONTAINS
     ! Otherwise, try to read from HEMCO configuration file
     ELSEIF ( EVAL_ZSFC ) THEN
        CALL HCO_EvalFld ( HcoState, 'ZSFC', HcoState%Grid%ZSFC%Val, RC, FOUND=FoundZSFC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        EVAL_ZSFC = FoundZSFC
 
        ! Verbose
@@ -996,7 +1021,10 @@ CONTAINS
     ! ------------------------------------------------------------------
     CALL HCO_ArrAssert( HcoState%Grid%PEDGE, HcoState%NX, &
                         HcoState%NY,         HcoState%NZ+1, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     IF ( ASSOCIATED( PEDGE ) ) THEN
 
@@ -1007,7 +1035,7 @@ CONTAINS
             NZ /= (HcoState%NZ + 1) ) THEN
           WRITE(MSG,*) 'Wrong PEDGE array size: ', NX, NY, NZ, &
                        '; should be: ', HcoState%NX, HcoState%NY, HcoState%NZ+1
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -1023,7 +1051,10 @@ CONTAINS
     ELSEIF ( EVAL_PEDGE ) THEN
        CALL HCO_EvalFld ( HcoState, 'PEDGE', &
                           HcoState%Grid%PEDGE%Val, RC, FOUND=FoundPEDGE )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        EVAL_PEDGE = FoundPEDGE
 
        ! Verbose
@@ -1043,7 +1074,10 @@ CONTAINS
     ! ------------------------------------------------------------------
     CALL HCO_ArrAssert( HcoState%Grid%BXHEIGHT_M, HcoState%NX, &
                         HcoState%NY,              HcoState%NZ, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     IF ( ASSOCIATED( BXHEIGHT ) ) THEN
 
@@ -1054,7 +1088,7 @@ CONTAINS
             NZ /= HcoState%NZ ) THEN
           WRITE(MSG,*) 'Wrong BXHEIGHT array size: ', NX, NY, NZ, &
                        '; should be: ', HcoState%NX, HcoState%NY, HcoState%NZ
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -1071,7 +1105,10 @@ CONTAINS
     ELSEIF ( EVAL_BXHEIGHT ) THEN
        CALL HCO_EvalFld ( HcoState, 'BXHEIGHT_M', &
                           HcoState%Grid%BXHEIGHT_M%Val, RC, FOUND=FoundBXHEIGHT )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
        EVAL_BXHEIGHT = FoundBXHEIGHT
 
        ! Verbose
@@ -1177,7 +1214,10 @@ CONTAINS
           ! Make sure box height is initialized if it will be calculated
           CALL HCO_ArrAssert( HcoState%Grid%BXHEIGHT_M, HcoState%NX, &
                               HcoState%NY,              HcoState%NZ, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           !$OMP PARALLEL DO                &
           !$OMP DEFAULT( SHARED          ) &
@@ -1221,7 +1261,7 @@ CONTAINS
                    'surface pressure value is zero! You can either provide an '    // &
                    'updated pressure edge field (PEDGE) or add a field with the '  // &
                    'surface geopotential height to your configuration file (ZSFC)'
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
              RETURN
           ELSE
              FoundZSFC = .TRUE.
@@ -1239,7 +1279,7 @@ CONTAINS
                    'pressure value is zero! You can either provide an '    // &
                    'updated pressure edge field (PEDGE) or add a field with the '  // &
                    'grid box heights to your configuration file (BOXHEIGHT_M)'
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
              RETURN
           ELSE
              FoundZSFC = .TRUE.
@@ -1351,13 +1391,19 @@ CONTAINS
     ! Make sure size is ok. Allocate if unallocated.
     CALL HCO_ArrAssert( HcoState%Grid%PBLHEIGHT, &
                         HcoState%NX, HcoState%NY, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Try to read from file first
     IF ( PRESENT( FldName ) ) THEN
        CALL HCO_EvalFld ( HcoState, FldName, &
           HcoState%Grid%PBLHEIGHT%Val, RC, FOUND=FOUND )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Verbose
        IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err,2) ) THEN
@@ -1377,7 +1423,7 @@ CONTAINS
              IF ( NX /= HcoState%NX .OR. NY /= HcoState%NY ) THEN
                 WRITE(MSG,*) 'Wrong PBLM array size: ', NX, NY, &
                              '; should be: ', HcoState%NX, HcoState%NY
-                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+                CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
                 RETURN
              ENDIF
 
@@ -1401,7 +1447,10 @@ CONTAINS
           ! Make sure size is ok
           CALL HCO_ArrAssert( HcoState%Grid%PBLHEIGHT, &
                               HcoState%NX, HcoState%NY, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Pass data
           HcoState%Grid%PBLHEIGHT%Val = DefVal
@@ -1419,7 +1468,7 @@ CONTAINS
     IF ( .NOT. FOUND ) THEN
        WRITE(MSG,*) 'Cannot set PBL height: a valid HEMCO data field, ', &
           'an explicit 2D field or a default value must be provided!'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -1479,7 +1528,7 @@ CONTAINS
 !         SIZE(PBLFRAC,3) /= HcoState%NZ        ) THEN
 !       WRITE(MSG,*) 'Input array PBLFRAC has wrong horiz. dimensions: ', &
 !                     SIZE(PBLFRAC,1),SIZE(PBLFRAC,2),SIZE(PBLFRAC,3)
-!       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+!       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
 !       RETURN
 !    ENDIF
 !
@@ -1564,7 +1613,7 @@ CONTAINS
 !    IF ( SIZE(PBLlev,1) /= HcoState%NX .OR. SIZE(PBLlev,2) /= HcoState%NY ) THEN
 !       WRITE(MSG,*) 'Input array PBLlev has wrong horiz. dimensions: ', &
 !              SIZE(PBLlev,1),SIZE(PBLlev,2)
-!       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+!       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
 !       RETURN
 !    ENDIF
 !

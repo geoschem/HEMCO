@@ -149,6 +149,8 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: FRCLND      ! Olson land fraction [-]
      TYPE(ExtDat_2R),  POINTER :: FRLAND      ! land fraction [-]
      TYPE(ExtDat_2R),  POINTER :: FROCEAN     ! ocean fraction [-]
+     TYPE(ExtDat_2R),  POINTER :: FRSEAICE    ! sea ice fraction [-]
+     TYPE(ExtDat_2R),  POINTER :: QV2M        ! 2m specific humidity [-]
      TYPE(ExtDat_2R),  POINTER :: FRLAKE      ! lake fraction [-]
      TYPE(ExtDat_2R),  POINTER :: FRLANDIC    ! land ice fraction [-]
      TYPE(ExtDat_2R),  POINTER :: CLDFRC      ! cloud fraction [-]
@@ -276,9 +278,11 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+    CHARACTER(LEN=255)  :: LOC
     !======================================================================
     ! ExtStateInit begins here
     !======================================================================
+    LOC = 'ExtStateInit (HCOX_STATE_MOD.F90)'
 
     ! Allocate object
     IF ( .NOT. ASSOCIATED ( ExtState ) ) ALLOCATE ( ExtState )
@@ -323,156 +327,318 @@ CONTAINS
     ! need to be defined in the HEMCO-model interface routine.
     !-----------------------------------------------------------------------
     CALL ExtDat_Init( ExtState%U10M, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%V10M, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%ALBD, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%WLI , RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%T2M, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%TSKIN, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%GWETROOT, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%GWETTOP, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%SNOWHGT, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%SNODP, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%SNICE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%USTAR, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%Z0, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%TROPP, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%SUNCOS, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%SZAFACT, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%PARDR, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%PARDF, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%PSC2_WET, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%RADSWG, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%FRCLND, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%FRLAND, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 21', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%FROCEAN, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 22', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%FRSEAICE, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 23', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%QV2M, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 24', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%FRLAKE, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 25', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%FRLANDIC, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 26', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%CLDFRC, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 27', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%LAI, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 28', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%CHLR, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 29', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%FLASH_DENS, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 30', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%CONV_DEPTH, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 31', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%JNO2, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 32', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%JOH, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 33', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%CNV_MFC, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 34', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ExtState%PBL_MAX    => NULL()
 
     CALL ExtDat_Init ( ExtState%FRAC_OF_PBL, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 35', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%SPHU, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 36', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%TK, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 37', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%AIR, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 38', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%AIRVOL, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 39', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%AIRDEN, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 40', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%O3, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 41', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%NO, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 42', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%NO2, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 43', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%HNO3, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 44', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%POPG, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 45', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%DRY_TOTN, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 46', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%WET_TOTN, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 47', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%BYNCY, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 48', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%LFR, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 49', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%CNV_FRC, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 50', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     CALL ExtDat_Init ( ExtState%TropLev, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 51', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -535,6 +701,8 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%FRCLND     )
        CALL ExtDat_Cleanup( ExtState%FRLAND     )
        CALL ExtDat_Cleanup( ExtState%FROCEAN    )
+       CALL ExtDat_Cleanup( ExtState%FRSEAICE   )
+       CALL ExtDat_Cleanup( ExtState%QV2M       )
        CALL ExtDat_Cleanup( ExtState%FRLAKE     )
        CALL ExtDat_Cleanup( ExtState%FRLANDIC   )
        CALL ExtDat_Cleanup( ExtState%CLDFRC     )
@@ -595,10 +763,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     ! ================================================================
     ! ExtDat_Init_2R begins here
     ! ================================================================
+    LOC = 'ExtDat_Init_2R (HCOX_STATE_MOD.F90)'
 
     ExtDat     => NULL()
     ALLOCATE(ExtDat)
@@ -606,7 +779,10 @@ CONTAINS
 
     ! Establish pointer to ExtDat%Arr%Val
     CALL HCO_ArrInit( ExtDat%Arr, 0, 0, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 52', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ExtDat%DoUse = .FALSE.
     ExtDat%FromList = .FALSE.
@@ -641,10 +817,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     ! ================================================================
     ! ExtDat_Init_2S begins here
     ! ================================================================
+    LOC = 'ExtDat_Init_2S (HCOX_STATE_MOD.F90)'
 
     ExtDat     => NULL()
     ALLOCATE(ExtDat)
@@ -652,7 +833,10 @@ CONTAINS
 
     ! Establish pointer to ExtDat%Arr%Val
     CALL HCO_ArrInit( ExtDat%Arr, 0, 0, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 53', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ExtDat%DoUse = .FALSE.
     ExtDat%FromList = .FALSE.
@@ -687,10 +871,15 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     ! ================================================================
     ! ExtDat_Init_2I begins here
     ! ================================================================
+    LOC = 'ExtDat_Init_2I (HCOX_STATE_MOD.F90)'
 
     ExtDat => NULL()
     ALLOCATE(ExtDat)
@@ -698,7 +887,10 @@ CONTAINS
 
     ! Establish pointer to ExtDat%Arr%Val
     CALL HCO_ArrInit( ExtDat%Arr, 0, 0, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 54', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ExtDat%DoUse = .FALSE.
     ExtDat%FromList = .FALSE.
@@ -733,9 +925,14 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! ExtDat_Init_3R begins here
     ! ================================================================
+    LOC = 'ExtDat_Init_3R (HCOX_STATE_MOD.F90)'
 
     ExtDat => NULL()
     ALLOCATE(ExtDat)
@@ -743,7 +940,10 @@ CONTAINS
 
     ! Establish pointer to ExtDat%Arr%Val
     CALL HCO_ArrInit( ExtDat%Arr, 0, 0, 0, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 55', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ExtDat%DoUse = .FALSE.
     ExtDat%FromList = .FALSE.
@@ -778,9 +978,14 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
     ! ================================================================
     ! ExtDat_Init_3S begins here
     ! ================================================================
+    LOC = 'ExtDat_Init_3S (HCOX_STATE_MOD.F90)'
 
     ExtDat => NULL()
     ALLOCATE(ExtDat)
@@ -788,7 +993,10 @@ CONTAINS
 
     ! Establish pointer to ExtDat%Arr%Val
     CALL HCO_ArrInit( ExtDat%Arr, 0, 0, 0, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 56', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ExtDat%DoUse = .FALSE.
     ExtDat%FromList = .FALSE.
@@ -1056,13 +1264,16 @@ CONTAINS
        ! Allocate temporary array
        ALLOCATE(Arr2D(HcoState%NX,HcoState%NY),STAT=AS)
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, "Arr2D allocation error", RC, THISLOC=LOC )
+          CALL HCO_ERROR ( "Arr2D allocation error", RC, THISLOC=LOC )
           RETURN
        ENDIF
 
        ! Try to get data from list
        CALL HCO_EvalFld( HcoState, TRIM(FldName), Arr2D, RC, FOUND=FOUND )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 57', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! On first call, need to make additional checks
        IF ( FRST ) THEN
@@ -1073,7 +1284,10 @@ CONTAINS
 
              ! Make sure array is allocated
              CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 58', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! Verbose
              IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
@@ -1089,7 +1303,7 @@ CONTAINS
                 IF ( FailIfNotFilled ) THEN
                    MSG = 'Cannot fill extension field ' // TRIM(FldName) // &
                          ' because target field is not associated.'
-                   CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1107,7 +1321,7 @@ CONTAINS
                       'Expected dimensions: ', HcoState%NX, HcoState%NY, &
                       '; encountered dimensions: ', NX, NY, '. Error occured ', &
                       'for field ', TRIM(FldName)
-                   CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1130,7 +1344,7 @@ CONTAINS
           ! Field not found and no target defined
           ELSEIF ( FailIfNotFilled ) THEN
              MSG = 'Cannot fill extension field ' // TRIM(FldName)
-             CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
        ENDIF ! FIRST
@@ -1146,7 +1360,7 @@ CONTAINS
              IF ( PRESENT(Filled) ) Filled = .TRUE.
           ELSEIF ( FailIfNotFilled ) Then
              MSG = 'Cannot find extension field in HEMCO data list: ' // TRIM(FldName)
-             CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
        ENDIF ! FromList
@@ -1155,7 +1369,7 @@ CONTAINS
     ! Make sure array exists
     IF ( FailIfNotFilled .AND. .NOT. ASSOCIATED(ExtDat%Arr%Val) ) THEN
        MSG = 'ExtState array not filled: ' // TRIM(FldName)
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Cleanup
@@ -1249,13 +1463,16 @@ CONTAINS
        ! Allocate temporary array
        ALLOCATE(Arr2D(HcoState%NX,HcoState%NY),STAT=AS)
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, "Arr2D allocation error", RC, THISLOC=LOC )
+          CALL HCO_ERROR ( "Arr2D allocation error", RC, THISLOC=LOC )
           RETURN
        ENDIF
 
        ! Try to get data from list
        CALL HCO_EvalFld( HcoState, TRIM(FldName), Arr2D, RC, FOUND=FOUND )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 59', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! On first call, need to make additional checks
        IF ( FRST ) THEN
@@ -1266,7 +1483,10 @@ CONTAINS
 
              ! Make sure array is allocated
              CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 60', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! Verbose
              IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
@@ -1282,7 +1502,7 @@ CONTAINS
                 IF ( FailIfNotFilled ) THEN
                    MSG = 'Cannot fill extension field ' // TRIM(FldName) // &
                          ' because target field is not associated.'
-                   CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1300,7 +1520,7 @@ CONTAINS
                       'Expected dimensions: ', HcoState%NX, HcoState%NY, &
                       '; encountered dimensions: ', NX, NY, '. Error occured ', &
                       'for field ', TRIM(FldName)
-                   CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1323,7 +1543,7 @@ CONTAINS
           ! Field not found and no target defined
           ELSEIF ( FailIfNotFilled ) THEN
              MSG = 'Cannot fill extension field ' // TRIM(FldName)
-             CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
        ENDIF ! FIRST
@@ -1339,7 +1559,7 @@ CONTAINS
              IF ( PRESENT(Filled) ) Filled = .TRUE.
           ELSEIF ( FailIfNotFilled ) THEN
              MSG = 'Cannot find extension field in HEMCO data list: ' // TRIM(FldName)
-             CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
        ENDIF ! FromList
@@ -1348,7 +1568,7 @@ CONTAINS
     ! Make sure array exists
     IF ( FailIfNotFilled .AND. .NOT. ASSOCIATED(ExtDat%Arr%Val) ) THEN
        MSG = 'ExtState array not filled: ' // TRIM(FldName)
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Cleanup
@@ -1442,13 +1662,16 @@ CONTAINS
        ! Allocate temporary array
        ALLOCATE(Arr2D(HcoState%NX,HcoState%NY),STAT=AS)
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, "Arr2D allocation error", RC, THISLOC=LOC )
+          CALL HCO_ERROR ( "Arr2D allocation error", RC, THISLOC=LOC )
           RETURN
        ENDIF
 
        ! Try to get data from list
        CALL HCO_EvalFld( HcoState, TRIM(FldName), Arr2D, RC, FOUND=FOUND )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 61', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! On first call, need to make additional checks
        IF ( FRST ) THEN
@@ -1459,7 +1682,10 @@ CONTAINS
 
              ! Make sure array is allocated
              CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 62', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! Verbose
              IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
@@ -1475,7 +1701,7 @@ CONTAINS
                 IF ( FailIfNotFilled ) THEN
                    MSG = 'Cannot fill extension field ' // TRIM(FldName) // &
                          ' because target field is not associated.'
-                   CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1493,7 +1719,7 @@ CONTAINS
                       'Expected dimensions: ', HcoState%NX, HcoState%NY, &
                       '; encountered dimensions: ', NX, NY, '. Error occured ', &
                       'for field ', TRIM(FldName)
-                   CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1516,7 +1742,7 @@ CONTAINS
           ! Not found in list and no target defined
           ELSEIF ( FailIfNotFilled ) THEN
              MSG = 'Cannot fill extension field ' // TRIM(FldName)
-             CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
 
@@ -1535,7 +1761,7 @@ CONTAINS
 
           ELSEIF ( FailIfNotFilled ) THEN
              MSG = 'Cannot find extension field in HEMCO data list: ' // TRIM(FldName)
-             CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
 
@@ -1545,7 +1771,7 @@ CONTAINS
     ! Make sure array exists
     IF ( FailIfNotFilled .AND. .NOT. ASSOCIATED(ExtDat%Arr%Val) ) THEN
        MSG = 'ExtState array not filled: ' // TRIM(FldName)
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Cleanup
@@ -1649,13 +1875,16 @@ CONTAINS
        ! Allocate temporary array
        ALLOCATE(Arr3D(HcoState%NX,HcoState%NY,NZ_EXPECTED),STAT=AS)
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, "Arr3D allocation error", RC, THISLOC=LOC )
+          CALL HCO_ERROR ( "Arr3D allocation error", RC, THISLOC=LOC )
           RETURN
        ENDIF
 
        ! Try to get data from list
        CALL HCO_EvalFld( HcoState, TRIM(FldName), Arr3D, RC, FOUND=FOUND )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 63', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! On first call, need to make additional checks
        IF ( FRST ) THEN
@@ -1666,7 +1895,10 @@ CONTAINS
 
              ! Make sure array is allocated
              CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, NZ_EXPECTED, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 64', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! Verbose
              IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
@@ -1682,7 +1914,7 @@ CONTAINS
                 IF ( FailIfNotFilled ) THEN
                    MSG = 'Cannot fill extension field ' // TRIM(FldName) // &
                          ' because target field is not associated.'
-                   CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1701,7 +1933,7 @@ CONTAINS
                       'Expected dimensions: ', HcoState%NX, HcoState%NY, NZ_EXPECTED, &
                       '; encountered dimensions: ', NX, NY, NZ, '. Error occured ', &
                       'for field ', TRIM(FldName)
-                   CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1726,7 +1958,7 @@ CONTAINS
              ! Target array must be present
              IF ( .NOT. PRESENT(Trgt) ) THEN
                 MSG = 'Cannot fill extension field ' // TRIM(FldName)
-                CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                 RETURN
              ENDIF
           ENDIF
@@ -1746,7 +1978,7 @@ CONTAINS
 
           ELSEIF ( FailIfNotFilled ) THEN
              MSG = 'Cannot find extension field in HEMCO data list: ' // TRIM(FldName)
-             CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
 
           ENDIF
@@ -1756,7 +1988,7 @@ CONTAINS
     ! Make sure array exists
     IF ( FailIfNotFilled .AND. .NOT. ASSOCIATED(ExtDat%Arr%Val) ) THEN
        MSG = 'ExtState array not filled: ' // TRIM(FldName)
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Cleanup
@@ -1860,13 +2092,16 @@ CONTAINS
        ! Allocate temporary array
        ALLOCATE(Arr3D(HcoState%NX,HcoState%NY,NZ_EXPECTED),STAT=AS)
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, "Arr3D allocation error", RC, THISLOC=LOC )
+          CALL HCO_ERROR ( "Arr3D allocation error", RC, THISLOC=LOC )
           RETURN
        ENDIF
 
        ! Try to get data from list
        CALL HCO_EvalFld( HcoState, TRIM(FldName), Arr3D, RC, FOUND=FOUND )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 65', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! On first call, need to make additional checks
        IF ( FRST ) THEN
@@ -1877,7 +2112,10 @@ CONTAINS
 
              ! Make sure array is allocated
              CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, NZ_EXPECTED, RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 66', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! Verbose
              IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
@@ -1893,7 +2131,7 @@ CONTAINS
                 IF ( FailIfNotFilled ) THEN
                    MSG = 'Cannot fill extension field ' // TRIM(FldName) // &
                          ' because target field is not associated.'
-                   CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1912,7 +2150,7 @@ CONTAINS
                       'Expected dimensions: ', HcoState%NX, HcoState%NY, NZ_EXPECTED, &
                       '; encountered dimensions: ', NX, NY, NZ, '. Error occured ', &
                       'for field ', TRIM(FldName)
-                   CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                   CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                    RETURN
                 ENDIF
 
@@ -1937,7 +2175,7 @@ CONTAINS
              ! Target array must be present
              IF ( .NOT. PRESENT(Trgt) ) THEN
                 MSG = 'Cannot fill extension field ' // TRIM(FldName)
-                CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+                CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
                 RETURN
              ENDIF
           ENDIF
@@ -1955,7 +2193,7 @@ CONTAINS
              IF ( PRESENT(Filled) ) Filled = .TRUE.
           ELSEIF ( FailIfNotFilled ) THEN
              MSG = 'Cannot find extension field in HEMCO data list: ' // TRIM(FldName)
-             CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
        ENDIF !FromList
@@ -1964,7 +2202,7 @@ CONTAINS
     ! Make sure array exists
     IF ( FailIfNotFilled .AND. .NOT. ASSOCIATED(ExtDat%Arr%Val) ) THEN
        MSG = 'ExtState array not filled: ' // TRIM(FldName)
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Cleanup

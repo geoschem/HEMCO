@@ -220,7 +220,7 @@ CONTAINS
     ! Allocate AP and BP
     ALLOCATE(zGrid%Ap(nz+1), zGrid%Bp(nz+1), STAT=AS )
     IF ( AS /= 0 ) THEN
-       CALL HCO_ERROR( HcoConfig%Err, 'Cannot allocate Ap / Bp', RC, THISLOC=LOC )
+       CALL HCO_ERROR( 'Cannot allocate Ap / Bp', RC, THISLOC=LOC )
        RETURN
     ENDIF
     zGrid%Ap = 0.0_hp
@@ -233,7 +233,7 @@ CONTAINS
        IF ( nz > 72 ) THEN
           WRITE(MSG,*) 'Vertical grid has more than 72 vertical levels', &
                        '- please provide Ap values in configuration file.'
-          CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ELSEIF ( nz > 47 ) THEN
           zGrid%Ap(:) = Ap72(1:(nz+1))
@@ -249,7 +249,7 @@ CONTAINS
        IF ( nz > 72 ) THEN
           WRITE(MSG,*) 'Vertical grid has more than 72 vertical levels', &
                        '- please provide Bp values in configuration file.'
-          CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ELSEIF ( nz > 47 ) THEN
           zGrid%Bp(:) = Bp72(1:(nz+1))

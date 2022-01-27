@@ -102,7 +102,10 @@ CONTAINS
     ! For error handling
     Iam = LOC
     CALL HCO_ENTER( HcoState%Config%Err,  LOC, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Point to ESMF IMPORT object
     IMPORT => HcoState%IMPORT
@@ -130,7 +133,7 @@ CONTAINS
        ! Check for MAPL error
        IF( STAT /= ESMF_SUCCESS ) THEN
           MSG = 'Cannot get xyz pointer: ' // TRIM(Lct%Dct%Dta%ncFile)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -146,7 +149,10 @@ CONTAINS
           ! Use pointer if types match
           CALL FileData_ArrInit( Lct%Dct%Dta, TT, 0, 0, 0, RC )
           !CALL FileData_ArrInit( Lct%Dct%Dta, TT, II, JJ, LL, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! Pointer to data. HEMCO expects data to have surface level at
@@ -171,7 +177,7 @@ CONTAINS
        ! Check for MAPL error
        IF( STAT /= ESMF_SUCCESS ) THEN
           MSG = 'Cannot get xy pointer: ' // TRIM(Lct%Dct%Dta%ncFile)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -185,7 +191,10 @@ CONTAINS
        IF ( .NOT. ASSOCIATED(Lct%Dct%Dta%V2) ) THEN
           CALL FileData_ArrInit( Lct%Dct%Dta, TT, 0, 0, RC )
           !CALL FileData_ArrInit( Lct%Dct%Dta, TT, II, JJ, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! Pointer to data

@@ -153,14 +153,19 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER                  :: AS
+    CHARACTER(LEN=255)       :: LOC
 
     !======================================================================
     ! HcoClock_Init begins here!
     !======================================================================
+    LOC = 'HcoClock_Init (HCO_CLOCK_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'HcoClock_Init (HCO_CLOCK_MOD.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Eventually allocate clock object and set all values to -1
     IF ( .NOT. ASSOCIATED ( HcoState%Clock ) ) THEN
@@ -212,35 +217,35 @@ CONTAINS
 
        ALLOCATE ( HcoState%Clock%ThisLocYear(HcoState%Clock%ntz), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, 'ThisLocYear', RC )
+          CALL HCO_ERROR ( 'ThisLocYear', RC )
           RETURN
        ENDIF
        HcoState%Clock%ThisLocYear(:) = -1
 
        ALLOCATE ( HcoState%Clock%ThisLocMonth(HcoState%Clock%ntz), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'ThisLocMonth', RC )
+          CALL HCO_ERROR( 'ThisLocMonth', RC )
           RETURN
        ENDIF
        HcoState%Clock%ThisLocMonth(:) = -1
 
        ALLOCATE ( HcoState%Clock%ThisLocDay(HcoState%Clock%ntz), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'ThisLocDay', RC )
+          CALL HCO_ERROR( 'ThisLocDay', RC )
           RETURN
        ENDIF
        HcoState%Clock%ThisLocDay(:) = -1
 
        ALLOCATE ( HcoState%Clock%ThisLocWD(HcoState%Clock%ntz), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'ThisLocWD', RC )
+          CALL HCO_ERROR( 'ThisLocWD', RC )
           RETURN
        ENDIF
        HcoState%Clock%ThisLocWD(:) = -1
 
        ALLOCATE ( HcoState%Clock%ThisLocHour(HcoState%Clock%ntz), STAT=AS )
        IF ( AS /= 0 ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, 'ThisLocHour', RC )
+          CALL HCO_ERROR( 'ThisLocHour', RC )
           RETURN
        ENDIF
        HcoState%Clock%ThisLocHour(:) = -1.0_sp
@@ -251,7 +256,10 @@ CONTAINS
 
        ! Initialize TIMEZONES array. Initialize as pointer (dims=0)
        CALL HCO_ArrInit( HcoState%Clock%TIMEZONES, 0, 0, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
     ENDIF
 
@@ -410,7 +418,7 @@ CONTAINS
                        FOUND=FND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error getting emission year'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
        IF ( FND ) THEN
@@ -423,7 +431,7 @@ CONTAINS
                        FOUND=FND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error getting emission month'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
 
@@ -437,7 +445,7 @@ CONTAINS
                        FOUND=FND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error getting emission day'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
 
@@ -451,7 +459,7 @@ CONTAINS
                        FOUND=FND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error getting emission hour'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
 
@@ -540,7 +548,7 @@ CONTAINS
        CALL Set_LocalTime ( HcoState, Clock, UTC, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error setting local time'
-          CALL HCO_Error( HcoState%Config%Err, ErrMsg, RC )
+          CALL HCO_Error( ErrMsg, RC )
           RETURN
        ENDIF
 
@@ -922,7 +930,7 @@ CONTAINS
 
     ! Check time zone index
     IF ( IX > HcoState%Clock%ntz ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'time zone index too large!', RC )
+       CALL HCO_ERROR ( 'time zone index too large!', RC )
        RETURN
     ENDIF
 
@@ -1457,19 +1465,24 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER  :: I,      MtLastDay
-    REAL(sp) :: LocDt, DECloc
-    REAL(sp) :: ThisLocHour
-    INTEGER  :: ThisLocYear, ThisLocMonth
-    INTEGER  :: ThisLocDay,  ThisLocWD
+    INTEGER             :: I,      MtLastDay
+    REAL(sp)            :: LocDt, DECloc
+    REAL(sp)            :: ThisLocHour
+    INTEGER             :: ThisLocYear, ThisLocMonth
+    INTEGER             :: ThisLocDay,  ThisLocWD
+    CHARACTER(LEN=255)  :: LOC
 
     !-----------------------------------
     ! SET_LOCALTIME begins here!
     !-----------------------------------
+    LOC = 'SET_LOCALTIME (HCO_CLOCK_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'SET_LOCALTIME (HCO_CLOCK_MOD.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Loop over all time zones to account for different local times.
     DO I = 1, Clock%ntz
@@ -1652,10 +1665,12 @@ CONTAINS
     INTEGER                   :: YYYYMMDD, HHMMSS
     INTEGER                   :: Yr, Mt, Dy, Hr, Mn, Sc
     REAL(dp)                  :: DAY, UTC, JD
+    CHARACTER(LEN=255)        :: LOC
 
     !-----------------------------------
     ! HcoClock_Increase begins here!
     !-----------------------------------
+    LOC = 'HcoClock_Increase (HCO_CLOCK_MOD.F90)'
 
     ! Get pointer to HEMCO clock
     Clock => HcoState%Clock
@@ -1683,7 +1698,10 @@ CONTAINS
     ! Update HEMCO clock to new values
     CALL HcoClock_Set ( HcoState, Yr, Mt, Dy, Hr, Mn, Sc, &
                         IsEmisTime=EmisTime, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Cleanup
     Clock => NULL()

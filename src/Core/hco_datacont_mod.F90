@@ -381,18 +381,22 @@ CONTAINS
     INTEGER                   :: II
     TYPE(ListCont), POINTER   :: TmpLct
     LOGICAL                   :: verbose
-    CHARACTER(LEN=255)        :: MSG
+    CHARACTER(LEN=255)        :: MSG, LOC
 
     !======================================================================
     ! cIDList_Create begins here
     !======================================================================
+    LOC = 'cIDList_Create (HCO_DATACONT_MOD.F90)'
 
     ! Initialize
     TmpLct => NULL()
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'cIDList_Create (hco_datacont_mod.F)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set verbose flag
     verbose = HCO_IsVerb ( HcoState%Config%Err, 3 )
@@ -565,7 +569,7 @@ CONTAINS
     ! Check input
     IF ( cID > HcoState%nnDataCont ) THEN
        MSG = 'cID higher than number of containers'
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC)
+       CALL HCO_ERROR ( MSG, RC, THISLOC=LOC)
        RETURN
     ENDIF
 
@@ -575,7 +579,7 @@ CONTAINS
     ! Check if data container allocated
     IF ( .NOT. ASSOCIATED( Dct ) ) THEN
        MSG = 'Data container is not associated!'
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC)
+       CALL HCO_ERROR ( MSG, RC, THISLOC=LOC)
        RETURN
     ENDIF
 

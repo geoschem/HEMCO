@@ -71,7 +71,8 @@ MODULE HCOX_GC_RnPbBe_Mod
 
    ! Emissions indices etc.
    INTEGER               :: Instance
-   INTEGER               :: ExtNr         ! HEMCO Extension number
+   INTEGER               :: ExtNr         ! Main Extension number
+   INTEGER               :: ExtNrZhang    ! ZHANG_Rn222 extension number
    INTEGER               :: IDTRn222      ! Index # for Rn222
    INTEGER               :: IDTBe7        ! Index # for Be7
    INTEGER               :: IDTBe7Strat   ! Index # for Be7Strat
@@ -122,7 +123,7 @@ CONTAINS
 !
 ! !USES:
 !
-    ! HEMCO modules
+    USE HCO_Calc_Mod,    ONLY : HCO_EvalFld
     USE HCO_FluxArr_Mod, ONLY : HCO_EmisAdd
 !
 ! !INPUT PARAMETERS:
@@ -156,7 +157,7 @@ CONTAINS
     REAL*8            :: F_WATER,  F_BELOW_70, F_BELOW_60, F_ABOVE_60
     REAL*8            :: DENOM
     REAL(hp)          :: LAT_TMP,  P_TMP,      Be_TMP
-    CHARACTER(LEN=255):: MSG
+    CHARACTER(LEN=255):: MSG, LOC
 
     ! Pointers
     TYPE(MyInst), POINTER :: Inst
@@ -166,13 +167,17 @@ CONTAINS
     !=======================================================================
     ! HCOX_GC_RnPbBe_RUN begins here!
     !=======================================================================
+    LOC = 'HCOX_GC_RnPbBe_RUN (HCOX_GC_RNPBBE_MOD.F90)'
 
     ! Return if extension not turned on
     IF ( ExtState%GC_RnPbBe <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_GC_RnPbBe_Run (hcox_gc_RnPbBe_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set error flag
     !ERR = .FALSE.
@@ -182,7 +187,7 @@ CONTAINS
     CALL InstGet ( ExtState%GC_RnPbBe, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find GC_RnPbBe instance Nr. ', ExtState%GC_RnPbBe
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -214,124 +219,146 @@ CONTAINS
     !=======================================================================
     IF ( Inst%IDTRn222 > 0 ) THEN
 
-!$OMP PARALLEL DO                                            &
-!$OMP DEFAULT( SHARED )                                       &
-!$OMP PRIVATE( I,          J,          LAT,        DENOM   ) &
-!$OMP PRIVATE( F_BELOW_70, F_BELOW_60, F_ABOVE_60, Rn_LAND ) &
-!$OMP PRIVATE( Rn_WATER,   F_LAND,     F_WATER,    ADD_Rn  ) &
-!$OMP SCHEDULE( DYNAMIC )
-       DO J = 1, HcoState%Ny
-       DO I = 1, HcoState%Nx
+       IF ( Inst%ExtNrZhang > 0 ) THEN
 
-          ! Get ABS( latitude ) of the grid box
-          LAT           = ABS( HcoState%Grid%YMID%Val( I, J ) )
+          !------------------------------------------------------------------
+          ! Use Zhang et al Rn222 emissions
+          ! cf https://doi.org/10.5194/acp-21-1861-2021
+          !------------------------------------------------------------------
+          CALL HCO_EvalFld( HcoState,       'ZHANG_Rn222_EMIS',              &
+                            Inst%EmissRn222, RC                             )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             CALL HCO_Error( 'Could not read ZHANG_Rn222_EMIS!', RC )
+             RETURN
+          ENDIF
 
-          ! Zero for safety's sake
-          F_BELOW_70    = 0d0
-          F_BELOW_60    = 0d0
-          F_ABOVE_60    = 0d0
+       ELSE
 
-          ! Baseline 222Rn emissions
-          ! Rn_LAND [kg/m2/s] = [1 atom 222Rn/cm2/s] / [atoms/kg] * [1d4 cm2/m2]
-          Rn_LAND       = ( 1d0 / XNUMOL_Rn ) * 1d4
+          !------------------------------------------------------------------
+          ! Use default Rn222 emissions, based on Jacob et al 1997
+          !------------------------------------------------------------------
+          !$OMP PARALLEL DO                                                  &
+          !$OMP DEFAULT( SHARED )                                            &
+          !$OMP PRIVATE( I,          J,          LAT,        DENOM         ) &
+          !$OMP PRIVATE( F_BELOW_70, F_BELOW_60, F_ABOVE_60, Rn_LAND       ) &
+          !$OMP PRIVATE( Rn_WATER,   F_LAND,     F_WATER,    ADD_Rn        ) &
+          !$OMP SCHEDULE( DYNAMIC )
+          DO J = 1, HcoState%Ny
+          DO I = 1, HcoState%Nx
 
-          ! Baseline 222Rn emissions over water or ice [kg]
-          Rn_WATER      = Rn_LAND * 0.005d0
+             ! Get ABS( latitude ) of the grid box
+             LAT           = ABS( HcoState%Grid%YMID%Val( I, J ) )
 
-          ! Fraction of grid box that is land
-          F_LAND        = ExtState%FRCLND%Arr%Val(I,J)
+             ! Zero for safety's sake
+             F_BELOW_70    = 0d0
+             F_BELOW_60    = 0d0
+             F_ABOVE_60    = 0d0
 
-          ! Fraction of grid box that is water
-          F_WATER       = 1d0 - F_LAND
+             ! Baseline 222Rn emissions
+             ! Rn_LAND [kg/m2/s] = [1 atom 222Rn/cm2/s] / [atoms/kg]
+             !                   * [1d4 cm2/m2]
+             Rn_LAND       = ( 1d0 / XNUMOL_Rn ) * 1d4
 
-          !--------------------
-          ! 90S-70S or 70N-90N
-          !--------------------
-          IF ( LAT >= 70d0 ) THEN
+             ! Baseline 222Rn emissions over water or ice [kg]
+             Rn_WATER      = Rn_LAND * 0.005d0
 
-             ! 222Rn emissions are shut off poleward of 70 degrees
-             ADD_Rn = 0.0d0
+             ! Fraction of grid box that is land
+             F_LAND        = ExtState%FRCLND%Arr%Val(I,J)
 
-          !--------------------
-          ! 70S-60S or 60N-70N
-          !--------------------
-          ELSE IF ( LAT >= 60d0 ) THEN
+             ! Fraction of grid box that is water
+             F_WATER       = 1d0 - F_LAND
 
-             IF ( LAT <= 70d0 ) THEN
+             !--------------------
+             ! 90S-70S or 70N-90N
+             !--------------------
+             IF ( LAT >= 70d0 ) THEN
 
-                ! If the entire grid box lies equatorward of 70 deg,
-                ! then 222Rn emissions here are 0.005 [atoms/cm2/s]
-                ADD_Rn = Rn_WATER
-
-             ELSE
-
-                ! N-S extent of grid box [degrees]
-                DENOM = HcoState%Grid%YMID%Val( I, J+1 ) &
-                      - HcoState%Grid%YMID%Val( I, J   )
-
-                ! Compute the fraction of the grid box below 70 degrees
-                F_BELOW_70 = ( 70.0d0 - LAT ) / DENOM
-
-                ! If the grid box straddles the 70S or 70N latitude line,
-                ! then only count 222Rn emissions equatorward of 70 degrees.
-                ! 222Rn emissions here are 0.005 [atoms/cm2/s].
-                ADD_Rn = F_BELOW_70 * Rn_WATER
-
-             ENDIF
-
-          ELSE
+                ! 222Rn emissions are shut off poleward of 70 degrees
+                ADD_Rn = 0.0d0
 
              !--------------------
              ! 70S-60S or 60N-70N
              !--------------------
-             IF ( LAT > 60d0 ) THEN
+             ELSE IF ( LAT >= 60d0 ) THEN
 
-                ! N-S extent of grid box [degrees]
-                DENOM  = HcoState%Grid%YMID%Val( I, J+1 ) &
-                       - HcoState%Grid%YMID%Val( I, J   )
+                IF ( LAT <= 70d0 ) THEN
 
-                ! Fraction of grid box with ABS( lat ) below 60 degrees
-                F_BELOW_60 = ( 60.0d0 - LAT ) / DENOM
+                   ! If the entire grid box lies equatorward of 70 deg,
+                   ! then 222Rn emissions here are 0.005 [atoms/cm2/s]
+                   ADD_Rn = Rn_WATER
 
-                ! Fraction of grid box with ABS( lat ) above 60 degrees
-                F_ABOVE_60 = F_BELOW_60
+                ELSE
 
-                ADD_Rn =                                                &
-                         ! Consider 222Rn emissions equatorward of
-                         ! 60 degrees for both land (1.0 [atoms/cm2/s])
-                         ! and water (0.005 [atoms/cm2/s])
-                         F_BELOW_60 *                                   &
-                         ( Rn_LAND  * F_LAND  ) +                       &
-                         ( Rn_WATER * F_WATER ) +                       &
+                   ! N-S extent of grid box [degrees]
+                   DENOM = HcoState%Grid%YMID%Val( I, J+1 )                  &
+                        - HcoState%Grid%YMID%Val( I, J   )
 
-                         ! If the grid box straddles the 60 degree boundary
-                         ! then also consider the emissions poleward of 60
-                         ! degrees.  222Rn emissions here are 0.005 [at/cm2/s].
-                         F_ABOVE_60 * Rn_WATER
+                   ! Compute the fraction of the grid box below 70 degrees
+                   F_BELOW_70 = ( 70.0d0 - LAT ) / DENOM
 
+                   ! If the grid box straddles the 70S or 70N latitude
+                   ! line, then only count 222Rn emissions equatorward of
+                   ! 70 degrees.  222Rn emissions here are 0.005
+                   ! [atoms/cm2/s].
+                   ADD_Rn = F_BELOW_70 * Rn_WATER
 
-             !--------------------
-             ! 60S-60N
-             !--------------------
+                ENDIF
+
              ELSE
 
-                ! Consider 222Rn emissions equatorward of 60 deg for
-                ! land (1.0 [atoms/cm2/s]) and water (0.005 [atoms/cm2/s])
-                ADD_Rn = ( Rn_LAND * F_LAND ) + ( Rn_WATER * F_WATER )
+                !--------------------
+                ! 70S-60S or 60N-70N
+                !--------------------
+                IF ( LAT > 60d0 ) THEN
 
+                   ! N-S extent of grid box [degrees]
+                   DENOM  = HcoState%Grid%YMID%Val( I, J+1 )                 &
+                          - HcoState%Grid%YMID%Val( I, J   )
+
+                   ! Fraction of grid box with ABS( lat ) below 60 degrees
+                   F_BELOW_60 = ( 60.0d0 - LAT ) / DENOM
+
+                   ! Fraction of grid box with ABS( lat ) above 60 degrees
+                   F_ABOVE_60 = F_BELOW_60
+
+                   ADD_Rn =                                                  &
+                        ! Consider 222Rn emissions equatorward of
+                        ! 60 degrees for both land (1.0 [atoms/cm2/s])
+                        ! and water (0.005 [atoms/cm2/s])
+                        F_BELOW_60 *                                         &
+                        ( Rn_LAND  * F_LAND  ) +                             &
+                        ( Rn_WATER * F_WATER ) +                             &
+
+                        ! If the grid box straddles the 60 degree boundary
+                        ! then also consider the emissions poleward of 60
+                        ! degrees.  222Rn emissions here are 0.005
+                        ! [atoms/cm2/s].
+                        F_ABOVE_60 * Rn_WATER
+
+                !--------------------
+                ! 60S-60N
+                !--------------------
+                ELSE
+
+                   ! Consider 222Rn emissions equatorward of 60 deg for
+                   ! land (1.0 [atoms/cm2/s]) and water (0.005 [atoms/cm2/s])
+                   ADD_Rn = ( Rn_LAND * F_LAND ) + ( Rn_WATER * F_WATER )
+
+                ENDIF
              ENDIF
-          ENDIF
 
-          ! For boxes below freezing, reduce 222Rn emissions by 3x
-          IF ( ExtState%T2M%Arr%Val(I,J) < 273.15 ) THEN
-             ADD_Rn = ADD_Rn / 3d0
-          ENDIF
+             ! For boxes below freezing, reduce 222Rn emissions by 3x
+             IF ( ExtState%T2M%Arr%Val(I,J) < 273.15 ) THEN
+                ADD_Rn = ADD_Rn / 3d0
+             ENDIF
 
-          ! Save 222Rn emissions into an array [kg/m2/s]
-          Inst%EmissRn222(I,J) = ADD_Rn
-       ENDDO
-       ENDDO
-!$OMP END PARALLEL DO
+             ! Save 222Rn emissions into an array [kg/m2/s]
+             Inst%EmissRn222(I,J) = ADD_Rn
+          ENDDO
+          ENDDO
+          !$OMP END PARALLEL DO
+
+       ENDIF
 
        !------------------------------------------------------------------------
        ! Add 222Rn emissions to HEMCO data structure & diagnostics
@@ -343,7 +370,7 @@ CONTAINS
                          RC,       ExtNr=Inst%ExtNr )
        Arr2D => NULL()
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( HcoState%Config%Err, &
+          CALL HCO_ERROR( &
                           'HCO_EmisAdd error: EmissRn222', RC )
           RETURN
        ENDIF
@@ -397,7 +424,7 @@ CONTAINS
              IF ( Inst%IDTBe7Strat > 0 ) THEN
                 Inst%EmissBe7Strat (I,J,L) = Add_Be7
              ENDIF
-             IF ( Inst%IDTBe10Strat > 0 ) THEN 
+             IF ( Inst%IDTBe10Strat > 0 ) THEN
                 Inst%EmissBe10Strat(I,J,L) = Add_Be10
              ENDIF
           ELSE
@@ -425,7 +452,7 @@ CONTAINS
                             RC,       ExtNr=Inst%ExtNr )
           Arr3D => NULL()
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'HCO_EmisAdd error: EmissBe7', RC )
              RETURN
           ENDIF
@@ -438,7 +465,7 @@ CONTAINS
                             RC,       ExtNr=Inst%ExtNr )
           Arr3D => NULL()
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'HCO_EmisAdd error: EmissBe7Strat', RC )
              RETURN
           ENDIF
@@ -451,7 +478,7 @@ CONTAINS
                             RC,       ExtNr=Inst%ExtNr )
           Arr3D => NULL()
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'HCO_EmisAdd error: EmissBe10', RC )
              RETURN
           ENDIF
@@ -464,7 +491,7 @@ CONTAINS
                             RC,       ExtNr=Inst%ExtNr )
           Arr3D => NULL()
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, &
+             CALL HCO_ERROR( &
                              'HCO_EmisAdd error: EmissBe10Strat', RC )
              RETURN
           ENDIF
@@ -502,6 +529,7 @@ CONTAINS
 ! !USES:
 !
     USE HCO_ExtList_Mod, ONLY : GetExtNr
+    USE HCO_ExtList_Mod, ONLY : GetExtOpt
     USE HCO_State_Mod,   ONLY : HCO_GetExtHcoID
 !
 ! !INPUT PARAMETERS:
@@ -524,8 +552,8 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
-    INTEGER                        :: N, nSpc, ExtNr
-    CHARACTER(LEN=255)             :: MSG
+    INTEGER                        :: N, nSpc, ExtNr, ExtNrZhang
+    CHARACTER(LEN=255)             :: MSG, LOC
 
     ! Arrays
     INTEGER,           ALLOCATABLE :: HcoIDs(:)
@@ -537,28 +565,39 @@ CONTAINS
     !=======================================================================
     ! HCOX_GC_RnPbBe_INIT begins here!
     !=======================================================================
+    LOC = 'HCOX_GC_RNPBBE_INIT (HCOX_GC_RNPBBE_MOD.F90)'
 
-    ! Get the extension number
+    ! Get the main extension number
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
+    ! Get the extension number for Zhang et al [2021] emissions
+    ExtNrZhang = GetExtNr( HcoState%Config%ExtList, 'ZHANG_Rn222' )
+
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HcoX_GC_RnPbBe_Init (hcox_gc_RnPbBe_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Create Instance
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%GC_RnPbBe, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create GC_RnPbBe instance', RC )
+       CALL HCO_ERROR ( 'Cannot create GC_RnPbBe instance', RC )
        RETURN
     ENDIF
-    ! Also fill Inst%ExtNr
-    Inst%ExtNr = ExtNr
+    ! Also fill the extension numbers in the Instance object
+    Inst%ExtNr      = ExtNr
+    Inst%ExtNrZhang = ExtNrZhang
 
     ! Set HEMCO species IDs
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, HcoIDs, SpcNames, nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+       CALL HCO_ERROR( 'Could not set HEMCO species IDs', RC )
+       RETURN
+    ENDIF
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
@@ -611,7 +650,7 @@ CONTAINS
 
     ! ERROR: No tracer defined
     IF ( Inst%IDTRn222 <= 0 .AND. Inst%IDTBe7 <= 0 .AND. Inst%IDTBe10 <= 0) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, &
+       CALL HCO_ERROR( &
                        'Cannot use RnPbBe extension: no valid species!', RC )
     ENDIF
 
@@ -628,7 +667,7 @@ CONTAINS
     IF ( Inst%IDTRn222 > 0 ) THEN
        ALLOCATE( Inst%EmissRn222( HcoState%Nx, HcoState%NY ), STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate EmissRn222', RC )
           RETURN
        ENDIF
@@ -638,7 +677,7 @@ CONTAINS
        ALLOCATE( Inst%EmissBe7( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
                  STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate EmissBe7', RC )
           RETURN
        ENDIF
@@ -647,7 +686,7 @@ CONTAINS
        ! Array for latitudes (Lal & Peters data)
        ALLOCATE( Inst%LATSOU( 10 ), STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate LATSOU', RC )
           RETURN
        ENDIF
@@ -655,7 +694,7 @@ CONTAINS
        ! Array for pressures (Lal & Peters data)
        ALLOCATE( Inst%PRESOU( 33 ), STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate PRESOU', RC )
           RETURN
        ENDIF
@@ -663,7 +702,7 @@ CONTAINS
        ! Array for 7Be emissions ( Lal & Peters data)
        ALLOCATE( Inst%BESOU( 10, 33 ), STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate BESOU', RC )
           RETURN
        ENDIF
@@ -676,7 +715,7 @@ CONTAINS
        ALLOCATE( Inst%EmissBe7Strat( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
                  STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate EmissBe7Strat', RC )
           RETURN
        ENDIF
@@ -687,7 +726,7 @@ CONTAINS
        ALLOCATE( Inst%EmissBe10( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
                  STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate EmissBe10', RC )
           RETURN
        ENDIF
@@ -697,7 +736,7 @@ CONTAINS
        ALLOCATE( Inst%EmissBe10Strat( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
                  STAT=RC )
        IF ( RC /= 0 ) THEN
-          CALL HCO_ERROR ( HcoState%Config%Err, &
+          CALL HCO_ERROR ( &
                            'Cannot allocate EmissBe10Strat', RC )
           RETURN
        ENDIF

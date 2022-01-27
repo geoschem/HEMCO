@@ -87,16 +87,21 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     REAL(hp)            :: SCAL(HcoState%NX,HcoState%NY)
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! HCOX_SCALE_sp2D begins here
     !======================================================================
+    LOC = 'HCOX_SCALE_sp2D (HCOX_TOOLS_MOD.F90)'
 
     IF ( TRIM(SCALENAME) /= TRIM(HCOX_NOSCALE) ) THEN
 
        ! Get mask field
        CALL HCO_EvalFld ( HcoState, TRIM(SCALENAME), SCAL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Set array to zero outside of mask region
        Arr = Arr * SCAL
@@ -147,16 +152,21 @@ CONTAINS
 !
     REAL(hp)            :: SCAL(HcoState%NX,HcoState%NY)
     INTEGER             :: I, NZ
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! HCOX_SCALE_sp3D begins here
     !======================================================================
+    LOC = 'HCOX_SCALE_sp3D (HCOX_TOOLS_MOD.F90)'
 
     IF ( TRIM(SCALENAME) /= TRIM(HCOX_NOSCALE) ) THEN
 
        ! Get mask field
        CALL HCO_EvalFld ( HcoState, TRIM(SCALENAME), SCAL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Number of levels
        NZ = SIZE(Arr,3)
@@ -211,16 +221,21 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     REAL(hp)            :: SCAL(HcoState%NX,HcoState%NY)
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! HCOX_SCALE_dp2D begins here
     !======================================================================
+    LOC = 'HCOX_SCALE_dp2D (HCOX_TOOLS_MOD.F90)'
 
     IF ( TRIM(SCALENAME) /= TRIM(HCOX_NOSCALE) ) THEN
 
        ! Get mask field
        CALL HCO_EvalFld ( HcoState, TRIM(SCALENAME), SCAL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Set array to zero outside of mask region
        Arr = Arr * SCAL
@@ -272,16 +287,21 @@ CONTAINS
 !
     REAL(hp)            :: SCAL(HcoState%NX,HcoState%NY)
     INTEGER             :: I, NZ
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! HCOX_SCALE_dp3D begins here
     !======================================================================
+    LOC = 'HCOX_SCALE_dp3D (HCOX_TOOLS_MOD.F90)'
 
     IF ( TRIM(SCALENAME) /= TRIM(HCOX_NOSCALE) ) THEN
 
        ! Get mask field
        CALL HCO_EvalFld ( HcoState, TRIM(SCALENAME), SCAL, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Number of levels
        NZ = SIZE(Arr,3)

@@ -99,7 +99,7 @@ CONTAINS
     REAL(hp), ALLOCATABLE :: FLUXICE(:,:)
     REAL(hp), ALLOCATABLE :: FLUXWIND(:,:)
     LOGICAL               :: ERR
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
 
     TYPE(MyInst), POINTER :: Inst
 !
@@ -111,10 +111,14 @@ CONTAINS
     !=================================================================
     ! HCOX_CUSTOM_RUN begins here!
     !=================================================================
+    LOC = 'HCOX_CUSTOM_RUN (HCOX_CUSTOM_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_Custom_Run (hcox_custom_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Set error flag
     ERR = .FALSE.
@@ -127,7 +131,7 @@ CONTAINS
     CALL InstGet ( ExtState%Custom, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find custom instance Nr. ', ExtState%Custom
-       CALL HCO_ERROR(HcoState%Config%Err,MSG,RC)
+       CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
@@ -135,7 +139,7 @@ CONTAINS
     ALLOCATE ( FLUXICE( HcoState%NX,HcoState%NY),        &
                FLUXWIND(HcoState%NX,HcoState%NY), STAT=AS )
     IF ( AS/= 0 ) THEN
-       CALL HCO_ERROR( HcoState%Config%Err, 'ALLOCATION ERROR', RC )
+       CALL HCO_ERROR( 'ALLOCATION ERROR', RC )
        RETURN
     ENDIF
     FLUXICE  = 0.0_hp
@@ -151,7 +155,7 @@ CONTAINS
 
        ! Get the land type for grid box (I,J)
        LANDTYPE = HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J),  &
-                                ExtState%ALBD%Arr%Val(I,J) )
+                                ExtState%FRLANDIC%Arr%Val(I,J) )
 
        ! Check surface type
        ! Ocean:
@@ -188,7 +192,10 @@ CONTAINS
        ! Emissions array
        CALL HCO_EmisAdd( HcoState, FLUXWIND, Inst%OcWindIDs(N), &
                          RC,       ExtNr=Inst%ExtNr )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDDO !N
 
     ! Add ice fluxes to emission arrays & diagnostics
@@ -197,7 +204,10 @@ CONTAINS
        ! Emissions array
        CALL HCO_EmisAdd( HcoState, FLUXICE, Inst%IceSrcIDs(N), &
                          RC,       ExtNr=Inst%ExtNr )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDDO !N
 
     ! Return w/ success
@@ -249,37 +259,44 @@ CONTAINS
     INTEGER,           ALLOCATABLE :: HcoIDs(:)
     LOGICAL                        :: verb
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
-    CHARACTER(LEN=255)             :: MSG
+    CHARACTER(LEN=255)             :: MSG, LOC
     TYPE(MyInst), POINTER          :: Inst
 
     !=================================================================
     ! HCOX_CUSTOM_INIT begins here!
     !=================================================================
+    LOC = 'HCOX_CUSTOM_INIT (HCOX_CUSTOM_MOD.F90)'
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOX_Custom_Init (hcox_custom_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     verb = HCO_IsVerb(HcoState%Config%Err,1)
 
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%Custom, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create custom instance', RC )
+       CALL HCO_ERROR (  'Cannot create custom instance', RC )
        RETURN
     ENDIF
 
     ! Set species IDs
     CALL HCO_GetExtHcoID( HcoState, Inst%ExtNr, HcoIDs, SpcNames, nSpc, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Assume first half are 'wind species', second half are ice.
     IF ( MOD(nSpc,2) /= 0 ) THEN
        MSG = 'Cannot set species IDs for custom emission module!'
-       CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
@@ -310,7 +327,7 @@ CONTAINS
     ! Activate met fields required by this extension
     ExtState%U10M%DoUse = .TRUE.
     ExtState%V10M%DoUse = .TRUE.
-    ExtState%ALBD%DoUse = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%WLI%DoUse  = .TRUE.
 
     ! Activate this extension

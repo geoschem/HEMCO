@@ -153,7 +153,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     CHARACTER(LEN=255)            :: thisUnit, LevUnit, LevName
-    CHARACTER(LEN=1023)           :: MSG
+    CHARACTER(LEN=1023)           :: MSG, LOC
     CHARACTER(LEN=1023)           :: srcFile, srcFile2
     INTEGER                       :: NX, NY
     INTEGER                       :: NCRC, Flag, AS
@@ -200,10 +200,14 @@ CONTAINS
     !=================================================================
     ! HCOIO_READ begins here
     !=================================================================
+    LOC = 'HCOIO_READ (HCOIO_READ_STD_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, 'HCOIO_READ (hcoio_read_std_mod.F90)' , RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Initialize pointers
     ncArr   => NULL()
@@ -261,7 +265,7 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error encountered in routine "SrcFile_Parse", located '     // &
              'module src/Core/hcoio_read_std_mod.F90!'
-        CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+        CALL HCO_ERROR( MSG, RC )
         RETURN
     ENDIF
 
@@ -285,7 +289,7 @@ CONTAINS
                      TRIM(srcFile) // ' - Cannot get field ' // &
                      TRIM(Lct%Dct%cName) // '. Please check file name ' // &
                      'and time (incl. time range flag) in the config. file'
-                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                CALL HCO_ERROR( MSG, RC )
                 RETURN
 
              ! If MustFind flag is not enabled, ignore this field and return
@@ -304,7 +308,7 @@ CONTAINS
                   TRIM(srcFile) // ' - Cannot get field ' // &
                   TRIM(Lct%Dct%cName) // '. Please check file name ' // &
                   'and time (incl. time range flag) in the config. file'
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
        ENDIF
@@ -450,7 +454,10 @@ CONTAINS
                        ncLun,     tidx1,    tidx2,    &
                        wgt1,      wgt2,     oYMDhm1,  &
                        YMDhma,    YMDhm1,   RC        )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     !-----------------------------------------------------------------
     ! Check for negative tidx1. tidx1 can still be negative if:
@@ -466,7 +473,7 @@ CONTAINS
        DoReturn = .FALSE.
        IF ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_CYCLE ) THEN
           MSG = 'Invalid time index in ' // TRIM(srcFile)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           DoReturn = .TRUE.
        ELSEIF ( ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_RANGE ) .OR.      &
                 ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_EXACT )     ) THEN
@@ -475,7 +482,7 @@ CONTAINS
                    TRIM(srcFile) // ' - Cannot get field ' // &
                    TRIM(Lct%Dct%cName) // '. Please check file name ' // &
                    'and time (incl. time range flag) in the config. file'
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              DoReturn = .TRUE.
           ELSE
              CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE.)
@@ -504,7 +511,7 @@ CONTAINS
        IF ( Lct%Dct%Dta%MustFind ) THEN
           MSG = 'Cannot find field ' // TRIM(Lct%Dct%cName) // &
                 '. Please check variable name in the config. file'
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
 
        ! If MustFind flag is not enabled, ignore this field and return
@@ -549,7 +556,7 @@ CONTAINS
     IF ( nlon == 0 ) THEN
        MSG = 'Cannot find longitude variable in ' // TRIM(srcFile) // &
              ' - Must be one of `lon`, `longitude`, `Longitude`'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -558,13 +565,16 @@ CONTAINS
     IF ( INDEX( thisUnit, 'degrees_east' ) == 0 ) THEN
        MSG = 'illegal longitude unit in ' // TRIM(srcFile) // &
              ' - Must be `degrees_east`.'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
     ! Make sure longitude is steadily increasing.
     CALL HCO_ValidateLon( HcoState, nlon, LonMid, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Extract latitude midpoints
     CALL NC_READ_VAR ( ncLun, 'lat', nlat, thisUnit, LatMid, NCRC )
@@ -592,7 +602,7 @@ CONTAINS
     IF ( nlat == 0 ) THEN
        MSG = 'Cannot find latitude variable in ' // TRIM(srcFile) // &
              ' - Must be one of `lat`, `latitude`, `Latitude`'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -601,7 +611,7 @@ CONTAINS
     IF ( INDEX( thisUnit, 'degrees_north' ) == 0 ) THEN
        MSG = 'illegal latitude unit in ' // TRIM(srcFile) // &
              ' - Must be `degrees_north`.'
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -636,7 +646,7 @@ CONTAINS
        IF ( nlev == 0 ) THEN
           MSG = 'Cannot find vertical coordinate variable in ' // &
                  TRIM(SrcFile) // ' - Must be one of `lev`, `level`, `height`.'
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -657,7 +667,10 @@ CONTAINS
           ! IsModelLev will stay True if is was set so in NC_ISMODELLEVEL
           ! above. (ckeller, 9/29/15)
           CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Override IsModelLevel if the long_name contains
           ! "atmospheric_hybrid_sigma_pressure_coordinate"
@@ -679,7 +692,7 @@ CONTAINS
           IF ( ABS(Lct%Dct%Dta%Levels) > nlev ) THEN
              WRITE(MSG,*) Lct%Dct%Dta%Levels, ' levels requested but file ', &
                 'has only ', nlev, ' levels: ', TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -716,7 +729,10 @@ CONTAINS
     ! set.
     ! ----------------------------------------------------------------
     CALL GetArbDimIndex( HcoState, ncLun, Lct, ArbIdx, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! ----------------------------------------------------------------
     ! Read data
@@ -782,7 +798,10 @@ CONTAINS
           ENDIF
           CALL SrcFile_Parse ( HcoState,  Lct, srcFile2, &
                                FOUND, RC, Direction = Direction )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! If found, read data. Assume that all meta-data is the same.
@@ -798,7 +817,10 @@ CONTAINS
                              ncLun2,    tidx1,    tidx2,   &
                              wgt1,      wgt2,     oYMDhm2, &
                              YMDhmb,    YMDhm1,   RC       )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Always read first time slice
           tidx1 = 1
@@ -887,7 +909,10 @@ CONTAINS
        ! cYr is the current simulation year
        CALL HcoClock_Get( HcoState%Clock, cYYYY=cYr, cMM=cMt, cDD=cDy, &
                           cH=cHr, RC=RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Determine year range to be read:
        ! By default, we would like to average between the year range given
@@ -921,13 +946,16 @@ CONTAINS
              ! Get file name for this year
              CALL SrcFile_Parse ( HcoState, Lct, srcFile2, &
                                   FOUND, RC, Year=iYear )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! If found, read data. Assume that all meta-data is the same.
              IF ( .NOT. FOUND ) THEN
                 WRITE(MSG,*) 'Cannot find file for year ', iYear, ' - needed ', &
                    'to perform time-averaging on file ', TRIM(Lct%Dct%Dta%ncFile)
-                CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+                CALL HCO_ERROR( MSG, RC )
                 RETURN
              ENDIF
 
@@ -940,7 +968,10 @@ CONTAINS
                                 wgt1,      wgt2,     oYMDhm2, &
                                 YMDhmb,    YMDhm1,   RC,      &
                                 Year=iYear                    )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
 
              ! Do not perform weights
              wgt1  = -1.0_sp
@@ -1039,7 +1070,7 @@ CONTAINS
        IF ( Flag /= 0 .AND. UnitTolerance == 0 ) THEN
           MSG = 'Illegal unit: ' // TRIM(thisUnit) // '. File: ' // &
                 TRIM(srcFile)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -1069,7 +1100,7 @@ CONTAINS
                 '. File: ' // TRIM(srcFile)
 
           IF ( UnitTolerance == 0 ) THEN
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ELSE
              CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
@@ -1091,11 +1122,17 @@ CONTAINS
 
        IF ( ncYr == 0 ) THEN
           CALL HcoClock_Get( HcoState%Clock, cYYYY = ncYr, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
        IF ( ncMt == 0 ) THEN
           CALL HcoClock_Get( HcoState%Clock, cMM   = ncMt, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! Verbose mode
@@ -1119,7 +1156,7 @@ CONTAINS
             RC            = RC                )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'Cannot convert units for ' // TRIM(Lct%Dct%cName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG , RC )
+          CALL HCO_ERROR( MSG , RC )
           RETURN
        ENDIF
 
@@ -1183,20 +1220,23 @@ CONTAINS
                                    LatEdge,  nlatEdge, NCRC   )
           IF ( NCRC /= 0 ) THEN
              MSG = 'Cannot read lat edge of ' // TRIM(srcFile)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
           ! Now normalize data by area calculated from lat edges.
           CALL NORMALIZE_AREA( HcoState, ncArr,   nlon, &
                                LatEdge,  srcFile, RC     )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
        ! All other combinations are invalid
        ELSE
           MSG = 'Unit must be unitless, emission or concentration: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(thisUnit)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
     ENDIF ! Unit conversion
@@ -1210,11 +1250,14 @@ CONTAINS
                              LonEdge,  nlonEdge, NCRC   )
     IF ( NCRC /= 0 ) THEN
        MSG = 'Cannot read lon edge of ' // TRIM(srcFile)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
     CALL HCO_ValidateLon( HcoState, nlonEdge, LonEdge, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Get latitude edges (only if they have not been read yet
     ! for unit conversion)
@@ -1223,7 +1266,7 @@ CONTAINS
                                 LatEdge,  nlatEdge, NCRC   )
        IF ( NCRC /= 0 ) THEN
           MSG = 'Cannot read lat edge of ' // TRIM(srcFile)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
     ENDIF
@@ -1267,7 +1310,7 @@ CONTAINS
     IF ( HCO_IsIndexData(Lct%Dct%Dta%OrigUnit) .AND. UseMESSy ) THEN
        MSG = 'Cannot do MESSy regridding for index data: ' // &
              TRIM(srcFile)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -1286,7 +1329,7 @@ CONTAINS
        IF ( tidx1 /= tidx2 ) THEN
           MSG = 'Cannot do MESSy regridding for more than one time step; ' &
                 // TRIM(srcFile)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -1369,7 +1412,10 @@ CONTAINS
 
           ! Interpolate onto edges
           CALL SigmaMidToEdges ( HcoState, SigLev, SigEdge, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
 
           ! Sigma levels are not needed anymore
           IF ( ASSOCIATED(SigLev) ) DEALLOCATE(SigLev)
@@ -1394,7 +1440,10 @@ CONTAINS
        CALL HCO_MESSY_REGRID ( HcoState,  NcArr,                 &
                                LonEdge,   LatEdge,      SigEdge, &
                                Lct,       IsModelLevel, RC        )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        ! Cleanup
        IF ( ASSOCIATED(SigEdge) ) DEALLOCATE(SigEdge)
@@ -1409,7 +1458,10 @@ CONTAINS
        ENDIF
 
        CALL REGRID_MAPA2A ( HcoState, NcArr, LonEdge, LatEdge, Lct, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
     ENDIF
 
@@ -1421,13 +1473,19 @@ CONTAINS
           IF ( ASSOCIATED(Lct%Dct%Dta%V3(1)%Val) ) THEN
              CALL Diagn_Update ( HcoState, cName=TRIM(Lct%Dct%cName), &
                                  Array3D=Lct%Dct%Dta%V3(1)%Val, COL=-1, RC=RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
           ENDIF
        ELSEIF ( Lct%Dct%Dta%SpaceDim == 2 .AND. ASSOCIATED(Lct%Dct%Dta%V2) ) THEN
           IF ( ASSOCIATED(Lct%Dct%Dta%V2(1)%Val) ) THEN
              CALL Diagn_Update ( HcoState, cName=TRIM(Lct%Dct%cName), &
                                  Array2D=Lct%Dct%Dta%V2(1)%Val, COL=-1, RC=RC )
-             IF ( RC /= HCO_SUCCESS ) RETURN
+             IF ( RC /= HCO_SUCCESS ) THEN
+                 CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+                 RETURN
+             ENDIF
           ENDIF
        ENDIF
     ENDIF

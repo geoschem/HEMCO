@@ -120,14 +120,22 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! tIDx_Init begins here!
     !======================================================================
+    LOC = 'tIDx_Init (HCO_TIDX_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, 'tIDx_Init (hco_tidx_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Allocate collection of time indeces
     ALLOCATE ( HcoState%AlltIDx )
@@ -347,13 +355,15 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER            :: HH, WD, MM, RC
-    REAL(hp)           :: LonHH
-    REAL(dp)           :: frac
+    INTEGER             :: HH, WD, MM, RC
+    REAL(hp)            :: LonHH
+    REAL(dp)            :: frac
+    CHARACTER(LEN=255)  :: LOC
 
     !======================================================================
     ! tIDx_GetIndx begins here!
     !======================================================================
+    LOC = 'tIDx_GetIndx (HCO_TIDX_MOD.F90)'
 
     ! Default value (=> This will cause the code to crash!)
     Indx = -1
@@ -372,7 +382,10 @@ CONTAINS
        ! at longitude Lon.
        CASE ( 24 )
           CALL HcoClock_GetLocal( HcoState, I, J, cH=LonHH, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           Indx = FLOOR(LonHH) + 1
 
        ! Hourly data (already gridded)
@@ -381,7 +394,10 @@ CONTAINS
        ! of current UTC time. Add one since hour starts at 0.
        CASE ( 241 )
           CALL HcoClock_Get( HcoState%Clock, cH=HH, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           Indx = HH + 1
 
        ! Weekday data (local time)
@@ -390,7 +406,10 @@ CONTAINS
        CASE ( 7 )
 
           CALL HcoClock_GetLocal( HcoState, I, J, cWeekday=WD, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           Indx = WD + 1
 
        ! Monthly data (local time)
@@ -399,7 +418,10 @@ CONTAINS
        ! is kept in memory (and updated whenever a new month is entered).
        CASE ( 12 )
           CALL HcoClock_GetLocal( HcoState, I, J, cMM = MM, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           Indx = MM
 
        ! Default: assume it's constant
@@ -477,16 +499,19 @@ CONTAINS
 !
     INTEGER            :: nx, ny, nt, ntexp, dt
     INTEGER            :: cTypeID
-    CHARACTER(LEN=255) :: MSG
+    CHARACTER(LEN=255) :: MSG, LOC
 
     !-----------------------------------
     ! tIDx_Assign begins here!
     !-----------------------------------
+    LOC = 'tIDx_Assign (HCO_TIDX_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, &
-                   'tIDx_Assign (hco_tidx_mod.F90)', RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Check if already done
     IF ( ASSOCIATED( Dct%Dta%tIDx ) ) THEN
@@ -532,7 +557,7 @@ CONTAINS
           IF ( dt /= 24 ) THEN
              MSG = '7 time slices but delta t is not 24 hours!' // &
                   TRIM(Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -545,7 +570,7 @@ CONTAINS
           IF ( .NOT. Dct%Dta%IsLocTime ) THEN
              MSG = 'Weekday data must be in local time!' // &
                   TRIM(Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
 
           ELSE
@@ -564,7 +589,7 @@ CONTAINS
           ELSE
              MSG = 'Monthly data must not be gridded:' // &
                   TRIM(Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -581,7 +606,7 @@ CONTAINS
           IF ( MOD(24,dt) /= 0 ) THEN
              MSG = 'Cannot properly split up hourly data!' // &
                   TRIM(Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -590,7 +615,7 @@ CONTAINS
           IF ( ntexp /= nt ) THEN
              MSG = 'Wrong delta t and/or number of time slices!' // &
                   TRIM(Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
 
@@ -610,7 +635,7 @@ CONTAINS
        ELSE
           MSG = 'Invalid time slice for field ' // &
                TRIM(Dct%cName)
-          CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+          CALL HCO_ERROR( MSG, RC )
           RETURN
        ENDIF
 
@@ -759,12 +784,14 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER   :: cYr, cMt, cDy, cWd, cHr, cMn, sYr
-    LOGICAL   :: InRange
+    INTEGER             :: cYr, cMt, cDy, cWd, cHr, cMn, sYr
+    LOGICAL             :: InRange
+    CHARACTER(LEN=255)  :: LOC
 
     !-----------------------------------
     ! HCO_GetPrefTimeAttr begins here!
     !-----------------------------------
+    LOC = 'HCO_GetPrefTimeAttr (HCO_TIDX_MOD.F90)'
 
     ! Init
     RC = HCO_SUCCESS
@@ -774,7 +801,10 @@ CONTAINS
                        cYYYY    = cYr, cMM = cMt, cDD = cDy,        &
                        cWEEKDAY = cWd, cH  = cHr, cM  = cMn,        &
                        sYYYY    = sYr, RC = RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Always use simulation year when specified
     IF ( Lct%Dct%Dta%UseSimYear ) cYr = sYr
@@ -900,7 +930,10 @@ CONTAINS
     ! in HEMCO configuration file
     CALL TimeShift_Apply ( HcoState, Lct, &
                            readYr, readMt, readDy, readHr, readMn, RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -999,7 +1032,7 @@ CONTAINS
     CALL STRSPLIT( CharStr, HCO_GetOpt(HcoConfig%ExtList,'Separator'), SUBSTR, N )
     IF ( N < 4 ) THEN
        MSG = 'Time stamp must have at least 4 elements: ' // TRIM(CharStr)
-       CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -1061,7 +1094,7 @@ CONTAINS
              TimeVec(I1) = TimeVec(I0)
           ELSE
              MSG = 'Cannot extract time stamp: ' // TRIM(CharStr)
-             CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
        ENDIF
@@ -1090,7 +1123,10 @@ CONTAINS
     ! If time shift is specified, archive it in attribute 'tShift'.
     IF ( N > 4 ) THEN
        CALL TimeShift_Set( HcoConfig, Dta, SUBSTR(5), RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
     ENDIF
 
     ! Leave w/ success

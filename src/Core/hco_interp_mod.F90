@@ -388,7 +388,10 @@ CONTAINS
        ! Eventually inflate/collapse levels onto simulation levels.
        IF ( Lct%Dct%Dta%SpaceDim == 3 ) THEN
           CALL ModelLev_Interpolate( HcoState, REGR_4D, Lct, RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
        ENDIF
 
        ! For index based data, map fractions back to corresponding value.
@@ -649,16 +652,19 @@ CONTAINS
     INTEGER                 :: G5T4
     LOGICAL                 :: verb, infl, clps
     LOGICAL                 :: DONE
-    CHARACTER(LEN=255)      :: MSG
+    CHARACTER(LEN=255)      :: MSG, LOC
 
     !=================================================================
     ! ModelLev_Interpolate begins here
     !=================================================================
+    LOC = 'ModelLev_Interpolate (HCO_INTERP_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER (HcoState%Config%Err,&
-                   'ModelLev_Interpolate (hco_interp_mod.F90)' , RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    CALL HCO_ENTER (HcoState%Config%Err, LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Check for verbose mode
     verb = HCO_IsVerb(HcoState%Config%Err,  3 )
@@ -680,13 +686,13 @@ CONTAINS
     IF ( SIZE(REGR_4D,1) /= nx ) THEN
        WRITE(MSG,*) 'x dimension mismatch ', TRIM(Lct%Dct%cName), &
           ': ', nx, SIZE(REGR_4D,1)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
     IF ( SIZE(REGR_4D,2) /= ny ) THEN
        WRITE(MSG,*) 'y dimension mismatch ', TRIM(Lct%Dct%cName), &
           ': ', ny, SIZE(REGR_4D,2)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -705,7 +711,10 @@ CONTAINS
     IF ( ( nlev == nz ) .OR. ( nlev == nz+1 ) ) THEN
 
        CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nlev, nt, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        DO T = 1, nt
           Lct%Dct%Dta%V3(T)%Val(:,:,:) = REGR_4D(:,:,:,T)
@@ -809,7 +818,7 @@ CONTAINS
           ELSEIF ( nlev > 47 ) THEN
              MSG = 'Can only remap from native onto reduced GEOS-5 if '// &
                    'input data has exactly 72 or 73 levels: '//TRIM(Lct%Dct%cName)
-             CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ELSE
              nout = nlev
@@ -943,7 +952,10 @@ CONTAINS
     !===================================================================
     IF ( .NOT. DONE ) THEN
        CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nlev, nt, RC )
-       IF ( RC /= HCO_SUCCESS ) RETURN
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
 
        DO T = 1, nt
           Lct%Dct%Dta%V3(T)%Val(:,:,:) = REGR_4D(:,:,:,T)
@@ -974,7 +986,7 @@ CONTAINS
        ENDIF
     ELSE
        WRITE(MSG,*) 'Vertical regridding failed: ',TRIM(Lct%Dct%cName)
-       CALL HCO_ERROR( HcoState%Config%Err, MSG, RC )
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -1050,7 +1062,7 @@ CONTAINS
     ! Check number of levels to be used
     IF ( NZ /= 28 .AND. NZ /= 29 ) THEN
        MSG = 'Cannot map GEOS-5 onto GEOS-4 data, number of levels must be 28 or 29: '//TRIM(Lct%Dct%cName)
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -1058,7 +1070,7 @@ CONTAINS
     IF ( SIZE(REGR_4D,3) < NZ ) THEN
        WRITE(MSG,*) 'Cannot map GEOS-5 onto GEOS-4 data, original data has not enough levels: ', &
           TRIM(Lct%Dct%cName), ' --> ', SIZE(REGR_4D,3), ' smaller than ', NZ
-       CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 

@@ -184,7 +184,7 @@ CONTAINS
        IF ( OrigExtNr /= ExtNr ) THEN
           WRITE(MSG,*) 'Cannot create extension - extension already exists', &
                        TRIM(lcName), ExtNr, OrigExtNr
-          CALL HCO_ERROR(HcoConfig%Err,MSG,RC,THISLOC='AddExt (hco_extlist_mod.F90)')
+          CALL HCO_ERROR(MSG,RC,THISLOC='AddExt (hco_extlist_mod.F90)')
           RETURN
 
        ! Nothing to do otherwise
@@ -292,12 +292,13 @@ CONTAINS
 ! !INTERNAL VARIABLES:
 !
     INTEGER               :: IDX
-    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: MSG, LOC
     CHARACTER(LEN=OPTLEN) :: TmpStr, OptName, OptValue
 
     !======================================================================
     ! AddExtOpt begins here
     !======================================================================
+    LOC = 'AddExtOpt (HCO_EXTLIST_MOD.F90)'
 
     ! Parse option name and option value. These must be separated by colon.
     IDX = INDEX( TRIM(Opt), ':' )
@@ -306,7 +307,7 @@ CONTAINS
     IF ( IDX <= 0 ) THEN
        MSG = 'Cannot extract option name/value pair - these must be ' // &
              'separated by a colon (:) character: ' // TRIM(Opt)
-       CALL HCO_ERROR(HcoConfig%Err,MSG,RC,THISLOC='AddExtOpt (hco_extlist_mod)')
+       CALL HCO_ERROR(MSG,RC,THISLOC='AddExtOpt (hco_extlist_mod)')
        RETURN
     ENDIF
 
@@ -325,7 +326,10 @@ CONTAINS
     ! Pass to options
     CALL HCO_AddOpt( HcoConfig, OptName, OptValue, ExtNr, RC, &
                      IgnoreIfExist=IgnoreIfExist )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Cleanup and leave
     RC = HCO_SUCCESS
@@ -414,7 +418,7 @@ CONTAINS
     ELSEIF ( .NOT. OptFound ) THEN
        WRITE(MSG,*) '(A) Cannot find option ', TRIM(OptName),  &
        ' in extension ', ExtNr
-       CALL HCO_ERROR(HcoConfig%Err,MSG,RC,THISLOC=LOC )
+       CALL HCO_ERROR(MSG,RC,THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -605,7 +609,7 @@ CONTAINS
 
     IF ( .NOT. ASSOCIATED( ThisExt ) ) THEN
        WRITE(MSG,*) 'Cannot find extension Nr. ', ExtNr
-       CALL HCO_ERROR( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+       CALL HCO_ERROR(  MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -850,17 +854,26 @@ CONTAINS
 
        IF ( PRESENT(SpcScal_sp) ) THEN
           CALL GetExtOpt ( HcoConfig, ExtNr, IOptName, OptValSp=iScal_sp, FOUND=FND, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           IF ( FND ) SpcScal_sp(I) = iScal_sp
        ENDIF
        IF ( PRESENT(SpcScal_in) ) THEN
           CALL GetExtOpt ( HcoConfig, ExtNr, IOptName, OptValInt=iScal_in, FOUND=FND, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           IF ( FND ) SpcScal_in(I) = iScal_in
        ENDIF
        IF ( PRESENT(SpcScal_char) ) THEN
           CALL GetExtOpt ( HcoConfig, ExtNr, IOptName, OptValChar=iScal_char, FOUND=FND, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) RETURN
+          IF ( RC /= HCO_SUCCESS ) THEN
+              CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+              RETURN
+          ENDIF
           IF ( FND ) SpcScal_char(I) = iScal_char
        ENDIF
     ENDDO
@@ -1190,7 +1203,7 @@ CONTAINS
           IF ( TRIM(DUM) /= ADJUSTL(TRIM(OptValue)) ) THEN
              MSG = 'Cannot add option pair: '//TRIM(OptName)//': '//TRIM(OptValue) &
                 // ' - option already exists: '//TRIM(OptName)//': '//TRIM(DUM)
-             CALL HCO_ERROR ( HcoConfig%Err, MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR (  MSG, RC, THISLOC=LOC )
              RETURN
           ! Return with no error if values are the same
           ELSE
@@ -1210,7 +1223,7 @@ CONTAINS
     IF ( .NOT. ASSOCIATED( ThisExt ) ) THEN
        WRITE(MSG,*) 'Cannot add option to extension Nr. ', ExtNr
        MSG = TRIM(MSG) // '. Make sure this extension is activated!'
-       CALL HCO_ERROR(HcoConfig%Err,MSG,RC,THISLOC='AddOpt (hco_extlist_mod)')
+       CALL HCO_ERROR(MSG,RC,THISLOC='AddOpt (hco_extlist_mod)')
        RETURN
     ENDIF
 
@@ -1469,11 +1482,13 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     CHARACTER(LEN=OPTLEN)     :: DUM
+    CHARACTER(LEN=255)        :: LOC
     LOGICAL                   :: FOUND
 
     !=================================================================
     ! HCO_SetDefaultToken begins here!
     !=================================================================
+    LOC = 'HCO_SetDefaultToken (HCO_EXTLIST_MOD)'
 
     IF ( Trim(CF%MetField) == 'GEOSFP' ) THEN
        DEF_MET_UC = 'GEOSFP'
@@ -1499,25 +1514,37 @@ CONTAINS
 
     ! Wildcard character
     CALL GetExtOpt( CF, CoreNr, 'Wildcard', OptValChar=DUM, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND) DUM = DEF_WILDCARD
     CALL HCO_AddOpt( CF, 'Wildcard', DUM, CoreNr, RC, VERB=.FALSE. )
 
     ! Separator
     CALL GetExtOpt( CF, CoreNr, 'Separator', OptValChar=DUM, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND) DUM = DEF_SEPARATOR
     CALL HCO_AddOpt( CF, 'Separator', DUM, CoreNr, RC, VERB=.FALSE. )
 
     ! Colon
     CALL GetExtOpt( CF, CoreNr, 'Colon', OptValChar=DUM, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND) DUM = DEF_COLON
     CALL HCO_AddOpt( CF, 'Colon', DUM, CoreNr, RC, VERB=.FALSE. )
 
     ! Root directory
     CALL GetExtOpt( CF, CoreNr, 'ROOT', OptValChar=DUM, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND) DUM = DEF_ROOT
     CALL HCO_AddOpt( CF, 'ROOT', DUM, CoreNr, RC, VERB=.FALSE. )
 
@@ -1526,31 +1553,46 @@ CONTAINS
 
     ! Meteorology token (uppercase)
     CALL GetExtOpt( CF, CoreNr, 'MET', OptValChar=DUM, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND) DUM = DEF_MET_UC
     CALL HCO_AddOpt( CF, 'MET', DUM, CoreNr, RC, VERB=.FALSE. )
 
     ! Meteorology token (lowercase)
     CALL GetExtOpt( CF, CoreNr, 'met', OptValChar=DUM, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND) DUM = DEF_MET_LC
     CALL HCO_AddOpt( CF, 'met', DUM, CoreNr, RC, VERB=.FALSE. )
 
     ! Year for constant met fields
     CALL GetExtOpt( CF, CoreNr, 'CNYR', OptValChar=DUM, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND) DUM = DEF_CN_YR
     CALL HCO_AddOpt( CF, 'CNYR', DUM, CoreNr, RC, VERB=.FALSE. )
 
     ! NetCDF version extension
     CALL GetExtOpt( CF, CoreNr, 'NC', OptValChar=DUM, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND) DUM = DEF_NC_VER
     CALL HCO_AddOpt( CF, 'NC', DUM, CoreNr, RC, VERB=.FALSE. )
 
     ! Resolution token
     CALL GetExtOpt( CF, CoreNr, 'RES', OptValChar=DUM, Found=FOUND, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
     IF ( .NOT. FOUND ) DUM = DEF_RES
     CALL HCO_AddOpt( CF, 'RES', DUM, CoreNr, RC, VERB=.FALSE. )
 
