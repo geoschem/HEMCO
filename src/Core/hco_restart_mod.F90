@@ -330,9 +330,9 @@ CONTAINS
         RETURN
     ENDIF
 
-    ! If field is all negatives assume it to be not filled
+    ! If field is all negatives or zero assume it to be not filled
     IF ( FLD ) THEN
-       IF ( MAXVAL(Arr3D) < 0.0 ) FLD = .FALSE.
+       IF ( MAXVAL(Arr3D) <= 0.0 ) FLD = .FALSE.
     ENDIF
 
     ! Log output
@@ -491,9 +491,9 @@ CONTAINS
         RETURN
     ENDIF
 
-    ! If field is all negatives assume it to be not filled
+    ! If field is all negatives or zero assume it to be not filled
     IF ( FLD ) THEN
-       IF ( MAXVAL(Arr2D) < 0.0 ) FLD = .FALSE.
+       IF ( MAXVAL(Arr2D) <= 0.0 ) FLD = .FALSE.
     ENDIF
 
     ! Log output
