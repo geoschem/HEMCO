@@ -664,6 +664,20 @@ CONTAINS
     ! Repeat until end of the given section is found
     DO
 
+       ! Zero loop variables for safety's sake (bmy, 07 Mar 2022)
+       srcFile = ''
+       srcVar  = ''
+       srcTime = ''
+       tmCycle = ''
+       srcDim  = ''
+       srcUnit = ''
+       spcName = ''
+       char1   = ''
+       char2   = ''
+       int1    = 0
+       int2    = 0
+       int3    = 0
+
        !==============================================================
        ! Read line and get desired character strings
        ! Since base emissions, scale factors and masks have different
@@ -957,171 +971,31 @@ CONTAINS
                 ENDIF
 #endif
 
-                ! Set time cycling behaviour. Possible values are:
-                ! - "C"   : cycling <-- DEFAULT
-                ! - "CS"  : cycling, skip if not exist
-                ! - "CY"  : cycling, always use simulation year
-                ! - "CYS" : cycling, always use simulation yr, skip if not exist
-                ! - "R"   : range
-                ! - "RA"  : range, average outside
-                ! - "RF"  : range, forced (error if not in range)
-                ! - "RFY" : range, forced, always use simulation year
-                ! - "RFY3 : range, forced, always use simulation year, 3-hourly
-                ! - "RY"  : range, always use simulation year
-                ! - "E"   : exact, read/query once
-                ! - "EF"  : exact, forced (error if not exist), read/query once
-                ! - "EFY" : exact, forced, always use sim year
-                ! - "EFYO": exact, forced, always use sim year, read once
-                ! - "EC"  : exact, read/query continuously (e.g. for ESMF interface)
-                ! - "ECF" : exact, forced, read/query continuously
-                ! - "EY"  : exact, always use simulation year, read/query once
-                ! - "A"   : average
-                ! - "I"   : interpolate
-                ! - "ID"  : interpolate, discontinuous dataset
-                Dta%MustFind  = .FALSE.
-                Dta%UseSimYear= .FALSE.
-                Dta%Discontinuous = .FALSE.
-                IF ( TRIM(TmCycle) == "C" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_CYCLE
-                   Dta%MustFind  = .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "CS" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_CYCLE
-                   Dta%MustFind  = .FALSE.
-                ELSEIF ( TRIM(TmCycle) == "CY" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_CYCLE
-                   Dta%MustFind  = .TRUE.
-                   Dta%UseSimYear= .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "CYS" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_CYCLE
-                   Dta%MustFind  = .FALSE.
-                   Dta%UseSimYear= .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "R" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_RANGE
-                ELSEIF ( TRIM(TmCycle) == "RA" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_RANGEAVG
-                ELSEIF ( TRIM(TmCycle) == "RF" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_RANGE
-                   Dta%MustFind  = .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "RFY" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_RANGE
-                   Dta%MustFind  = .TRUE.
-                   Dta%UseSimYear= .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "RFY3" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_RANGE
-                   Dta%MustFind  = .TRUE.
-                   Dta%UseSimYear= .TRUE.
-                   Dta%UpdtFlag  = HCO_UFLAG_3HR
-                ELSEIF ( TRIM(TmCycle) == "RY" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_RANGE
-                   Dta%UseSimYear= .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "E" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_EXACT
-                   Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                ELSEIF ( TRIM(TmCycle) == "EF" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_EXACT
-                   Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                   Dta%MustFind  = .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_EXACT
-                   Dta%MustFind  = .TRUE.
-                   Dta%UseSimYear= .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "EFYO" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_EXACT
-                   Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                   Dta%MustFind  = .TRUE.
-                   Dta%UseSimYear= .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_EXACT
-                ELSEIF ( TRIM(TmCycle) == "ECF" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_EXACT
-                   Dta%MustFind  = .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "EY" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_EXACT
-                   Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                   Dta%UseSimYear= .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "A" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_AVERG
-                ELSEIF ( TRIM(TmCycle) == "I" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_INTER
-                ELSEIF ( TRIM(TmCycle) == "ID" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_INTER
-                   Dta%Discontinuous = .TRUE.
-                ELSEIF ( TRIM(TmCycle) == "-" ) THEN
-                   Dta%CycleFlag = HCO_CFLAG_CYCLE
-                ELSE
-                   MSG = 'Invalid time cycling attribute: ' // &
-                         TRIM(TmCycle) // ' - in ' // TRIM(tagcName)
-                   CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
+                ! Update the properties of the data container
+                ! NOTE: This routine abstracts the big IF/ELSE block that
+                ! processes the time cycle information (bmy, 07 Mar 2022)
+                CALL UpdateDtaProperties(                                    &
+                     dctType   = dctType,                                    &
+                     int3      = int3,                                       &
+                     char1     = TRIM( char1     ),                          &
+                     char2     = char2(1:1),                                 &
+                     tagCName  = TRIM( tagCName  ),                          &
+                     tmCycle   = TRIM( tmCycle   ),                          &
+                     separator = TRIM( separator ),                          &
+                     srcDim    = TRIM( srcDim    ),                          &
+                     wildCard  = TRIM( wildCard  ),                          &
+                     HcoConfig = HcoConfig,                                  &
+                     Lct       = Lct,                                        &
+                     Dta       = Dta,                                        &
+                     RC        = RC                                         )
+
+                ! Trap potential errors
+                IF ( RC /= HCO_Success ) THEN
+                   MSG = 'Error encountered in routine "UpdateDtaProperties"'
+                   CALL HCO_Error( MSG, RC, thisLoc=loc )
                    RETURN
                 ENDIF
 
-                ! Set space dimension. This will determine the dimension of the
-                ! data array vector, i.e. 3D or 2D. Different time slices will
-                ! be stored as different vector elements.
-                ! For 3D data, it is now possible to explicitly set the number
-                ! of vertical levels to be used, as well as the 'reading
-                ! direction' (up or down). These information is also extracted
-                ! from srcDim and will be stored in variable Dta%Levels.
-                ! (ckeller, 5/20/15)
-                ! ExtractSrcDim now also returns possible scale factors for the
-                ! injection level, which will be stored in container variable
-                ! levScalID1 (bottom level) and levScalID2 (top level).
-                CALL ExtractSrcDim( HcoConfig, srcDim, Dta, &
-                                    levScal1,  levScal2,  RC )
-                IF ( RC /= HCO_SUCCESS ) THEN
-                    CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
-                    RETURN
-                ENDIF
-
-                ! Set level scale factor index
-                IF ( levScal1 > 0 ) Lct%Dct%levScalID1 = levScal1
-                IF ( levScal2 > 0 ) Lct%Dct%levScalID2 = levScal2
-
-                ! For scale factors: check if a mask is assigned to this scale
-                ! factor. In this case, pass mask ID to first slot of Scal_cID
-                ! vector. This value will be set to the container ID of the
-                ! corresponding mask field lateron.
-                IF ( DctType == HCO_DCTTYPE_SCAL .AND. Int3 > 0 ) THEN
-                   ALLOCATE ( Lct%Dct%Scal_cID(1) )
-                   Lct%Dct%Scal_cID(1) = Int3
-                   Lct%Dct%nScalID     = 1
-                ENDIF
-
-                ! For masks: extract grid box edges. These will be used later
-                ! on to determine if emissions have to be considered by this
-                ! CPU.
-                IF ( DctType == HCO_DCTTYPE_MASK ) THEN
-
-                   ! Extract grid box edges. Need to be four values.
-                   CALL HCO_CharSplit ( Char1, Separator, Wildcard, &
-                                        SplitInts, nEdges, RC )
-                   IF ( RC /= HCO_SUCCESS ) THEN
-                       CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
-                       RETURN
-                   ENDIF
-                   IF ( nEdges /= 4 ) THEN
-                      MSG = 'Cannot properly read mask coverage: ' // &
-                           TRIM(Lct%Dct%cName)
-                      CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
-                      RETURN
-                   ENDIF
-
-                   ! Save temporarily in year and month range. Will be
-                   ! reset lateron.
-                   Dta%ncYrs(1) = SplitInts(1)
-                   Dta%ncYrs(2) = SplitInts(2)
-                   Dta%ncMts(1) = SplitInts(3)
-                   Dta%ncMts(2) = SplitInts(4)
-
-                   ! Make sure that masks are always being read if specified so.
-                   IF ( Char2(1:1) == 'y' .OR. Char2(1:1) == 'Y' ) THEN
-                      CALL ScalID2List( HcoConfig%ScalIDList, Lct%Dct%ScalID, RC )
-                      IF ( RC /= HCO_SUCCESS ) THEN
-                          CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
-                          RETURN
-                      ENDIF
-                   ENDIF
-                ENDIF
              ENDIF
 
              ! Connect file data object of this data container.
@@ -1295,171 +1169,31 @@ CONTAINS
              ENDIF
 #endif
 
-             ! Set time cycling behaviour. Possible values are:
-             ! - "C"   : cycling <-- DEFAULT
-             ! - "CS"  : cycling, skip if not exist
-             ! - "CY"  : cycling, always use simulation year
-             ! - "CYS" : cycling, always use simulation yr, skip if not exist
-             ! - "R"   : range
-             ! - "RA"  : range, average outside
-             ! - "RF"  : range, forced (error if not in range)
-             ! - "RFY" : range, forced, always use simulation year
-             ! - "RFY3": range, forced, always use simulation year, 3-hourly
-             ! - "RY"  : range, always use simulation year
-             ! - "E"   : exact, read/query once
-             ! - "EF"  : exact, forced (error if not exist), read/query once
-             ! - "EFY" : exact, forced, always use sim year
-             ! - "EFYO": exact, forced, always use sim year, read once
-             ! - "EC"  : exact, read/query continuousl (e.g. for ESMF interface)
-             ! - "ECF" : exact, forced, read/query continuously
-             ! - "EY"  : exact, always use simulation year, read/query once
-             ! - "A"   : average
-             ! - "I"   : interpolate
-             ! - "ID"  : interpolate, discontinuous dataset
-             Dta%MustFind = .FALSE.
-             Dta%UseSimYear = .FALSE.
-             Dta%Discontinuous = .FALSE.
-             IF ( TRIM(TmCycle) == "C" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_CYCLE
-                Dta%MustFind  = .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "CS" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_CYCLE
-                Dta%MustFind  = .FALSE.
-             ELSEIF ( TRIM(TmCycle) == "CY" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_CYCLE
-                Dta%MustFind  = .TRUE.
-                Dta%UseSimYear= .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "CYS" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_CYCLE
-                Dta%MustFind  = .FALSE.
-                Dta%UseSimYear= .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "R" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_RANGE
-             ELSEIF ( TRIM(TmCycle) == "RA" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_RANGEAVG
-             ELSEIF ( TRIM(TmCycle) == "RF" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_RANGE
-                Dta%MustFind  = .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "RFY" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_RANGE
-                Dta%MustFind  = .TRUE.
-                Dta%UseSimYear= .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "RFY3" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_RANGE
-                Dta%MustFind  = .TRUE.
-                Dta%UseSimYear= .TRUE.
-                Dta%UpdtFlag  = HCO_UFLAG_3HR
-             ELSEIF ( TRIM(TmCycle) == "RY" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_RANGE
-                Dta%UseSimYear= .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "E" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_EXACT
-                Dta%UpdtFlag  = HCO_UFLAG_ONCE
-             ELSEIF ( TRIM(TmCycle) == "EF" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_EXACT
-                Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                Dta%MustFind  = .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "EFY" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_EXACT
-                Dta%MustFind  = .TRUE.
-                Dta%UseSimYear= .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "EFYO" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_EXACT
-                Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                Dta%MustFind  = .TRUE.
-                Dta%UseSimYear= .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "EC" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_EXACT
-             ELSEIF ( TRIM(TmCycle) == "ECF" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_EXACT
-                Dta%MustFind  = .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "EY" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_EXACT
-                Dta%UpdtFlag  = HCO_UFLAG_ONCE
-                Dta%UseSimYear= .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "A" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_AVERG
-             ELSEIF ( TRIM(TmCycle) == "I" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_INTER
-             ELSEIF ( TRIM(TmCycle) == "ID" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_INTER
-                Dta%Discontinuous = .TRUE.
-             ELSEIF ( TRIM(TmCycle) == "-" ) THEN
-                Dta%CycleFlag = HCO_CFLAG_CYCLE
-             ELSE
-                MSG = 'Invalid time cycling attribute: ' // &
-                     TRIM(TmCycle) // ' - in ' // TRIM(tagcName)
-                CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
+             ! Update the properties of the data container
+             ! NOTE: This routine abstracts the big IF/ELSE block that
+             ! processes the time cycle information (bmy, 07 Mar 2022)
+             CALL UpdateDtaProperties(                                    &
+                  dctType   = dctType,                                    &
+                  int3      = int3,                                       &
+                  char1     = TRIM( char1     ),                          &
+                  char2     = char2(1:1),                                 &
+                  tagCName  = TRIM( tagCName  ),                          &
+                  tmCycle   = TRIM( tmCycle   ),                          &
+                  separator = TRIM( separator ),                          &
+                  srcDim    = TRIM( srcDim    ),                          &
+                  wildCard  = TRIM( wildCard  ),                          &
+                  HcoConfig = HcoConfig,                                  &
+                  Lct       = Lct,                                        &
+                  Dta       = Dta,                                        &
+                  RC        = RC                                         )
+
+             ! Trap potential errors
+             IF ( RC /= HCO_Success ) THEN
+                MSG = 'Error encountered in routine "UpdateDtaProperties"'
+                CALL HCO_Error( MSG, RC, thisLoc=loc )
                 RETURN
              ENDIF
 
-             ! Set space dimension. This will determine the dimension of the
-             ! data array vector, i.e. 3D or 2D. Different time slices will
-             ! be stored as different vector elements.
-             ! For 3D data, it is now possible to explicitly set the number
-             ! of vertical levels to be used, as well as the 'reading
-             ! direction' (up or down). These information is also extracted
-             ! from srcDim and will be stored in variable Dta%Levels.
-             ! (ckeller, 5/20/15)
-             ! ExtractSrcDim now also returns possible scale factors for the
-             ! injection level, which will be stored in container variable
-             ! levScalID1 (bottom level) and levScalID2 (top level).
-             CALL ExtractSrcDim( HcoConfig, srcDim, Dta, &
-                                 levScal1,  levScal2,  RC )
-             IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 24', RC, THISLOC=LOC )
-                 RETURN
-             ENDIF
-
-             ! Set level scale factor index
-             IF ( levScal1 > 0 ) Lct%Dct%levScalID1 = levScal1
-             IF ( levScal2 > 0 ) Lct%Dct%levScalID2 = levScal2
-
-             ! For scale factors: check if a mask is assigned to this scale
-             ! factor. In this case, pass mask ID to first slot of Scal_cID
-             ! vector. This value will be set to the container ID of the
-             ! corresponding mask field lateron.
-             IF ( DctType == HCO_DCTTYPE_SCAL .AND. Int3 > 0 ) THEN
-                ALLOCATE ( Lct%Dct%Scal_cID(1) )
-                Lct%Dct%Scal_cID(1) = Int3
-                Lct%Dct%nScalID     = 1
-             ENDIF
-
-             ! For masks: extract grid box edges. These will be used later
-             ! on to determine if emissions have to be considered by this
-             ! CPU.
-             IF ( DctType == HCO_DCTTYPE_MASK ) THEN
-
-                ! Extract grid box edges. Need to be four values.
-                CALL HCO_CharSplit ( Char1, Separator, Wildcard, &
-                                     SplitInts, nEdges, RC )
-                IF ( RC /= HCO_SUCCESS ) THEN
-                    CALL HCO_ERROR( 'ERROR 25', RC, THISLOC=LOC )
-                    RETURN
-                ENDIF
-                IF ( nEdges /= 4 ) THEN
-                   MSG = 'Cannot properly read mask coverage: ' // &
-                         TRIM(Lct%Dct%cName)
-                   CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
-                   RETURN
-                ENDIF
-
-                ! Save temporarily in year and month range. Will be
-                ! reset lateron.
-                Dta%ncYrs(1) = SplitInts(1)
-                Dta%ncYrs(2) = SplitInts(2)
-                Dta%ncMts(1) = SplitInts(3)
-                Dta%ncMts(2) = SplitInts(4)
-
-                ! Make sure that masks are always being read if specified so.
-                IF ( Char2(1:1) == 'y' .OR. Char2(1:1) == 'Y' ) THEN
-                   CALL ScalID2List( HcoConfig%ScalIDList, Lct%Dct%ScalID, RC )
-                   IF ( RC /= HCO_SUCCESS ) THEN
-                       CALL HCO_ERROR( 'ERROR 26', RC, THISLOC=LOC )
-                       RETURN
-                   ENDIF
-                ENDIF
-             ENDIF
           ENDIF
 
           ! Connect file data object of this data container.
@@ -3903,7 +3637,7 @@ CONTAINS
           PRINT *,'Error in ScaleID2List called from HEMCO ScalID_Register (1)'
           RETURN
        ENDIF
- 
+
        ! Replace scale factor ID with container ID.
        CALL Get_cID ( Dct%Scal_cID(N), HcoConfig, cID, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -5058,5 +4792,264 @@ CONTAINS
     tagName = HcoConfig%ModelSpc(D)%SpcName
 
   END SUBROUTINE Hco_GetTagInfo
+!EOC
+!------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: UpdateDtaProperties
+!
+! !DESCRIPTION: Updates metdata about the current data container that is
+!  being created (e.g. time cycle information, level information, etc.)
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE UpdateDtaProperties( char1,     char2,     dctType,  int3,       &
+                                  separator, srcDim,    tagCName, tmCycle,    &
+                                  wildCard,  HcoConfig, Lct,      Dta,        &
+                                  RC                                         )
+!
+! !INPUT PARAMETERS:
+!
+    CHARACTER(LEN=*), INTENT(IN)  :: char1      !
+    CHARACTER(LEN=1), INTENT(IN)  :: char2      !
+    INTEGER,          INTENT(IN)  :: dctType    ! 1=base; 2=scale; 3=mask
+    INTEGER,          INTENT(IN)  :: int3       !
+    CHARACTER(LEN=*), INTENT(IN)  :: separator  ! Separator character
+    CHARACTER(LEN=*), INTENT(IN)  :: srcDim     ! e.g. "xyz", "xy", etc.
+    CHARACTER(LEN=*), INTENT(IN)  :: tagCName   ! Contaniner name
+    CHARACTER(LEN=*), INTENT(IN)  :: tmCycle    ! Tioe cycle flag setting
+    CHARACTER(LEN=*), INTENT(IN)  :: wildCard   ! Wild card character
+    TYPE(ConfigObj),  POINTER     :: HcoConfig  ! HEMCO configuration object
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    TYPE(ListCont),   POINTER     :: Lct        ! List container object
+    TYPE(FileData),   POINTER     :: Dta        ! Data container object
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,          INTENT(OUT) :: RC         ! Success or failure
+!
+! !REMARKS:
+!  Abstracted from routine Config_ReadCont.
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Scalars
+    INTEGER            :: levScal1
+    INTEGER            :: levScal2
+    INTEGER            :: nEdges
+
+    ! Arrays
+    INTEGER            :: splitInts(255)
+
+    ! Strings
+    CHARACTER(LEN=255) :: thisLoc
+    CHARACTER(LEN=512) :: errMsg
+
+    ! String arrays
+    CHARACTER(LEN=255) :: SubStrs(255)
+
+    !========================================================================
+    ! UpdateDtaProperties begins here!
+    !========================================================================
+
+    ! Initialize
+    RC        = HCO_SUCCESS
+    levScal1  = 0
+    levScal2  = 0
+    nEdges    = 0
+    splitInts = 0
+    errMsg    = ''
+    thisLoc   = &
+    ' -> at UpdateDtaProperties (in module HEMCO/src/Core/hco_config_mod.F90)'
+
+    !========================================================================
+    ! Set time cycling behaviour. Possible values are:
+    ! - "C"   : cycling <-- DEFAULT
+    ! - "CS"  : cycling, skip if not exist
+    ! - "CY"  : cycling, always use simulation year
+    ! - "CYS" : cycling, always use simulation yr, skip if not exist
+    ! - "R"   : range
+    ! - "RA"  : range, average outside
+    ! - "RF"  : range, forced (error if not in range)
+    ! - "RFY" : range, forced, always use simulation year
+    ! - "RFY3 : range, forced, always use simulation year, 3-hourly
+    ! - "RY"  : range, always use simulation year
+    ! - "E"   : exact, read/query once
+    ! - "EF"  : exact, forced (error if not exist), read/query once
+    ! - "EFY" : exact, forced, always use sim year
+    ! - "EFYO": exact, forced, always use sim year, read once
+    ! - "EC"  : exact, read/query continuously (e.g. for ESMF interface)
+    ! - "ECF" : exact, forced, read/query continuously
+    ! - "EY"  : exact, always use simulation year, read/query once
+    ! - "A"   : average
+    ! - "I"   : interpolate
+    ! - "ID"  : interpolate, discontinuous dataset
+    !========================================================================
+
+    ! Zero logical fields of Dta for safety's sake
+    Dta%MustFind      = .FALSE.
+    Dta%UseSimYear    = .FALSE.
+    Dta%Discontinuous = .FALSE.
+
+    ! Look for time cycle values
+    SELECT CASE( TRIM( TmCycle ) )
+       CASE( "C" )
+          Dta%CycleFlag     = HCO_CFLAG_CYCLE
+          Dta%MustFind      = .TRUE.
+       CASE( "CS" )
+          Dta%CycleFlag     = HCO_CFLAG_CYCLE
+          Dta%MustFind      = .FALSE.
+       CASE( "CY" )
+          Dta%CycleFlag     = HCO_CFLAG_CYCLE
+          Dta%MustFind      = .TRUE.
+          Dta%UseSimYear    = .TRUE.
+       CASE( "CYS" )
+          Dta%CycleFlag     = HCO_CFLAG_CYCLE
+          Dta%MustFind      = .FALSE.
+          Dta%UseSimYear    = .TRUE.
+       CASE( "R" )
+          Dta%CycleFlag     = HCO_CFLAG_RANGE
+       CASE( "RA" )
+          Dta%CycleFlag     = HCO_CFLAG_RANGEAVG
+       CASE( "RF" )
+          Dta%CycleFlag     = HCO_CFLAG_RANGE
+          Dta%MustFind      = .TRUE.
+       CASE( "RFY" )
+          Dta%CycleFlag     = HCO_CFLAG_RANGE
+          Dta%MustFind      = .TRUE.
+          Dta%UseSimYear    = .TRUE.
+       CASE( "RFY3" )
+          Dta%CycleFlag     = HCO_CFLAG_RANGE
+          Dta%MustFind      = .TRUE.
+          Dta%UseSimYear    = .TRUE.
+          Dta%UpdtFlag      = HCO_UFLAG_3HR
+       CASE( "RY" )
+          Dta%CycleFlag     = HCO_CFLAG_RANGE
+          Dta%UseSimYear    = .TRUE.
+       CASE( "E" )
+          Dta%CycleFlag     = HCO_CFLAG_EXACT
+          Dta%UpdtFlag      = HCO_UFLAG_ONCE
+       CASE( "EF" )
+          Dta%CycleFlag     = HCO_CFLAG_EXACT
+          Dta%UpdtFlag      = HCO_UFLAG_ONCE
+          Dta%MustFind      = .TRUE.
+       CASE( "EFY" )
+          Dta%CycleFlag     = HCO_CFLAG_EXACT
+          Dta%MustFind      = .TRUE.
+          Dta%UseSimYear    = .TRUE.
+       CASE( "EFYO" )
+          Dta%CycleFlag     = HCO_CFLAG_EXACT
+          Dta%UpdtFlag      = HCO_UFLAG_ONCE
+          Dta%MustFind      = .TRUE.
+          Dta%UseSimYear    = .TRUE.
+       CASE( "EC" )
+          Dta%CycleFlag     = HCO_CFLAG_EXACT
+       CASE( "ECF" )
+          Dta%CycleFlag     = HCO_CFLAG_EXACT
+          Dta%MustFind      = .TRUE.
+       CASE( "EY" )
+          Dta%CycleFlag     = HCO_CFLAG_EXACT
+          Dta%UpdtFlag      = HCO_UFLAG_ONCE
+          Dta%UseSimYear    = .TRUE.
+       CASE( "A" )
+          Dta%CycleFlag     = HCO_CFLAG_AVERG
+       CASE( "I" )
+          Dta%CycleFlag     = HCO_CFLAG_INTER
+       CASE( "ID" )
+          Dta%CycleFlag     = HCO_CFLAG_INTER
+          Dta%Discontinuous = .TRUE.
+       CASE( "-" )
+          Dta%CycleFlag     = HCO_CFLAG_CYCLE
+       CASE DEFAULT
+          errMsg = 'Invalid time cycling attribute: ' // tmCycle          // &
+                   ' - in '                           // tagcName
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+    END SELECT
+
+    !========================================================================
+    ! Set space dimension. This will determine the dimension of the
+    ! data array vector, i.e. 3D or 2D. Different time slices will
+    ! be stored as different vector elements.
+    ! For 3D data, it is now possible to explicitly set the number
+    ! of vertical levels to be used, as well as the 'reading
+    ! direction' (up or down). These information is also extracted
+    ! from srcDim and will be stored in variable Dta%Levels.
+    ! (ckeller, 5/20/15)
+    ! ExtractSrcDim now also returns possible scale factors for the
+    ! injection level, which will be stored in container variable
+    ! levScalID1 (bottom level) and levScalID2 (top level).
+    !========================================================================
+    CALL ExtractSrcDim( HcoConfig, srcDim, Dta, levScal1, levScal2, RC       )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Error encountered in routine "ExtractSrcDim"!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
+    ENDIF
+
+    ! Set level scale factor index
+    IF ( levScal1 > 0 ) Lct%Dct%levScalID1 = levScal1
+    IF ( levScal2 > 0 ) Lct%Dct%levScalID2 = levScal2
+
+    !========================================================================
+    ! For scale factors: check if a mask is assigned to this scale factor.
+    ! In this case, pass mask ID to first slot of Scal_cID vector. This
+    ! value will be set to the container ID of the corresponding mask
+    ! field later on.
+    !========================================================================
+    IF ( DctType == HCO_DCTTYPE_SCAL .AND. Int3 > 0 ) THEN
+       ALLOCATE ( Lct%Dct%Scal_cID(1) )
+       Lct%Dct%Scal_cID(1) = Int3
+       Lct%Dct%nScalID     = 1
+    ENDIF
+
+    !========================================================================
+    ! For masks: extract grid box edges. These will be used later on to
+    ! determine if emissions have to be considered by this CPU.
+    !========================================================================
+    IF ( DctType == HCO_DCTTYPE_MASK ) THEN
+
+       ! Extract grid box edges. Need to be four values.
+       CALL HCO_CharSplit( char1,     separator, wildcard,                   &
+                           splitInts, nEdges,    RC                         )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in routine "HCO_CharSplit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+       IF ( nEdges /= 4 ) THEN
+          errMsg = 'Cannot properly read mask coverage: '                 // &
+                   TRIM( Lct%Dct%cName )
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+       ! Save temporarily in year and month range. Will be
+       ! reset lateron.
+       Dta%ncYrs(1) = splitInts(1)
+       Dta%ncYrs(2) = splitInts(2)
+       Dta%ncMts(1) = splitInts(3)
+       Dta%ncMts(2) = splitInts(4)
+
+       ! Make sure that masks are always being read if specified so.
+       IF ( char2 == 'y' .OR. char2 == 'Y' ) THEN
+          CALL ScalID2List( HcoConfig%ScalIDList, Lct%Dct%ScalID, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             errMsg = 'Error encountered in routine "ScalID2List"!'
+             CALL HCO_ERROR( errMsg, RC, thisLoc )
+             RETURN
+          ENDIF
+       ENDIF
+    ENDIF
+
+  END SUBROUTINE UpdateDtaProperties
 !EOC
 END MODULE HCO_Config_Mod
