@@ -220,6 +220,25 @@ CONTAINS
     LonEdge => NULL()
     LatEdge => NULL()
 
+    ! Zero local variables for safety's sake
+    dir     =  0
+    lev1    =  0
+    lev2    =  0
+    ncYr    =  0
+    ncMt    =  0
+    ncYr2   =  0
+    ncMt2   =  0
+    nLon    =  0
+    nLat    =  0
+    nLev    =  0
+    nTime   =  0
+    tIdx1   =  0
+    tIdx2   =  0
+    tidx1b  =  0
+    tidx2b  =  0
+    wgt1    =  0.0_sp
+    wgt2    =  0.0_sp
+
     ! Get unit tolerance set in configuration file
     UnitTolerance = HCO_UnitTolerance( HcoState%Config )
 

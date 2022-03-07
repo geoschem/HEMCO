@@ -25,7 +25,7 @@ MODULE HCO_Interp_Mod
 !
   USE HCO_Types_Mod
   USE HCO_Error_Mod
-  USE HCO_State_Mod,       ONLY : Hco_State
+  USE HCO_State_Mod, ONLY : Hco_State
 
   IMPLICIT NONE
   PRIVATE

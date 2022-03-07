@@ -329,7 +329,7 @@ CONTAINS
     ENDIF
 
     ! Conversion factor from ng N to kg NO
-    UNITCONV = 1.0e-12_hp / 14.0e+0_hp * HcoState%Spc(Inst%IDTNO)%MW_g
+    UNITCONV = 1.0e-12_hp / 14.0_hp * HcoState%Spc(Inst%IDTNO)%MW_g
 
     !-----------------------------------------------------------------
     ! On first call, set pointers to all arrays needed by SoilNOx
@@ -337,7 +337,7 @@ CONTAINS
     FIRST = HcoClock_First ( HcoState%Clock, .TRUE. )
 
     !IF ( FIRST ) THEN
-       CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK1', Inst%LANDTYPE(1)%VAL,  RC )
+       CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK1',  Inst%LANDTYPE(1)%VAL,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
            CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
            RETURN
@@ -592,7 +592,7 @@ CONTAINS
     ! Loop over each land grid-box, removed loop over landpoints
 !$OMP PARALLEL DO                                                            &
 !$OMP DEFAULT( SHARED )                                                      &
-!$OMP PRIVATE( I, J, Dep_Fert, SoilFrt, FertDiag, IjFlux                    )&
+!$OMP PRIVATE( I, J, Dep_Fert, SoilFrt, FertDiag, IJflux                    )&
 !$OMP COLLAPSE( 2                                                           )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
@@ -618,8 +618,8 @@ CONTAINS
 
        ! Put in constraint if dry period gt 1 yr, keep at 1yr to
        ! avoid unrealistic pulse
-       IF ( Inst%DRYPERIOD(I,J) > 8760e+0_sp ) THEN
-          Inst%DRYPERIOD(I,J) = 8760e+0_sp
+       IF ( Inst%DRYPERIOD(I,J) > 8760.0_sp ) THEN
+          Inst%DRYPERIOD(I,J) = 8760.0_sp
        ENDIF
 
        ! Return NO emissions from soils [kg NO/m2/s]
@@ -1178,7 +1178,7 @@ CONTAINS
 
        ! Temperature-dependent term of soil NOx emissions [unitless]
        ! Use GWET instead of climo wet/dry
-       TEMP_TERM = SOILTEMP( K, TC, GWET)
+       TEMP_TERM = SOILTEMP( K, TC, GWET )
 
        ! Soil moisture scaling of soil NOx emissions
        ARID      = Inst%CLIMARID(I,J)
@@ -1237,7 +1237,7 @@ CONTAINS
 ! !USES:
 !
     USE Drydep_Toolbox_Mod, ONLY : BIOFIT
-    USE HCO_GeoTools_Mod, ONLY : HCO_LANDTYPE
+    USE HCO_GeoTools_Mod,   ONLY : HCO_LANDTYPE
 !
 ! !ARGUMENTS:
 !
@@ -1307,13 +1307,13 @@ CONTAINS
 
        ! Surface temperature [K] and [C]
        TEMPK = ExtState%T2M%Arr%Val(I,J)
-       TEMPC = ExtState%T2M%Arr%Val(I,J) - 273.15e+0_hp
+       TEMPC = ExtState%T2M%Arr%Val(I,J) - 273.15_hp
 
        ! Compute bulk surface resistance for gases.
        !
        !  Adjust external surface resistances for temperature;
        !  from Wesely [1989], expression given in text on p. 1296.
-       RT = 1000.0e+0_hp * EXP( -TEMPC - 4.0e+0_hp )
+       RT = 1000.0_hp * EXP( -TEMPC - 4.0_hp )
 
        !--------------------------------------------------------------
        ! Get surface resistances - loop over biome types K
@@ -1641,7 +1641,7 @@ CONTAINS
     !convert months -->  seconds (assume 30 days months)
     TAU_SEC = TAU_MONTHS * DAYSPERMONTH * SECPERDAY
 
-    C1 = EXP( - TS_SEC / TAU_SEC)
+    C1 = EXP( -TS_SEC / TAU_SEC )
     C2 = 1.0_hp - C1
 
     ! kg NO/m2
@@ -1651,7 +1651,7 @@ CONTAINS
                             + DEPN * TAU_SEC * C2
 
     ! 40% runoff.
-    DEP_FERT = Inst%DEP_RESERVOIR(I,J) * 0.6e+0_hp
+    DEP_FERT = Inst%DEP_RESERVOIR(I,J) * 0.6_hp
 
   END SUBROUTINE Get_Dep_N
 !EOC
@@ -1951,7 +1951,7 @@ CONTAINS
 !BOC
 !
     !Scale by soil moisture
-    IF ( ARID .GE. NONARID .AND. ARID .NE. 0) THEN
+    IF ( ARID >= NONARID .AND. ARID > 0.0_hp ) THEN
        !Arid, max Poisson = 0.2
        WETSCALE = 8.24_hp * GWET * EXP( -12.5_hp * GWET * GWET )
     ELSE

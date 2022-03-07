@@ -147,9 +147,11 @@ CONTAINS
     !=================================================================
     ! GET_TIMEIDX begins here
     !=================================================================
-    LOC = 'GET_TIMEIDX (HCOIO_UTIL_MOD.F90)'
 
-    ! Init
+    ! Initialize
+    LOC         = 'GET_TIMEIDX (HCOIO_UTIL_MOD.F90)'
+
+    ! Officially enter Get_TimeIdx
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
@@ -157,14 +159,26 @@ CONTAINS
     ENDIF
     verb = HCO_IsVerb(HcoState%Config%Err,3)
 
-    ! Initialize
-    wgt1  = -1.0_sp
-    wgt2  = -1.0_sp
-    oYMDhm = 0.0_dp
-    YMDhm  = 0.0_dp
-    YMDhm1 = 0.0_dp
-
-    ! Initialize pointers
+    ! Initialize local variables for safety's sake
+    nTime      =  0
+    cnt        =  0
+    prefYr     =  0
+    prefMt     =  0
+    prefDy     =  0
+    prefHr     =  0
+    prefMn     =  0
+    refYear    =  0
+    origYMDhm  =  0
+    prefYMDhm  =  0
+    tidx1      =  0
+    tidx2      =  0
+    tidx1a     =  0
+    wgt1       = -1.0_sp
+    wgt2       = -1.0_sp
+    oYMDhm     =  0.0_dp
+    YMDhm      =  0.0_dp
+    YMDhm1     =  0.0_dp
+    ExitSearch = .FALSE.
     availYMDhm => NULL()
 
     ! ----------------------------------------------------------------
