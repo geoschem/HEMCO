@@ -1316,8 +1316,9 @@ CONTAINS
              ! - "A"   : average
              ! - "I"   : interpolate
              ! - "ID"  : interpolate, discontinuous dataset
-             Dta%MustFind  = .FALSE.
-             Dta%UseSimYear= .FALSE.
+             Dta%MustFind = .FALSE.
+             Dta%UseSimYear = .FALSE.
+             Dta%Discontinuous = .FALSE.
              IF ( TRIM(TmCycle) == "C" ) THEN
                 Dta%CycleFlag = HCO_CFLAG_CYCLE
                 Dta%MustFind  = .TRUE.
