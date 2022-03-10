@@ -118,19 +118,19 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER                :: I, J
-    REAL*8                 :: EMIS_HOI
-    REAL*8                 :: EMIS_I2, IODIDE, O3_CONC
-    REAL*8                 :: SST
-    REAL*8                 :: A_M2
-    REAL*8                 :: W10M
-    REAL(hp), TARGET       :: FLUXHOI (HcoState%NX,HcoState%NY)
-    REAL(hp), TARGET       :: FLUXI2 (HcoState%NX,HcoState%NY)
-    TYPE(MyInst), POINTER  :: Inst
+    INTEGER               :: I, J
+    REAL*8                :: EMIS_HOI
+    REAL*8                :: EMIS_I2, IODIDE, O3_CONC
+    REAL*8                :: SST
+    REAL*8                :: A_M2
+    REAL*8                :: W10M
+    REAL(hp),     TARGET  :: FLUXHOI(HcoState%NX,HcoState%NY)
+    REAL(hp),     TARGET  :: FLUXI2(HcoState%NX,HcoState%NY)
+    TYPE(MyInst), POINTER :: Inst
 
     ! Error handling
-    LOGICAL                :: ERR
-    CHARACTER(LEN=255)     :: MSG, LOC
+    LOGICAL               :: ERR
+    CHARACTER(LEN=255)    :: MSG, LOC
 
     !=================================================================
     ! HCOX_Iodine_Run begins here!
@@ -162,115 +162,122 @@ CONTAINS
     ! Initialize flux arrays/variables
     FLUXHOI  = 0.0_hp
     FLUXI2   = 0.0_hp
-    EMIS_HOI = 0.0_hp
-    EMIS_I2  = 0.0_hp
 
-    ! Loop over surface boxes
+    !------------------------------------------------------------------------
+    ! Compute emissions
+    !------------------------------------------------------------------------
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I,      J,       A_M2,    W10M,     SST                  )&
+    !$OMP PRIVATE( IODIDE, O3_CONC, EMIS_I2, EMIS_HOI                       )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( DYNAMIC, 4                                              )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
+
+       ! Zero private variables for safety's sake
+       A_M2     = 0.0d0
+       EMIS_HOI = 0.0d0
+       EMIS_I2  = 0.0d0
+       IODIDE   = 0.0d0
+       O3_CONC  = 0.0d0
+       SST      = 0.0d0
+       W10M     = 0.0d0
 
        ! Advance to next grid box if box is not over water
        ! further check needed for ocean, but not available
        ! ( as parameterisation of iodide based on ocean data)
-       IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J), &
+       IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J),                         &
                           ExtState%FRLANDIC%Arr%Val(I,J) ) /= 0 ) CYCLE
 
        ! Grid box surface area on simulation grid [m2]
        A_M2 = HcoState%Grid%AREA_M2%Val( I, J )
 
        ! Wind speed at 10 m altitude [m/s]
-       W10M = SQRT( ExtState%U10M%Arr%Val(I,J)**2 &
-                  + ExtState%V10M%Arr%Val(I,J)**2 )
+       W10M = SQRT( ExtState%U10M%Arr%Val(I,J)**2                            &
+                  + ExtState%V10M%Arr%Val(I,J)**2                           )
 
        ! limit W10M to a minimium of 5 m/s to avoid overestimation of fluxes
        ! from CARPENTER et al. (2013) (per. comm.)
-       IF ( W10M .LE. 5d0  ) THEN
-           W10M   =  5d0
-       ENDIF
+       IF ( W10M .LE. 5.0d0  ) W10M = 5.0d0
 
-       ! Sea surface temperature in Celcius
-!       SST = ExtState%TSKIN%Arr%Val(I,J) - 273.15d0
+!%%% Comment out unused code (bmy, 09 Mar 2022)
+!%%%!       ! Sea surface temperature in Celcius
+!%%%!       SST = ExtState%TSKIN%Arr%Val(I,J) - 273.15d0
+
        ! Sea surface temperature in Kelvin
        SST = ExtState%TSKIN%Arr%Val(I,J)
 
-#if defined( MODEL_GEOS )
-       ! Empirical SST scaling factor (jaegle 5/11/11)
-!       SCALE = 0.329d0 + 0.0904d0*SST - &
-!               0.00717d0*SST**2d0 + 0.000207d0*SST**3d0
-#endif
+!%%%% Comment out unused code (bmy, 09 Mar 2022)
+!%%%#if defined( MODEL_GEOS )
+!%%%!       ! Empirical SST scaling factor (jaegle 5/11/11)
+!%%%!       SCALE = 0.329d0 + 0.0904d0*SST - &
+!%%%!               0.00717d0*SST**2d0 + 0.000207d0*SST**3d0
+!%%%#endif
+!%%%!
+!%%%!       ! SST dependence of iodide - Chance et al. 2014
+!%%%!       IODIDE = ( (0.225d0 * ( (SST)**2d0) )  + 19d0 )  / 1d9
 
-!       ! SST dependence of iodide - Chance et al. 2014
-!       IODIDE = ( (0.225d0 * ( (SST)**2d0) )  + 19d0 )  / 1d9
-!       ! SST dependence of iodide - Macdonald et al. 2014
+       ! SST dependence of iodide - Macdonald et al. 2014
        IODIDE = 1.46d6 * EXP( (-9134d0/SST) )
 
        ! Get O3 concentration at the surface ( in mol/mol )
        ! ExtState%O3 is in units of kg/kg dry air
-       O3_CONC = ExtState%O3%Arr%Val(I,J,1)         &
-               * HcoState%Phys%AIRMW / 48.0_dp &
-               * 1.e9_dp
+       O3_CONC = ExtState%O3%Arr%Val(I,J,1)                                  &
+               * HcoState%Phys%AIRMW / 48.0_dp                               &
+               * 1.0e9_dp
 
-#if defined( MODEL_GEOS )
-       ! Reset to using original Gong (2003) emissions (jaegle 6/30/11)
-       !SCALE = 1.0d0
+!%%% Comment out unused code (bmy, 09 Mar 2022)
+!%%%#if defined( MODEL_GEOS )
+!%%%       ! Reset to using original Gong (2003) emissions (jaegle 6/30/11)
+!%%%       !SCALE = 1.0d0
+!%%%
+!%%%       ! Eventually apply wind scaling factor.
+!%%%!       SCALE = SCALE * WindScale
+!%%%#endif
 
-       ! Eventually apply wind scaling factor.
-!       SCALE = SCALE * WindScale
-#endif
-
+       !---------------------------------------------------------------------
        ! If I2 & emitting, use parameterisation from
        ! Carpenter et al (2013) to give emissions in nmol m-2 d-1.
        ! Then convert this to kg/m2/s
+       !---------------------------------------------------------------------
        IF ( Inst%CalcI2 ) THEN
-           EMIS_I2 = ( O3_CONC * (IODIDE**1.3d0) * &
-               ( ( 1.74d9 - ( 6.54d8*LOG( W10M ) )   ) )/ &
+           EMIS_I2 = ( O3_CONC * (IODIDE**1.3d0) *                           &
+               ( ( 1.74d9 - ( 6.54d8*LOG( W10M ) )   ) )/                    &
                      24d0/60d0/60d0/1d9*MWT_I2 )
 
           ! If parametsation results in negative ( W10 too high )
           ! flux set to zero
-          IF ( EMIS_I2 .LT. 0d0 ) THEN
-             EMIS_I2 = 0d0
-          ENDIF
+          IF ( EMIS_I2 .LT. 0.0d0 ) EMIS_I2 = 0.0d0
 
-       ENDIF
-!
-       IF ( Inst%CalcHOI ) THEN
-       ! If HOI & emitting, use parameterisation from
-       ! Carpenter et al (2013) to give emissions in nmol m-2 d-1.
-       ! Then convert this to kg/m2/s
-
-         EMIS_HOI =  O3_CONC * &
-            ( ( 4.15d5 * ( SQRT(IODIDE)/ W10M ) ) - &
-            ( 20.6 / W10M ) - ( 2.36d4  * SQRT(IODIDE) ) ) / &
-                      24d0/60d0/60d0/1d9*MWT_HOI
-
-         ! If parametsation results in negative ( W10 too high )
-         ! flux set to zero
-         IF ( EMIS_HOI .LT. 0d0 ) THEN
-                EMIS_HOI = 0d0
-         ENDIF
-
-       ENDIF
-
-       ! Store HOI flux in tendency array in [kg/m2/s]
-       IF ( Inst%CalcHOI ) THEN
-
-          ! kg --> kg/m2/s
-          FLUXHOI(I,J) = EMIS_HOI
-
-
-       ENDIF
-
-       ! store I2 flux in tendency array in [kg/m2/s]
-       IF ( Inst%CalcI2 ) THEN
-
-          ! kg --> kg/m2/s
+          ! store I2 flux in tendency array in [kg/m2/s]
           FLUXI2(I,J) = EMIS_I2
 
        ENDIF
 
+       !---------------------------------------------------------------------
+       ! If HOI & emitting, use parameterisation from
+       ! Carpenter et al (2013) to give emissions in nmol m-2 d-1.
+       ! Then convert this to kg/m2/s
+       !---------------------------------------------------------------------
+       IF ( Inst%CalcHOI ) THEN
+
+          EMIS_HOI =  O3_CONC *                                              &
+             ( ( 4.15d5 * ( SQRT(IODIDE)/ W10M ) ) -                         &
+             ( 20.6 / W10M ) - ( 2.36d4  * SQRT(IODIDE) ) ) /                &
+                      24d0/60d0/60d0/1d9*MWT_HOI
+
+          ! If parametsation results in negative ( W10 too high )
+          ! flux set to zero
+          IF ( EMIS_HOI .LT. 0.0d0 ) EMIS_HOI = 0.0d0
+
+          ! Store HOI flux in tendency array in [kg/m2/s]
+          FLUXHOI(I,J) = EMIS_HOI
+       ENDIF
+
     ENDDO !I
     ENDDO !J
+    !$OMP END PARALLEL DO
 
     ! Check exit status
     IF ( ERR ) THEN

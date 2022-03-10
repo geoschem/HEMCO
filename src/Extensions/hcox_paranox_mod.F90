@@ -117,6 +117,7 @@ MODULE HCOX_ParaNOx_MOD
      INTEGER               :: IDTHNO3
      INTEGER               :: IDTO3
      REAL*8                :: MW_O3
+
      REAL*8                :: MW_NO
      REAL*8                :: MW_NO2
      REAL*8                :: MW_HNO3
@@ -260,10 +261,8 @@ CONTAINS
     HcoState%Options%CatMax = -1
     HcoState%Options%ExtNr  = Inst%ExtNr
 
-    ! --> Define array to write emissions into. ShipNO is reset to
-    ! zero within subroutine EVOLVE_PLUME, so no need to do this
-    ! here.
-!    ShipNO                      = 0.0d0
+    ! --> Define array to write emissions into.
+    Inst%ShipNO                    = 0.0d0
     HcoState%Options%AutoFillDiagn = .FALSE.
     HcoState%Options%FillBuffer    =  .TRUE.
     HcoState%Buffer3D%Val          => Inst%ShipNO
@@ -359,8 +358,9 @@ CONTAINS
     REAL(hp), TARGET         :: FLUXNO2 (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: FLUXHNO3(HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: FLUXO3  (HcoState%NX,HcoState%NY)
-!    REAL(hp), TARGET         :: DEPO3   (HcoState%NX,HcoState%NY)
-!    REAL(hp), TARGET         :: DEPHNO3 (HcoState%NX,HcoState%NY)
+!%%% Comment out unused code
+!%%%!    REAL(hp), TARGET         :: DEPO3   (HcoState%NX,HcoState%NY)
+!%%%!    REAL(hp), TARGET         :: DEPHNO3 (HcoState%NX,HcoState%NY)
 
     ! Pointers
     REAL(hp), POINTER        :: Arr2D(:,:)
@@ -376,15 +376,12 @@ CONTAINS
     REAL(dp)                 :: FNO_NOx
     REAL(hp)                 :: iMass
     REAL(hp)                 :: ExpVal
-
-!------------------------------------------------------------------------------
-!### DEBUG -- COMMENT OUT FOR NOW
-!    ! testing only
-!    REAL*8             :: FRAC, TOTPRES, DELTPRES
-!    INTEGER            :: TOP
-!    integer            :: ix, jx
-!    logical, parameter :: add2hemco = .true.
-!------------------------------------------------------------------------------
+!%%% Comment out debug code
+!%%%!    ! testing only
+!%%%!    REAL*8             :: FRAC, TOTPRES, DELTPRES
+!%%%!    INTEGER            :: TOP
+!%%%!    integer            :: ix, jx
+!%%%!    logical, parameter :: add2hemco = .true.
 
     !=================================================================
     ! EVOLVE_PLUME begins here!
@@ -462,26 +459,25 @@ CONTAINS
     ! Error check
     ERR = .FALSE.
 
-    ! Init
-    FLUXNO   = 0.0_hp
-    FLUXNO2  = 0.0_hp
-    FLUXHNO3 = 0.0_hp
-    FLUXO3   = 0.0_hp
+    ! Initialize
+    FLUXNO       = 0.0_hp
+    FLUXNO2      = 0.0_hp
+    FLUXHNO3     = 0.0_hp
+    FLUXO3       = 0.0_hp
 
     ! Deposition fluxes
-    Inst%DEPO3    = 0.0_sp
-    Inst%DEPHNO3  = 0.0_sp
+    Inst%DEPO3   = 0.0_sp
+    Inst%DEPHNO3 = 0.0_sp
 
-!------------------------------------------------------------------------
-!    ! Debug
-!    print*, '### In EVOLVE_PLUME:'
-!    print*, '### JOH: ',  SUM   ( ExtState%JOH%Arr%Val ),  &
-!                          MAXVAL( ExtState%JOH%Arr%Val )
-!    print*, '### JNO2: ', SUM   ( ExtState%JNO2%Arr%Val ),  &
-!                          MAXVAL( ExtState%JNO2%Arr%Val )
-!    print*, '### SC5 : ', SUM   ( SC5 ), MAXVAL(SC5)
-!    print*, '### EMIS: ', SUM   ( SHIPNOEMIS(:,:,1) ), MAXVAL(SHIPNOEMIS(:,:,1))
-!------------------------------------------------------------------------
+!%%% Comment out debug code
+!%%%!    ! Debug
+!%%%!    print*, '### In EVOLVE_PLUME:'
+!%%%!    print*, '### JOH: ',  SUM   ( ExtState%JOH%Arr%Val ),  &
+!%%%!                          MAXVAL( ExtState%JOH%Arr%Val )
+!%%%!    print*, '### JNO2: ', SUM   ( ExtState%JNO2%Arr%Val ),  &
+!%%%!                          MAXVAL( ExtState%JNO2%Arr%Val )
+!%%%!    print*, '### SC5 : ', SUM   ( SC5 ), MAXVAL(SC5)
+!%%%!    print*, '### EMIS: ', SUM   ( SHIPNOEMIS(:,:,1) ), MAXVAL(SHIPNOEMIS(:,:,1))
 
     ! Loop over all grid boxes
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -501,28 +497,45 @@ CONTAINS
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
-       ! Skip if no ship emissions in this grid box
-       IF ( ShipNoEmis(I,J,1) == 0d0 ) CYCLE
+       ! Zero private variables for safety's sake
+       FNO_NOx   = 0.0_dp
+       iFlx      = 0.0_hp
+       iMass     = 0.0_hp
+       SHIP_FNOx = 0.0_dp
+       SHIP_DNOx = 0.0_dp
+       SHIP_OPE  = 0.0_dp
+       SHIP_MOE  = 0.0_dp
+       TMP       = 0.0_hp
 
+       !---------------------------------------------------------------------
+       ! Skip if no ship emissions in this grid box
+       !---------------------------------------------------------------------
+       IF ( .not. ( ShipNoEmis(I,J,1) > 0.0_hp ) ) CYCLE
+
+       !---------------------------------------------------------------------
        ! Production Efficiency for ship emiss (gvinken,mpayer,2/7/12)
        ! Updated to include effects of wind speed (cdh, 3/25/2014)
        ! Updated for HEMCO (ckeller, 02/04/2015)
-       CALL PARANOX_LUT( ExtState,  HcoState, Inst, I, J, RC, &
-                         SHIP_FNOx, SHIP_DNOx, SHIP_OPE, SHIP_MOE )
+       !---------------------------------------------------------------------
+       CALL PARANOX_LUT( ExtState,  HcoState,  Inst,      I,                  &
+                         J,         RC,        SHIP_FNOx, SHIP_DNOx,          &
+                         SHIP_OPE,  SHIP_MOE                                 )
        IF ( RC /= HCO_SUCCESS ) THEN
           ERR = .TRUE.; EXIT
        ENDIF
 
-!       ! for debugging only
-!       if(I==3.and.J==35)then
-!          write(*,*) 'PARANOX ship emissions @',I,J
-!          write(*,*) 'Emis [kg/m2/s]: ', ShipNoEmis(I,J,1)
-!          write(*,*) 'SHIP_FNOx: ', SHIP_FNOx
-!          write(*,*) 'SHIP_DNOx: ', SHIP_DNOx
-!          write(*,*) 'SHIP_OPE : ', SHIP_OPE
-!          write(*,*) 'SHIP_MOE : ', SHIP_MOE
-!       endif
+!%%% Comment out debug code
+!%%%!       ! for debugging only
+!%%%!       if(I==3.and.J==35)then
+!%%%!          write(*,*) 'PARANOX ship emissions @',I,J
+!%%%!          write(*,*) 'Emis [kg/m2/s]: ', ShipNoEmis(I,J,1)
+!%%%!          write(*,*) 'SHIP_FNOx: ', SHIP_FNOx
+!%%%!          write(*,*) 'SHIP_DNOx: ', SHIP_DNOx
+!%%%!          write(*,*) 'SHIP_OPE : ', SHIP_OPE
+!%%%!          write(*,*) 'SHIP_MOE : ', SHIP_MOE
+!%%%!       endif
 
+       !---------------------------------------------------------------------
        ! Split the ship NOx emission into NO and NO2
        ! following the ambient ratio
        ! Now check for zero ambient air concentrations. In this
@@ -531,18 +544,18 @@ CONTAINS
        ! Bug fix: Make sure NO and NO2 are both positive
        ! See https://github.com/geoschem/geos-chem/issues/380
        !  -- Bob Yantosca (24 Jul 2020)
+       !---------------------------------------------------------------------
+       FNO_NOx = 1.0_hp
        IF ( ExtState%NO%Arr%Val (I,J,1) > 0.0_hp .and.                       &
             ExtState%NO2%Arr%Val(I,J,1) > 0.0_hp       ) THEN
-          FNO_NOx = (ExtState%NO%Arr%Val(I,J,1)/Inst%MW_NO) /                &
-                  ( (ExtState%NO%Arr%Val(I,J,1)/Inst%MW_NO) +                &
-                    (ExtState%NO2%Arr%Val(I,J,1)/Inst%MW_NO2) )
-       ELSE
-          FNO_NOx = 1.0_hp
+          FNO_NOx = (   ExtState%NO%Arr%Val(I,J,1)  / Inst%MW_NO    )        &
+                  / ( ( ExtState%NO%Arr%Val(I,J,1)  / Inst%MW_NO  )          &
+                  +   ( ExtState%NO2%Arr%Val(I,J,1) / Inst%MW_NO2 ) )
        ENDIF
 
-       !---------------------------
+       !---------------------------------------------------------------------
        ! Calculate NO emissions
-       !---------------------------
+       !---------------------------------------------------------------------
        IF ( Inst%IDTNO > 0 ) THEN
 
            ! Of the total ship NOx, the fraction SHIP_FNOx
@@ -553,27 +566,30 @@ CONTAINS
 
        ENDIF
 
-       !---------------------------
+       !---------------------------------------------------------------------
        ! Calculate NO2 emissions
-       !---------------------------
+       !---------------------------------------------------------------------
        IF ( Inst%IDTNO2 > 0 ) THEN
 
            ! NO2 emissions complement NO emissions, so that total NOx
            ! emissions are preserved.
-           FLUXNO2(I,J) = ShipNoEmis(I,J,1) * SHIP_FNOx * (1.d0-FNO_NOx) &
+           FLUXNO2(I,J) = ShipNoEmis(I,J,1)                                  &
+                        * SHIP_FNOx                                          &
+                        * ( 1.0d0 - FNO_NOx          )                       &
                         * ( Inst%MW_NO2 / Inst%MW_NO )
        ENDIF
 
-       !---------------------------
+       !---------------------------------------------------------------------
        ! Calculate HNO3 emissions
-       !---------------------------
+       !---------------------------------------------------------------------
        IF ( Inst%IDTHNO3 > 0 ) THEN
 
           ! Of the total ship NOx, the fraction 1-SHIP_FNOx-SHIP_DNOx
           ! is converted to HNO3 during plume dilution and chemistry.
           ! Unit: kg/m2/s
-          FLUXHNO3(I,J) = ShipNoEmis(I,J,1) * ( 1d0-SHIP_FNOx-SHIP_DNOx ) &
-                        * ( Inst%MW_HNO3 / Inst%MW_NO )
+          FLUXHNO3(I,J) = ShipNoEmis(I,J,1)                                  &
+                        * ( 1d0 - SHIP_FNOx - SHIP_DNOx )                    &
+                        * ( Inst%MW_HNO3 / Inst%MW_NO   )
        ENDIF
 
        !--------------------------------------------------------------------
@@ -589,48 +605,54 @@ CONTAINS
        IF ( (Inst%IDTHNO3 > 0) .AND. (SHIP_DNOx > 0.0_dp) ) THEN
 
           ! Deposition flux in kg/m2/s.
-          Inst%DEPHNO3(I,J) = ShipNoEmis(I,J,1) * SHIP_DNOx * ( Inst%MW_HNO3 / Inst%MW_NO )
-!          iFlx = ShipNoEmis(I,J,1) * SHIP_DNOx * ( MW_HNO3 / MW_NO )
-!
-!          ! Get mass of species. This can either be the total PBL
-!          ! column mass or the first layer only, depending on the
-!          ! HEMCO setting.
-!          iMass = ExtState%HNO3%Arr%Val(I,J,1) &
-!                * ExtState%FRAC_OF_PBL%Arr%Val(I,J,1)
-!          IF ( HcoState%Options%PBL_DRYDEP ) THEN
-!             DO L = 1, HcoState%NZ
-!                IF ( ExtState%FRAC_OF_PBL%Arr%Val(I,J,L) == 0.0_hp ) EXIT
-!                iMass = iMass + ( ExtState%HNO3%Arr%Val(I,J,L) *       &
-!                                  ExtState%FRAC_OF_PBL%Arr%Val(I,J,L) )
-!             ENDDO
-!          ENDIF
-!
-!          ! Calculate deposition velocity (1/s) from flux
-!          ! Now avoid div-zero error (ckeller, 11/10/2014).
-!          IF ( iMass > TINY(1.0_hp) ) THEN
-!             TMP = ABS(iFlx) * HcoState%Grid%AREA_M2%Val(I,J)
-!
-!             ! Check if it's safe to do division
-!             IF ( (EXPONENT(TMP)-EXPONENT(iMass)) < MAXEXPONENT(TMP) ) THEN
-!                DEPHNO3(I,J) = TMP / iMass
-!             ENDIF
-!
-!             ! Check deposition velocity
-!             CALL HCO_CheckDepv( HcoState, DEPHNO3(I,J), RC )
-!          ENDIF
+          Inst%DEPHNO3(I,J) = ShipNoEmis(I,J,1)                              &
+                            * SHIP_DNOx                                      &
+                            * ( Inst%MW_HNO3 / Inst%MW_NO )
+
+!%%% Comment out unused code
+!%%%!          iFlx = ShipNoEmis(I,J,1) * SHIP_DNOx * ( MW_HNO3 / MW_NO )
+!%%%!
+!%%%!          ! Get mass of species. This can either be the total PBL
+!%%%!          ! column mass or the first layer only, depending on the
+!%%%!          ! HEMCO setting.
+!%%%!          iMass = ExtState%HNO3%Arr%Val(I,J,1) &
+!%%%!                * ExtState%FRAC_OF_PBL%Arr%Val(I,J,1)
+!%%%!          IF ( HcoState%Options%PBL_DRYDEP ) THEN
+!%%%!             DO L = 1, HcoState%NZ
+!%%%!                IF ( ExtState%FRAC_OF_PBL%Arr%Val(I,J,L) == 0.0_hp ) EXIT
+!%%%!                iMass = iMass + ( ExtState%HNO3%Arr%Val(I,J,L) *       &
+!%%%!                                  ExtState%FRAC_OF_PBL%Arr%Val(I,J,L) )
+!%%%!             ENDDO
+!%%%!          ENDIF
+!%%%!
+!%%%!          ! Calculate deposition velocity (1/s) from flux
+!%%%!          ! Now avoid div-zero error (ckeller, 11/10/2014).
+!%%%!          IF ( iMass > TINY(1.0_hp) ) THEN
+!%%%!             TMP = ABS(iFlx) * HcoState%Grid%AREA_M2%Val(I,J)
+!%%%!
+!%%%!             ! Check if it's safe to do division
+!%%%!             IF ( (EXPONENT(TMP)-EXPONENT(iMass)) < MAXEXPONENT(TMP) ) THEN
+!%%%!                DEPHNO3(I,J) = TMP / iMass
+!%%%!             ENDIF
+!%%%!
+!%%%!             ! Check deposition velocity
+!%%%!             CALL HCO_CheckDepv( HcoState, DEPHNO3(I,J), RC )
+!%%%!          ENDIF
 
        ENDIF
 
-       !---------------------------
+       !---------------------------------------------------------------------
        ! Calculate O3 emissions
-       !---------------------------
+       !---------------------------------------------------------------------
        IF ( Inst%IDTO3 > 0 ) THEN
 
           ! Of the total ship NOx, the fraction
           ! (1-FRACTION_NOX)*INT_OPE is converted to O3 during
           ! plume dilution and chemistry.
           ! Unit: kg/m2/s
-          iFlx = ShipNoEmis(I,J,1) * (1d0-SHIP_FNOx) * SHIP_OPE &
+          iFlx = ShipNoEmis(I,J,1)                                           &
+               * ( 1d0 - SHIP_FNOx         )                                 &
+               * SHIP_OPE                                                    &
                * ( Inst%MW_O3 / Inst%MW_NO )
 
           ! For positive fluxes, add to emission flux array
@@ -649,37 +671,40 @@ CONTAINS
              !DEPO3(I,J) = iFlx
              Inst%DEPO3(I,J) = ABS(iFlx)
 
-!             ! Get mass of species. This can either be the total PBL
-!             ! column mass or the first layer only, depending on the
-!             ! HEMCO setting.
-!             iMass = ExtState%O3%Arr%Val(I,J,1) &
-!                   * ExtState%FRAC_OF_PBL%Arr%Val(I,J,1)
-!             IF ( HcoState%Options%PBL_DRYDEP ) THEN
-!                DO L = 1, HcoState%NZ
-!                   IF ( ExtState%FRAC_OF_PBL%Arr%Val(I,J,L) == 0.0_hp ) EXIT
-!                   iMass = iMass + ( ExtState%O3%Arr%Val(I,J,L) *       &
-!                                     ExtState%FRAC_OF_PBL%Arr%Val(I,J,L) )
-!                ENDDO
-!             ENDIF
-!
-!             ! Calculate deposition velocity (1/s) from flux
-!             ! Now avoid div-zero error (ckeller, 11/10/2014).
-!             IF ( iMass > TINY(1.0_hp) ) THEN
-!                TMP = ABS(iFlx) * HcoState%Grid%AREA_M2%Val(I,J)
-!
-!                ! Check if it's safe to do division
-!                IF ( (EXPONENT(TMP)-EXPONENT(iMass)) < MAXEXPONENT(TMP) ) THEN
-!                   DEPO3(I,J) = TMP / iMass
-!                ENDIF
-!
-!                ! Check deposition velocity
-!                CALL HCO_CheckDepv( HcoState, DEPO3(I,J), RC )
-!             ENDIF
+!%%% Comment out unused code
+!%%%!             ! Get mass of species. This can either be the total PBL
+!%%%!             ! column mass or the first layer only, depending on the
+!%%%!             ! HEMCO setting.
+!%%%!             iMass = ExtState%O3%Arr%Val(I,J,1) &
+!%%%!                   * ExtState%FRAC_OF_PBL%Arr%Val(I,J,1)
+!%%%!             IF ( HcoState%Options%PBL_DRYDEP ) THEN
+!%%%!                DO L = 1, HcoState%NZ
+!%%%!                   IF ( ExtState%FRAC_OF_PBL%Arr%Val(I,J,L) == 0.0_hp ) EXIT
+!%%%!                   iMass = iMass + ( ExtState%O3%Arr%Val(I,J,L) *       &
+!%%%!                                     ExtState%FRAC_OF_PBL%Arr%Val(I,J,L) )
+!%%%!                ENDDO
+!%%%!             ENDIF
+!%%%!
+!%%%!             ! Calculate deposition velocity (1/s) from flux
+!%%%!             ! Now avoid div-zero error (ckeller, 11/10/2014).
+!%%%!             IF ( iMass > TINY(1.0_hp) ) THEN
+!%%%!                TMP = ABS(iFlx) * HcoState%Grid%AREA_M2%Val(I,J)
+!%%%!
+!%%%!                ! Check if it's safe to do division
+!%%%!                IF ( (EXPONENT(TMP)-EXPONENT(iMass)) < MAXEXPONENT(TMP) ) THEN
+!%%%!                   DEPO3(I,J) = TMP / iMass
+!%%%!                ENDIF
+!%%%!
+!%%%!                ! Check deposition velocity
+!%%%!                CALL HCO_CheckDepv( HcoState, DEPO3(I,J), RC )
+!%%%!             ENDIF
 
           ENDIF
        ENDIF
 
+       !---------------------------------------------------------------------
        ! Eventually write out into diagnostics array
+       !---------------------------------------------------------------------
        IF ( DoDiagn ) THEN
           DIAGN(I,J,1) = SHIP_FNOx
           DIAGN(I,J,2) = SHIP_OPE
@@ -688,8 +713,10 @@ CONTAINS
           DIAGN(I,J,5) = FLUXNO(I,J)
        ENDIF
 
+       !---------------------------------------------------------------------
        ! Reset ship NO emissions to zero. Will be refilled on next
        ! emission step!
+       !---------------------------------------------------------------------
        ShipNoEmis(I,J,1) = 0.0d0
 
     ENDDO !I
