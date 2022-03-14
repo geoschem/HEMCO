@@ -111,7 +111,7 @@ netCDF) on your system.
 | `Intel         | **The Intel    |                | `Install from  |
 | Compiler Suite | Compiler Suite |                | Intel <http    |
 | (icc, icpc,    | is our         | The GCST       | s://software.i |
-| ifort)         | recommended    | has tested     | ntel.com/conte |
+| ifort)`        | recommended    | has tested     | ntel.com/conte |
 |                | proprietary    | with these     | nt/www/us/en/d |
 |                | compiler       | versions (but  | evelop/tools/o |
 |                | collection.**  | others may     | neapi/componen |
