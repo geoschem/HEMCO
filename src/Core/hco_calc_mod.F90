@@ -3035,12 +3035,13 @@ END FUNCTION GetEmisLUnit
     ENDIF
 
     ! Loop over all latitudes and longitudes
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL          ) &
-!$OMP SCHEDULE( DYNAMIC                                              ) &
-!$OMP REDUCTION( +totLL                                              ) &
-!$OMP REDUCTION( +nnLL                                               )
+!$OMP PARALLEL DO                                                            &
+!$OMP DEFAULT( SHARED                                                       )&
+!$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL                 )&
+!$OMP COLLAPSE( 2                                                           )&
+!$OMP SCHEDULE( DYNAMIC, 4                                                  )&
+!$OMP REDUCTION( +:totLL                                                    )&
+!$OMP REDUCTION( +:nnLL                                                     )
     DO J = 1, nJ
     DO I = 1, nI
 
@@ -3211,10 +3212,11 @@ END FUNCTION GetEmisLUnit
        ERROR = 0
 
        ! Loop over all latitudes and longitudes
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale ) &
-!$OMP SCHEDULE( DYNAMIC )
+!$OMP PARALLEL DO                                                            &
+!$OMP DEFAULT( SHARED )                                                      &
+!$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale        )&
+!$OMP COLLAPSE( 2                                                           )&
+!$OMP SCHEDULE( DYNAMIC, 4                                                  )
        DO J = 1, nJ
        DO I = 1, nI
 
@@ -3403,7 +3405,7 @@ END FUNCTION GetEmisLUnit
              MSG = 'Illegal mathematical operator for scale factor: ' // TRIM(ScalDct%cName)
           ELSEIF ( ERROR == 3 ) THEN
              MSG = 'Encountered negative time index for scale factor: ' // TRIM(ScalDct%cName)
-          ELSEIF ( ERROR == 3 ) THEN
+          ELSEIF ( ERROR == 4 ) THEN
              MSG = 'Mask error in ' // TRIM(ScalDct%cName)
           ELSE
              MSG = 'Error when applying scale factor: ' // TRIM(ScalDct%cName)
