@@ -3035,10 +3035,12 @@ END FUNCTION GetEmisLUnit
     ENDIF
 
     ! Loop over all latitudes and longitudes
-!!$OMP PARALLEL DO                                                      &
-!!$OMP DEFAULT( SHARED )                                                &
-!!$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL          ) &
-!!$OMP SCHEDULE( DYNAMIC )
+!$OMP PARALLEL DO                                                      &
+!$OMP DEFAULT( SHARED )                                                &
+!$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL          ) &
+!$OMP SCHEDULE( DYNAMIC                                              ) &
+!$OMP REDUCTION( +totLL                                              ) &
+!$OMP REDUCTION( +nnLL                                               )
     DO J = 1, nJ
     DO I = 1, nI
 
@@ -3123,7 +3125,7 @@ END FUNCTION GetEmisLUnit
 
     ENDDO !I
     ENDDO !J
-!!$OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 
     ! Check for error
     IF ( ERROR == 1 ) THEN
@@ -3209,10 +3211,10 @@ END FUNCTION GetEmisLUnit
        ERROR = 0
 
        ! Loop over all latitudes and longitudes
-!!$OMP PARALLEL DO                                                      &
-!!$OMP DEFAULT( SHARED )                                                &
-!!$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale ) &
-!!$OMP SCHEDULE( DYNAMIC )
+!$OMP PARALLEL DO                                                      &
+!$OMP DEFAULT( SHARED )                                                &
+!$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale ) &
+!$OMP SCHEDULE( DYNAMIC )
        DO J = 1, nJ
        DO I = 1, nI
 
@@ -3391,7 +3393,7 @@ END FUNCTION GetEmisLUnit
 
        ENDDO !I
        ENDDO !J
-!!$OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 
        ! error check
        IF ( ERROR > 0 ) THEN
