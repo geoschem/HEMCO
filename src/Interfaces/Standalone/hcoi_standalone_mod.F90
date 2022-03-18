@@ -541,7 +541,7 @@ CONTAINS
               CALL HCO_ERROR ( 'ERROR 0', RC, THISLOC=LOC )
               RETURN
           ENDIF
-
+       ELSE
           CALL HcoClock_Increase ( HcoState, HcoState%TS_EMIS, .TRUE., RC=RC )
           IF ( RC /= HCO_SUCCESS ) THEN
               CALL HCO_ERROR ( 'ERROR 1', RC, THISLOC=LOC )
