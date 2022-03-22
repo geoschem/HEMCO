@@ -1344,20 +1344,27 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    INTEGER :: I, NZ, ILEV
+    INTEGER :: I, DZ, NZ, ILEV
 
     !=================================================================
     ! INFLATE begins here
     !=================================================================
 
     ! Get input data array
-    NZ = SIZE(REGR_4D,3)
+    NZ = SIZE( REGR_4D, 3 )
+
+    ! Get size of data array in the HEMCO state (bmy, 22 Mar 2022)
+    DZ = SIZE( Lct%Dct%Dta%V3(T)%Val, 3 )
 
     ! Do for every output level
     DO I = 1, NLEV
 
        ! Current output level
        ILEV = OutLev1 + I - 1
+
+       ! Avoid out-of-bounds errors if ILEV is greater than the
+       ! number of levels in Lct%Dct%Dta%V3(T)%Val (bmy, 22 Mar 2022)
+       IF ( ILEV > DZ ) EXIT
 
        ! If input level is beyond vert. extent of input data, set output
        ! data to zero.
