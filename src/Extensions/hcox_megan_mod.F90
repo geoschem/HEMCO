@@ -3903,28 +3903,28 @@ CONTAINS
        CALL HCO_ERROR( 'T_LAST24H', RC )
        RETURN
     ENDIF
-    Inst%T_LAST24H = 0.0_hp
+    Inst%T_LAST24H = 0.0_sp
 
     ALLOCATE( Inst%T_LASTXDAYS( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( 'T_LASTXDAYS', RC )
        RETURN
     ENDIF
-    Inst%T_LASTXDAYS = 0.0_hp
+    Inst%T_LASTXDAYS = 0.0_sp
 
     ALLOCATE( Inst%PARDR_LASTXDAYS( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( 'PARDR_LASTXDAYS', RC )
        RETURN
     ENDIF
-    Inst%PARDR_LASTXDAYS = 0.0_hp
+    Inst%PARDR_LASTXDAYS = 0.0_sp
 
     ALLOCATE( Inst%PARDF_LASTXDAYS( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
        CALL HCO_ERROR( 'PARDF_LASTXDAYS', RC )
        RETURN
     ENDIF
-    Inst%PARDF_LASTXDAYS = 0.0_hp
+    Inst%PARDF_LASTXDAYS = 0.0_sp
 
     ALLOCATE( Inst%LAI_PREVDAY( NX, NY ), STAT=AS )
     IF ( AS /= 0 ) THEN
