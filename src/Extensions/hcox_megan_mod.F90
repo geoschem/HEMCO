@@ -3329,6 +3329,25 @@ CONTAINS
                      0.08_hp, 0.08_hp, 0.08_hp, 0.08_hp, 0.08_hp, &
                      0.08_hp, 0.20_hp, 0.20_hp, 0.20_hp, 0.20_hp/)
 
+    ! Set AEF arrays to zero
+    Inst%AEF_APIN(:,:) = 0.0_hp
+    Inst%AEF_MYRC(:,:) = 0.0_hp
+    Inst%AEF_OMON(:,:) = 0.0_hp
+    Inst%AEF_FARN(:,:) = 0.0_hp
+    Inst%AEF_BCAR(:,:) = 0.0_hp
+    Inst%AEF_OSQT(:,:) = 0.0_hp
+    Inst%AEF_MOH (:,:) = 0.0_hp
+    Inst%AEF_ACET(:,:) = 0.0_hp
+    Inst%AEF_EOH (:,:) = 0.0_hp
+    Inst%AEF_CH2O(:,:) = 0.0_hp
+    Inst%AEF_ALD2(:,:) = 0.0_hp
+    Inst%AEF_FAXX(:,:) = 0.0_hp
+    Inst%AEF_AAXX(:,:) = 0.0_hp
+    Inst%AEF_C2H4(:,:) = 0.0_hp
+    Inst%AEF_TOLU(:,:) = 0.0_hp
+    Inst%AEF_HCNX(:,:) = 0.0_hp
+    Inst%AEF_PRPE(:,:) = 0.0_hp
+
     ! Loop through plant types
     DO P = 1, 15
 
