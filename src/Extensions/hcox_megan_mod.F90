@@ -231,13 +231,11 @@ MODULE HCOX_MEGAN_MOD
      ! Normalization factor
      REAL(hp), POINTER       :: NORM_FAC(:)
 
-     ! New restart variables (ckeller, 11/05/2015)
+     ! Restart variables
      REAL(sp), POINTER       :: T_LASTXDAYS    (:,:) ! Avg. temp  of last X days
      REAL(sp), POINTER       :: T_LAST24H      (:,:) ! Avg. temp  of last 24 hrs
      REAL(sp), POINTER       :: PARDF_LASTXDAYS(:,:) ! Avg. PARDF of last X days
      REAL(sp), POINTER       :: PARDR_LASTXDAYS(:,:) ! Avg. PARDR of last X days
-
-     ! previous LAI values (ckeller, 10/09/2014)
      REAL(sp), POINTER       :: LAI_PREVDAY(:,:)     ! LAI of prev. day
 
      ! Array for PFT
@@ -3932,13 +3930,6 @@ CONTAINS
       RETURN
     ENDIF
     Inst%LAI_PREVDAY = 0.0_sp
-
-    ALLOCATE( Inst%ARRAY_16( NX, NY, 16 ), STAT=AS )
-    IF ( AS /= 0 ) THEN
-      CALL HCO_ERROR( 'ARRAY_16', RC )
-      RETURN
-    ENDIF
-    Inst%ARRAY_16 = 0.0_hp
 
     ! Normalization factor
     ! There should be a different normalization factor for each compound, but
