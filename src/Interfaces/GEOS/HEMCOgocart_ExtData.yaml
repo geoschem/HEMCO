@@ -1,0 +1,534 @@
+Collections:
+  HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/MEGAN_20180519/CLM4_PFT.geos.025x03125.esmf.nc
+  HEMCOgocart_Carbon_litter.2x25.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/CH4/Carbon_litter.2x25.esmf.nc
+  HEMCOgocart_Carbon_soil.2x25.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/CH4/Carbon_soil.2x25.esmf.nc
+  HEMCOgocart_EDGAR_HTAP_BC_ENERGY_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_BC_ENERGY_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_BC_INDUSTRY_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_BC_INDUSTRY_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_BC_RESIDENTIAL_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_BC_RESIDENTIAL_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_BC_SHIPS_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_BC_SHIPS_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_BC_TRANSPORT_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_BC_TRANSPORT_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_CO_ENERGY_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_CO_ENERGY_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_CO_INDUSTRY_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_CO_INDUSTRY_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_CO_RESIDENTIAL_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_CO_RESIDENTIAL_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_CO_SHIPS_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_CO_SHIPS_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_CO_TRANSPORT_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_CO_TRANSPORT_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_NH3_AGRICULTURE_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_NH3_AGRICULTURE_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_NH3_ENERGY_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_NH3_ENERGY_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_NH3_INDUSTRY_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_NH3_INDUSTRY_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_NH3_RESIDENTIAL_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_NH3_RESIDENTIAL_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_NH3_TRANSPORT_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_NH3_TRANSPORT_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_OC_ENERGY_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_OC_ENERGY_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_OC_INDUSTRY_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_OC_INDUSTRY_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_OC_RESIDENTIAL_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_OC_RESIDENTIAL_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_OC_SHIPS_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_OC_SHIPS_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_OC_TRANSPORT_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_OC_TRANSPORT_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_SO2_ENERGY_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_SO2_ENERGY_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_SO2_INDUSTRY_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_SO2_INDUSTRY_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_SO2_RESIDENTIAL_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_SO2_RESIDENTIAL_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_SO2_SHIPS_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_SO2_SHIPS_2010.generic.01x01.nc
+  HEMCOgocart_EDGAR_HTAP_SO2_TRANSPORT_2010.generic.01x01.nc:
+    template: /discover/nobackup/cakelle2/data/HTAP/EDGAR_HTAP_SO2_TRANSPORT_2010.generic.01x01.nc
+  HEMCOgocart_GWETTOP.annual.geos5.2x25.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/CH4/GWETTOP.annual.geos5.2x25.esmf.nc
+  HEMCOgocart_GWETTOP.monthly.geos5.2x25.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/CH4/GWETTOP.monthly.geos5.2x25.esmf.nc
+  HEMCOgocart_KORUS.emis_BC.x3600_y1800_t12.2015.nc4:
+    template: /discover/nobackup/pcastell/KORUS_emis/KORUS.emis_BC.x3600_y1800_t12.2015.nc4
+  HEMCOgocart_KORUS.emis_CO.x3600_y1800_t12.2015.nc4:
+    template: /discover/nobackup/pcastell/KORUS_emis/KORUS.emis_CO.x3600_y1800_t12.2015.nc4
+  HEMCOgocart_KORUS.emis_NH3.x3600_y1800_t12.2015.nc4:
+    template: /discover/nobackup/pcastell/KORUS_emis/KORUS.emis_NH3.x3600_y1800_t12.2015.nc4
+  HEMCOgocart_KORUS.emis_OC.x3600_y1800_t12.2015.nc4:
+    template: /discover/nobackup/pcastell/KORUS_emis/KORUS.emis_OC.x3600_y1800_t12.2015.nc4
+  HEMCOgocart_KORUS.emis_SO2.x3600_y1800_t12.2015.nc4:
+    template: /discover/nobackup/pcastell/KORUS_emis/KORUS.emis_SO2.x3600_y1800_t12.2015.nc4
+  HEMCOgocart_KORUS.emis_mask.x3600_y1800_t12.2015.nc4:
+    template: /discover/nobackup/pcastell/KORUS_emis/KORUS.emis_mask.x3600_y1800_t12.2015.nc4
+  HEMCOgocart_MEGAN2.1_EF.geos.025x03125.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/MEGAN_20180519/MEGAN2.1_EF.geos.025x03125.esmf.nc
+  HEMCOgocart_NVOC.geos.1x1.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/NVOC.geos.1x1.esmf.nc
+  HEMCOgocart_TSKIN.annual.geos5.2x25.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/CH4/TSKIN.annual.geos5.2x25.esmf.nc
+  HEMCOgocart_Wetfrac.2x25.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/CH4/Wetfrac.2x25.esmf.nc
+  HEMCOgocart_co_biofuel_v2.x360_y181_t12.2001.nc:
+    template: ExtData/PIESA/sfc/co_biofuel_v2.x360_y181_t12.2001.nc
+  HEMCOgocart_co_fossilfuel_v2.x360_y181_t12.2001.nc:
+    template: ExtData/PIESA/sfc/co_fossilfuel_v2.x360_y181_t12.2001.nc
+  HEMCOgocart_htap-v2.2.emis_bc.elevated.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.elevated.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_bc.ships.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.ships.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_bc.surface.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.surface.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_nh3.agriculture.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_nh3.agriculture.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_nh3.energy.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_nh3.energy.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_nh3.industry.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_nh3.industry.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_nh3.residential.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_nh3.residential.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_nh3.transport.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_nh3.transport.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_oc.elevated.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.elevated.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_oc.ships.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.ships.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_oc.surface.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.surface.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_so2.elevated.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.elevated.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_so2.ships.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.ships.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_so2.surface.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so2.surface.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_htap-v2.2.emis_so4.ships.x3600_y1800_t12.2008.nc4:
+    template: ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_so4.ships.x3600_y1800_t12.2008.nc4
+  HEMCOgocart_v42_CH4.0.1x0.1.2008.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/CH4/v42_CH4.0.1x0.1.2008.esmf.nc
+
+Samplings:
+  HEMCOgocart_sample_0:
+    extrapolation: clim
+    update_frequency: PT24H
+    update_offset: PT12H
+    update_reference_time: '0'
+  HEMCOgocart_sample_1:
+    extrapolation: clim
+    update_frequency: P1M
+    update_reference_time: '0'
+  HEMCOgocart_sample_2:
+    extrapolation: persist_closest
+
+Exports:
+  CH4_GWET_MT:
+    collection: HEMCOgocart_GWETTOP.monthly.geos5.2x25.esmf.nc
+    sample: HEMCOgocart_sample_1
+    variable: GWETTOP
+  CH4_GWET_YR:
+    collection: HEMCOgocart_GWETTOP.annual.geos5.2x25.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: GWETTOP
+  CH4_LITTER_C:
+    collection: HEMCOgocart_Carbon_litter.2x25.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: CARBON
+  CH4_MEAN_T:
+    collection: HEMCOgocart_TSKIN.annual.geos5.2x25.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: TSKIN
+  CH4_RICE:
+    collection: HEMCOgocart_v42_CH4.0.1x0.1.2008.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: ch4_4C_4D
+  CH4_SOIL_C:
+    collection: HEMCOgocart_Carbon_soil.2x25.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: CARBON
+  CH4_WETFRAC:
+    collection: HEMCOgocart_Wetfrac.2x25.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: WETFRAC
+  CLM4_PFT_BARE:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_BARE
+  CLM4_PFT_BDLF_DECD_BORL_SHRB:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_BDLF_DECD_BORL_SHRB
+  CLM4_PFT_BDLF_DECD_BORL_TREE:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_BDLF_DECD_BORL_TREE
+  CLM4_PFT_BDLF_DECD_TMPT_SHRB:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_BDLF_DECD_TMPT_SHRB
+  CLM4_PFT_BDLF_DECD_TMPT_TREE:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_BDLF_DECD_TMPT_TREE
+  CLM4_PFT_BDLF_DECD_TROP_TREE:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_BDLF_DECD_TROP_TREE
+  CLM4_PFT_BDLF_EVGN_SHRB:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_BDLF_EVGN_SHRB
+  CLM4_PFT_BDLF_EVGN_TMPT_TREE:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_BDLF_EVGN_TMPT_TREE
+  CLM4_PFT_BDLF_EVGN_TROP_TREE:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_BDLF_EVGN_TROP_TREE
+  CLM4_PFT_C3_ARCT_GRSS:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_C3_ARCT_GRSS
+  CLM4_PFT_C3_NARC_GRSS:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_C3_NARC_GRSS
+  CLM4_PFT_C4_GRSS:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_C4_GRSS
+  CLM4_PFT_CROP:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_CROP
+  CLM4_PFT_NDLF_DECD_BORL_TREE:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_NDLF_DECD_BORL_TREE
+  CLM4_PFT_NDLF_EVGN_BORL_TREE:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_NDLF_EVGN_BORL_TREE
+  CLM4_PFT_NDLF_EVGN_TMPT_TREE:
+    collection: HEMCOgocart_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgocart_sample_2
+    variable: PFT_NDLF_EVGN_TMPT_TREE
+  GOCART_BC_ANTEBC1:
+    collection: HEMCOgocart_htap-v2.2.emis_bc.surface.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: antebc1
+  GOCART_BC_ANTEBC2:
+    collection: HEMCOgocart_htap-v2.2.emis_bc.elevated.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: antebc2
+  GOCART_BC_SHIP:
+    collection: HEMCOgocart_htap-v2.2.emis_bc.ships.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: bc_ship
+  GOCART_CO_BF:
+    collection: HEMCOgocart_co_biofuel_v2.x360_y181_t12.2001.nc
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: emcobf
+  GOCART_CO_FS:
+    collection: HEMCOgocart_co_fossilfuel_v2.x360_y181_t12.2001.nc
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: emcofs
+  GOCART_EMI_NH3_AG:
+    collection: HEMCOgocart_htap-v2.2.emis_nh3.agriculture.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: nh3_emis
+  GOCART_EMI_NH3_EN:
+    collection: HEMCOgocart_htap-v2.2.emis_nh3.energy.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: nh3_emis
+  GOCART_EMI_NH3_IN:
+    collection: HEMCOgocart_htap-v2.2.emis_nh3.industry.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: nh3_emis
+  GOCART_EMI_NH3_RE:
+    collection: HEMCOgocart_htap-v2.2.emis_nh3.residential.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: nh3_emis
+  GOCART_EMI_NH3_TR:
+    collection: HEMCOgocart_htap-v2.2.emis_nh3.transport.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: nh3_emis
+  GOCART_OC_ANTEOC1:
+    collection: HEMCOgocart_htap-v2.2.emis_oc.surface.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: anteoc1
+  GOCART_OC_ANTEOC2:
+    collection: HEMCOgocart_htap-v2.2.emis_oc.elevated.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: anteoc2
+  GOCART_OC_SHIP:
+    collection: HEMCOgocart_htap-v2.2.emis_oc.ships.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: oc_ship
+  GOCART_SO2_ANTHROL1:
+    collection: HEMCOgocart_htap-v2.2.emis_so2.surface.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: sanl1
+  GOCART_SO2_ANTHROL2:
+    collection: HEMCOgocart_htap-v2.2.emis_so2.elevated.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: sanl2
+  GOCART_SO2_SHIP:
+    collection: HEMCOgocart_htap-v2.2.emis_so2.ships.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: so2_ship
+  GOCART_SO4_SHIP:
+    collection: HEMCOgocart_htap-v2.2.emis_so4.ships.x3600_y1800_t12.2008.nc4
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_0
+    variable: so4_ship
+  HTAP_BC_IND:
+    collection: HEMCOgocart_EDGAR_HTAP_BC_INDUSTRY_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_bc
+  HTAP_BC_POW:
+    collection: HEMCOgocart_EDGAR_HTAP_BC_ENERGY_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_bc
+  HTAP_BC_RES:
+    collection: HEMCOgocart_EDGAR_HTAP_BC_RESIDENTIAL_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_bc
+  HTAP_BC_SHIP:
+    collection: HEMCOgocart_EDGAR_HTAP_BC_SHIPS_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_2
+    variable: emi_bc
+  HTAP_BC_TRA:
+    collection: HEMCOgocart_EDGAR_HTAP_BC_TRANSPORT_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_bc
+  HTAP_CO_IND:
+    collection: HEMCOgocart_EDGAR_HTAP_CO_INDUSTRY_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_co
+  HTAP_CO_POW:
+    collection: HEMCOgocart_EDGAR_HTAP_CO_ENERGY_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_co
+  HTAP_CO_RES:
+    collection: HEMCOgocart_EDGAR_HTAP_CO_RESIDENTIAL_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_co
+  HTAP_CO_SHIP:
+    collection: HEMCOgocart_EDGAR_HTAP_CO_SHIPS_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_2
+    variable: emi_co
+  HTAP_CO_TRA:
+    collection: HEMCOgocart_EDGAR_HTAP_CO_TRANSPORT_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_co
+  HTAP_NH3_AGR:
+    collection: HEMCOgocart_EDGAR_HTAP_NH3_AGRICULTURE_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_nh3
+  HTAP_NH3_IND:
+    collection: HEMCOgocart_EDGAR_HTAP_NH3_INDUSTRY_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_nh3
+  HTAP_NH3_POW:
+    collection: HEMCOgocart_EDGAR_HTAP_NH3_ENERGY_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_nh3
+  HTAP_NH3_RES:
+    collection: HEMCOgocart_EDGAR_HTAP_NH3_RESIDENTIAL_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_nh3
+  HTAP_NH3_TRA:
+    collection: HEMCOgocart_EDGAR_HTAP_NH3_TRANSPORT_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_nh3
+  HTAP_OC_IND:
+    collection: HEMCOgocart_EDGAR_HTAP_OC_INDUSTRY_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_oc
+  HTAP_OC_POW:
+    collection: HEMCOgocart_EDGAR_HTAP_OC_ENERGY_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_oc
+  HTAP_OC_RES:
+    collection: HEMCOgocart_EDGAR_HTAP_OC_RESIDENTIAL_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_oc
+  HTAP_OC_SHIP:
+    collection: HEMCOgocart_EDGAR_HTAP_OC_SHIPS_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_2
+    variable: emi_oc
+  HTAP_OC_TRA:
+    collection: HEMCOgocart_EDGAR_HTAP_OC_TRANSPORT_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_oc
+  HTAP_SO2_IND:
+    collection: HEMCOgocart_EDGAR_HTAP_SO2_INDUSTRY_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_so2
+  HTAP_SO2_POW:
+    collection: HEMCOgocart_EDGAR_HTAP_SO2_ENERGY_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_so2
+  HTAP_SO2_RES:
+    collection: HEMCOgocart_EDGAR_HTAP_SO2_RESIDENTIAL_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_so2
+  HTAP_SO2_SHIP:
+    collection: HEMCOgocart_EDGAR_HTAP_SO2_SHIPS_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_2
+    variable: emi_so2
+  HTAP_SO2_TRA:
+    collection: HEMCOgocart_EDGAR_HTAP_SO2_TRANSPORT_2010.generic.01x01.nc
+    sample: HEMCOgocart_sample_1
+    variable: emi_so2
+  KORUS_BC_AREA:
+    collection: HEMCOgocart_KORUS.emis_BC.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: BC_AREA
+  KORUS_BC_MOBILE:
+    collection: HEMCOgocart_KORUS.emis_BC.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: BC_MOBILE
+  KORUS_BC_POINT:
+    collection: HEMCOgocart_KORUS.emis_BC.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: BC_POINT
+  KORUS_BC_SHIP:
+    collection: HEMCOgocart_KORUS.emis_BC.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: BC_SHIP
+  KORUS_CO_AREA:
+    collection: HEMCOgocart_KORUS.emis_CO.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: CO_AREA
+  KORUS_CO_MOBILE:
+    collection: HEMCOgocart_KORUS.emis_CO.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: CO_MOBILE
+  KORUS_CO_POINT:
+    collection: HEMCOgocart_KORUS.emis_CO.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: CO_POINT
+  KORUS_CO_SHIP:
+    collection: HEMCOgocart_KORUS.emis_CO.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: CO_SHIP
+  KORUS_MASK:
+    collection: HEMCOgocart_KORUS.emis_mask.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_2
+    variable: MASK
+  KORUS_NH3_AREA:
+    collection: HEMCOgocart_KORUS.emis_NH3.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: NH3_AREA
+  KORUS_NH3_MOBILE:
+    collection: HEMCOgocart_KORUS.emis_NH3.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: NH3_MOBILE
+  KORUS_NH3_POINT:
+    collection: HEMCOgocart_KORUS.emis_NH3.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: NH3_POINT
+  KORUS_NH3_SHIP:
+    collection: HEMCOgocart_KORUS.emis_NH3.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: NH3_SHIP
+  KORUS_OC_AREA:
+    collection: HEMCOgocart_KORUS.emis_OC.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: OC_AREA
+  KORUS_OC_MOBILE:
+    collection: HEMCOgocart_KORUS.emis_OC.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: OC_MOBILE
+  KORUS_OC_POINT:
+    collection: HEMCOgocart_KORUS.emis_OC.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: OC_POINT
+  KORUS_OC_SHIP:
+    collection: HEMCOgocart_KORUS.emis_OC.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: OC_SHIP
+  KORUS_SO2_AREA:
+    collection: HEMCOgocart_KORUS.emis_SO2.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: SO2_AREA
+  KORUS_SO2_MOBILE:
+    collection: HEMCOgocart_KORUS.emis_SO2.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: SO2_MOBILE
+  KORUS_SO2_POINT:
+    collection: HEMCOgocart_KORUS.emis_SO2.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: SO2_POINT
+  KORUS_SO2_SHIP:
+    collection: HEMCOgocart_KORUS.emis_SO2.x3600_y1800_t12.2015.nc4
+    sample: HEMCOgocart_sample_1
+    variable: SO2_SHIP
+  MEGAN_AEF_BPIN:
+    collection: HEMCOgocart_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_2
+    variable: AEF_BETA_PINENE
+  MEGAN_AEF_CARE:
+    collection: HEMCOgocart_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_2
+    variable: AEF_CARENE
+  MEGAN_AEF_ISOP:
+    collection: HEMCOgocart_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_2
+    variable: AEF_ISOPRENE
+  MEGAN_AEF_LIMO:
+    collection: HEMCOgocart_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_2
+    variable: AEF_LIMONENE
+  MEGAN_AEF_MBOX:
+    collection: HEMCOgocart_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_2
+    variable: AEF_MBO
+  MEGAN_AEF_OCIM:
+    collection: HEMCOgocart_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_2
+    variable: AEF_OCIMENE
+  MEGAN_AEF_SABI:
+    collection: HEMCOgocart_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_2
+    variable: AEF_SABINENE
+  MEGAN_ORVC:
+    collection: HEMCOgocart_NVOC.geos.1x1.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgocart_sample_1
+    variable: OCPI
+

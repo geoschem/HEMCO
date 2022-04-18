@@ -1,0 +1,122 @@
+Collections:
+  HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/MEGAN_20180519/CLM4_PFT.geos.025x03125.esmf.nc
+  HEMCOgmi_MEGAN2.1_EF.geos.025x03125.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/MEGAN_20180519/MEGAN2.1_EF.geos.025x03125.esmf.nc
+  HEMCOgmi_NVOC.geos.1x1.esmf.nc:
+    template: /discover/nobackup/cakelle2/data/NVOC.geos.1x1.esmf.nc
+
+Samplings:
+  HEMCOgmi_sample_0:
+    extrapolation: persist_closest
+  HEMCOgmi_sample_1:
+    extrapolation: clim
+    update_frequency: P1M
+    update_reference_time: '0'
+
+Exports:
+  CLM4_PFT_BARE_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_BARE
+  CLM4_PFT_BDLF_DECD_BORL_SHRB_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_BDLF_DECD_BORL_SHRB
+  CLM4_PFT_BDLF_DECD_BORL_TREE_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_BDLF_DECD_BORL_TREE
+  CLM4_PFT_BDLF_DECD_TMPT_SHRB_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_BDLF_DECD_TMPT_SHRB
+  CLM4_PFT_BDLF_DECD_TMPT_TREE_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_BDLF_DECD_TMPT_TREE
+  CLM4_PFT_BDLF_DECD_TROP_TREE_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_BDLF_DECD_TROP_TREE
+  CLM4_PFT_BDLF_EVGN_SHRB_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_BDLF_EVGN_SHRB
+  CLM4_PFT_BDLF_EVGN_TMPT_TREE_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_BDLF_EVGN_TMPT_TREE
+  CLM4_PFT_BDLF_EVGN_TROP_TREE_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_BDLF_EVGN_TROP_TREE
+  CLM4_PFT_C3_ARCT_GRSS_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_C3_ARCT_GRSS
+  CLM4_PFT_C3_NARC_GRSS_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_C3_NARC_GRSS
+  CLM4_PFT_C4_GRSS_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_C4_GRSS
+  CLM4_PFT_CROP_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_CROP
+  CLM4_PFT_NDLF_DECD_BORL_TREE_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_NDLF_DECD_BORL_TREE
+  CLM4_PFT_NDLF_EVGN_BORL_TREE_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_NDLF_EVGN_BORL_TREE
+  CLM4_PFT_NDLF_EVGN_TMPT_TREE_GMI:
+    collection: HEMCOgmi_CLM4_PFT.geos.025x03125.esmf.nc
+    sample: HEMCOgmi_sample_0
+    variable: PFT_NDLF_EVGN_TMPT_TREE
+  MEGAN_AEF_BPIN_GMI:
+    collection: HEMCOgmi_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgmi_sample_0
+    variable: AEF_BETA_PINENE
+  MEGAN_AEF_CARE_GMI:
+    collection: HEMCOgmi_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgmi_sample_0
+    variable: AEF_CARENE
+  MEGAN_AEF_ISOP_GMI:
+    collection: HEMCOgmi_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgmi_sample_0
+    variable: AEF_ISOPRENE
+  MEGAN_AEF_LIMO_GMI:
+    collection: HEMCOgmi_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgmi_sample_0
+    variable: AEF_LIMONENE
+  MEGAN_AEF_MBOX_GMI:
+    collection: HEMCOgmi_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgmi_sample_0
+    variable: AEF_MBO
+  MEGAN_AEF_OCIM_GMI:
+    collection: HEMCOgmi_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgmi_sample_0
+    variable: AEF_OCIMENE
+  MEGAN_AEF_SABI_GMI:
+    collection: HEMCOgmi_MEGAN2.1_EF.geos.025x03125.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgmi_sample_0
+    variable: AEF_SABINENE
+  MEGAN_ORVC_GMI:
+    collection: HEMCOgmi_NVOC.geos.1x1.esmf.nc
+    regrid: CONSERVE
+    sample: HEMCOgmi_sample_1
+    variable: OCPI
+
