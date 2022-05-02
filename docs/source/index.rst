@@ -19,13 +19,25 @@ HEMCO
 
 .. toctree::
    :maxdepth: 2
-   :caption: User Guide
+   :caption: User Guide (HEMCO Standalone)
 
    user-guide/downloading.rst
    user-guide/compiling.rst
    user-guide/rundir-init.rst
    user-guide/rundir-config.rst
    user-guide/running.rst
+
+.. toctree::
+   :maxdepth: 2
+   :caption: User Guide (GEOS-Chem)
+
+   user-guide-gc/intro.rst
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Coupling HEMCO
+
+   coupling/intro.rst
 
 
 .. toctree::
