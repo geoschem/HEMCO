@@ -1,6 +1,6 @@
 
 
-Configuring a run directory
+Configuring a Run Directory
 ===========================
 
 .. note::
@@ -29,6 +29,9 @@ HEMCO_sa_Config.rc
 HEMCO_Config.rc
    Contains emissions settings. This file is typically obtained
    from another model (e.g. GEOS-Chem).
+
+.. note::
+   An older version of the HEMCO User's Guide is available `on the GEOS-Chem Wiki <http://wiki.seas.harvard.edu/geos-chem/index.php/The_HEMCO_User%27s_Guide>`_, which includes more detailed information on configuring HEMCO emission inventories using the HEMCO configuration file, :file:`HEMCO_Config.rc`.
 
 HEMCO_Diagn.rc
    Specifies which fields to save out to the HEMCO diagnostics file saved in
