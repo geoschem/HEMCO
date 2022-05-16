@@ -84,7 +84,7 @@ CONTAINS
 ! !USES:
 !
     USE ESMF
-    USE MAPL_MOD
+    USE MAPLBase_MOD
     USE HCO_Types_Mod, ONLY : DiagnCont
     USE HCO_State_Mod, ONLY : HCO_State
 
