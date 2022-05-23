@@ -67,6 +67,7 @@ MODULE HCOX_TOMAS_Jeagle_Mod
    INTEGER,  ALLOCATABLE :: HcoIDs    (:      )    ! HEMCO species ID's
    REAL(dp), POINTER     :: TOMAS_DBIN(:      )    ! TOMAS bin width
    REAL(dp), POINTER     :: DRFAC     (:      )    ! TOMAS area?
+   REAL(dp), POINTER     :: OFFLINE_NFAC(:      )  ! scale the offline emissions into bins
    REAL(dp), POINTER     :: TC1       (:,:,:,:)    ! Aerosol mass
    REAL(dp), POINTER     :: TC2       (:,:,:,:)    ! Aerosol number
    LOGICAL               :: ColdSST                ! Flag to correct SSA emissions over cold waters
@@ -93,6 +94,8 @@ MODULE HCOX_TOMAS_Jeagle_Mod
 
    !Number densities 
    REAL(sp), POINTER   :: MULTIICE(:,:)   => NULL() ! add for blowing snow 
+   !REAL(sp), POINTER   :: SALA_OFFLINE(:,:)   => NULL() ! is this needed - where is multiice use?
+  ! REAL(sp), POINTER   :: SALC_OFFLINE(:,:)   => NULL() ! 
 
    TYPE(MyInst), POINTER :: NextInst => NULL()
   END TYPE MyInst
@@ -220,6 +223,8 @@ CONTAINS
     CHARACTER(LEN=31)      :: FLDNME
     INTEGER                :: NDAYS!, cYYYY, cMM, cDD, K                                                                                 
     REAL(hp), TARGET       :: MULTI(HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET       :: SALA_OFFLINE(HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET       :: SALC_OFFLINE(HcoState%NX,HcoState%NY)
     REAL(hp), TARGET       :: SNOWSALA  (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET       :: SNOWSALC  (HcoState%NX,HcoState%NY)
 
@@ -263,6 +268,23 @@ CONTAINS
     !INIT VALUES
     Inst%TC1 = 0.0_hp
     Inst%TC2 = 0.0_hp
+
+    !!!betty - maybe will need another IF here
+      CALL HCO_EvalFld ( HcoState, 'SEASALT_SALA', SALA_OFFLINE, RC )
+      IF ( RC /= HCO_SUCCESS ) THEN
+          WRITE(MSG,*) 'Cannot find OFFLINE SALA'
+          !CALL HCO_ERROR(HcoState%Config%Err, MSG, RC)
+          CALL HCO_ERROR(MSG, RC )
+          RETURN
+      ENDIF
+      CALL HCO_EvalFld ( HcoState, 'SEASALT_SALC', SALC_OFFLINE, RC )
+      IF ( RC /= HCO_SUCCESS ) THEN
+          WRITE(MSG,*) 'Cannot find OFFLINE SALC'
+          !CALL HCO_ERROR(HcoState%Config%Err, MSG, RC)
+          CALL HCO_ERROR(MSG, RC )
+          RETURN
+      ENDIF
+
 
     IF ( Inst%EmitSnowSS ) THEN
       ! Read in distribution of multi-year sea ice from                                                      
@@ -445,7 +467,6 @@ CONTAINS
 
                   dfo=1.373*W10M**3.41*rwet**(-1.*A)  & !m-2 um-1 s-1
                     *(1.+0.057*rwet**3.45)*10.**(1.607*exp(-1.*B**2))
-
              else
 
                   dfo=0.d0
@@ -455,6 +476,20 @@ CONTAINS
 
              !dfo=dfo*focean*SCALE  ! scale now includes ocean fraction - remove this line
              dfo=dfo*SCALE  ! note: scale now includes ocean fraction
+
+                print*,'Original dfo', dfo
+
+              ! test an overwrite with the offline values - use 0.6361 to remove mass from 11-16 um
+                   dfo   = 0.6361d0*(SALA_OFFLINE(I,J) + SALC_OFFLINE(I,J)) &
+                           *Inst%OFFLINE_NFAC(k) &
+                          / SQRT( HcoState%MicroPhys%BinBound(K  ) *    &
+                                  HcoState%MicroPhys%BinBound(K+1)   )
+
+                print*, 'New dfo',dfo
+
+
+
+
 
              ! Loop thru the boundary layer
              DO L = 1, HcoState%Nz
@@ -857,6 +892,15 @@ CONTAINS
        RETURN
     ENDIF
 
+    ! Allocate TOMAS_A
+    ALLOCATE ( Inst%OFFLINE_NFAC( HcoState%MicroPhys%nBins ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = 'Cannot allocate OFFLINE_NFAC array (hcox_tomas_jeagle_mod.F90)'
+       !CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
+       CALL HCO_ERROR(MSG, RC )
+       RETURN
+    ENDIF
+
     ! JKODROS - ALLOCATE TC1 and TC2
     ALLOCATE ( Inst%TC1( HcoState%NX, HcoState%NY,&
                HcoState%NZ, HcoState%MicroPhys%nBins ), STAT=RC )
@@ -1018,6 +1062,11 @@ CONTAINS
           2.84132d-03,   4.51031d-03,    7.15968d-03,     1.13653d-02,   &
           1.80413d-02,   2.86387d-02,    4.54612d-02,     7.21651d-02,   &
           1.14555d-01,   1.81845d-01,    1.06874d+00,     3.39304d+00 /)
+
+    Inst%OFFLINE_NFAC= (/2.66827d-05,    5.14210d-05,     1.23134d-04,   &
+          4.02014d-04,   1.82823d-03,    1.02085d-02,     5.23141d-02,   &
+          1.72667d-01,   2.86934d-01,    2.32107d-01,     1.09428d-01,   &
+          4.43300d-02,   2.57428d-02,    6.11951d-02,     2.64302d-03 /)
 
 #elif defined( TOMAS40 )
 
@@ -1349,6 +1398,7 @@ CONTAINS
 
           IF ( ASSOCIATED( Inst%TOMAS_DBIN ) ) DEALLOCATE( Inst%TOMAS_DBIN )
           IF ( ASSOCIATED( Inst%DRFAC      ) ) DEALLOCATE( Inst%DRFAC      )
+          IF ( ASSOCIATED( Inst%OFFLINE_NFAC) ) DEALLOCATE( Inst%OFFLINE_NFAC)
           IF ( ASSOCIATED( Inst%TC1        ) ) DEALLOCATE( Inst%TC1        )
           IF ( ASSOCIATED( Inst%TC2        ) ) DEALLOCATE( Inst%TC2        )
           IF ( ALLOCATED ( Inst%HcoIDs     ) ) DEALLOCATE( Inst%HcoIDs     )
