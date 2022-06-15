@@ -3763,10 +3763,13 @@ CONTAINS
                           'offline biogenic VOC emissions'
           ENDIF
        CASE( 'MOH' )
-          ! No offline biogenic VOC emissions available for MOH as
-          ! of GEOS-Chem 12.7.0 (mps, 12/17/19)
-          Inst%IDTMOH  = HcoIDs(I)
-          WRITE(MSG,*) '   MOH        = ',TRIM(SpcNames(I)),Inst%IDTMOH
+          IF ( .not. Inst%OFFLINE_BIOGENICVOC ) THEN
+             Inst%IDTMOH  = HcoIDs(I)
+             WRITE(MSG,*) '   MOH        = ',TRIM(SpcNames(I)),Inst%IDTMOH
+          ELSE
+             WRITE(MSG,*) '   MOH will be obtained from ' // &
+                          'offline biogenic VOC emissions'
+          ENDIF
        CASE( 'EOH' )
           IF ( .not. Inst%OFFLINE_BIOGENICVOC ) THEN
              Inst%IDTEOH  = HcoIDs(I)
