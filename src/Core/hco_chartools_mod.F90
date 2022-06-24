@@ -927,6 +927,10 @@ CONTAINS
 !
   SUBROUTINE HCO_ReadLine( LUN, LINE, EOF, RC )
 !
+! !USES:
+!
+    USE Hco_CharPak_Mod, ONLY : CStrip
+!
 ! !INPUT PARAMETERS:
 !
     INTEGER,          INTENT(IN   ) :: LUN      ! Stream LUN
@@ -946,7 +950,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER             :: IOS
+    INTEGER             :: IOS, C
     CHARACTER(LEN=255)  :: MSG
     CHARACTER(LEN=4095) :: DUM
 
@@ -990,6 +994,14 @@ CONTAINS
     ELSE
        LINE = DUM(1:LEN(LINE))
     ENDIF
+
+    ! Strip tabs and other non-printing characters but keep spaces
+    CALL CStrip( Line, KeepSpaces=.TRUE. )
+
+    ! Skip any comments at the end of a line (unless the 
+    ! comment character # is in the first column)
+    C = INDEX( Line, '#' )
+    IF ( C > 1 ) Line = Line(1:C-1)
 
   END SUBROUTINE HCO_ReadLine
 !EOC
