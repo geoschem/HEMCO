@@ -7,22 +7,22 @@ Compiling HEMCO
 .. note::
    This user guide assumes you have loaded a computing environment
    that satisfies :ref:`HEMCO's software requirements
-   <software_requirements>`.
+   <software-requirements>`.
 
 .. note::
 
-   Another useful resource for HEMCO build instructions is our
+   Another useful resource for :program:`HEMCO` build instructions is our
    `YouTube tutorial
    <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`_.
 
-There are two steps to build HEMCO. The first step is configuring your
+There are two steps to build :program:`HEMCO`. The first step is configuring your
 build. To configure your build you use :program:`cmake` to configure
 build settings.  Build settings cover options like enabling or
-disabling components, specifying run directories to install HEMCO to,
-or whether HEMCO should be compiled in Debug mode.
+disabling components, specifying run directories to install :program:`HEMCO` to,
+or whether :program:`HEMCO` should be compiled in Debug mode.
 
-The second step is compiling. To compile HEMCO you use
-:program:`make`. This compiles HEMCO according to your build
+The second step is compiling. To compile :program:`HEMCO` you use
+:program:`make`. This compiles :program:`HEMCO` according to your build
 configuration.
 
 ===========================
@@ -32,15 +32,15 @@ Create your build directory
 Create a build directory. This directory is going to be the working
 directory for your build. The configuration and compile steps generate
 a bunch of build files, and this directory is going to store
-those. You can think of a build directory as representing a HEMCO
+those. You can think of a build directory as representing a :program:`HEMCO`
 build. It stores configuration settings, information about your
 system, and intermediate files from the compiler.
 
 A build directory is self contained, so you can delete it at any point
 to erase the build and its configuration. You can have as many build
 directories as you would like. Most users only need one build
-directory, since they only build HEMCO once; but, for example, if you
-were building HEMCO with Intel and GNU compilers to compare
+directory, since they only build :program:`HEMCO` once; but, for example, if you
+were building :program:`HEMCO` with Intel and GNU compilers to compare
 performance, you would have two build directories: one for the Intel
 build, and one for the GNU build. You can name your build directories
 whatever you want, but a good choice is :file:`build/`. There is one
@@ -48,9 +48,9 @@ rule for build directories: **a build directory should be a new
 directory**.
 
 Create a build directory and initialize it. You initialize a build
-directory by running :program:`cmake` with the path to the HEMCO
+directory by running :program:`cmake` with the path to the :program:`HEMCO`
 source code. Here is an example of creating a build directory in the
-top-level of the HEMCO source code:
+top-level of the :program:`HEMCO` source code:
 
 .. code-block:: console
 
@@ -89,16 +89,16 @@ settings.
    The :literal:`.` argument is important. It is the path to your
    build directory which is :literal:`.` here.
 
-HEMCO has no required build settings. You can find the complete list
+:program:`HEMCO` has no required build settings. You can find the complete list
 of :ref:`HEMCO's build settings here <hemco_build_options>`. The most
 frequently used build setting is :literal:`RUNDIR` which lets you
 specify one or more run directories
-where CMake will install HEMCO. Here, "install" refers to copying the compiled executable, and some supplemental files
+where CMake will install :program:`HEMCO`. Here, "install" refers to copying the compiled executable, and some supplemental files
 with build settings, to your run directories.
 
 .. note::
 
-   You can even update build settings after you compile HEMCO. Simply
+   You can even update build settings after you compile :program:`HEMCO`. Simply
    rerun :program:`make` and (optionally) :program:`make install`, and
    the build system will automatically figure out what needs to be
    recompiled.
@@ -121,7 +121,7 @@ This tells you the configuration was successful, and that you are ready to compi
 Compile HEMCO
 =============
 
-You compile HEMCO with:
+You compile :program:`HEMCO` with:
 
 .. code-block:: console
 
@@ -141,20 +141,20 @@ manually, or you can do
 which copies :file:`./bin/hemco_standalone` (and some supplemental
 files) to the run directories specified in :option:`RUNDIR`.
 
-Now you have compiled HEMCO, and you are ready to move on to creating
+Now you have compiled :program:`HEMCO`, and you are ready to move on to creating
 a run directory!
 
 ===========
 Recompiling
 ===========
 
-You need to recompile HEMCO if you update a build setting or make a
+You need to recompile :program:`HEMCO` if you update a build setting or make a
 modification to the source code. However, with CMake, you don't need
 to clean before recompiling. The build system automatically figure out
 which files need to be recompiled based on your modification. This is
 known as incremental compiling.
 
-To recompile HEMCO, simply do
+To recompile :program:`HEMCO`, simply do
 
 .. code-block:: console
 
@@ -171,7 +171,7 @@ HEMCO build options
 .. option:: RUNDIR
 
    Paths to run directories where :command:`make install` installs
-   HEMCO. Multiple run directories can be specified by a semicolon
+   :program:`HEMCO`. Multiple run directories can be specified by a semicolon
    separated list. A warning is issues if one of these directories
    does not look like a run directory.
 
@@ -186,7 +186,7 @@ HEMCO build options
 
 .. option:: HEMCO_Fortran_FLAGS_<COMPILER_ID>
 
-    Additional compiler options for HEMCO for build type
+    Additional compiler options for :program:`HEMCO` for build type
     :literal:`<BUILD_TYPE>`.
 
    .. option:: <COMPILER_ID>
@@ -195,7 +195,7 @@ HEMCO build options
 
 .. option:: HEMCO_Fortran_FLAGS_<CMAKE_BUILD_TYPE>_<COMPILER_ID>
 
-   Compiler options for HEMCO for the given :option:`CMAKE_BUILD_TYPE`.
+   Compiler options for :program:`HEMCO` for the given :option:`CMAKE_BUILD_TYPE`.
 
    .. option:: <COMPILER_ID>
 

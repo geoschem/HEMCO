@@ -4,11 +4,13 @@
 Quick Start
 ###########
 
-This quickstart guide assumes your environment satisfies :ref:`HEMCO's
-requirements <requirements>`. This means you should load a
-compute environment such that programs like :program:`cmake` and
-:program:`mpirun` are available, before continuing. You can find more
-detailed instructions in the user guide. 
+This quickstart guide assumes your environment satisfies
+:program:`HEMCO`'s :ref:`hardware <hardware-requirements>` and
+:ref:`software <software-requirements>` requirements. This means you
+should load a compute environment such that programs like
+:program:`cmake` and :program:`mpirun` are available, before
+continuing. You can find more detailed instructions in the user
+guide.
 
 ==============
 1. Clone HEMCO
@@ -33,7 +35,7 @@ located in the **main** branch.
 =========================
 
 Navigate to the :file:`run/` subdirectory.  Create a run directory by
-running :file:`./createRunDir.sh` and answering the prompts: 
+running :file:`./createRunDir.sh` and answering the prompts:
 
 .. code-block:: console
 
@@ -45,7 +47,7 @@ running :file:`./createRunDir.sh` and answering the prompts:
 =======================
 
 Create a build directory and :command:`cd` into it.  A good name for
-this directory is :file:`build/`, and a good place for it is in the  
+this directory is :file:`build/`, and a good place for it is in the
 top-level of the source code:
 
 .. code-block:: console
@@ -59,20 +61,20 @@ Initialize your build directory by running :program:`cmake` and passing it the p
 
    $ cmake ~/HEMCO
 
-Now you can configure :ref:`build options <HEMCO_build_options>`. 
-These are persistent settings that are saved to your build directory. 
-A common build option is :literal:`-DRUNDIR`.  
+Now you can configure :ref:`build options <HEMCO_build_options>`.
+These are persistent settings that are saved to your build directory.
+A common build option is :literal:`-DRUNDIR`.
 This option lets you specify one or more run directories that HEMCO is
-"installed" to when you do :command:`make install`.  
+"installed" to when you do :command:`make install`.
 Configure your build so it installs HEMCO to the run directory you
-created in Step 2: 
+created in Step 2:
 
 .. code-block:: console
 
    $ cmake . -DRUNDIR="/path/to/rundir"
 
 .. note::
-   The :literal:`.` in the :program:`cmake` command above is important. It tells CMake that your 
+   The :literal:`.` in the :program:`cmake` command above is important. It tells CMake that your
    current working directory (i.e., :literal:`.`) is your build directory.
 
 ======================
@@ -91,13 +93,13 @@ Next, install the compiled executable to your run directory (or directories):
 
    $ make install
 
-This copies :file:`build/bin/hemco_standalone` and supplemental files to your run directory. 
+This copies :file:`build/bin/hemco_standalone` and supplemental files to your run directory.
 
 .. note::
    You can update build settings at any time:
-   
+
    1. Navigate to your build directory.
-   2. Update your build settings with :program:`cmake`. See 
+   2. Update your build settings with :program:`cmake`. See
    3. Recompile with :command:`make -j`. Note that the build system automatically figures out what (if any) files
       need to be recompiled.
    4. Install the rebuilt executable with :command:`make install`.

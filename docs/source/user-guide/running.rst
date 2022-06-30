@@ -4,7 +4,7 @@ Running HEMCO
 
 .. note::
 
-   Another useful resource for instructions on running HEMCO is our
+   Another useful resource for instructions on running :program:`HEMCO` is our
    `YouTube tutorial
    <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`_.
 
@@ -12,14 +12,14 @@ Running HEMCO
 Run interactively
 =================
 
-HEMCO may be run interactively at the command line by typing the
+:program:`HEMCO` may be run interactively at the command line by typing the
 following within your run directory
 
 .. code-block:: console
 
    $ ./hemco_standalone
 
-You may also specify the path to the HEMCO standalone configuration
+You may also specify the path to the :program:`HEMCO` standalone configuration
 file using:
 
 .. code-block:: console
@@ -33,7 +33,7 @@ Run as batch job
 ================
 
 Batch job run scripts will vary based on what job scheduler you have
-available. The example run script included in HEMCO run directories
+available. The example run script included in :program:`HEMCO` run directories
 (:file:`runHEMCO.sh`) is for use with SLURM. You may modify this file
 for your system and preferences as needed.
 
@@ -68,11 +68,12 @@ Verify a successful run
 
 There are several ways to verify that your run was successful.
 
-#. NetCDF files are present in the :file:`OutputDir/` subdirectory
-#. HEMCO log file :file:`HEMCO.log` ends with :literal:`HEMCO X.Y.Z
-   FINISHED.`
+#. :ref:`NetCDF <ncguide>` files are present in the :file:`OutputDir/`
+   subdirectory;
+#. :program:`HEMCO` log file :file:`HEMCO.log` ends with :literal:`HEMCO X.Y.Z
+   FINISHED.`;
 #. Standard output file :file:`HEMCO_SA.log` ends with
-   :literal:`HEMCO_STANDALONE FINISHED!`
+   :literal:`HEMCO_STANDALONE FINISHED!`;
 #. The job scheduler log does not contain any error messages
 
 If it looks like something went wrong, scan through the log files to
@@ -81,7 +82,8 @@ tips:
 
 - Review all of your configuration files to ensure you have proper setup
 - Check to make sure you have downloaded all input files needed for
-  your HEMCO standalone simulation
+  your :program:`HEMCO` standalone simulation
 
 If you cannot figure out where the problem is please do not hesitate
-to create a GitHub issue.
+to create a `GitHub issue
+<https://github.com/geoschem/HEMCO/issues/new/choose/>`_.

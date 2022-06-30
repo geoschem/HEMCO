@@ -18,7 +18,8 @@ The Harmonized Emissions Component (HEMCO)
    :caption: Getting Started
 
    getting-started/quick-start.rst
-   getting-started/requirements.rst
+   getting-started/hardware-requirements.rst
+   getting-started/software-requirements.rst
    getting-started/key-references.rst
 
 .. toctree::
