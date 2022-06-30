@@ -1,13 +1,17 @@
-HEMCO
-=====
+##########################################
+The Harmonized Emissions Component (HEMCO)
+##########################################
 
-.. important:: This is a prerelease of the HEMCO user guide.
-   These pages are the most up-to-date and accurate instructions for HEMCO, but they
-   are still a work in progress. 
-   
-   Contributions (e.g., suggestions, edits, revisions) would be greatly appreciated. See
-   :ref:`editing this guide <editing_this_user_guide>` and our :doc:`contributing guidelines <reference/CONTRIBUTING.md>`. 
-   If you find a something hard to understand---let us know!
+.. important::
+
+   This is a prerelease of the HEMCO user guide. These pages are the
+   most up-to-date and accurate instructions for HEMCO, but they
+   are still a work in progress.
+
+   Contributions (e.g., suggestions, edits, revisions) would be
+   greatly appreciated. See :ref:`editing this guide
+   <editing_this_user_guide>` and our contributing guidelines.  If
+   you find something hard to understand---let us know!
 
 .. toctree::
    :maxdepth: 1
@@ -39,11 +43,20 @@ HEMCO
 
    coupling/intro.rst
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Supplemental Guides
+
+   geos-chem-shared-docs/supplemental-guides/libraries.rst
+   geos-chem-shared-docs/supplemental-guides/spack.rst
+   geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
+   geos-chem-shared-docs/supplemental-guides/netcdf-guide.rst
+   geos-chem-shared-docs/supplemental-guides/related-docs.rst
 
 .. toctree::
    :maxdepth: 1
    :caption: Help & Reference
 
-   reference/SUPPORT.md
    reference/CONTRIBUTING.md
-   geos-chem-shared-docs/editing_these_docs.rst 
+   reference/SUPPORT.md
+   geos-chem-shared-docs/editing_these_docs.rst

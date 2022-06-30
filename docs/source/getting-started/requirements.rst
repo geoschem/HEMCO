@@ -1,16 +1,20 @@
+.. _requirements:
+
+############
 Requirements
-============
+############
 
 .. include:: <isonum.txt>
 
 .. role:: raw-html(raw)
     :format: html
 
+=====================
 Hardware requirements
----------------------
+=====================
 
 Computer system requirements
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------
 
 Before you can run HEMCO, you will need to have one the following items.
 
@@ -85,18 +89,19 @@ Before you can run HEMCO, you will need to have one the following items.
 
 
 Memory requirements
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 If you plan to run GEOS-Chem on a local computer system, please make
 sure that your system has sufficient memory and disk space:
 
+.. _software_requirements:
 
+=====================
 Software requirements
----------------------
-
+=====================
 
 Supported compilers for HEMCO
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------
 
 The table below lists the supported compilers for HEMCO.
 
@@ -165,7 +170,7 @@ netCDF) on your system.
 
 
 Required software packages for HEMCO
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------
 
 +----------------------+----------------------+----------------------+
 | Item                 | Description          | Best way to install  |
@@ -251,7 +256,7 @@ Required software packages for HEMCO
 
 
 Optional but recommended software packages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------
 
 +----------------------+----------------------+----------------------+
 | Item                 | Description          | Best way to install  |
@@ -337,7 +342,7 @@ Optional but recommended software packages
 
 
 Required source code and data for HEMCO
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
 
 +----------------------+----------------------+----------------------+
 | Item                 | Description          | Best way to install  |
