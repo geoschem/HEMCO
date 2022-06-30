@@ -1,0 +1,51 @@
+.. _hardware-requirements:
+
+#####################
+Hardware requirements
+#####################
+
+============================
+Computer system requirements
+============================
+
+Before you can run :program:`HEMCO`, you will need to have one the
+following items.
+ 
+#. A Unix or Linux based computer system, OR:
+#. An account on the `Amazon Web Services cloud computing platform
+   <http://geos-chem-cloud.readthedocs.io/>`_.   
+
+If your institution has computational resources (e.g. a shared
+computer cluster with many cores, sufficient disk storage and memory),
+then you can run :program:`HEMCO` there.  Contact your IT staff for
+assistance.
+
+If your institution lacks computational resources (or if you need
+additional computational resources beyond what is available), then you
+should consider signing up for access to the Amazon Web Services
+cloud. Using the cloud has the following advantages:    
+                                  
+#. You can run :program:`HEMCO` and/or :program:`GEOS-Chem` without
+   having to invest in local hardware and maintenance personnel.
+#. You won't have to download any meteorological fields or emissions
+   data. All of the necessary data input for :program:`HEMCO` and/or
+   :program:`GEOS-Chem` will be available on the cloud.                 
+#. You can initialize your computational environment with all of the
+   required software (e.g. compilers,libraries, utilities) that you
+   need for :program:`HEMCO` and/or :program:`GEOS-Chem`.
+#. Your runs will be 100% reproducible, because you will initialize
+   your computational environment the same way every time.
+#. You will avoid compilation errors due to library incompatibilities. 
+#. You will be charged for the computational time that you use, and if
+   you download dataoff the cloud.                
+                                  
+Learn more by `visiting this tutorial
+<https://geos-chem-cloud.readthedocs.io>`_. 
+
+===================
+Memory requirements
+===================
+
+If you plan to run :program:`HEMCO` on a local computer system, please make
+sure that your system has sufficient memory and disk space.
+
