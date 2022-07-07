@@ -50,6 +50,7 @@ The Harmonized Emissions Component (HEMCO)
 
    geos-chem-shared-docs/supplemental-guides/libraries.rst
    geos-chem-shared-docs/supplemental-guides/spack.rst
+   geos-chem-shared-docs/supplemental-guides/debug-guide.rst
    geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
    geos-chem-shared-docs/supplemental-guides/netcdf-guide.rst
    geos-chem-shared-docs/supplemental-guides/related-docs.rst
