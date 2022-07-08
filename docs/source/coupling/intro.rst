@@ -1,3 +1,5 @@
+.. _hemco-coupling:
+
 ##############################
 Coupling HEMCO to other models
 ##############################
@@ -257,8 +259,7 @@ Defining Met Fields for HEMCO Extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An example to translate and define meteorological quantities such as
-temperature, humidity, etc. is available `in the HEMCO-CESM interface
-<https://github.com/jimmielin/HEMCO_CESM/blob/development/hco_cam_convert_state_mod.F90>`_.
+temperature, humidity, etc. is available in the HEMCO-CESM interface.
 
 Running HEMCO
 --------------
