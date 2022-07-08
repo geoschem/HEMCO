@@ -1,8 +1,8 @@
 .. _hemco-diag:
 
-################################
-Schedule HEMCO diagnostic output
-################################
+#################
+HEMCO diagnostics
+#################
 
 .. _hco-diag-overview:
 
@@ -51,8 +51,8 @@ Currently supported averaging methods are:
 
 .. option:: cumulsum
 
-   Cumulative sum since simulation start.	   
-   
+   Cumulative sum since simulation start.
+
 Explicitly setting the averaging method will disable automatic unit
 conversion and the fields passed to this diagnostic will be stored as
 is. The optional unit conversion factor can be set to perform a unit
@@ -61,7 +61,7 @@ conversion before returning the field for output.
 .. note::
 
    It is highly recommended to explicitly set the averaging method for
-   all fields that are not in kg/m2/s. 
+   all fields that are not in kg/m2/s.
 
 .. _hco-diag-builtin:
 
@@ -93,59 +93,18 @@ e.g. the diagnostics for Aug 1, 2008 will be written as
 :file:`HEMCO_Diagnostics.200808010000.nc`. The  datetime can denote
 the beginning, middle, or end (default) of the time interval, as
 specified by setting :option:`DiagnTimeStamp` (see below).
-      
-Several options for the default diagnostic collection can be specified
-at the top of the HEMCO configuration file (in the **Begin section
-settings** section): 
 
-.. code-block:: text
+Several :ref:`options for the default diagnostic collection
+<hco-cfg-settings-diagnostics>` can be specified at the top of the
+:ref:`HEMCO configuration file <hco-cfg>` file.  Commonly-used options
+are :option:`DiagnFile`, :option:`DiagnFreq`, and
+:option:`DiagnPrefix`.
 
-   ###############################################################################
-   ### BEGIN SECTION SETTINGS
-   ###############################################################################
-
-   ROOT:                        /path/to/ExtData/HEMCO
-   METDIR:                      /path/to/meteorological/data
-   Logfile:                     HEMCO.log
-   DiagnFile:                   HEMCO_Diagn.rc
-   DiagnPrefix:                 ./OutputDir/HEMCO_diagnostics
-   DiagnFreq:                   End
-
-   # ... etc ...
-
-.. option:: DiagnFile
-
-   Specifies the configuration file for the HEMCO default diagnostics
-   collection. This is usually named :file:`HEMCO_Diagn.rc`.  This
-   file contains a list of fields to be added to the default
-   collection.
-
-   Each line of the diagnostics definition file
-   represents a diagnostics container. It expects the following 7 entries
-   (all on the same line):
-
-   #. Container name (character)
-   #. HEMCO species (character)
-   #. Extension number (integer)
-   #. Emission category (integer)
-   #. Emission hierarchy (integer)
-   #. Space dimension (2 or 3)
-   #. Output unit (character)
-   #. Long name of diagnostic, for the netCDF :literal:`long_name`
-      variable attribute (character)
-
-   .. note::
-
-      If you are not sure what the container name, extension number,
-      category, and hierarchy are for a given diagnostic, you can set
-      :literal:`Verbose` to 3 in the HEMCO configuration file, and run a
-      very short simulation (a couple of model hours). Then you can look
-      at the output in the :file:`HEMCO.log` file to determine what these
-      values should be.
-
-   For example, the following entries will make HEMCO write out total NO
-   and CO emissions, as well as GFED biomass burning CO emissions (e.g.
-   only emissions from extension 111):
+Adding the following entries to the diagnostic configuration file
+(i.e. the same file specified by :option:`DiagnFreq`, commonly called
+:file:`HEMCO_Diagn.rc`) will make HEMCO write out total NO and CO
+emissions, as well as GFED biomass burning CO emissions (e.g. only
+emissions from extension 111):
 
    .. code-block:: console
 
@@ -154,28 +113,26 @@ settings** section):
       EmisCO_Total   CO   -1     -1  -1   2   kg/m2/s  CO_emission_flux_from_all_sectors
       EmisCO_GFED    CO   111    -1  -1   2   kg/m2/s  CO_emission_flux_from_biomass_burning
 
-   If you want to just diagnose regional emissions, then you need to
-   set the diagnostics extension number, category and hierarchy
-   accordingly. For example, if you want EPA16 emissions for CO over
-   the USA, then add this line:
+If you want to just diagnose regional emissions, then you need to
+set the diagnostics extension number, category and hierarchy
+accordingly. For example, if you want EPA16 emissions for CO over
+the USA, then add this line:
 
    .. code-block:: console
 
       #Name          Spec ExtNr  Cat Hier Dim Unit     Longname
       EmisCO_EPA16   CO   0      1   50   2   kg/m2/s  CO_emission_flux_from_EPA16_inventory
 
-   It is important that you define valid values for all attributes up
-   to the hierarchy. As soon as you set an attribute to default
-   (:literal:`-1`),  HEMCO will take the sum up to this attribute. For
-   example, the following diagnostics would simply return total base
-   emissions:
+It is important that you define valid values for all attributes up
+to the hierarchy. As soon as you set an attribute to default
+(:literal:`-1`),  HEMCO will take the sum up to this attribute. For
+example, the following diagnostics would simply return total base
+emissions:
 
    .. code-block:: console
 
      #Name           Spec ExtNr  Cat Hier Dim Unit     Longname
      EmisCO_EPA16    CO   0      -1  50   2   kg/m2/s  CO_emission_flux_from_EPA16_inventory
-
-
 
 .. _hco-diag-restart:
 

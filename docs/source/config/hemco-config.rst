@@ -1,4 +1,4 @@
-.. |br| raw:: html
+.. |br| raw:: html:
 
    <br />
 
@@ -10,7 +10,7 @@ The HEMCO configuration file
 
 The HEMCO Configuration file is composed of several sections:
 :ref:`hco-cfg-settings`, :ref:`hco-cfg-base`,
-:ref:`hco-cfg-scalefac`, and :ref:`hco-cfg-masks`. 
+:ref:`hco-cfg-scalefac`, and :ref:`hco-cfg-masks`.
 
 .. _hco-cfg-settings:
 
@@ -220,6 +220,40 @@ The following options control archival of diagnostic quantities.  For
 more information about HEMCO diagnostics, please see the
 :ref:`hemco-diag` section.
 
+.. option:: DiagnFile
+
+   Specifies the configuration file for the HEMCO default diagnostics
+   collection. This is usually named :file:`HEMCO_Diagn.rc`.  This
+   file contains a list of fields to be added to the default
+   collection.
+
+   Each line of the diagnostics definition file
+   represents a diagnostics container. It expects the following 7 entries
+   (all on the same line):
+
+   #. Container name (character)
+   #. HEMCO species (character)
+   #. Extension number (integer)
+   #. Emission category (integer)
+   #. Emission hierarchy (integer)
+   #. Space dimension (2 or 3)
+   #. Output unit (character)
+   #. Long name of diagnostic, for the netCDF :literal:`long_name`
+      variable attribute (character)
+
+   .. note::
+
+      If you are not sure what the container name, extension number,
+      category, and hierarchy are for a given diagnostic, you can set
+      :literal:`Verbose` to 3 in the HEMCO configuration file, and run a
+      very short simulation (a couple of model hours). Then you can look
+      at the output in the :file:`HEMCO.log` file to determine what these
+      values should be.
+
+   Please see the :ref:`Default diagnostics collection
+   <hco-diag-default>` section for more information about the
+   configuration file (e.g. :file:`HEMCO_Diagn.rc`).
+
 .. option:: DiagnFreq
 
    This setting (located in the HEMCO configuration file) specifies
@@ -382,7 +416,7 @@ would register token :literal:`$ENS` (and assign value 3 to it):
 User-defined tokens can be used the same way as the built-in tokens
 (:literal:`$ROOT`, :literal:`$RES`, :literal:`YYYY`, etc.). See
 :literal:`sourceFile` in the Base emissions for more details about
-tokens. 
+tokens.
 
 .. important::
 
@@ -406,7 +440,7 @@ between these comment lines:
    ### BEGIN SECTION BASE EMISSIONS
    ###############################################################################
    settings go here
-   
+
    ### END SECTION BASE EMISSIONS ###
 
 The following attributes need to be defined for each base emissions entry:
@@ -452,7 +486,7 @@ The following attributes need to be defined for each base emissions entry:
    location of the configuration file. For instance, if the
    data  is located in subfolder :literal:`data` of the same directory
    as the configuration file, the file name can be set to
-   :literal:`$CFDIR/data/filename.nc`. 
+   :literal:`$CFDIR/data/filename.nc`.
 
    Similarly, the **date tokens** :literal:`$YYYY`, :literal:`$MM`,
    :literal:`$DD`, :literal:`$HH`, and :literal:`$MN` can be used to
@@ -467,7 +501,7 @@ The following attributes need to be defined for each base emissions entry:
    section. In `GEOS-Chem <https://geos-chem.readthedocs.io>`_ they
    are set to compiler-flag specific values if not set in the settings
    section.  Any token defined in the settings section can be used to
-   construct a part of the file name (see :ref:`hco-cfg-settings-usrdef`). 
+   construct a part of the file name (see :ref:`hco-cfg-settings-usrdef`).
 
    As an alternative to an input file, **geospatial uniform values**
    can directly be specified in the configuration file (see e.g. scale
@@ -504,13 +538,13 @@ The following attributes need to be defined for each base emissions entry:
 
    This attribute defines the time slices to be used and the data
    refresh frequency. The format is
-   :literal:`year/month/day/hour`. Accepted are discrete dates for 
+   :literal:`year/month/day/hour`. Accepted are discrete dates for
    time-independent data (e.g. :literal:`2000/1/1/0`) and time ranges
    for temporally changing fields
    (e.g. :literal:`1980-2007/1-12/1-31/0-23`). Data will automatically
    become updated as soon as the simulation date enters a new time
    interval.
-   
+
    The provided time attribute determines the data refresh
    frequency. It does not need to correspond to the datetimes of the
    input file.
@@ -537,7 +571,7 @@ The following attributes need to be defined for each base emissions entry:
      day (since there are no hourly data in the file). Providing too
      high update frequencies is not recommended unless the data
      interpolation option is enabled (see below).
-   
+
    If the provided time attributes do not match a datetime of the
    input file, the **most likely** time slice is selected. The most
    likely time slice is determined based on the specified source time
@@ -555,7 +589,7 @@ The following attributes need to be defined for each base emissions entry:
      attribute is set to :literal:`2005-2020/1-12/1/0`, the monthly
      values of 2005 are (re-)used for all years between 2005 and 2010,
      the monthly values of 2010 are used for simulation years 2010 -
-     2020, etc. 
+     2020, etc.
 
    It is possible to use tokens :literal:`$YYYY`, :literal:`$MM`,
    :literal:`$DD`, and :literal:`$HH`, which will automatically be
@@ -576,8 +610,8 @@ The following attributes need to be defined for each base emissions entry:
    behavior is to interpret weekly data as 'local time', i.e. token
    :literal:`WD` assumes that the provided values are in local
    time. It is possible to use weekly data referenced to UTC time
-   using token :literal:`UTCWD`. 
-   
+   using token :literal:`UTCWD`.
+
    Similar to the weekday option, there is an option to indicate
    hourly data that represents local time: :literal:`LH`. If using
    this flag, all hourly data of a given time interval (day, month,
@@ -591,7 +625,7 @@ The following attributes need to be defined for each base emissions entry:
    hours. For the US, for instance, this results in the wrong daily
    data being used for the last 6-9 hours of the day (when UTC time is
    one day ahead of local US time).
-	    
+
    There is a difference between source time attributes
    :literal:`2005-2008/$MM/1/0` and :literal:`2005-2008/1-12/1/0`. In
    the first case, the file will be updated annually, while the update
@@ -607,7 +641,7 @@ The following attributes need to be defined for each base emissions entry:
    :literal:`2000/1-12/1/1`, but not :literal:`1990-2007/1-12/1/1`.
 
    .. note::
-	    
+
       All data read from netCDF file are assumed to be in UTC time,
       except for weekday data that are always assumed to be in local
       time. Data read from the configuration file and/or from ASCII are
@@ -627,10 +661,10 @@ The following attributes need to be defined for each base emissions entry:
    set to :file:`file_$YYYY`, but the source time attribute should
    still be :literal:`2005-2007/1-12/1/0` to indicate that the field
    shall be updated monthly.
-   
+
    This attribute can be set to the wildcard character (:literal:`*`), which
    will force the file to be updated on every HEMCO time step.
-	 
+
    File reference time can be shifted by a fixed amount by adding an
    optional fifth element to the time stamp attribute. For instance,
    consider the case where 3-hourly averages are provided in
@@ -733,7 +767,7 @@ The following attributes need to be defined for each base emissions entry:
 	and 2010,  respectively.
 
    .. option:: RF
-	     
+
       **Range, Forced:**  Same as ``R``, but HEMCO stops with an error
       if the simulation date is outside the provided range.
 
@@ -804,8 +838,8 @@ The following attributes need to be defined for each base emissions entry:
       values. Once the simulation year changes to 2007, the weights
       hange to 0.6 for 2005 and 0.4 for 2010, etc. The interpolation
       frequency is determined by :option:`sourceTime` the source time
-      attribute. 
- 
+      attribute.
+
       For example, setting the source time attribute to
       :literal:`2005-2050/1-12/1/0 I` would result in a recalculation
       of the weights on every new simulation month. Interpolation
@@ -822,7 +856,7 @@ The following attributes need to be defined for each base emissions entry:
       :literal`file_200501.nc`, :file:`file_200502.nc`, etc., a
       combination of source file name :file:`file_$YYYY$MM.nc` and
       :option:`sourceTime` attribute :literal:`2005-2007/1-12/1-31/0
-      I` will result in daily data interpolation between the two
+`<      I` will result in daily data interpolation between the two
       bracketing files, e.g. if the simulation day is July 15, 2005,
       the fields current values are calculated from files
       :literal:`file_200507.nc` and :literal:`file_200508.nc`,
@@ -835,7 +869,7 @@ The following attributes need to be defined for each base emissions entry:
       between those files can be achieved by setting source file to
       :file:file_$YYYY$MM$DD_$HH00.nc`, and :option:`sourceTime` to
       :literal:`2000-2015/1-12/1-31/0-23 I` (or whatever the covered
-      year range is). 
+      year range is).
 
 .. option:: sourceDim
 
@@ -858,7 +892,7 @@ The following attributes need to be defined for each base emissions entry:
     level into which 2D data shall be released by setting  the
     vertical coordinate to `:literal:`LX```, with :literal:`X` being
     the release level. For instance, to emit a 2D field into level 5,
-    set :option:`SrcDim` to :literal:`xyL5`. 
+    set :option:`SrcDim` to :literal:`xyL5`.
 
     HEMCO can has two options to specify the emission injection
     height:
@@ -867,7 +901,7 @@ The following attributes need to be defined for each base emissions entry:
        meters, e.g. to emit a source at 2000m:
        :literal:`xyL=2000m`. |br|
        |br|
-       
+
     #. For 2D fields it is legal to define a range of levels, in which
        case the  emissions are uniformly distributed across these
        levels (maintaining the original total emissions).
@@ -904,7 +938,7 @@ The following attributes need to be defined for each base emissions entry:
 
 .. option:: SrcUnit
 
-   Units of the data.	    
+   Units of the data.
 
 .. option:: Species
 
@@ -912,7 +946,7 @@ The following attributes need to be defined for each base emissions entry:
    species. All HEMCO emission species are defined at the beginning of
    the simulation (see the Interfaces section) If the species name
    does not match any of the HEMCO species, the field is ignored
-   altogether. 
+   altogether.
 
    The species name can be set to the wildcard character, in which
    case the field is always read by HEMCO but no species is assigned
@@ -931,7 +965,7 @@ how the final emission fields are assembled from all provided data fields.
    separated by the separator character. The :option:`ScalIDs` must
    correspond to the numbers provided in the :ref:`hco-cfg-scalefac`
    and :ref:`hco-cfg-masks` sections.
-   
+
 .. option:: Cat
 
    Emission category. Used to distinguish different, independent
