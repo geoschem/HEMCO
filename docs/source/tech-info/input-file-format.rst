@@ -1,0 +1,322 @@
+.. |br| raw:: html:
+
+   <br />
+
+
+
+.. _hco-filefmt:
+
+#################
+Input file format
+#################
+
+Currently, HEMCO can read data from the following data sources:
+
+#.  Gridded data from netCDF file. More detail on the netCDF file are
+    given below. In an ESMF environment, the MAPL/ESMF generic I/O
+    routines are used to read/remap the data. In a non-ESMF environment,
+    the HEMCO generic reading and remapping algorithms are used. Those
+    support vertical regridding, unit conversion, and more (see
+    below). |br|
+    |br|
+
+#.  Scalar data directly specified in the HEMCO configuration file.
+    Scalar values can be set in the HEMCO configuration file directly. If
+    multiple values - separated by the separator sign (/) - are
+    provided, they are interpreted as temporally changing values: 7
+    values = Sun, Mon, ..., Sat; 12 values = Jan, Feb, ..., Dec; 24
+    values = 12am, 1am, ..., 11pm (local time!). Mask box boundaries can
+    also be provided directly in the HEMCO configuration file. The entry
+    must have exactly four values, interpreted as lower left and upper
+    right mask box corners (lon1/lat1/lon2/lat2). |br|
+    |br|
+
+#.  Country-specific data specified in a separate ASCII file. This file
+    must end with the suffix '.txt' and hold the country specific values
+    listed by country ID. The IDs must correspond to the IDs of a
+    corresponding (netCDF) mask file. The mask file must be listed in the
+    HEMCO configuration file. For example:
+
+.. code-block:: kconfig
+   
+   #==============================================================================
+   # --- Country mask file ---
+   #==============================================================================
+   * COUNTRY_MASK $ROOT/MASKS/v2014-07/countrymask_0.1x0.1.nc CountryID 2000/1/1/0 C xy count * - 1 1
+
+In the .txt file containing the country-specific scale factors, the
+container name of this mask file (e.g. :literal:`COUNTRY_MASK`) must
+be given in the first line of the file. In that file, ID 0 is reserved
+for the default values that are applied to all countries with no
+specific values listed. The .txt file must be structured as follows:
+
+.. code-block:: kconfig
+
+   # Country mask field name
+   COUNTRY_MASK
+   
+   # CountryName CountryID CountryValues
+   DEFAULT       0         1.0/2.0/3.0/4.0/5.0/6.0/7.0
+
+The :literal:`CountryValues` are interpreted the same way as scalar
+values, except that they are applied to all grid boxes with the given country
+ID.
+
+.. _hco-filefmt-coards:
+
+====================
+COARDS compatibility
+====================
+
+Gridded input files are expected to be in the Network Common Data Form
+(netCDF) format (http://www.unidata.ucar.edu/software/netcdf/) and must
+adhere to the COARDS metadata conventions
+(http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html). In
+particular, the following points must be fulfilled:
+
+#. Index variables (e.g. :option:`time:`, :option:`lev`,
+   :option:`lat:`, :option:`lon`) must have the same name as the
+   dimensions used to define them.  Use the :command:`ncdump`
+   command to check this, i.e.
+
+   .. code-block:: console
+
+      $ ncdump myfile.nc | grep float | grep double
+
+   And you will see output similar to this:
+
+   .. code-block:: console:
+
+      float time(time) ;
+      float lev(lev) ;
+      float lat(lat) ;
+      float lon(lon) ;
+
+#. Data in index variables must be either monotonically increasing or
+   monotonically decreasing.
+   
+Allowable netCDF index variables are:
+   
+.. option:: time
+
+   The :option:`time` dimension must be specified relative to a given
+   reference datetime. The reference datetime must be specified in the
+   :literal:`time:units` netCDF attribute, using one of the following
+   formats: 
+
+   - :literal:`days since YYYY-MM-DD hh:mn:ss`
+   - :literal:`hours since YYYY-MM-DD hh:mn:ss`
+   - :literal:`minutes since YYYY-MM-DD hh:mn:ss`
+   - :literal:`seconds since YYYY-MM-DD hh:mn:ss`
+
+   .. note::
+
+      We have noticed some issues with netCDF files having a reference
+      time prior to 1900/01/01.  We recommend using reference date/time
+      values after 1900 if possible.
+                                       
+   Weekly data must contain seven time slices in increments of one 
+   day. The first entry must represent Sunday data, regardless of the
+   real weekday of the assigned datetime. It is possible to store
+   weekly data for more than one time interval, in which case the
+   first weekday (i.e. Sunday) must hold the starting date for the given set  
+   of (seven) time slices.
+
+   - For instance, weekly data for every month of a year can be stored
+     as 12 sets of 7 time slices. The reference datetime of the first
+     entry of each set must fall on the first day of every month, and
+     the following six entries must be increments of one day.            
+
+   .. note:: 
+     
+      Currently, weekly data from netCDF files is not correctly    
+      read in an ESMF environment.     	    
+
+.. option:: lev
+
+   The :option:`lev` dimension specifies the number of vertical levels
+   in a netCDF file.  You may omit this dimension if the data stored
+   in the file has only two geospatial dimensions (e.g. :ref:`lat` and
+   :ref:`lon`).
+
+   In a non-ESMF environment, data is interpolated onto the simulation
+   levels if the input data is on vertical levels other than the HEMCO
+   model levels (see :ref:`hco-filefmt-vertregrid`. Data on non-model
+   levels must be on a hybrid sigma pressure coordinate system. In
+   order to properly determine the vertical pressure levels of the
+   input  data, the file must contain the surface pressure values and
+   the hybrid coefficients (a, b) of the coordinate
+   system. Furthermore, the level variable must contain the attributes
+   standard_name and formula_terms (the attribute positive is
+   recommended but not required). A header excerpt  of a valid netCDF
+   file is shown below:                           
+   
+   .. code-block:: console
+
+      float lev(lev) ;
+          lev:standard_name = ”atmosphere_hybrid_sigma_pressure_coordinate” ;
+          lev:units = ”level” ;
+          lev:positive = ”down” ;
+          lev:formula_terms = ”ap: hyam b: hybm ps: PS” ;
+      float hyam(nhym) ;
+          hyam:long_name = ”hybrid A coefficient at layer midpoints” ;
+          hyam:units = ”hPa” ;
+      float hybm(nhym) ;
+          hybm:long_name = ”hybrid B coefficient at layer midpoints” ;
+          hybm:units = ”1” ;
+      float time(time) ;
+          time:standard_name = ”time” ;
+          time:units = ”days since 2000-01-01 00:00:00” ;
+          time:calendar = ”standard” ;
+      float PS(time, lat, lon) ;
+          PS:long_name = ”surface pressure” ;
+          PS:units = ”hPa” ;
+      float EMIS(time, lev, lat, lon) ;
+          EMIS:long_name = ”emissions” ;
+          EMIS:units = ”kg m-2 s-1” ;
+
+.. option:: lat
+
+   The latitude variable must be specified in the netCDF file with
+   monotonically increasing (or decreasing) values.  The
+   :literal:`lat:units` attribute must be :literal:`degrees_north`.
+	    
+.. option:: latitude
+
+   Alternative name that can be used instead of :option:`lat`.	    
+	    
+.. option:: Latitude
+
+   Alternative name that can be used instead of :option:`lat`.	    
+
+
+.. option:: lon
+
+   The longitude variable must be specified in the netCDF file with
+   monotonically increasing (or decreasing) values.  The
+   :literal:`lat:units` attribute must be :literal:`degrees_east`.
+	    
+.. option:: longitude
+
+   Alternative name that can be used instead of :option:`lon`.	    
+	    
+.. option:: Longitude
+
+   Alternative name that can be used instead of :option:`lon`.	    
+
+.. _hco-filefmt-units:
+
+=======================
+Units of data variables
+=======================
+
+It is recommended to store data in one of the HEMCO standard units:
+
+- :literal:`kg/m2/s` for fluxes;
+- :literal:`kg/m3` for concentrations;
+- :literal:`1` for unitless data;
+- :literal:`count` for index-based data, i.e. discrete distributions
+  (for instance, land types represented as integer values).
+
+HEMCO will attempt to convert all data to one of those units, unless
+otherwise via the :option:`SrcUnit` attribute (see the :ref:`Base
+Emissions <hco-cfg-base>` section.
+
+Mass conversion (e.g. from molecules to kg) is performed based on the
+properties (e.g. molecular weight) of the species assigned to the
+given data set.  It is also possible to convert between species-based
+and molecule-based units (e.g. kg  vs. kg(C)). This conversion is
+based on the emitted molecular  weight and the molecular ratio of the
+given species (see the HEMCO-model Interface) section. More details on
+unit conversion are given in module :file:`src/Core/hco_unit_mod.F90`.
+                                    
+Index-based data is regridded in 
+such a manner that every grid    
+box on the new grid represents   
+the index with the largest       
+relative contribution from the   
+overlapping boxes of the         
+original grid. All other data    
+are regridded as 'concentration' 
+quantities, i.e. conserving the  
+global weighted average.
+
+For more information, we invite you to read `our Preparing data files
+for use with HEMCO wiki 
+page <http://wiki.geos-chem.org/Preparing_data_files_for_use_with_HEMCO>`__.
+
+.. _arbitrary_additional_netcdf_dimension:
+
+=====================================
+Arbitrary additional netCDF dimension
+=====================================
+
+As of v1.1.010, HEMCO can read netCDF files with an additional,
+arbitrary dimension. The dimension name and dimension index to be read
+must be given explicitly in the HEMCO configuration file as part of the
+SrcDim file attribute (see `srcDim in the Base emissions
+section <#Base_emissions>`__). This feature is currently not available
+in an ESMF environment.
+
+.. _hco-filefmt-regrid:
+
+==========
+Regridding
+==========
+
+.. _hco-filefmt-regrid-vert:
+
+Vertical regridding
+-------------------
+
+In a non-ESMF environment, HEMCO is able to perform some limited
+vertical interpolation. In the simplest case, the input data has the
+same number of vertical levels as the HEMCO vertical grid (nz). In this
+case, HEMCO explicitly assumes that the input data is already on model
+levels and no interpolation is performed. The same is true if the input
+data has nz+1 vertical levels, in which case the data is interpreted as
+being on grid edges instead of grid midpoints. Additional vertical
+regridding options are available for the various GEOS grids (e.g. to
+regrid native GEOS-5 levels to reduced GEOS-5 levels, or to remap GEOS-5
+data onto the vertical GEOS-4 grid). These options are only available if
+the corresponding compiler flags are set (this is the default case for
+GEOS-Chem users).
+
+By default, HEMCO assumes that the vertical coordinate direction is
+upwards, i.e. the first level index corresponds to the surface layer.
+The vertical axis can be reversed by setting the srcDim attribute in
+the HEMCO configuration file accordingly (e.g. xy-72 if the input
+data has 72 levels on a reversed vertical axis).
+
+.. _hco-filefmt-regrid-horz:
+
+Horizontal regridding
+---------------------
+
+In a non-ESMF environment, HEMCO can only regrid between rectilinear
+grids (e.g. lat-lon).
+
+.. _nested_hemco_configuration_files:
+
+================================
+Nested HEMCO configuration files
+================================
+
+:ref:`HEMCO configuration files <hco-cfg>` can be nested by adding an include
+statement to the master HEMCO configuration file (:file:`HEMCO_Config.rc`),
+e.g.:
+
+.. code-block:: console
+
+   >>>include HEMCO_Config_nested.rc
+
+The emission information contained in :file:`HEMCO_Config_nested.rc`
+will then be used along with the emission configuration specified in
+:file:`HEMCO_Config.rc`. Information in the master configuration file take
+precedence over the information in the nested files. If the same setting
+or extension switch/option is defined in both the master and the nested
+configuration file, HEMCO will use the one from the master file.
+
+Include statements can be placed anywhere in the HEMCO configuration
+file. It is legal to nest multiple files (up to 5 levels deep).
+

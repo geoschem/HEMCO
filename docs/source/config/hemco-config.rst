@@ -18,10 +18,8 @@ The HEMCO Configuration file is composed of several sections:
 Section settings
 ================
 
-Section settings of the HEMCO configuration file define number of
-parameter and variables used by HEMCO. They should be listed at the
-beginning of the HEMCO configuration file, in between these comment
-lines:
+Parameters and variables used by HEMCO are defined in SECTION
+SETTINGS, in between these comment lines:
 
 .. code-block:: kconfig
 
@@ -166,7 +164,7 @@ Emissions settings
 The following options can be used to hold emissions constant over a
 year, month, day, or hour, and to scale emissions to a given value:
 
-.. option:: Emission year
+.. option:: Emission year
 
    If present, this emission year will be used regardless of the model
    simulation year.
@@ -174,7 +172,7 @@ year, month, day, or hour, and to scale emissions to a given value:
    If omitted, the emission year will be set to the model simulation
    year.
 
-.. option:: Emission month
+.. option:: Emission month
 
    If present, this emission month will be used regardless of the model
    simulation month.
@@ -182,7 +180,7 @@ year, month, day, or hour, and to scale emissions to a given value:
    If omitted, the emission month will be set to the model simulation
    month.
 
-.. option:: Emission day
+.. option:: Emission day
 
    If present, this emission day will be used regardless of the model
    simulation day.
@@ -190,7 +188,7 @@ year, month, day, or hour, and to scale emissions to a given value:
    If omitted, the emission day will be set to the model simulation
    day.
 
-.. option:: Emission hour
+.. option:: Emission hour
 
    If present, this emission month will be used regardless of the model
    simulation hour.
@@ -218,7 +216,7 @@ Diagnostics settings
 
 The following options control archival of diagnostic quantities.  For
 more information about HEMCO diagnostics, please see the
-:ref:`hemco-diag` section.
+:ref:`hco-diag` section.
 
 .. option:: DiagnFile
 
@@ -424,15 +422,96 @@ tokens.
     special characters such as :literal:`.`, :literal:`_`,
     :literal:`-`, or :literal:`x`.
 
+.. _hco-cfg-ext-switches:
+
+==================
+Extension switches
+==================
+
+HEMCO performs automatic emission calculations using all fields that
+belong to the :ref:`base emisisons extension <hco-cfg-base>`. Additional
+emissions that depend on environmental parameter such as wind speed or
+air temperature--and/or that use non-linear parameterizations--are
+calculated through :ref:`hco-ext`.  A list of currently implemented
+extensions in HEMCO is given in `Keller et al. (2014)
+<#References>`__. To add new extensions to HEMCO, modifications of the
+source code are required, as described further in :ref:`hco-under-the-hood`.
+
+The first section of the configuration file lists all available
+extensions and whether they shall be used or not. For each extension,
+the following attributes need to be specified:
+
+.. option:: ExtNr
+
+   Extension number associated with this field. All
+   :ref:`base emissions <hco-cfg-base>` should have extension number
+   zero.  The extension number` of the data listed in section
+   :ref:`hco-ext` data must match with the corresponding extension
+   number. 
+
+   The extension number can be set to the wildcard character. In that
+   case, the field is read by HEMCO (if the assigned species name
+   matches any of the HEMCO species, see :option:`Species` below) but
+   not used for emission calculation. This is particularly useful if
+   HEMCO is only used for data I/O but not for emission calculation.
+
+.. option:: ExtName
+
+   Extension name.
+
+.. option:: Toggle
+
+   If :literal:`on`, the extension will be used.
+
+   If :literal:`off`, the extension will not be used.
+
+.. option:: Species
+
+   List of species to be used by this extension. Multiple species are
+   separated by the :option:`Separator` symbol
+   (e.g. :literal:`/`). All listed species must be supported by the
+   given extension.
+
+   - For example, the soil NO emissions extension only supports one
+     species (NO). An error will be raised if additional species are
+     listed.
+
+Additional extension-specific settings can also be specified in the
+'Extensions Settings' section (see also an example in
+:ref:`edit-hco-cfg` and the definition of :ref:`hco-data-coll`. These
+settings must immediately follow the extension definition.
+
+HEMCO expects an extension with extension number zero, denoted the
+:ref:`base emisisons extension <hco-cfg-base>` extension. All emission
+fields linked to the base extension will be used for automatic
+emission calculation. Fields assigned to any other extension number
+will not be inlcuded in the base emissions calculation, but they are
+still read/regridded by HEMCO (and can be made available readily
+anywhere in the model code). These data are only read if the
+corresponding extension is enabled. 
+
+All species to be used by HEMCO must be listed in column
+:option:`Species` of the base extension switch. In particular, all
+species used by any of the other extensions must also be listed as
+base species, otherwise they will not be recognized. It is possible
+(and recommended) to use the :option:`Wildcard` character, in which
+case HEMCO automatically determines what species to use by matching
+the atmospheric model species names with the species names assigned to
+the base emission fields and/or any emission extension.
+
+The environmental fields (wind speed, temperature, etc.) required by the
+extensions are either passed from the atmospheric model or read through
+the HEMCO configuration file, as described in :ref:`hco-ext`. 
+	     
 .. _hco-cfg-base:
 
 ==============
 Base emissions
 ==============
 
-The base emission section lists all base emission fields and how they
-are linked to scale factors. Base emissions settings must be included
-between these comment lines:
+The BASE EMISSIONS section lists all base emission fields and how they
+are linked to :ref:`scale factors <hco-cfg-scalefac>`. Base emissions
+settings must be included between these comment lines:
 
 .. code-block:: kconfig
 
@@ -443,20 +522,10 @@ between these comment lines:
 
    ### END SECTION BASE EMISSIONS ###
 
-The following attributes need to be defined for each base emissions entry:
+The :option:`ExtNr` field is defined in :ref:`hco-cfg-ext-switches`.
 
-.. option:: ExtNr
-
-   Extension number associated with this field. All base emissions
-   should have extension number zero.  The :literal:`ExtNr` of the
-   data listed in section Extensions data must match with the
-   corresponding extension number.
-
-   The extension number can be set to the wildcard character. In that
-   case, the field is read by  HEMCO (if the assigned species name
-   matches any of the HEMCO species, see 'Species' below) but not used
-   for emission calculation. This is particularly useful if HEMCO is
-   only used for data I/O but not for emission calculation.
+Other attributes that need to be defined for each base emissions entry
+are:
 
 .. option:: Name
 
@@ -709,12 +778,12 @@ The following attributes need to be defined for each base emissions entry:
    .. option:: CY
 
       **Cycling, Use Simulation Year:**, Same as :option:`C`, except
-      don't allow :option:`Emission year` setting to override year value.
+      don't allow :option:`Emission year` setting to override year value.
 
    .. option:: CYS
 
-      **Cycling, Use Simulation Year, Skip:**  Same as :option:`CS` ,
-      except don't allow :option:`Emission year` setting to override year
+      **Cycling, Use Simulation Year, Skip:**  Same as :option:`CS`,
+      except don't allow :option:`Emission year` setting to override year
       value.
 
    .. option:: R
@@ -774,7 +843,7 @@ The following attributes need to be defined for each base emissions entry:
    .. option:: RY
 
       **Range, Use Simulation Year:** Same as :option:`R`, except
-      don't allow :option:`Emission year` to override year value.
+      don't allow :option:`Emission year` to override year value.
 
    .. option:: E
 
@@ -807,7 +876,7 @@ The following attributes need to be defined for each base emissions entry:
    .. option:: EY
 
       **Exact, Use Smulation Year:** Same as :option:`E`, except don't
-      allow :option:`Emission year`  setting to override year value.
+      allow :option:`Emission year`  setting to override year value.
 
    .. option:: A
 
@@ -856,7 +925,7 @@ The following attributes need to be defined for each base emissions entry:
       :literal`file_200501.nc`, :file:`file_200502.nc`, etc., a
       combination of source file name :file:`file_$YYYY$MM.nc` and
       :option:`sourceTime` attribute :literal:`2005-2007/1-12/1-31/0
-`<      I` will result in daily data interpolation between the two
+      :literal:I` will result in daily data interpolation between the two
       bracketing files, e.g. if the simulation day is July 15, 2005,
       the fields current values are calculated from files
       :literal:`file_200507.nc` and :literal:`file_200508.nc`,
@@ -871,7 +940,7 @@ The following attributes need to be defined for each base emissions entry:
       :literal:`2000-2015/1-12/1-31/0-23 I` (or whatever the covered
       year range is).
 
-.. option:: sourceDim
+.. option:: SrcDim
 
     Spatial dimension of input data (:literal:`xy` for horizontal
     data; :literal:`xyz` for 3-dimensional data).
@@ -980,7 +1049,7 @@ how the final emission fields are assembled from all provided data fields.
    In practice, the only time when more than one emissions category
    needs to be specified is when an :ref:`inventory does not separate
    between anthropogenic, biofuels, and/or trash emissions
-   <edit-hemco-cfg-ex6>1`
+   <edit-hco-cfg-ex6>`
 
    For example, the CEDS inventory uses categories :literal:`1/2/12`
    because CEDS lumps both biofuel emissions and trash emissions with
@@ -1004,8 +1073,257 @@ how the final emission fields are assembled from all provided data fields.
 Scale factors
 =============
 
+The SCALE FACTORS section of the configuration file lists all scale
+factors applied to the base emission field. Scale factors that are not
+used by any of the base emission fields are ignored. Scale factors can
+represent:
+
+#. Temporal emission variations including diurnal, seasonal, or
+   interannual variability;
+#. Regional masks that restrict the applicability of the base inventory
+   to a given region; or
+#. Species-specific scale factors, e.g., to split lumped organic
+   compound emissions into individual species.
+
+This sample snippet of the HEMCO configuration file shows how scale
+factors can either be read from a netCDF file or listed as a set of
+values.
+
+.. code-block:: kconfig
+
+   ###############################################################################
+   ### BEGIN SECTION SCALE FACTORS
+   ###############################################################################
+   # ScalID Name srcFile srcVar srcTime CRE Dim Unit Oper
+
+   # %%% Hourly factors, read from disk %%%
+   1 HOURLY_SCALFACT hourly.nc                                      factor 2000/1/1/0-23 C xy 1 1
+
+   # %%% Scaling SO2 to SO4 (molar ratio) %%%
+   2 SO2toSO4        0.031                                          -      -             - -  1 1
+
+   # %%% Daily scale factors, list 7 entries %%%
+   20 GEIA_DOW_NOX   0.784/1.0706/1.0706/1.0706/1.0706/1.0706/0.863 -      -             - xy 1 1
+
+   ### END SECTION SCALE FACTORS ###
+
+Options :option:`sourceFile`, :option:`sourceVar`,
+:option:`sourceTime`, :option:`CRE`, :option:`SrcDim`, and
+:option:`SrcUnit`, are described in :ref:`hco-cfg-base`.
+
+Other scale factor options not previously described are:
+	
+Scale factor options not previously described are:
+
+.. option:: ScalID
+
+   Scale factor identification number. Used to link the scale factors
+   to the base emissions through the corresponding ScalIDs attribute
+   in the :ref`hco-cfg-base`.
+
+.. option:: Oper
+
+   Scale factor operator. Determines the operation performed on the
+   scale factor.  Possible values are:
+
+   -  1 for multiplication (Emission = Base \* Scale);
+   -  -1 for division (Emission = Base / Scale);
+   -  2 for squared (Emission = Base \* Scale**2).
+
+.. option:: MaskID
+
+   Optional.  ScalID of a mask field. This optional value can be used
+   if a scale factor shall only be used over a given region. The
+   provided MaskID must have a corresponding entry in the
+   :ref:`Masks section <hco-cfg-masks>` of the configuration file.
+
+.. note::
+
+   Scale factors are assumed to be :literal:`unitless` (aka
+   :literal:`1`) and no automatic unit conversion is performed.
+	
 .. _hco-cfg-masks:
 
 =====
 Masks
 =====
+
+This section lists all masks used by HEMCO. Masks are binary scale
+factors (1 inside the mask region, 0 outside). If masks are regridded,
+the remapped mask values (1 and 0) are determined through regular
+rounding, i.e. a remapped mask value of 0.49 will be set to 0 while 0.5
+will be set to 1.
+
+The MASKS section in the HEMCO configuration file will look similar to
+this (it will vary depending on the type of GEOS-Chem simulation you are
+using):
+
+.. code-block:: kconfig
+
+   ###############################################################################
+   ### BEGIN SECTION MASKS
+   ###############################################################################
+   # ScalID Name sourceFile sourceVar sourceTime CRE SrcDim SrcUnit Oper Lon1/Lat1/Lon2/Lat2
+   
+   #==============================================================================
+   # Country/region masks
+   #==============================================================================
+   1000 EMEP_MASK   EMEP_mask.geos.1x1.20151222.nc           MASK     2000/1/1/0 C xy unitless 1 -30/30/45/70
+   1002 CANADA_MASK Canada_mask.geos.1x1.nc                  MASK     2000/1/1/0 C xy unitless 1 -141/40/-52/85
+   1003 SEASIA_MASK SE_Asia_mask.generic.1x1.nc              MASK     2000/1/1/0 C xy unitless 1  60/-12/153/55
+   1004 NA_MASK     NA_mask.geos.1x1.nc                      MASK     2000/1/1/0 C xy unitless 1 -165/10/-40/90
+   1005 USA_MASK    usa.mask.nei2005.geos.1x1.nc             MASK     2000/1/1/0 C xy unitless 1 -165/10/-40/90
+   1006 ASIA_MASK   MIX_Asia_mask.generic.025x025.nc         MASK     2000/1/1/0 C xy unitless 1 46/-12/180/82
+   1007 NEI11_MASK  USA_LANDMASK_NEI2011_0.1x0.1.20160921.nc LANDMASK 2000/1/1/0 C xy 1        1 -140/20/-50/60
+   1008 USA_BOX     -129/25/-63/49                           -        2000/1/1/0 C xy 1        1 -129/25/-63/49
+  
+  ### END SECTION MASKS ###
+
+The required attributes for mask fields are described below:
+
+Options :option:`ScalID` and :option:`Oper` are described in
+:ref:`hco-cfg-scalefac`.
+
+Options :option:`Name`, :option:`sourceFile`, :option:`sourceVar`,
+:option:`sourceTime`, :option:`CRE`, :option:`SrcDim`, and
+:option:`SrcUnit`, are described in :ref:`hco-cfg-base`.
+
+The :envvar:`Box` option is deprecated.
+
+Instead of specifying the :option:`sourceFile` and :option:`sourceVar`
+fields, you can directly provide the lower left and upper right box
+coordinates: :literal:`Lon1/Lat1/Lon2/Lat2` . Longitudes must be in
+degrees east, latitudes in degrees north. Only grid boxes whose mid
+points are within the specified mask boundaries.  You may also specify
+a single grid point (:literal:`Lon1/Lat1/Lon1/Lat1/`).
+
+.. _hco-cfg-data-coll:
+
+================
+Data collections
+================
+
+The fields listed in :ref:`the HEMCO configuration file <hco-cfg>` data
+collections. Collections can be enabled/disabled in section extension
+switches. Only fields that are part of an enabled collection will be
+used by HEMCO.
+
+The beginning and end of a collection is indicated by an opening and
+closing bracket, respectively: :literal:(((CollectionName` and
+:literal:`)))CollectionName`. These brackets must be on individual lines
+immediately preceeding / following the first/last entry of a collection.
+The same collection bracket can be used as many times as needed.
+
+The collections are enabled/disabled in the Extension Switches section
+(see :ref:`Extension Switches <hco-cfg-ext-switches>`). Each
+collection name must be provided as an extension setting and can then
+be readily enabled/disabled:
+
+.. code-block:: kconfig
+
+   ###############################################################################
+   #### BEGIN SECTION EXTENSION SWITCHES
+   ###############################################################################                
+   # ExtNr ExtName           on/off  Species  
+   0       Base              : on    *
+       --> MACCITY           :       true
+       --> EMEP              :       true
+       --> AEIC              :       true
+    
+   ### END SECTION EXTENSION SWITCHES
+   
+   ###############################################################################
+   ### BEGIN SECTION BASE EMISSIONS
+   ###############################################################################
+   ExtNr Name srcFile srcVar srcTime CRE Dim Unit Species ScalIDs Cat Hier
+
+   (((MACCITY
+   0 MACCITY_CO MACCity.nc  CO 1980-2014/1-12/1/0 C xy  kg/m2/s CO 500      1 1
+   )))MACCITY
+
+   (((EMEP
+   0 EMEP_CO    EMEP.nc     CO 2000-2014/1-12/1/0 C xy  kg/m2/s CO 500/1001 1 2
+   )))EMEP
+   
+   (((AEIC
+   0 AEIC_CO    AEIC.nc     CO 2005/1-12/1/0      C xyz kg/m2/s CO -        2 1
+   )))AEIC
+
+   ### END SECTION BASE EMISSIONS ###
+   
+   ###############################################################################
+   #### BEGIN SECTION SCALE FACTORS
+   ###############################################################################
+   # ScalID Name srcFile srcVar srcTime CRE Dim Unit Oper         
+
+   500 HOURLY_SCALFACT $ROOT/hourly.nc factor  2000/1/1/0-23 C xy 1 1           
+   600 SO2toSO4        0.031           -       -             - -  1 1           
+
+   ### END SECTION SCALE FACTORS ###
+   
+   ###############################################################################
+   #### BEGIN SECTION MASKS
+   ###############################################################################
+   #ScalID Name srcFile srcVar srcTime CRE Dim Unit Oper Box      
+
+   1001 MASK_EUROPE $ROOT/mask_europe.nc MASK 2000/1/1/0 C xy 1 1 -30/30/45/70        
+
+   ### END SECTION MASKS ###
+
+.. _hco-cfg-data-coll-ext-names:
+
+Extension names
+---------------
+
+The collection brackets also work with :ref:`extension names
+<hco-ext-list>`, e.g. data can be included/excluded based on
+extensions. This is particularly useful to include an emission
+inventory for standard emission calculation if (and only if) an
+extension is not being used (see example below). 
+
+.. _hco-cfg-data-coll-undefined:
+
+Undefined collections
+---------------------
+
+If, for a given collection, no corresponding entry is found in the
+extensions section, it will be ignored. Collections are also ignored if
+the collection is defined in an extension that is disabled. It is
+recommended to list all collections under the base extension.
+
+.. _hco-cfg-data-coll-exclude:
+
+Exclude collections
+-------------------
+
+To use the opposite of a collection switch, .not. can be added in
+front of an existing collection name. For instance, to read file
+NOT_EMEP.nc only if EMEP is not being used:
+
+.. code-block:: kconfig
+
+   (((.not.EMEP
+   0 NOT_EMEP_CO    $ROOT/NOT_EMEP.nc     CO 2000/1-12/1/0 C xy kg/m2/s CO 500/1001 1 2
+   ))).not.EMEP
+
+.. _hco-cfg-data-coll-combine:
+
+Combine collections
+-------------------
+
+Multiple collections can be combined so that they are evaluated
+together. This is achieved by linking collection names with .or..
+For example, to use BOND biomass burning emissions only if both GFED and
+FINN are not being used:
+
+.. code-block:: kconfig
+
+   (((.not.GFED.or.FINN
+   0 BOND_BM_BCPI   $ROOT/BCOC_BOND/v2014-07/Bond_biomass.nc BC   2000/1-12/1/0 C xy kg/m2/s BCPI 70 2 1
+   0 BOND_BM_BCPO   -                                        -    -             - -  -       BCPO 71 2 1
+   0 BOND_BM_OCPI   $ROOT/BCOC_BOND/v2014-07/Bond_biomass.nc OC   2000/1-12/1/0 C xy kg/m2/s OCPI 72 2 1
+   0 BOND_BM_OCPO   -                                        -    -             - -  -       OCPO 73 2 1
+   0 BOND_BM_POA1   -                                        -    -             - -  -       POA1 74 2 1
+   ))).not.GFED.or.FINN
+
+

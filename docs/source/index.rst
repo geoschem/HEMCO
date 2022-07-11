@@ -34,21 +34,23 @@ The Harmonized Emissions Component (HEMCO)
 
 .. toctree::
    :maxdepth: 2
-   :caption: User Guide (GEOS-Chem)
-
-   user-guide-gc/intro.rst
-
-.. toctree::
-   :maxdepth: 2
    :caption: Configuring HEMCO	 
 
    config/editing-hemco-config.rst
    config/hemco-config.rst
+   config/extensions.rst
    config/diagnostics.rst
-	      
+
 .. toctree::
    :maxdepth: 2
-   :caption: Coupling HEMCO
+   :caption: Technical information
+	     
+   tech-info/input-file-format.rst
+   tech-info/under-the-hood.rst
+	     
+.. toctree::
+   :maxdepth: 2
+   :caption: Coupling HEMCO to models
 
    coupling/intro.rst
 

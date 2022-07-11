@@ -1,8 +1,8 @@
 .. _edit-hco-cfg:
 
-#################################################
-Edit the HEMCO configuration file: Short examples
-#################################################
+#################################
+Configuring HEMCO: Short examples
+#################################
 
 All emission calculation settings are specified in the **HEMCO
 configuration file**, which is named :file:`HEMCO_Config.rc`.
@@ -22,14 +22,14 @@ configuration file to customize your HEMCO simulation.
    model, then your HEMCO configuration file may be more complex than
    what is shown below.
 
-.. _edit-edit-hemco-cfg-ex1:
+.. _edit-hco-cfg-ex1:
 
 =============================================
 Example 1: Add global anthropogenic emissions
 =============================================
 
 Suppose monthly global anthropogenic CO emissions from the **MACCity**
-inventory (Lamarque et al., 2010) are stored in file
+inventory :cite:`Lamarque_et_al.,_2010` are stored in file
 :file:`MACCity.nc` as variable :literal:`CO`. The following HEMCO
 configuration file then simulates CO emissions with gridded
 hourly scale factors applied to it (the latter taken from variable
@@ -97,7 +97,7 @@ Interfaces.
    ### END SECTION MASKS ###
 
 The various attributes are explained in more detail in the
-:ref:`hemco-cfg-base` and :ref:`hemco-cfg-scalefac` sections.
+:ref:`hco-cfg-base` and :ref:`hco-cfg-scalefac` sections.
 
 .. note::
 
@@ -105,7 +105,7 @@ The various attributes are explained in more detail in the
    order to reduce confusion with the :literal:`Cat` and
    :literal:`Hier` values.
 
-As described in :ref:`edit-hemco-cfg-data-coll` section, all of the files
+As described in :ref:`hco-data-coll`, all of the files
 contained between the brackets :literal:`(((MACCITY` and
 :literal:`)))MACCITY` will be read if you set the switch
 
@@ -180,7 +180,7 @@ to the simulation, modify the configuration file as follows:
     ### END SECTION MASKS ###
 
 For now, we have omitted the **Settings section**  because nothing has
-changed since :ref:`the previous example <edit-hemco-cfg-ex1>`.
+changed since :ref:`the previous example <edit-hco-cfg-ex1>`.
 
 Note the increased hierarchy (:literal:`2`) of the regional EMEP
 inventory compared to the global MACCity emissions (:literal:`1`) in
@@ -194,8 +194,8 @@ specified by the MASK_EUROPE variable.
 Example 3: Adding the AEIC aircraft emissions
 =============================================
 
-To add aircraft emissions from the AEIC inventory (`Stettler et al.,
-2011 <#References>`__), available in file :file:`AEIC.nc`, modify the
+To add aircraft emissions from the AEIC inventory
+(:cite:t:`Stettler_et_al.2011`), available in file :file:`AEIC.nc`, modify the
 configuration file accordingly:
 
 .. code-block :: kconfig

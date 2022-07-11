@@ -19,7 +19,7 @@ master_doc = 'index'
 # -- Project information -----------------------------------------------------
 
 project = 'HEMCO'
-copyright = '2021, GEOS-Chem Support Team'
+copyright = '2022, GEOS-Chem Support Team'
 author = 'GEOS-Chem Support Team'
 
 # The full version, including alpha/beta/rc tags
@@ -36,25 +36,28 @@ extensions = [
     "sphinxcontrib.bibtex",
     "recommonmark",
 ]
-bibtex_default_style = 'gcrefstyle'
+bibtex_default_style = 'hcorefstyle'
+bibtex_reference_style = "author_year"
 
 from pybtex.style.formatting.alpha import Style as AlphaStyle
 from pybtex.style.names.lastfirst import NameStyle as LastFirst
 from pybtex.style.template import join, words, optional, sentence
 from pybtex.style.labels import BaseLabelStyle
 
-class GCLabelStyle(BaseLabelStyle):
+class HcoLabelStyle(BaseLabelStyle):
+    # Base label definition.  Here we replace text in citations
+    # e.g. "et al" to "et al.".  Add others as needed.
     def format_labels(self, sorted_entries):
         for entry in sorted_entries:
             yield entry.key.replace("_", " ").replace("et al.", "et al.,")
 
-class GCRefStyle(AlphaStyle):
+class HcoRefStyle(AlphaStyle):
     # Use pybtex.style.formatting.alpha to list citations
     # by author name first, then by year.
     #   -- Bob Yantosca (30 Jun 2020)
     default_name_style = LastFirst
     default_sort_style = None
-    default_label_style = GCLabelStyle
+    default_label_style = HcoLabelStyle
 
     def __init__(self):
        super().__init__()
@@ -66,15 +69,15 @@ class GCRefStyle(AlphaStyle):
        return sentence[ optional[ self.format_doi(e) ], ]
 
 from pybtex.plugin import register_plugin
-register_plugin('pybtex.style.formatting', 'gcrefstyle', GCRefStyle)
+register_plugin('pybtex.style.formatting', 'hcorefstyle', HcoRefStyle)
 
 
 bibtex_bibliography_header = ".. rubric:: References"
 bibtex_footbibliography_header = bibtex_bibliography_header
 
-#bibtex_bibfiles = ['hemco.bib', 'geos-chem-shared-docs/geos-chem.bib']
 bibtex_bibfiles = [
-    'geos-chem-shared-docs/biblio/geos-chem.bib'
+#    'reference/hco.bib',
+    'geos-chem-shared-docs/biblio/geos-chem.bib',
 ]
 
 
@@ -94,11 +97,13 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = [
+    'geos-chem-shared-docs/_static'
+]
 
 html_context = {
     'css_files': [
-        '_static/theme_overrides.css',  # overrides for wide tables in RTD theme
+        'theme_overrides.css',  # overrides for wide tables in RTD theme
         ],
     }
 

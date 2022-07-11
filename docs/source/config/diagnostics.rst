@@ -1,4 +1,4 @@
-.. _hemco-diag:
+.. _hco-diag:
 
 #################
 HEMCO diagnostics
@@ -70,8 +70,8 @@ Built-in diagnostic collections
 ===============================
 
 HEMCO has three built-in diagnostic collections (:ref:`Default
-<hemco-diag-default>`, :ref:`Restart <hemco-diag-restart>`, and
-:ref:`Manual <hemco-diag-manual>`) that are automatically created
+<hco-diag-default>`, :ref:`Restart <hco-diag-restart>`, and
+:ref:`Manual <hco-diag-manual>`) that are automatically created
 on every HEMCO run. These collections are used by HEMCO for internal
 data exchange and to write out restart variables. These collections
 are 'open', i.e. the user can add additional diagnostic fields to them
@@ -100,6 +100,11 @@ Several :ref:`options for the default diagnostic collection
 are :option:`DiagnFile`, :option:`DiagnFreq`, and
 :option:`DiagnPrefix`.
 
+.. _hco-diag-configfile:
+
+Configuration file for the Default collection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 Adding the following entries to the diagnostic configuration file
 (i.e. the same file specified by :option:`DiagnFreq`, commonly called
 :file:`HEMCO_Diagn.rc`) will make HEMCO write out total NO and CO
@@ -170,12 +175,12 @@ and :literal:`PARANOX_HNO3_DEPOSITION_FLUX`, respectively.
 Importing diagnostic content into an external model
 ===================================================
 
-The content of the :ref:`Default collection <hemco-diag-default>` can
+The content of the :ref:`Default collection <hco-diag-default>` can
 be specified through the HEMCO diagnostics definitions file (specified
 by the :option:`DiagnFile` option).
 
-The content of the :ref:`Manual <hemco-diag-manual>` and
-:ref:`Restart <hemco-diag-restart>` collections currently need to
+The content of the :ref:`Manual <hco-diag-manual>` and
+:ref:`Restart <hco-diag-restart>` collections currently need to
 be defined within the model code (e.g. it is hard-coded). This should
 be done in high-level routines (at the HEMCO-to-model interface
 level).
