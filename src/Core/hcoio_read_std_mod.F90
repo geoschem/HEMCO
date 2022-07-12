@@ -202,6 +202,14 @@ CONTAINS
     !=================================================================
     LOC = 'HCOIO_READ (HCOIO_READ_STD_MOD.F90)'
 
+    ! Do not try to read a mask file where the mask bounding box limits
+    ! are given in the srcFile location, as there is no file to read.
+    ! This should fix https://github.com/geoschem/HEMCO/issues/153.
+    !   -- Bob Yantosca (12 Jul 2022)
+    IF ( Lct%Dct%DctType == HCO_DCTTYPE_MASK ) THEN
+       IF ( .not. Lct%Dct%Dta%ncRead ) RETURN
+    ENDIF
+
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
