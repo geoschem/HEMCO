@@ -76,10 +76,9 @@ bibtex_bibliography_header = ".. rubric:: References"
 bibtex_footbibliography_header = bibtex_bibliography_header
 
 bibtex_bibfiles = [
-#    'reference/hco.bib',
     'geos-chem-shared-docs/biblio/geos-chem.bib',
+    'reference/hco.bib'
 ]
-
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

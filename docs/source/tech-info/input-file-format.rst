@@ -1,8 +1,6 @@
-.. |br| raw:: html:
+.. |br| raw:: html
 
    <br />
-
-
 
 .. _hco-filefmt:
 
@@ -12,7 +10,7 @@ Input file format
 
 Currently, HEMCO can read data from the following data sources:
 
-#.  Gridded data from netCDF file. More detail on the netCDF file are
+#.  **Gridded data from netCDF file**. More detail on the netCDF file are
     given below. In an ESMF environment, the MAPL/ESMF generic I/O
     routines are used to read/remap the data. In a non-ESMF environment,
     the HEMCO generic reading and remapping algorithms are used. Those
@@ -20,7 +18,7 @@ Currently, HEMCO can read data from the following data sources:
     below). |br|
     |br|
 
-#.  Scalar data directly specified in the HEMCO configuration file.
+#.  **Scalar data directly specified in the HEMCO configuration file.**
     Scalar values can be set in the HEMCO configuration file directly. If
     multiple values - separated by the separator sign (/) - are
     provided, they are interpreted as temporally changing values: 7
@@ -31,14 +29,14 @@ Currently, HEMCO can read data from the following data sources:
     right mask box corners (lon1/lat1/lon2/lat2). |br|
     |br|
 
-#.  Country-specific data specified in a separate ASCII file. This file
+#.  **Country-specific data specified in a separate ASCII file.** This file
     must end with the suffix '.txt' and hold the country specific values
     listed by country ID. The IDs must correspond to the IDs of a
     corresponding (netCDF) mask file. The mask file must be listed in the
     HEMCO configuration file. For example:
 
 .. code-block:: kconfig
-   
+
    #==============================================================================
    # --- Country mask file ---
    #==============================================================================
@@ -54,7 +52,7 @@ specific values listed. The .txt file must be structured as follows:
 
    # Country mask field name
    COUNTRY_MASK
-   
+
    # CountryName CountryID CountryValues
    DEFAULT       0         1.0/2.0/3.0/4.0/5.0/6.0/7.0
 
@@ -68,14 +66,14 @@ ID.
 COARDS compatibility
 ====================
 
-Gridded input files are expected to be in the Network Common Data Form
-(netCDF) format (http://www.unidata.ucar.edu/software/netcdf/) and must
-adhere to the COARDS metadata conventions
-(http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html). In
-particular, the following points must be fulfilled:
+Gridded input files are expected to be in the `Network Common Data
+Form (netCDF) format <http://www.unidata.ucar.edu/software/netcdf/>`_ and must
+adhere to the `COARDS metadata conventions
+<https://ferret.pmel.noaa.gov/Ferret/documentation/coards-netcdf-conventions>`_
+In particular, the following points must be fulfilled:
 
-#. Index variables (e.g. :option:`time:`, :option:`lev`,
-   :option:`lat:`, :option:`lon`) must have the same name as the
+#. Index variables (e.g. :option:`time`, :option:`lev`,
+   :option:`lat`, :option:`lon`) must have the same name as the
    dimensions used to define them.  Use the :command:`ncdump`
    command to check this, i.e.
 
@@ -85,7 +83,7 @@ particular, the following points must be fulfilled:
 
    And you will see output similar to this:
 
-   .. code-block:: console:
+   .. code-block:: console
 
       float time(time) ;
       float lev(lev) ;
@@ -94,15 +92,15 @@ particular, the following points must be fulfilled:
 
 #. Data in index variables must be either monotonically increasing or
    monotonically decreasing.
-   
+
 Allowable netCDF index variables are:
-   
+
 .. option:: time
 
    The :option:`time` dimension must be specified relative to a given
    reference datetime. The reference datetime must be specified in the
    :literal:`time:units` netCDF attribute, using one of the following
-   formats: 
+   formats:
 
    - :literal:`days since YYYY-MM-DD hh:mn:ss`
    - :literal:`hours since YYYY-MM-DD hh:mn:ss`
@@ -114,34 +112,34 @@ Allowable netCDF index variables are:
       We have noticed some issues with netCDF files having a reference
       time prior to 1900/01/01.  We recommend using reference date/time
       values after 1900 if possible.
-                                       
-   Weekly data must contain seven time slices in increments of one 
+
+   Weekly data must contain seven time slices in increments of one
    day. The first entry must represent Sunday data, regardless of the
    real weekday of the assigned datetime. It is possible to store
    weekly data for more than one time interval, in which case the
-   first weekday (i.e. Sunday) must hold the starting date for the given set  
+   first weekday (i.e. Sunday) must hold the starting date for the given set
    of (seven) time slices.
 
    - For instance, weekly data for every month of a year can be stored
      as 12 sets of 7 time slices. The reference datetime of the first
      entry of each set must fall on the first day of every month, and
-     the following six entries must be increments of one day.            
+     the following six entries must be increments of one day.
 
-   .. note:: 
-     
-      Currently, weekly data from netCDF files is not correctly    
-      read in an ESMF environment.     	    
+   .. note::
+
+      Currently, weekly data from netCDF files is not correctly
+      read in an ESMF environment.
 
 .. option:: lev
 
    The :option:`lev` dimension specifies the number of vertical levels
    in a netCDF file.  You may omit this dimension if the data stored
-   in the file has only two geospatial dimensions (e.g. :ref:`lat` and
-   :ref:`lon`).
+   in the file has only two geospatial dimensions (e.g. :option:`lat` and
+   :option:`lon`).
 
    In a non-ESMF environment, data is interpolated onto the simulation
    levels if the input data is on vertical levels other than the HEMCO
-   model levels (see :ref:`hco-filefmt-vertregrid`. Data on non-model
+   model levels (see :ref:`hco-filefmt-regrid-vert`. Data on non-model
    levels must be on a hybrid sigma pressure coordinate system. In
    order to properly determine the vertical pressure levels of the
    input  data, the file must contain the surface pressure values and
@@ -149,8 +147,8 @@ Allowable netCDF index variables are:
    system. Furthermore, the level variable must contain the attributes
    standard_name and formula_terms (the attribute positive is
    recommended but not required). A header excerpt  of a valid netCDF
-   file is shown below:                           
-   
+   file is shown below:
+
    .. code-block:: console
 
       float lev(lev) ;
@@ -180,14 +178,14 @@ Allowable netCDF index variables are:
    The latitude variable must be specified in the netCDF file with
    monotonically increasing (or decreasing) values.  The
    :literal:`lat:units` attribute must be :literal:`degrees_north`.
-	    
+
 .. option:: latitude
 
-   Alternative name that can be used instead of :option:`lat`.	    
-	    
+   Alternative name that can be used instead of :option:`lat`.
+
 .. option:: Latitude
 
-   Alternative name that can be used instead of :option:`lat`.	    
+   Alternative name that can be used instead of :option:`lat`.
 
 
 .. option:: lon
@@ -195,14 +193,14 @@ Allowable netCDF index variables are:
    The longitude variable must be specified in the netCDF file with
    monotonically increasing (or decreasing) values.  The
    :literal:`lat:units` attribute must be :literal:`degrees_east`.
-	    
+
 .. option:: longitude
 
-   Alternative name that can be used instead of :option:`lon`.	    
-	    
+   Alternative name that can be used instead of :option:`lon`.
+
 .. option:: Longitude
 
-   Alternative name that can be used instead of :option:`lon`.	    
+   Alternative name that can be used instead of :option:`lon`.
 
 .. _hco-filefmt-units:
 
@@ -220,7 +218,7 @@ It is recommended to store data in one of the HEMCO standard units:
 
 HEMCO will attempt to convert all data to one of those units, unless
 otherwise via the :option:`SrcUnit` attribute (see the :ref:`Base
-Emissions <hco-cfg-base>` section.
+Emissions <hco-cfg-base>`) section.
 
 Mass conversion (e.g. from molecules to kg) is performed based on the
 properties (e.g. molecular weight) of the species assigned to the
@@ -229,20 +227,15 @@ and molecule-based units (e.g. kg  vs. kg(C)). This conversion is
 based on the emitted molecular  weight and the molecular ratio of the
 given species (see the HEMCO-model Interface) section. More details on
 unit conversion are given in module :file:`src/Core/hco_unit_mod.F90`.
-                                    
-Index-based data is regridded in 
-such a manner that every grid    
-box on the new grid represents   
-the index with the largest       
-relative contribution from the   
-overlapping boxes of the         
-original grid. All other data    
-are regridded as 'concentration' 
-quantities, i.e. conserving the  
-global weighted average.
+
+Index-based data is regridded in such a manner that every grid box on
+the new grid represents the index with the largest relative
+contribution from the overlapping boxes of the original grid. All
+other data are regridded as "concentration: quantities,
+i.e. conserving the global weighted average.
 
 For more information, we invite you to read `our Preparing data files
-for use with HEMCO wiki 
+for use with HEMCO wiki
 page <http://wiki.geos-chem.org/Preparing_data_files_for_use_with_HEMCO>`__.
 
 .. _arbitrary_additional_netcdf_dimension:
@@ -251,12 +244,11 @@ page <http://wiki.geos-chem.org/Preparing_data_files_for_use_with_HEMCO>`__.
 Arbitrary additional netCDF dimension
 =====================================
 
-As of v1.1.010, HEMCO can read netCDF files with an additional,
-arbitrary dimension. The dimension name and dimension index to be read
-must be given explicitly in the HEMCO configuration file as part of the
-SrcDim file attribute (see `srcDim in the Base emissions
-section <#Base_emissions>`__). This feature is currently not available
-in an ESMF environment.
+HEMCO can read netCDF files with an additional, arbitrary
+dimension. The dimension name and dimension index to be read must be
+given explicitly in the HEMCO configuration file as part of the
+:option:`SrcDim` file attribute). This feature is currently not
+available in an ESMF environment.
 
 .. _hco-filefmt-regrid:
 
@@ -319,4 +311,3 @@ configuration file, HEMCO will use the one from the master file.
 
 Include statements can be placed anywhere in the HEMCO configuration
 file. It is legal to nest multiple files (up to 5 levels deep).
-

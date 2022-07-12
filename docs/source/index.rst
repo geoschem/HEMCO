@@ -47,11 +47,6 @@ The Harmonized Emissions Component (HEMCO)
 	     
    tech-info/input-file-format.rst
    tech-info/under-the-hood.rst
-	     
-.. toctree::
-   :maxdepth: 2
-   :caption: Coupling HEMCO to models
-
    coupling/intro.rst
 
 .. toctree::
