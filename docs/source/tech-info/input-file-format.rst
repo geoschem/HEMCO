@@ -261,18 +261,32 @@ Regridding
 Vertical regridding
 -------------------
 
-In a non-ESMF environment, HEMCO is able to perform some limited
-vertical interpolation. In the simplest case, the input data has the
-same number of vertical levels as the HEMCO vertical grid (nz). In this
-case, HEMCO explicitly assumes that the input data is already on model
-levels and no interpolation is performed. The same is true if the input
-data has nz+1 vertical levels, in which case the data is interpreted as
-being on grid edges instead of grid midpoints. Additional vertical
+HEMCO is able to perform some limited vertical interpolation. 
+
+.. warning::
+
+   **HEMCO assumes that the input data is on the same grid as the model grid if it has the same number (nz) of, or plus one (nz+1) vertical levels than the model.**
+   In the case of the same number of vertical levels, HEMCO assumes that the input data is already on the model grid 
+   and no interpolation is performed. In the case of input data having nz+1 levels,
+   the data is interpreted as being on grid edges instead of grid midpoints.
+
+**Collapsing into various GEOS grids.** Additional vertical
 regridding options are available for the various GEOS grids (e.g. to
 regrid native GEOS-5 levels to reduced GEOS-5 levels, or to remap GEOS-5
 data onto the vertical GEOS-4 grid). These options are only available if
 the corresponding compiler flags are set (this is the default case for
 GEOS-Chem users).
+
+**Conservative vertical interpolation using MESSy.** If input data is
+specified with vertical coordinates in :literal:`lev` attribute of the
+netCDF file with units :literal:`atmosphere_hybrid_sigma_pressure_coordinate`,
+HEMCO can perform vertical interpolation using MESSy to the model grid.
+
+**Regridding GEOS-Chem 3-D input data in other models.** In other models
+where HEMCO is used for emissions, but do not necessarily use the GEOS
+vertical grids (e.g., WRF-GC, GEOS-Chem within CESM, CAM-chem with HEMCO),
+input data from GEOS-Chem files which have 72 levels will automatically
+be regridded to the model levels, for compatibility.
 
 By default, HEMCO assumes that the vertical coordinate direction is
 upwards, i.e. the first level index corresponds to the surface layer.
