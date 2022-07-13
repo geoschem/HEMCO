@@ -2,17 +2,6 @@
 The Harmonized Emissions Component (HEMCO)
 ##########################################
 
-.. important::
-
-   This is a prerelease of the HEMCO user guide. These pages are the
-   most up-to-date and accurate instructions for HEMCO, but they
-   are still a work in progress.
-
-   Contributions (e.g., suggestions, edits, revisions) would be
-   greatly appreciated. See :ref:`editing this guide
-   <editing_this_user_guide>` and our contributing guidelines.  If
-   you find something hard to understand---let us know!
-
 .. toctree::
    :maxdepth: 1
    :caption: Getting Started
@@ -40,6 +29,7 @@ The Harmonized Emissions Component (HEMCO)
    config/hemco-config.rst
    config/extensions.rst
    config/diagnostics.rst
+   config/more-examples.rst
 
 .. toctree::
    :maxdepth: 2

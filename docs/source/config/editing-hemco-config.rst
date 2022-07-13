@@ -1,26 +1,27 @@
 .. _edit-hco-cfg:
 
-#################################
-Configuring HEMCO: Short examples
-#################################
+##############
+Basic examples
+##############
 
-All emission calculation settings are specified in the **HEMCO
-configuration file**, which is named :file:`HEMCO_Config.rc`.
+All emission calculation settings are specified in :ref:`the HEMCO
+configuration file <hco-cfg>`, which is named
+:file:`HEMCO_Config.rc`.
 
 Modification of the HEMCO source code (and recompilation) is only
 required if new extensions are added, or to use HEMCO in a new model
-environent (see sections Behind the scenes of HEMCO
-<#Behind_the_scenes_of_HEMCO>`__ and Interfaces <#Interfaces>__).
+environent (see sections :ref:`hco-hood` and :ref:`hco-hood-int`).
 
-In the sections that follow, we will show you how to modify the HEMCO
-configuration file to customize your HEMCO simulation.
+In the sections that follow, we provide some basic examples that
+demonstrate how to modify the configuration file to customize your
+HEMCO simulation.
 
 .. note::
 
-   Below are shown simple HEMCO configuration file examples for
-   demonstration purposes.  If you are using HEMCO with an external
-   model, then your HEMCO configuration file may be more complex than
-   what is shown below.
+   The following sectoins contain simple HEMCO configuration file
+   examples for demonstration purposes.  If you are using HEMCO with
+   an external model, then your HEMCO configuration file may be more
+   complex than the examples shown below.
 
 .. _edit-hco-cfg-ex1:
 

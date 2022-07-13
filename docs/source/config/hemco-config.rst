@@ -9,11 +9,13 @@ The HEMCO configuration file
 ############################
 
 The HEMCO Configuration file is composed of several sections:
-:ref:`hco-cfg-settings`, :ref:`hco-cfg-base`,
-:ref:`hco-cfg-scalefac`, and :ref:`hco-cfg-masks`.
+:ref:`Section Settings <hco-cfg-settings>`,
+:ref:`Base Emissions <hco-cfg-base>`,
+:ref:`Scale Factors, <hco-cfg-scalefac>`, and
+:ref:`Masks <hco-cfg-masks>`.
 
 An overview of the structure and key formats of the HEMCO configuration file
-can be found in Figure 2 of :cite:`Lin_et_al._2021`:
+can be found in Figure 2 of :cite:t:`Lin_et_al._2021`:
 
 .. image:: ../images/lin-et-al-2021-fig2.png
    :width: 600
@@ -24,14 +26,15 @@ can be found in Figure 2 of :cite:`Lin_et_al._2021`:
 Section settings
 ================
 
-Parameters and variables used by HEMCO are defined in SECTION
-SETTINGS, in between these comment lines:
+Parameters and variables used by HEMCO are defined in between these
+comment lines:
 
 .. code-block:: kconfig
 
    ###############################################################################
    ### BEGIN SECTION SETTINGS
    ###############################################################################
+
    settings go here
 
    ### END SECTION SETTINGS ###
@@ -441,7 +444,7 @@ air temperature--and/or that use non-linear parameterizations--are
 calculated through :ref:`hco-ext`.  A list of currently implemented
 extensions in HEMCO is given in `Keller et al. (2014)
 <#References>`__. To add new extensions to HEMCO, modifications of the
-source code are required, as described further in :ref:`hco-under-the-hood`.
+source code are required, as described further in :ref:`hco-hood`.
 
 The first section of the configuration file lists all available
 extensions and whether they shall be used or not. For each extension,
@@ -453,7 +456,7 @@ the following attributes need to be specified:
    :ref:`base emissions <hco-cfg-base>` should have extension number
    zero.  The extension number` of the data listed in section
    :ref:`hco-ext` data must match with the corresponding extension
-   number. 
+   number.
 
    The extension number can be set to the wildcard character. In that
    case, the field is read by HEMCO (if the assigned species name
@@ -484,8 +487,9 @@ the following attributes need to be specified:
 
 Additional extension-specific settings can also be specified in the
 'Extensions Settings' section (see also an example in
-:ref:`edit-hco-cfg` and the definition of :ref:`hco-data-coll`. These
-settings must immediately follow the extension definition.
+:ref:`edit-hco-cfg` and the definition of
+:ref:`hco-cfg-data-coll`. These settings must immediately follow the
+extension definition.
 
 HEMCO expects an extension with extension number zero, denoted the
 :ref:`base emisisons extension <hco-cfg-base>` extension. All emission
@@ -494,7 +498,7 @@ emission calculation. Fields assigned to any other extension number
 will not be inlcuded in the base emissions calculation, but they are
 still read/regridded by HEMCO (and can be made available readily
 anywhere in the model code). These data are only read if the
-corresponding extension is enabled. 
+corresponding extension is enabled.
 
 All species to be used by HEMCO must be listed in column
 :option:`Species` of the base extension switch. In particular, all
@@ -507,8 +511,8 @@ the base emission fields and/or any emission extension.
 
 The environmental fields (wind speed, temperature, etc.) required by the
 extensions are either passed from the atmospheric model or read through
-the HEMCO configuration file, as described in :ref:`hco-ext`. 
-	     
+the HEMCO configuration file, as described in :ref:`hco-ext`.
+
 .. _hco-cfg-base:
 
 ==============
@@ -746,7 +750,7 @@ are:
    individual files with centered time stamps, e.g.:
    :file:`file.yyyymmdd_0130z.nc`, :file:`file.yyyymmdd_0430z.nc`,
    ..., :file:`file.yyymmdd_2230z.nc`. To read these files **at the
-   beginning of their time intervals, the time stamp can be shifted by
+   beginning of their time intervals**, the time stamp can be shifted by
    90 minutes: :literal:`2000-2016/1-12/1-31/0-23/+90minutes`.  At
    time 00z, HEMCO will then read file 0130z and keep using this file
    until 03z, when it switches to file 0430z. Similarly, it is
@@ -784,12 +788,12 @@ are:
    .. option:: CY
 
       **Cycling, Use Simulation Year:**, Same as :option:`C`, except
-      don't allow :option:`Emission year` setting to override year value.
+      don't allow :envvar:`Emission year` setting to override year value.
 
    .. option:: CYS
 
       **Cycling, Use Simulation Year, Skip:**  Same as :option:`CS`,
-      except don't allow :option:`Emission year` setting to override year
+      except don't allow :envvar:`Emission year` setting to override year
       value.
 
    .. option:: R
@@ -849,7 +853,7 @@ are:
    .. option:: RY
 
       **Range, Use Simulation Year:** Same as :option:`R`, except
-      don't allow :option:`Emission year` to override year value.
+      don't allow :envvar:`Emission year` to override year value.
 
    .. option:: E
 
@@ -882,7 +886,7 @@ are:
    .. option:: EY
 
       **Exact, Use Smulation Year:** Same as :option:`E`, except don't
-      allow :option:`Emission year`  setting to override year value.
+      allow :envvar:`Emission year`  setting to override year value.
 
    .. option:: A
 
@@ -957,8 +961,8 @@ are:
     example, to use the lowest 5 levels of the input data only, set
     :option:`SrcDim` to :literal:`xy5`.   This will place the lowest 5
     levels of the input  data into HEMCO levels 1 to 5. To use the
-    topmost  5 levels of the input data, set :opton:`SrcDim` to
-    :literal:``xy-5`. The minus sign will force the vertical  axis to
+    topmost  5 levels of the input data, set :option:`SrcDim` to
+    :literal:`xy-5`. The minus sign will force the vertical  axis to
     be flipped, i.e. the 5 topmost levels will be placed into HEMCO
     levels 1 to 5 (in reversed order, so that the topmost level of the
     input data will be placed in HEMCO lev el 1, etc.).
@@ -1118,7 +1122,7 @@ Options :option:`sourceFile`, :option:`sourceVar`,
 :option:`SrcUnit`, are described in :ref:`hco-cfg-base`.
 
 Other scale factor options not previously described are:
-	
+
 Scale factor options not previously described are:
 
 .. option:: ScalID
@@ -1147,7 +1151,7 @@ Scale factor options not previously described are:
 
    Scale factors are assumed to be :literal:`unitless` (aka
    :literal:`1`) and no automatic unit conversion is performed.
-	
+
 .. _hco-cfg-masks:
 
 =====
@@ -1170,7 +1174,7 @@ using):
    ### BEGIN SECTION MASKS
    ###############################################################################
    # ScalID Name sourceFile sourceVar sourceTime CRE SrcDim SrcUnit Oper Lon1/Lat1/Lon2/Lat2
-   
+
    #==============================================================================
    # Country/region masks
    #==============================================================================
@@ -1182,7 +1186,7 @@ using):
    1006 ASIA_MASK   MIX_Asia_mask.generic.025x025.nc         MASK     2000/1/1/0 C xy unitless 1 46/-12/180/82
    1007 NEI11_MASK  USA_LANDMASK_NEI2011_0.1x0.1.20160921.nc LANDMASK 2000/1/1/0 C xy 1        1 -140/20/-50/60
    1008 USA_BOX     -129/25/-63/49                           -        2000/1/1/0 C xy 1        1 -129/25/-63/49
-  
+
   ### END SECTION MASKS ###
 
 The required attributes for mask fields are described below:
@@ -1229,15 +1233,15 @@ be readily enabled/disabled:
 
    ###############################################################################
    #### BEGIN SECTION EXTENSION SWITCHES
-   ###############################################################################                
-   # ExtNr ExtName           on/off  Species  
+   ###############################################################################
+   # ExtNr ExtName           on/off  Species
    0       Base              : on    *
        --> MACCITY           :       true
        --> EMEP              :       true
        --> AEIC              :       true
-    
+
    ### END SECTION EXTENSION SWITCHES
-   
+
    ###############################################################################
    ### BEGIN SECTION BASE EMISSIONS
    ###############################################################################
@@ -1250,29 +1254,29 @@ be readily enabled/disabled:
    (((EMEP
    0 EMEP_CO    EMEP.nc     CO 2000-2014/1-12/1/0 C xy  kg/m2/s CO 500/1001 1 2
    )))EMEP
-   
+
    (((AEIC
    0 AEIC_CO    AEIC.nc     CO 2005/1-12/1/0      C xyz kg/m2/s CO -        2 1
    )))AEIC
 
    ### END SECTION BASE EMISSIONS ###
-   
+
    ###############################################################################
    #### BEGIN SECTION SCALE FACTORS
    ###############################################################################
-   # ScalID Name srcFile srcVar srcTime CRE Dim Unit Oper         
+   # ScalID Name srcFile srcVar srcTime CRE Dim Unit Oper
 
-   500 HOURLY_SCALFACT $ROOT/hourly.nc factor  2000/1/1/0-23 C xy 1 1           
-   600 SO2toSO4        0.031           -       -             - -  1 1           
+   500 HOURLY_SCALFACT $ROOT/hourly.nc factor  2000/1/1/0-23 C xy 1 1
+   600 SO2toSO4        0.031           -       -             - -  1 1
 
    ### END SECTION SCALE FACTORS ###
-   
+
    ###############################################################################
    #### BEGIN SECTION MASKS
    ###############################################################################
-   #ScalID Name srcFile srcVar srcTime CRE Dim Unit Oper Box      
+   #ScalID Name srcFile srcVar srcTime CRE Dim Unit Oper Box
 
-   1001 MASK_EUROPE $ROOT/mask_europe.nc MASK 2000/1/1/0 C xy 1 1 -30/30/45/70        
+   1001 MASK_EUROPE $ROOT/mask_europe.nc MASK 2000/1/1/0 C xy 1 1 -30/30/45/70
 
    ### END SECTION MASKS ###
 
@@ -1285,7 +1289,7 @@ The collection brackets also work with :ref:`extension names
 <hco-ext-list>`, e.g. data can be included/excluded based on
 extensions. This is particularly useful to include an emission
 inventory for standard emission calculation if (and only if) an
-extension is not being used (see example below). 
+extension is not being used (see example below).
 
 .. _hco-cfg-data-coll-undefined:
 
@@ -1331,5 +1335,3 @@ FINN are not being used:
    0 BOND_BM_OCPO   -                                        -    -             - -  -       OCPO 73 2 1
    0 BOND_BM_POA1   -                                        -    -             - -  -       POA1 74 2 1
    ))).not.GFED.or.FINN
-
-
