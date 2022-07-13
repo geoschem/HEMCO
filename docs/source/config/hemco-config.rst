@@ -12,6 +12,12 @@ The HEMCO Configuration file is composed of several sections:
 :ref:`hco-cfg-settings`, :ref:`hco-cfg-base`,
 :ref:`hco-cfg-scalefac`, and :ref:`hco-cfg-masks`.
 
+An overview of the structure and key formats of the HEMCO configuration file
+can be found in Figure 2 of :cite:`Lin_et_al._2021`:
+
+.. image:: ../images/lin-et-al-2021-fig2.png
+   :width: 600
+
 .. _hco-cfg-settings:
 
 ================
