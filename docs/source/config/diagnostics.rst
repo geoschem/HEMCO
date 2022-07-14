@@ -35,6 +35,8 @@ interval in the units assigned to this field (default is
 kg/m2/s). This behavior can be avoided by explicitly setting the
 averaging method.
 
+**TODO: Find out where these get defined **
+
 Currently supported averaging methods are:
 
 .. option:: instantaneous
@@ -168,103 +170,6 @@ diagnostics. For example, the PARANOX extension (used in `GEOS-Chem
 <https://geos-chem.readthedocs.io>`_) stores the O3 and HNO3 loss
 fluxes in the manual diagnostics :literal:`PARANOX_O3_DEPOSITION_FLUX`
 and :literal:`PARANOX_HNO3_DEPOSITION_FLUX`, respectively.
-
-
-.. _hco-diag-example:
-
-==============================================
-Using the HEMCO built-in diagnostics framework
-==============================================
-
-Overview
-~~~~~~~~
-
-The `HEMCO diagnostics framework <The_HEMCO_User's_Guide#Diagnostics>`__
-lets user define customized diagnostics. All diagnostic definitions need
-be provided in an external diagnostics definition file, typically called
-``DiagnFile.rc``. The diagnostics file name is defined in the settings
-section of the HEMCO configuration file, together with the diagnostics
-file name and the diagnostics output frequency. For instance, the
-following entry tells HEMCO to read diagnostics definitions from file
-``MyDiagnFile.rc`` and write hourly diagnostics into files
-``Diagnostics.YYYYMMDDhhmmss.nc`` (the date will be appended to the
-diagnostics prefix by HEMCO:
-
-| ``      DiagnFile            : MyDiagnFile.rc``
-| ``      DiagnPrefix          : Diagnostics``
-| ``      DiagnFreq            : Hourly``
-
-All emissions to be written into the diagnostics can now be defined in
-file MyDiagnFile.rc. For example, the following entries would tell HEMCO
-to write out total vertical integrated NO emissions (into field
-``NO_TOTAL``), 3D field of lightning NO emissions (extension Nr 103,
-into field ``NO_LIGHTNING``), 2D field of soil NO emissions in kg per
-grid box (extension 104, into ``NO_SOIL``), total anthropogenic NO
-emissions (emission category 1, into ``NO_ANTHRO``), and anthropogenic
-NO emissions from NEI11 (category 1, hierarchy 50, into ``NO_NEI11``):
-
-| ``# Name       Spec ExtNr Cat Hier Dim OutUnit``
-| ``NO_TOTAL     NO   -1    -1  -1   2   kg/m2/s``
-| ``NO_LIGHTNING NO   103   -1  -1   3   kg/m2/s``
-| ``NO_SOIL      NO   104   -1  -1   2   kg``
-| ``NO_ANTHRO    NO   0      1  -1   2   kg/m2/s``
-| ``NO_NEI11     NO   0      1  50   2   kg/m2/s``
-
-Compute emission totals
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Create a ``DiagnFile.rc`` with the emission categories or inventories
-for which you want to compute totals. For example, to compare total NO
-emissions from different anthropogenic inventories:
-
-| ``# Name          Spec ExtNr Cat Hier Dim OutUnit``
-| ``EDGAR_NO        NO   0      1  2    2   kg``
-| ``EMEP_NO         NO   0      1  10   2   kg``
-| ``BRAVO_NO        NO   0      1  20   2   kg``
-| ``CAC_NO          NO   0      1  30   2   kg``
-| ``NEI11_NO        NO   0      1  50   2   kg``
-| ``MIX_NO          NO   0      1  45   2   kg``
-
-Make sure your HEMCO configuration points to ``DiagnFile.rc``:
-
-| ``DiagnPrefix: HEMCO_Diagnostics``
-| ``DiagnFreq: Monthly``
-| ``DiagnFile: DiagnFile.rc``
-
-If you run for one month, it makes sense to set the diagnostics output
-frequency (``DiagnFreq``) to ``Monthly``, then you will get the monthly
-mean value. You can set the output unit to ``kg`` instead of ``kg/m2/s``
-to get the total flux per grid box.
-
-Once you have the diagnostics, you can easily calculate the emission
-totals using CDO, NCO, NCL, etc. For example, if you write out the
-fluxes in kg instead of kg/m2/s, it’s as easy as:
-
-``cdo fldsum HEMCO_Diagnostics.201308010000.nc totals.nc``
-
-And then
-
-| ``% ncdump totals.nc ``
-| ``  netcdf totals {``
-| ``  dimensions:``
-| ``       lon = 1 ;``
-| ``       lat = 1 ;``
-| ``       time = UNLIMITED ; // (1 currently)``
-| `` ...``
-| `` MIX_NO =``
-| ``  2.827249e+09 ;``
-| `` NEI11_NO =``
-| ``  8.113327e+08 ;``
-| `` CAC_NO =``
-| ``  7.514479e+07 ;``
-| `` BRAVO_NO =``
-| ``  5.152818e+07 ;``
-| `` EMEP_NO =``
-| ``  9.123655e+08 ``
-| `` EDGAR_NO =``
-| ``  4.196484e+09 ;``
-| ``}``
-
 
 .. _hco-diag-importing:
 
