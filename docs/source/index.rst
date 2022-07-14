@@ -5,7 +5,8 @@ The Harmonized Emissions Component (HEMCO)
 .. raw:: html
 
    <p>
-   <a href="https://github.com/geoschem/HEMCO/releases"><img src="https://img.shields.io/github/v/release/geoschem/HEMCO?include_prereleases&label=Latest%20Release"></a>   
+   <a href="https://github.com/geoschem/HEMCO/releases"><img src="https://img.shields.io/github/v/release/geoschem/HEMCO?include_prereleases&label=Latest%20Pre-Release"></a>
+   <a href="https://github.com/geoschem/HEMCO/releases"><img src="https://img.shields.io/github/v/release/geoschem/HEMCO?&label=:atest%20Stable%20Release"></a>
    <a href="https://github.com/geoschem/HEMCO/releases/"><img src="https://img.shields.io/github/release-date-pre/geoschem/HEMCO"></a>
    <a href="https://github.com/geoschem/HEMCO/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
    <a href="https://doi.org/10.5281/zenodo.4618253"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4618253.svg"></a>
@@ -34,7 +35,7 @@ The Harmonized Emissions Component (HEMCO)
 
 .. toctree::
    :maxdepth: 2
-   :caption: Configuring HEMCO	 
+   :caption: Configuring HEMCO
 
    config/basic-examples.rst
    config/hemco-config.rst
@@ -45,7 +46,7 @@ The Harmonized Emissions Component (HEMCO)
 .. toctree::
    :maxdepth: 2
    :caption: Technical information
-	     
+
    tech-info/input-file-format.rst
    tech-info/under-the-hood.rst
    coupling/intro.rst
