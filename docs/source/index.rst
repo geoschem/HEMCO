@@ -25,7 +25,7 @@ The Harmonized Emissions Component (HEMCO)
    :maxdepth: 2
    :caption: Configuring HEMCO	 
 
-   config/editing-hemco-config.rst
+   config/basic-examples.rst
    config/hemco-config.rst
    config/extensions.rst
    config/diagnostics.rst

@@ -30,7 +30,7 @@ Example 1: Add global anthropogenic emissions
 =============================================
 
 Suppose monthly global anthropogenic CO emissions from the **MACCity**
-inventory :cite:`Lamarque_et_al.,_2010` are stored in file
+inventory :cite:`Lamarque_et_al._2010` are stored in file
 :file:`MACCity.nc` as variable :literal:`CO`. The following HEMCO
 configuration file then simulates CO emissions with gridded
 hourly scale factors applied to it (the latter taken from variable
@@ -106,7 +106,7 @@ The various attributes are explained in more detail in the
    order to reduce confusion with the :literal:`Cat` and
    :literal:`Hier` values.
 
-As described in :ref:`hco-data-coll`, all of the files
+As described in :ref:`hco-cfg-data-coll`, all of the files
 contained between the brackets :literal:`(((MACCITY` and
 :literal:`)))MACCITY` will be read if you set the switch
 
@@ -132,8 +132,9 @@ Example 2: Overlay regional emissions
 =====================================
 
 To add regional monthly anthropogenic CO emissions from the EMEP
-European inventory (which are contained in the file :file:`EMEP.nc`)
-to the simulation, modify the configuration file as follows:
+European inventory :cite:`Vestreng_et_al._2009` (which are contained
+in the file :file:`EMEP.nc`) to the simulation, modify the
+configuration file as follows:
 
 .. code-block:: kconfig
 
@@ -185,7 +186,7 @@ changed since :ref:`the previous example <edit-hco-cfg-ex1>`.
 
 Note the increased hierarchy (:literal:`2`) of the regional EMEP
 inventory compared to the global MACCity emissions (:literal:`1`) in
-column :lieral:`Hier`. This will cause the EMEP emissions to replace
+column :option:`Hier`. This will cause the EMEP emissions to replace
 the MACCity emissions in the region where EMEP is defined, which is
 specified by the MASK_EUROPE variable.
 
@@ -196,8 +197,8 @@ Example 3: Adding the AEIC aircraft emissions
 =============================================
 
 To add aircraft emissions from the AEIC inventory
-(:cite:t:`Stettler_et_al.2011`), available in file :file:`AEIC.nc`, modify the
-configuration file accordingly:
+:cite:`Stettler_et_al._2011`, available in file :file:`AEIC.nc`,
+modify the :ref:`configuration file <hco-cfg>` accordingly:
 
 .. code-block :: kconfig
 
@@ -209,7 +210,6 @@ configuration file accordingly:
        --> MACCITY           :       true
        --> EMEP              :       true
        --> AEIC              :       true
-
    ### END SECTION EXTENSION SWITCHES ###
 
    ###############################################################################
