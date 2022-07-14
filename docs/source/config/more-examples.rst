@@ -177,7 +177,7 @@ listed under :ref:`Base Emissions <hco-cfg-base>`, do the following:
    go into the :ref:`Scale Factors <hco-cfg-scalefac` section of
    :ref:`the HEMCO configuration file <hco-cfg>`:
 
-   .. code-block:: kconfig:
+   .. code-block:: kconfig
 
       400 ZERO 0.0 - - - xy 1 1
 
@@ -201,7 +201,7 @@ for sensitivity study purposes.
 Scale extension emissions globally by species
 ---------------------------------------------
 
-You may pass a global scale factor to the :ref:`cfg-ext`.  For
+You may pass a global scale factor to the :ref:`hco-ext`.  For
 example, to double soil NO emissions everywhere, add the
 :literal:`Scaling_NO` to the section for the :option:`SoilNOx`
 extension.  This is located in the :option:`Extension Switches
@@ -554,130 +554,157 @@ HEMCO extensions examples
 Fixing emissions to a current year in MEGAN
 -------------------------------------------
 
-Q. Is it possible to fix MEGAN emissions in one year? I know this
-   works for many other emission inventories, but MEGAN emissions are
-   dependent on environmental variables.
+Question submitted by a user:
 
-A. [The best] option may be to run the HEMCO standalone and save out
-   MEGAN emissions for a year, then use the HEMCO diagnostic output
-   saved to netCDF as input for your MEGAN emissions instead of using
-   the MEGAN extension.
+   Is it possible to fix :option:`MEGAN` emissions in one year? I know
+   this works for many other emission inventories, but MEGAN emissions
+   are dependent on environmental variables.
 
-    (1) Run the HEMCO standalone model. Make sure the following entries
-    to your ``HEMCO_Diagn.rc`` file:
+The best option may be may be to run the HEMCO standalone and save out
+MEGAN emissions for the desired year.  Then use the :ref:`HEMCO diagnostic
+output <hco-diag>` saved to netCDF as input for your :option:`MEGAN` emissions
+instead of using the :option:`MEGAN` extension.
 
-| ``     EmisISOP_Biogenic  ISOP   108    -1  -1   2   kg/m2/s  ISOP_emissions_from_biogenic_sources``
-| ``     EmisISOP_Biogenic  ISOP   108    -1  -1   2   kg/m2/s  ISOP_emissions_from_biogenic_sources``
-| ``     EmisALD2_Biogenic  ALD2   108    -1  -1   2   kg/m2/s  ALD2_emissions_from_biogenic_sources``
-| ``     etc.``
+Follow these steps.
 
-    In the above entries 108 tells HEMCO to get the emissions from the
-    MEGAN extension (HEMCO extension #108) for the specfied species. You
-    can change the units the emissions are saved out as -- typically we
-    save the biogenic emissions out in atomsC/cm2/s, but for this
-    purpose it may make sense to save out the emissions in HEMCO's
-    preferred unit kg/m2/s. See the HEMCO users guide for more
-    instructions on the `HEMCO
-    diagnostics <The_HEMCO_User%27s_Guide#Diagnostics>`__.
+#.  Run the HEMCO standalone model. Make sure the following entries
+    to your :file:`HEMCO_Diagn.rc` file:
 
-    You'll also want to make sure you have the following lines near the
-    top of your HEMCO\_Config.rc to enable saving out the HEMCO
-    diagnostics.For example, for monthly HEMCO output:
+    .. code-block:: kconfig
 
-| ``     DiagnFile:                   HEMCO_Diagn.rc``
-| ``     DiagnPrefix:                 HEMCO_diagnostics``
-| ``     DiagnFreq:                   Monthly``
+       EmisISOP_Biogenic  ISOP   108    -1  -1   2   kg/m2/s  ISOP_emissions_from_biogenic_sources
+       EmisISOP_Biogenic  ISOP   108    -1  -1   2   kg/m2/s  ISOP_emissions_from_biogenic_sources
+       EmisALD2_Biogenic  ALD2   108    -1  -1   2   kg/m2/s  ALD2_emissions_from_biogenic_sources
+       ... etc for other MEGAN species ...
 
-    (2) Run GEOS-Chem with the following settings:
+    In the above entries, :literal:`108` tells HEMCO to get the
+    emissions from the :option:`MEGAN` extension (HEMCO extension
+    #108) for the specfied species. You can change the units the
+    emissions are saved out as -- typically we save the biogenic
+    emissions out in atomsC/cm2/s, but for this purpose it may make
+    sense to save out the emissions in HEMCO's preferred unit
+    kg/m2/s.
 
-        (a) Turn the MEGAN extension off in HEMCO\_Config.rc
-        (b) Add entries for reading the the fixed MEGAN emissions saved
-        out in step 1 to the base emissions section. For example:
+#. Add the following lines in the :ref:`Settings <hco-cfg-settings>`
+   section of :ref:`HEMCO_Config.rc <hco-cfg>` configuration file:
 
-``     0 MEGAN_ISOP YOURPATH/HEMCO_diagnostic.2016$MM010000.nc EmisISOP_Biogenic 2016/1-12/1/1/0 C xy kg/m2/s ISOP - 4 1``
+    .. code-block:: kconfig
 
-    Note: HEMCO cat=4 is reserved for biogenic emissions.
+       DiagnFile:                   HEMCO_Diagn.rc
+       DiagnPrefix:                 HEMCO_diagnostics
+       DiagnFreq:                   Monthly
 
-    I think that should do it. You can run a short simulation and check
-    the biogenic emissions output to make sure it worked as expected.
+   For more information, see the sections on :option:`DiagnFile`,
+   :option:`DiagnPrefix`, :option:`DiagnFreq`.
 
---`Bob Yantosca <User:Bmy>`__ (`talk <User_talk:Bmy>`__) 20:04, 16
-January 2019 (UTC)
+#. Turn off the MEGAN extension in the :ref:`Extension Switches
+   <hco-cfg-ext-switches>:
 
-Applying 2D emissions vertically
---------------------------------
+   .. code-block:: kconfig
 
-Add emissions into specific levels
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      108     MEGAN                  : off   ISOP/ACET/PRPE/...etc additional species...
 
-***`Christoph Keller <User:Christoph_Keller>`__ wrote:***
+#. Add entries for reading the fixed MEGAN emission that were archived
+   in Step 1 under :ref:`Base Emissions <hco-cfg-base>`.  For example:
 
-    HEMCO can emit emissions into a layer other than the surface layer.
-    For instance, in my example below
+   .. code-block:: kconfig
 
-``    0 EMEP_CO $ROOT/EMEP.nc CO 2000-2014/1-12/1/0 C ``\ \ ``xyL5``\ \ ``  kg/m2/s CO 1/1001 1 2``
+      0 MEGAN_ISOP [PATH_TO_FILE]/HEMCO_diagnostic.2016$MM010000.nc EmisISOP_Biogenic 2016/1-12/1/1/0 C xy kg/m2/s ISOP - 4 1
 
-    the ``EMEP_CO`` emissions would be released into level 5 instead of
-    level 1. Theoretically, you could create a separate HEMCO entry for
-    every emission level and assign a fraction of the total emissions to
-    each of these levels by adding an extra scale factor:
+   .. note::
 
-| ``    0 EMEP_COL1 $ROOT/EMEP.nc CO 2000-2014/1-12/1/0 C ``\ \ ``xyL1``\ \ ``  kg/m2/s CO 1/``\ \ ``150``\ \ ``/1001 1 2``
-| ``    0 EMEP_COL2 $ROOT/EMEP.nc CO 2000-2014/1-12/1/0 C ``\ \ ``xyL2``\ \ ``  kg/m2/s CO 1/``\ \ ``151``\ \ ``/1001 1 2``
-| ``    0 EMEP_COL3 $ROOT/EMEP.nc CO 2000-2014/1-12/1/0 C ``\ \ ``xyL3``\ \ ``  kg/m2/s CO 1/``\ \ ``152``\ \ ``/1001 1 2``
-| ``    ...``
+      HEMCO :option:`Cat` :literal:` = 4` is reserved for biogenic emissions.
 
-    Where scale factors 150, 151, 152 are the fractions of EMEP to be
-    emitted into level 1, level 2, etc.
+#. Run HEMCO in either standalone mode, or coupled to an external
+   model, dependingon your application.
 
-| ``    ``\ \ ``151``\ \ `` EMEP_LEV1_FRAC 0.5 - - - xy 1 1``
-| ``    ``\ \ ``152``\ \ `` EMEP_LEV2_FRAC 0.1 - - - xy 1 1``
-| ``    ``\ \ ``153``\ \ `` EMEP_LEV3_FRAC 0.1 - - - xy 1 1``
+.. _cfg-ex-ext-emit-2d-levels:
 
-    But this is somewhat cumbersome. Also, this won’t give you the
-    possibility to specifically emit a fraction above the PBL given that
-    the PBL height is variable over time.
+Add 2D emissions into specific levels
+-------------------------------------
 
-    HEMCO v2 (included in `GEOS-Chem v11-01 <GEOS-Chem_v11-01>`__)
-    contains additional options to emit 2D fields across multiple
-    vertical levels. For instance, to release 1.0 kg/m2/s of NO into
-    levels 1-5, you can use:
+HEMCO can emit emissions into a layer other than the surface layer.
+For example:
 
-``    0 NO_MULTILEVELS 1.0 - - ``\ \ ``xyL=1:5``\ \ ``         kg/m2/s NO – 1 1``
+.. code-block:: kconfig
 
-    The emissions are then spread across the lowest 5 model levels based
-    upon the model level thicknesses. Instead of specifying the model
-    levels it is also possible to specify the altitude in meters or use
-    ``PBL`` for the planetary boundary layer. For example, the following
-    are all legal:
+   0 EMEP_CO EMEP.nc CO 2000-2014/1-12/1/0 C xyL5 kg/m2/s CO 1/1001 1 2
 
-| ``    0 NO_MULTILEVELS 1.0 - - ``\ \ ``xyL=1:2500m``\ \ ``     kg/m2/s NO – 1 1   —> emits from surface level to 2500m``
-| ``    0 NO_MULTILEVELS 1.0 - - ``\ \ ``xyL=1000m:5000m``\ \ `` kg/m2/s NO – 1 1   —> emits from 1000m to 5000m``
-| ``    0 NO_MULTILEVELS 1.0 - - ``\ \ ``xyL=500m:17``\ \ ``     kg/m2/s NO – 1 1   —> emits from 500m to level 17``
-| ``    0 NO_MULTILEVELS 1.0 - - ``\ \ ``xyL=1:PBL``\ \ ``       kg/m2/s NO – 1 1   —> emits from surface level to PBL top``
+will release the :literal:`EMEP_CO` into level 5 instead of
+level 1. Theoretically, you could create a separate HEMCO entry for
+every emission level (under :ref:`Base Emissions <hco-cfg-base>`:
 
-    In HEMCO v2.1.005 it is legal to read the emission level from an
-    external source (i.e. netCDF file) listed as a scale factor. This
-    field can then be referred to using its scale factor ID. As an
-    example, let's assume daily varying emission heights are archived in
-    file emis\_heights.nc, variable emish (in units of m, available for
-    years 2009 to 2010). We can then define a scale factor (in the scale
-    factors section) with a user-defined scale factor ID (300 in this
-    example):
+.. code-block:: kconfig
 
-``    ``\ \ ``300``\ \ `` EMIT_HEIGHT emis_heights.nc emish 2009-2010/1-12/1-31/0 C xy m 1``
+   0 EMEP_CO_L1 EMEP.nc CO 2000-2014/1-12/1/0 C xyL1 kg/m2/s CO 1 150/1001 1 2
+   0 EMEP_CO_L2 EMEP.nc CO 2000-2014/1-12/1/0 C xyL2 kg/m2/s CO 1 151/1001 1 2
+   0 EMEP_CO_L3 EMEP.nc CO 2000-2014/1-12/1/0 C xyL3 kg/m2/s CO 1 152/1001 1 2
 
-    and refer to this scale factor as the upper bound of the injection
-    height:
+and assign :ref:`Scale Factors <hco-cfg-scalefac>` (e.g. 150, 151,
+152) to specify the fraction of EMEP emissions to be added into each level:
 
-``    0 GFAS_CO GFAS_201606.nc cofire 2009-2010/1-12/1-31/0 C ``\ \ ``xyL=1:scal300``\ \ `` kg/m2/s CO - 5 3``
+.. code-block:: kconfig
 
-    It should be noted that HEMCO always regrids the fields to the model
-    grid before doing any data operations. If the emission height file
-    is very spotty and contains a lot of zeros the averaged injection
-    heights may be too low. In this case it may be required to set all
-    zeros to missing values (which are ignored by HEMCO) to achieve the
-    desired result.
+   151 EMEP_LEV1_FRAC 0.5 - - - xy 1 1
+   152 EMEP_LEV2_FRAC 0.1 - - - xy 1 1
+   153 EMEP_LEV3_FRAC 0.1 - - - xy 1 1``
+
+But this approach is somewhat cumbersome. Also, this won’t give you
+the possibility to specifically emit a fraction above the PBL given
+that the PBL height is variable over time.
+
+Use this notation (under :ref:`Base Emissions <hco-cfg-base>`) to tell
+HEMCO that you would like EMEP emissins to be added into levels 1 through 3:
+
+.. code-block:: kconfig
+
+   0 EMEP_CO_L1 EMEP.nc CO 2000-2014/1-12/1/0 C xyL=1:3 kg/m2/s CO 1 1001 1 2
+
+The emissions are then spread across the lowest 3 model levels based
+upon the model level thicknesses.
+
+Instead of specifying the model levels, you may also specify the
+altitude in meters or use :literal:`PBL` for the planetary boundary
+layer:
+
+.. code-block:: kconfig
+
+   # Emit from surface up to 2500 meters
+   0 EMEP_CO_L1 EMEP.nc CO 2000-2014/1-12/1/0 C xyL=1:2500m kg/m2/s C 1001 1 2
+
+   # Emit between 1000 and 5000 meters altitude
+   0 EMEP_CO_L1 EMEP.nc CO 2000-2014/1-12/1/0 C xyL=1000m:5000m kg/m2/s CO 1 1001 1 2
+
+   # Emit between 5000 meters altitude and model level 17
+   0 EMEP_CO_L1 EMEP.nc CO 2000-2014/1-12/1/0 C xyL=500m:17 kg/m2/s CO 1 1001 1 2
+
+   # Emit from the surface to the PBL top
+   0 EMEP_CO_L1 EMEP.nc CO 2000-2014/1-12/1/0 C xyL=1:PBL kg/m2/s CO 1 1001 1 2
+
+HEMCO can also read the emission levvel from an external source
+(e.g. netCDF file) that is listed as a scale factor.  This field can
+then be referred to using its scale factor ID.  As an example, let's
+assume daily varying emission heights for 2009-2010 are archived in
+:file:`emis_heights.nc` as variable :literal:`emish` in units of
+:literal:`m`. available for years 2009 to 2010). You can then define a
+:ref:`Scale Factor <hco-cfg-scalefac>` such as:
+
+.. code-block:: kconfig
+
+   300 EMIT_HEIGHT emis_heights.nc emish 2009-2010/1-12/1-31/0 C xy m 1
+
+and refer to this scale factor as the upper bound of the injection
+height under :ref:`Base Emissions`:
+
+.. code-block:: kconfig
+
+   0 GFAS_CO GFAS_201606.nc cofire 2009-2010/1-12/1-31/0 C xyL=1:scal300 kg/m2/s CO - 5 3
+
+It should be noted that HEMCO always regrids the fields to the model
+grid before doing any data operations. If the emission height file is
+very spotty and contains a lot of zeros the averaged injection heights
+may be too low. In this case it may be required to set all zeros to
+missing values (which are ignored by HEMCO) to achieve the desired result.
 
 --`Melissa Sulprizio <User:Melissa_Payer>`__
 (`talk <User_talk:Melissa_Payer>`__) 18:40, 1 March 2017 (UTC)

@@ -5,8 +5,7 @@ Basic examples
 ##############
 
 All emission calculation settings are specified in :ref:`the HEMCO
-configuration file <hco-cfg>`, which is named
-:file:`HEMCO_Config.rc`.
+configuration file <hco-cfg>`, which is named :file:`HEMCO_Config.rc`.
 
 Modification of the HEMCO source code (and recompilation) is only
 required if new extensions are added, or to use HEMCO in a new model
@@ -18,7 +17,7 @@ HEMCO simulation.
 
 .. note::
 
-   The following sectoins contain simple HEMCO configuration file
+   The following sections contain simple HEMCO configuration file
    examples for demonstration purposes.  If you are using HEMCO with
    an external model, then your HEMCO configuration file may be more
    complex than the examples shown below.
@@ -132,9 +131,9 @@ Example 2: Overlay regional emissions
 =====================================
 
 To add regional monthly anthropogenic CO emissions from the EMEP
-European inventory :cite:`Vestreng_et_al._2009` (which are contained
-in the file :file:`EMEP.nc`) to the simulation, modify the
-configuration file as follows:
+European inventory :cite:`Vestreng_et_al._2009` (in file
+:file:`EMEP.nc`)  to the simulation, modify the configuration file as
+follows:
 
 .. code-block:: kconfig
 
@@ -231,7 +230,7 @@ modify the :ref:`configuration file <hco-cfg>` accordingly:
 
    ### END SECTION BASE EMISSIONS ###
 
-Note the change in the emission category (column :literal:`Cat`) from
+Note the change in the emission category (column :option:`Cat`) from
 :literal:`1` to :literal:`2`.  In this example, category 1 represents
 anthropogenic emissions and category 2 represents aircraft emissions.
 
@@ -250,7 +249,7 @@ implemented as a HEMCO Extension, can be added to the simulation by:
    Emissions**.
 
 The extension number defined in the **Extension Switches** section
-must match the corresponding :literal:`ExtNr` entry in the Base
+must match the corresponding :option:`ExtNr` entry in the Base
 Emissions section (in this example, :literal:`111`).
 
 .. code-block:: kconfig
