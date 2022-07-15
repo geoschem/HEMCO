@@ -120,7 +120,7 @@ Released 2021-09-07
 
 ===========
 HEMCO 3.0.0
-============
+===========
 Released 2021-01-08
 
 -  Updates to speed up HEMCO
@@ -401,7 +401,7 @@ Released 2015-10-14
 -  New time flags :literal:`EF` and :literal:`RF` to force exit if
    field not found for
    current simulation datetime
--  Bug fix in :option:`Seaflux` extension: pull variables out of parallel
+-  Bug fix in :option:`SeaFlux` extension: pull variables out of parallel
    loop.
 
 .. _hco11010:

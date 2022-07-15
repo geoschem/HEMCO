@@ -14,6 +14,18 @@ The Harmonized Emissions Component (HEMCO)
    <a href="https://dev.azure.com/geoschem/HEMCO/_build?definitionId=11"><img src="https://dev.azure.com/geoschem/hemco/_apis/build/status/Quick%20Build?branchName=dev"></a>
    </p>
 
+The **Harmonized Emissions Component (HEMCO)** is a software component
+for computing atmospheric emissions from different sources, regions,
+and species on a user-defined grid. It can combine, overlay, and
+update a set of data inventories :ref:`base emissions <hco-cfg-base>`
+and :ref:`scale factors <hco-cfg-scalefac>`, as specified by the user
+through :ref:`the HEMCO configuration file <hco-cfg>`. Emissions that
+depend on environmental variables and non-linear parameterizations are
+calculated in separate :ref:`hco-ext`. HEMCO can be run in
+:ref:`standalone mode <hco-running>` or :ref:`coupled to an
+atmospheric model <hemco-coupling>`.  A more detailed description of
+HEMCO is given in :cite:t:`Keller_et_al._2014` and :cite:t:`Lin_et_al._2021`.
+
 .. toctree::
    :maxdepth: 1
    :caption: Getting Started
@@ -40,6 +52,7 @@ The Harmonized Emissions Component (HEMCO)
    config/hemco-config.rst
    config/extensions.rst
    config/diagnostics.rst
+   config/units.rst
    config/more-examples.rst
 
 .. toctree::
