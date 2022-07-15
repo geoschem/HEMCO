@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     then don't try to read from disk
   - Documentation from the GEOS-Chem wiki (now on ReadTheDocs)
   - Badges for the ReadTheDocs front page
+
 ### Changed
   - Ignore non-printing characters (e.g. tabs) when reading
     `HEMCO_Config.rc`. This had caused a bug in GCHP.
@@ -24,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `OFFLINE_BIOGENICVOC` emissions in MEGAN now include species MOH
 
 ## [3.4.0] - 2022-05-02
-### Addded
+### Added
   - Make sure each routine exits HEMCO with an error message (even if
     a placeholder message is used)
   - Fixed syntax error in `hcox_tomas_dustdead_mod.F`
@@ -32,11 +33,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     not filled
   - Several fixes for OpenMP parallelization and numerical stability
   - Bug fix: Prevent out-of-bounds error in HEMCO vertical interpolation
+
 ### Changed
   - Prevent undefined variable when calculating vertical scale factor
   - Set MEGAN biogenic annual emission factors to zero in before
     computing them
   - Updated ReadTheDocs documentation
+
 ### Removed
   - Retired CH4 wetlands emissions extension
 
@@ -62,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add climatology input to volcano extension
   - Include PET number in error message if using ESMF
   - Send all HCO_ERROR messages to stderr and write from all threads
+
 ### Changed
   - Modify volcano extension so that dry-run option also looks for
     climatology file
@@ -95,11 +99,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - A script for creating HEMCO standalone rundirs is now included
      in the `run/` folder
    - CEDS GDB-MAPS is now the default anthropogenic emissions inventory
+
 ### Changed
    - HEMCO source code has been split off from the GEOS-Chem
      repository into https://github.com/geoschem/HEMCO repository
    - Source code has been reorganized
-
    - Set and update `ExtState` before computing emissions in HEMCO
      standalone
    - Use `HcoState%NZ` instead of `NLEV` in `hco_interp_mod.F90`
@@ -108,6 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - CMake is now the default build system
    - Update isCoards script to account for files saved out by GCHP's
      History component
+
 ### Removed
    - Support for GNU make
    - Carbon-based units for VOC species
@@ -128,6 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now avoid running HEMCO twice on the first timestep of a
     simulation.
   - New `RFY3` time cycle option (3 hour input)
+
 ### Changed
   - Now use semantic versioning (X.Y.Z)
   - Restore reading CHLR fields for marine POA simulations
@@ -139,6 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updates from the NASA/GEOS development branch
   - New option to always use the simulation year for specified fields
   - Updates to the volcanic emissions extension
+
 ### Changed
   - Bug fix: Prevent zero emissions for `MEGAN_Mono` extension
 
@@ -147,6 +154,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Bug fix: Read data with the "E" cycle flag just once
   - Bug fix for collapsing model levels to reduced grid
   - New `CS` time cycle option
+
 ### Changed
   - Fixed unit conversion in `HCO_UNIT_GetAreaScal`
 
@@ -179,7 +187,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Option to emit into the layer height read from netCDF file
 
 ## [2.1.004] - 2017-12-30
-## Added
+### Added
   - Updates to remove possible issues and excessive print statements when
     operating in GEOS environment
   - Fixed possible tracer ID mismatch in sea salt extension
@@ -224,13 +232,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now uses updated timezones mask file.
   - Now accepts scale factors for extension fields.
   - New options to emit 2D fields across multiple vertical levels
+
 ### Changed
   - In `hcox_paranox_mod.F90`: Archive deposition flux as a
     positive number to avoid negative values propagating.
   - The HEMCO state object (`HcoState`) now must be passed to each routine.
   - Updated the passive tracer code.
 
-## [1.0.016] - 2015-12-14
+## [1.1.016] - 2015-12-14
 ### Added
   - New HEMCO standalone run directory
 
@@ -255,8 +264,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New option `DiagnTimeStamp` to control diagnostics time stamp format
   - Bug fix: restrict day to last day of month when searching for file
     names.
+
 ### Changed
-  - The `Seaflux` extension now uses HEMCO landtypes instead of land
+  - The `SeaFlux` extension now uses HEMCO landtypes instead of land
     fraction
 
 ## [1.1.011] - 2015-10-14
@@ -275,15 +285,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Bug fixes to allow specifying flexible diagnostics output
     frequencies.
 
-## [1.1.009] - 2015-09-10 and [1.1.008] - 2015-07-06
+## [1.1.008] - 2015-07-06
 ### Added
-  - Bug fix in hcoi_standalone_mod: make sure current date and
+  - Bug fix in `hcoi_standalone_mod.F90`: make sure current date and
     simulation end date are properly calculated
   - Make sure that negative emissions are correctly passed to hierarchy
     level diagnostics
   - Bug fix: When reading a data field, check if diagnostics container
     with the same name exist and write data into it.
-
 
 ## [1.1.007] - 2015-07-06
 ### Added
@@ -302,6 +311,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Capability to emit 2D data into levels other than the surface
   - Bug fix: Avoid out of bounds errors in `MEGAN_Mono` extension
   - Bug fix: Restore archiving biogenic CO emissions form monoterpenes
+
 ### Changed
   - Now ensure that longitudes fall within the range -180 to 180, for
     COARDS compliance.
@@ -313,6 +323,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Bug fix: Now allow FINN biomass emission diagnostics to be archived.
   - Extra flexibility to the definition of the vertical dimension used
     in `HEMCO_Config.rc` (i.e. attribute `SrcDim`).
+
 ### Changed
   - Base emissions can now have a dynamic number of scale factors (used
     to be limited to a fixed number).
@@ -337,6 +348,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Modifications to on/off switches in `HEMCO_Config.rc`:
     - Extension names can be used as switches
 	- Multiple switches can be combined with `.or`
+
 ### Changed
   - HEMCO has now two run phases:
       - Phase 1 reads the HEMCO list
@@ -348,6 +360,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0] - 2014-11-07
 Initial HEMCO release
+
 ### Added
   - Bug fix: Prevent seg fault when emissions are turned off
   - Bug fixes for the BIOGENIC_OCPI diagnostic
@@ -379,6 +392,7 @@ Initial HEMCO release
     file
   - Index-sorted data can now be read from an ASCII file and mapped
     onto athe simulation grid
+
 ### Changed
   - Treat OCPI, OCPO, BCPI, and BCPO separately
   - Stratospheric production and loss are read as non-emissions data
@@ -388,6 +402,7 @@ Initial HEMCO release
     `HEMCO_Config.rc`
   - `Verbose` is no longer a logical switch but a number between 0 and 3
   - Masks can now be applied to scale factors
+
 ### Removed
   - Extension data has been removed from `HEMCO_Config.rc`.  This is
     now a subsection of `Base Emissions`.
