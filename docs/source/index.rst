@@ -80,6 +80,7 @@ HEMCO is given in :cite:t:`Keller_et_al._2014` and :cite:t:`Lin_et_al._2021`.
    geos-chem-shared-docs/supplemental-guides/debug-guide.rst
    geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
    geos-chem-shared-docs/supplemental-guides/netcdf-guide.rst
+   geos-chem-shared-docs/supplemental-guides/coards-guide.rst
    geos-chem-shared-docs/supplemental-guides/related-docs.rst
 
 
