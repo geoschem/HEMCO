@@ -21,7 +21,6 @@ The Harmonized Emissions Component (HEMCO)
    getting-started/quick-start.rst
    getting-started/hardware-requirements.rst
    getting-started/software-requirements.rst
-   getting-started/key-references.rst
 
 .. toctree::
    :maxdepth: 2
@@ -53,6 +52,14 @@ The Harmonized Emissions Component (HEMCO)
 
 .. toctree::
    :maxdepth: 1
+   :caption: HEMCO reference
+
+   reference/key-references.rst
+   reference/version-history.rst
+   reference/known-bugs.rst
+
+.. toctree::
+   :maxdepth: 1
    :caption: Supplemental Guides
 
    geos-chem-shared-docs/supplemental-guides/libraries.rst
@@ -62,9 +69,10 @@ The Harmonized Emissions Component (HEMCO)
    geos-chem-shared-docs/supplemental-guides/netcdf-guide.rst
    geos-chem-shared-docs/supplemental-guides/related-docs.rst
 
+
 .. toctree::
    :maxdepth: 1
-   :caption: Help & Reference
+   :caption: Additional information
 
    reference/CONTRIBUTING.md
    reference/SUPPORT.md
