@@ -114,7 +114,7 @@ which is a derived type that holds all simulation information,
 including a list of the defined HEMCO species,  emission grid
 information, configuration file name, and additional run options. More
 details on the HEMCO state object can be found in
-:file:`src/Core/hco_state_mod.F90`. :code:`HcoState `is defined at the
+:file:`src/Core/hco_state_mod.F90`. :code:`HcoState` is defined at the
 interface level and then passed down to all HEMCO routines
 
 .. _hco-hood-init:

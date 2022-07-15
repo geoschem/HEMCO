@@ -35,7 +35,7 @@ interval in the units assigned to this field (default is
 kg/m2/s). This behavior can be avoided by explicitly setting the
 averaging method.
 
-**TODO: Find out where these get defined **
+**TODO: Find out where these get defined**
 
 Currently supported averaging methods are:
 
@@ -106,7 +106,7 @@ are :option:`DiagnFile`, :option:`DiagnFreq`, and
 
 Configuration file for the Default collection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	
+
 Adding the following entries to the diagnostic configuration file
 (i.e. the same file specified by :option:`DiagnFreq`, commonly called
 :file:`HEMCO_Diagn.rc`) will make HEMCO write out total NO and CO
@@ -192,5 +192,3 @@ provides a suite of routines to define, fill, obtain, etc. diagnostic
 fields. Similarly, :file:`hco_restart_mod.F90` (also found in
 :file:`HEMCO/src/Core/`) provides routines for managing HEMCO restart
 variables.
-
-

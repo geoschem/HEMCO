@@ -33,12 +33,12 @@ utilize this feature, you must first specify a mask file in the
 
 The mask file specified above was created from a shapefile obtained
 from the `GADM database <http://www.gadm.org>`_. The country mask
-netCDF file (:file:`countrymask_0.1x0.1.nc`, `follow this link
+netCDF file (`countrymask_0.1x0.1.nc
 <http://geoschemdata.wustl.edu/ExtData/HEMCO/MASKS/v2014-07/countrymask_0.1x0.1.nc>`_
 ) identifies countries by their ISO 3166-1 numeric code. Countries and
-their ISO3166-1-numeric codes are listed in the
-:file:`country_codes.csv` file (`follow this link
-<http://geoschemdata.wustl.edu/ExtData/HEMCO/MASKS/v2014-07/country_codes.csv>`_).
+their ISO3166-1-numeric codes are listed in the `country_codes.csv
+<http://geoschemdata.wustl.edu/ExtData/HEMCO/MASKS/v2014-07/country_codes.csv>`_
+file.
 
 The country-specific scale factors can be specified in a separate
 ASCII file ending with with the suffix :literal:`.txt.` The container
@@ -143,7 +143,7 @@ You may define uniform scale factors for single species that
 apply across all emission inventories, sectors and extensions. These
 scale factors can be set in the :ref:`Settings <hco-cfg-settings>`
 section of :ref:`the HEMCO configuration file <hco-cfg>`, using the
-:option:`EmissScale_<species-name>`, where :literal:`<species-name>`
+:literal:`EmissScale_<species-name>`, where :literal:`<species-name>`
 denotes the name of a HEMCO species such as :literal:`CO`,
 :literal:`CH4`, :literal:`NO`, etc.
 
@@ -173,7 +173,7 @@ To zero emissions of a given species (e.g. NO) from any inventory
 listed under :ref:`Base Emissions <hco-cfg-base>`, do the following:
 
 #. Create your own scale factor and assign value 0.0 to it. This must
-   go into the :ref:`Scale Factors <hco-cfg-scalefac` section of
+   go into the :ref:`Scale Factors <hco-cfg-scalefac>` section of
    :ref:`the HEMCO configuration file <hco-cfg>`:
 
    .. code-block:: kconfig
@@ -354,11 +354,11 @@ Question from a HEMCO user:
     scale with the fraction of the gird cell that is masked (e.g., if
     a quarter of the grid cells in one of the
     :math:`4^{\circ}{\times}5^{\circ}` grid are masked, the emissions
-     will scale down by 25%). 
+    will scale down by 25%).
 
 For this application, it may better to define your mask file in the
 :ref:`Scale Factors <hco-cfg-scalefac>` section of :ref:`the HEMCO
-configuration file <hco-cfg>`. 
+configuration file <hco-cfg>`.
 
 By defining a mask in the :ref:`hco-cfg-masks` section, HEMCO
 identifies the data container type as MASK and treats the data as
@@ -389,7 +389,7 @@ in a 4x5 grid box.
 
    ### END SECTION SCALE FACTORS ###
 
-.. _cfg-ex-mask-frac:
+.. _cfg-ex-mask-tagged:
 
 Create emissions for geographically tagged species
 --------------------------------------------------
@@ -415,32 +415,32 @@ create emissions for geographically tagged species, follow thse steps.
       1001 MASK_1  -30/30/45/70    - 2000/1/1/0 C xy 1 1 -30/30/45/70
       1002 MASK_2  -118/17/-95/33  - 2000/1/1/0 C xy 1 1 -118/17/-95/33
       1003 MASK_3  my_mask_file.nc - 2000/1/1/0 C xy 1 1 105/-46/160/–10
-   
+
       # ... etc ...
 
    If your mask regions are rectangular, you can specify the
    longitude and latitude at the box corners (such as was done for
    :literal:`MASK_1` and :literal:`MASK_2`).  You may also read a mask
-   definition from a netCDF file (as was done for :literal:`MASK_3`). 
-  
+   definition from a netCDF file (as was done for :literal:`MASK_3`).
+
 #. In the :ref:`Base Emissions <hco-cfg-base>` section of :ref:`the
    HEMCO configuration file <hco-cfg>`, add extra entries for tagged
    species underneath the entry for the global species, such as:
-   
+
    .. code-block:: kconfig
 
       #==============================================================================
       # --- EDGAR v4.2 emissions, various sectors ---
       #==============================================================================
       (((EDGAR
-      
+
       ### Gas and oil ###
       0 CH4_GAS__1B2a    v42_CH4.0.1x0.1.nc  ch4_1B2a  2004-2008/1/1/0 C xy kg/m2/s CH4   -    1 1
       0 CH4_GAS__1b2a_a  -                   -         -               - -  -       CH4_a 1001 1 1
       0 CH4_GAS__1b2a_b  -                   -         -               - -  -       CH4_b 1002 1 1
       0 CH4_GAS__1b2a_c  -                   -         -               - -  -       CH4_c 1003 1 1
       # ... etc ...
-   
+
       ### Coal mines ###
       0 CH4_COAL__1B1    v42_CH4.0.1x0.1.nc  ch4_1B1   2004-2008/1/1/0 C xy kg/m2/s CH4   -    2 1
       0 CH4_COAL__1B1_a  -                   -         -               - -  -       CH4_a 1001 2 1
@@ -602,7 +602,7 @@ assume daily varying emission heights for 2009-2010 are archived in
    300 EMIT_HEIGHT emis_heights.nc emish 2009-2010/1-12/1-31/0 C xy m 1
 
 and refer to this scale factor as the upper bound of the injection
-height under :ref:`Base Emissions`:
+height under :ref:`Base Emissions <hco-cfg-base>`:
 
 .. code-block:: kconfig
 
@@ -701,9 +701,9 @@ supported:
 *asin*, *acos*, *atan*, *sinh*, *cosh*, *tanh*, *sind*,
 *cosd*, *tand*,  *log*, *log10*, *nint*, *anint*,
 *aint*, *exp*, *sqrt*, *abs*, *floor*. The names refer to
-the equivalent Fortran functions. 
+the equivalent Fortran functions.
 
-.. important:: 
+.. important::
 
    When using mathematical expressions, we recommend setting the
    :option:`sourceTime` attribute to :literal:`*`, especially if you
@@ -726,7 +726,7 @@ Emissions <hco-cfg-base>` in :ref:`the HEMCO configuration file
 .. code-block:: kconfig
 
    0 SINE_NO  MATH:sin(HH/12*PI) - * C xy kg/m2/s NO - 1 500
-   
+
 This defines an emission category (:option:`Cat`) of :literal:`1` and
 hierarchy (:option:`Hier`) of :literal:`500`.  No scale factors are
 applied.
@@ -738,7 +738,7 @@ applied.
    be enabled by setting :literal:`Negative values: 2` in the
    :ref:`Settings <hco-cfg-settings>` section of :ref:`the HEMCO
    configuration file <hco-cfg>`.
- 
+
 In order to avoid negative values, you may specify an offset, as is
 shown below:
 
@@ -747,7 +747,7 @@ shown below:
    0 SINE_NO  MATH:2.0+sin(HH/12*PI) - * C xy kg/m2/s NO - 1 500
 
 .. _cfg-ex-other:
-   
+
 ==============
 Other examples
 ==============
@@ -776,11 +776,11 @@ configuration file <hco-cfg>`:
    0 PASV2_Flux 1.0e-9  - - - xy kg/m2/s PASV2 - 1 1
 
    # ... etc for additional species ...
-   
+
 To define emissions for passive species that are geographically
 tagged, simply assign corresponding mask values in the third-to-last
 column:
-   
+
 .. code-block:: kconfig
 
    0 PASV1_Flux 1.0e-3  - - - xy kg/m2/s PASV1 1000 1 1
@@ -790,10 +790,10 @@ column:
 
 Here, 1000 and 1001 refer to :ref:`mask definitions <hco-cfg-masks>`
 in :ref:`the HEMCO configuration file <hco-cfg>`.
-   
+
 
 Next, request HEMCO diagnostic output.  Define the following entries
-in the :ref:`diagnostics configuration file <hco-diag-configfile` (aka
+in the :ref:`diagnostics configuration file <hco-diag-configfile>` (aka
 :file:`HEMCO_Diagn.rc`):
 
 .. code-block:: kconfig
@@ -808,7 +808,7 @@ To activate these diagnostics, you must specify values for
 :option:`DiagnFile` and :option:`DiagnFreq` in the :ref:`Settings
 <hco-cfg-settings>` section of :ref:`the HEMCO configuration file
 <hco-cfg>`:
-   
+
 .. code-block:: kconfig
 
    DiagnFile:                 HEMCO_Diagn.rc

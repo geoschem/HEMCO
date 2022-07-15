@@ -69,7 +69,7 @@ be considered.
       will be computed according to :cite:t:`Zhang_et_al._2021`.
 
       If :option:`ZHANG_Rn222` is :literal:`off`, then Rn222 emissions
-      will be computed according to :cite:t:`Jacob_et_al_.1997`.
+      will be computed according to :cite:t:`Jacob_et_al._1997`.
 
 .. option:: GFED
 
@@ -114,7 +114,7 @@ be considered.
    Air-sea exchange.
 
    - Species: DMS, ACET, ALD2, MENO3, ETNO3, MOH
-   - References: :cite:t:`Johnson_2010`, :cite:t:`Nightingale_et_al.2000`
+   - References: :cite:t:`Johnson_2010`, :cite:t:`Nightingale_et_al._2000`
 
 .. option:: SeaSalt
 
@@ -122,7 +122,7 @@ be considered.
 
    - **Species**: SALA, SALC, SALACL, SALCCL, SALAAL, SALCAL, BrSALA,
      BrSALC, MOPO, MOPI
-   - **References**: :cite:t:`Jaegle_et_al._2011`, :cite_t:`Gong_2003`
+   - **References**: :cite:t:`Jaegle_et_al._2011`, :cite:t:`Gong_2003`
 
 .. option:: SoilNOx
 
@@ -188,7 +188,7 @@ To use the NCEP reanalysis monthly surface wind fields
 (http:, , www.esrl.noaa.gov, psd, data, gridded, data.ncep.reanalysis.derived.surface.html)
 in all HEMCO extensions, add the following two lines to the
 :ref:`Base Emissions <hco-cfg-base>` section of :ref:`the HEMCO
-configuration file <hco-cfg>`: 
+configuration file <hco-cfg>`:
 
 .. code-block:: kconfig
 
@@ -203,7 +203,7 @@ variables read through :ref:`the HEMCO configuration file
 <hco-cfg>`. This is particularly attractive for sensitivity
 studies. For example, a scale factor of 1.1 can be assigned to the
 NCEP surface wind fields to study the sensitivity of emissions on a
-10% increase in wind speed: 
+10% increase in wind speed:
 
 In the :ref:`Base Emissions <hco-cfg-base>` section:
 
@@ -263,8 +263,8 @@ for use by the various extensions:
 
 .. option:: CLDFRC
 
-   Cloud fraction	    
-	    
+   Cloud fraction
+
    - **Dim**: xy
    - **Units**: unitless
    - **Used by**: :option:`MEGAN`
@@ -287,12 +287,12 @@ for use by the various extensions:
 
 .. option:: FRCLND
 
-   Land fraction	    
-	    
+   Land fraction
+
    - **Dim**: xy
    - **Units**: unitless
    - **Used by**: :option:`GC_Rn-Pb-Be`, :option:`SeaFlux`
-     
+
 .. option:: GWETROOT
 
    Root soil moisture.
@@ -317,7 +317,7 @@ for use by the various extensions:
    - **Dim**: xyz
    - **Units**: kg
    - **Used by**: :option:`PARANOx`
-     
+
 .. option:: JO1D
 
    Photolysis J-value for O1D.
@@ -357,7 +357,7 @@ for use by the various extensions:
    - **Dim**: xyz
    - **Units**: kg
    - **Used by**: :option:`PARANOx`
-     
+
 .. option:: O3
 
    O3 mass.
@@ -369,15 +369,15 @@ for use by the various extensions:
 .. option:: PARDF
 
    Diffuse photosynthetic active radiation
-	    
+
    - **Dim**: xy
    - **Units**: W/m2
    - **Used by**: :option:`MEGAN`
-     
+
 .. option:: PARDR
 
    Direct photosynthetic active radiation
-	    
+
    - **Dim**: xy
    - **Units**: W/m2
    - **Used by**: :option:`MEGAN`
@@ -385,11 +385,11 @@ for use by the various extensions:
 .. option:: RADSWG
 
    Short-wave incident surface radiation
-	    
+
    - **Dim**: xy
    - **Units**: W/m2
    - **Used by**: :option:`SoilNOx`
-     
+
 .. option:: SNOWHGT
 
    Snow height (mm of H2O equivalent).
@@ -423,14 +423,14 @@ for use by the various extensions:
    - **Units**: K
    - **Used by**: :option:`DustDead`, :option:`LightNOx`,
      :option:`TOMAS_DustDead`
-     
+
 .. option:: TROPP
 
    Tropopause pressure.
 
    - **Dim**: xy
    - **Units**: Pa
-   - **Used by**: :option:`GC_Rn-Pb-Be`, :option:`LightNox`
+   - **Used by**: :option:`GC_Rn-Pb-Be`, :option:`LightNOx`
 
 .. option:: TSKIN
 
@@ -450,7 +450,7 @@ for use by the various extensions:
      :option:`DustGinoux`, :option:`PARANOx`, :option:`SeaFlux`,
      :option:`SeaSalt`, :option:`SoilNOx`, :option:`TOMAS_DustDead`,
      :option:`TOMAS_Jeagle`
-     
+
 .. option:: USTAR
 
    Friction velocity.
@@ -469,7 +469,7 @@ for use by the various extensions:
      :option:`DustGinoux`, :option:`PARANOx`, :option:`SeaFlux`,
      :option:`SeaSalt`, :option:`SoilNOx`, :option:`TOMAS_DustDead`,
      :option:`TOMAS_Jeagle`
-     
+
 .. option:: WLI
 
    Water-land-ice flags (:literal:`0` = water, :literal:`1` = land,
@@ -478,7 +478,7 @@ for use by the various extensions:
    - **Dim**: xy
    - **Units**: unitless
    - **Used by**: Almost every extension
-     
+
 .. option:: Z0
 
    Roughness height.
@@ -577,7 +577,7 @@ varying scale factor for GFED NO emissions:
 It is legal to apply scale factors and/or masks to the extension scale
 fields (in the same way as the 'regular' base emission fields). A more
 sophisticated example on how to scale soil NOx emissions is given in
-HEMCO examples. 
+HEMCO examples.
 
 .. _hco-ext-scale-mask:
 
