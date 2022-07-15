@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-## [3.5.0] -- TBD
+## [3.5.0] - TBD
 ### Added
   - Support for MAPL 2.16 (needed by GCHP and GEOS)
   - Bug fix for HEMCO standalone run directory creation
@@ -23,10 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
      2 (instead of 1)
   - `OFFLINE_BIOGENICVOC` emissions in MEGAN now include species MOH
 
-## [3.4.0] -- 2022-05-02
+## [3.4.0] - 2022-05-02
 ### Addded
   - Make sure each routine exits HEMCO with an error message (even if
-    a placeholder message is used) 
+    a placeholder message is used)
   - Fixed syntax error in `hcox_tomas_dustdead_mod.F`
   - GCHP bug fix: revert to all zeros in criteria for restart field
     not filled
@@ -35,28 +35,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
   - Prevent undefined variable when calculating vertical scale factor
   - Set MEGAN biogenic annual emission factors to zero in before
-    computing them 
+    computing them
   - Updated ReadTheDocs documentation
 ### Removed
   - Retired CH4 wetlands emissions extension
 
-## [3.3.0] -- 2022-05-02
+## [3.3.0] - 2022-05-02
 ### Changed
   - Updated `Extensionss/hcox_gc_RnPbBe_mod.F90` to use Zhang et al
     2021 emissions (now the default)` (cf doi:0.5194/acp-21-1861-2021)
 
-## [3.2.2] -- 2021-12-01
+## [3.2.2] - 2021-12-01
 ### Changed
   - Restore updating of manual HEMCO diagnostics, which had been
-    clobbered due to a prior Git merge 
+    clobbered due to a prior Git merge
 
-## [3.2.1] -- 2021-11-15
+## [3.2.1] - 2021-11-15
 ### Added
   - Add patch branches to continuous integration tests
   - Fix indexing of species in 'hcox_seasalt_mod.F90` when using
     marinePOA option
 
-## [3.2.0] -- 2021-11-15
+## [3.2.0] - 2021-11-15
 ### Added
   - GCHP adjoint updates
   - Add climatology input to volcano extension
@@ -64,26 +64,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Send all HCO_ERROR messages to stderr and write from all threads
 ### Changed
   - Modify volcano extension so that dry-run option also looks for
-    climatology file 
+    climatology file
   - Modified HEMCO diagnostics and standalone config files for
-    consistency with GEOS-Chem updates 
+    consistency with GEOS-Chem updates
 
-## [3.1.1] -- 2021-09-10
+## [3.1.1] - 2021-09-10
 ### Added
   - Fix to HEMCO lightning flash rate diagnostic units
   - Fix HEMCO's `createRunDir.sh` script to replace additional added tokens
 
-## [3.1.0] -- 2021-09-07
+## [3.1.0] - 2021-09-07
 ### Added
    - Blowing snow emissions of sea salt and sea salt bromide added to
-     sea salt extension 
+     sea salt extension
    - Add `HEMCO_INTERFACE` cache variable to CMake build
 
-## [3.0.0] -- 2021-01-08
+## [3.0.0] - 2021-01-08
 ### Added
    - Updates to speed up HEMCO
    - Updates to calculate emissions sensitivities, apply emissions
-     scaling factors, and output adjoint diagnostics 
+     scaling factors, and output adjoint diagnostics
    - Support for GCAP 2.0
    - Several driver programs have been added to the `src/Interfaces/`
      subdirectory for using HEMCO in other models
@@ -104,7 +104,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
      standalone
    - Use `HcoState%NZ` instead of `NLEV` in `hco_interp_mod.F90`
    - Make sure data containers with `EFY` time cycle flag are
-     only updated once 
+     only updated once
    - CMake is now the default build system
    - Update isCoards script to account for files saved out by GCHP's
      History component
@@ -114,7 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - Hard-coded scale factors in the DustDead extension
    - Duplicate `Inst%FLUXSABI` allocation in MEGAN HCO extension
 
-## [2.2.0] -- 2020-02-03
+## [2.2.0] - 2020-02-03
 ### Added
   - Implemented dry-run option
   - Now properly interpolate data with irregular timesteps
@@ -133,7 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Restore reading CHLR fields for marine POA simulations
   - Read met fields daily instead of hourly to improve file I/O
 
-## [2.1.012] -- 2019-04-01
+## [2.1.012] - 2019-04-01
 ### Added
   - Bug fixes for HEMCO interpolation
   - Updates from the NASA/GEOS development branch
@@ -142,23 +142,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
   - Bug fix: Prevent zero emissions for `MEGAN_Mono` extension
 
-## [2.1.010] -- 2019-10-05
+## [2.1.010] - 2019-10-05
 ### Added
   - Bug fix: Read data with the "E" cycle flag just once
   - Bug fix for collapsing model levels to reduced grid
   - New `CS` time cycle option
-### Chang
+### Changed
   - Fixed unit conversion in `HCO_UNIT_GetAreaScal`
 
-## [2.1.009] -- 2018-09-13
+## [2.1.009] - 2018-09-13
 ### Added
   - Wrap HEMCO extensions into instances
 
-## [2.1.008] -- 2018-08-08
+## [2.1.008] - 2018-08-08
 ### Added
   - Bug fix: respect range/exact flag for 1D values set in `HEMCO_Config.rc`
 
-## [2.1.007] -- 2018-07-18
+## [2.1.007] - 2018-07-18
 ### Added
   - Bug fix in `E` (exact) time cycling optiion
   - Now stop with error if multiple containers have the same
@@ -168,17 +168,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
   - Null string character from netCDF unit string
 
-## [2.1.006] -- 2018-06-10
+## [2.1.006] - 2018-06-10
 ### Added
   - CH4 emissions from wetlands now uses category #1
   - CH4 emissions from rice now uses category #2
   - Unit `mol/mol` has beeeen added to the list of unitless quantities.
 
-## [2.1.005] -- 2018-01-27
+## [2.1.005] - 2018-01-27
 ### Added
   - Option to emit into the layer height read from netCDF file
 
-## [2.1.004] -- 2017-12-30
+## [2.1.004] - 2017-12-30
 ## Added
   - Updates to remove possible issues and excessive print statements when
     operating in GEOS environment
@@ -188,15 +188,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New error trap in `hcox_dustginoux)mod.F90` to avoid seg faults
   - Bug fix in reference time code
 
-## [2.1.003] -- 2017-07-19
+## [2.1.003] - 2017-07-19
 ### Added
   - Now normalize MEGAN LAI by plant functional type.
 
-## [2.1.002] -- 2017-07-17
+## [2.1.002] - 2017-07-17
 ### Added
   - Enable tokens within math functions
 
-## [2.1.001] -- 2017-05-16
+## [2.1.001] - 2017-05-16
 ### Added
   - Now enable data compression in netCDF-4 output
   - Fixed bug in computation of local time in routine
@@ -210,12 +210,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     The option to use mathematical expressions (such as
   - Regridding routines can now support non-global grids
 
-## [2.0.004] -- 2017-01-26
+## [2.0.004] - 2017-01-26
 ### Added
   - New passive tracer module
   - [Improve write speed of netCDF output files
 
-## [2.0.003] -- 2016-10-16
+## [2.0.003] - 2016-10-16
 ### Added
   - New option `DiagnRefTime` (specfies reference time in created
     netCDF files)
@@ -230,24 +230,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The HEMCO state object (`HcoState`) now must be passed to each routine.
   - Updated the passive tracer code.
 
-## [1.0.016] -- 2015-12-14
+## [1.0.016] - 2015-12-14
 ### Added
   - New HEMCO standalone run directory
 
-## [1.1.015] -- 2015-12-07
+## [1.1.015] - 2015-12-07
 ### Added
   - Bug fix in GEOS5 -> GEOS-4 regridding
   - Bug fix in syncing the MEGAN LAI_PREVDAY variable
 
-## [1.1.014] -- 2015-11-23
+## [1.1.014] - 2015-11-23
 ### Added
   - Bug fix when interpolating/averaging between multiple files.
 
-## [1.1.013] -- 2015-11-19
+## [1.1.013] - 2015-11-19
 ### Added
   - Now allow mask grid points
 
-## [1.1.012] -- 2015-11-06
+## [1.1.012] - 2015-11-06
 ### Added
   - Now treat MEGAN restart variables as running averages
   - Bug fix: make sure that sea salt aerosol calculations work on
@@ -259,23 +259,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The `Seaflux` extension now uses HEMCO landtypes instead of land
     fraction
 
-## [1.1.011] -- 2015-10-14
+## [1.1.011] - 2015-10-14
 ### Added
   - Now allow horizontal coordinates `longitude` and `latitude`
   - New time flags `EF` and `RF` to force exit if field not found
     for current simulation datetime
   - Bug fix in `Seaflux` extension: pull variables out of parallel loop.
 
-## [1.1.010] -- 2015-09-22
+## [1.1.010] - 2015-09-22
 ### Added
   - HEMCO can now read any additional (arbitrary) dimension.
 
-## [1.1.009] -- 2015-09-10
+## [1.1.009] - 2015-09-10
 ### Added
   - Bug fixes to allow specifying flexible diagnostics output
     frequencies.
 
-## [1.1.009] -- 2015-09-10 and [1.1.008] -- 2015-07-06
+## [1.1.009] - 2015-09-10 and [1.1.008] - 2015-07-06
 ### Added
   - Bug fix in hcoi_standalone_mod: make sure current date and
     simulation end date are properly calculated
@@ -285,17 +285,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     with the same name exist and write data into it.
 
 
-## [1.1.007] -- 2015-07-06
+## [1.1.007] - 2015-07-06
 ### Added
   - Grid edges can now be explicitly given in HEMCO standalone model
 
-## [1.1.006] -- 2015-07-01
+## [1.1.006] - 2015-07-01
 ### Added
   - Aerocom, CH4, FINN, GFED, and soil NOx extensions now accept scale
     fields
   - Bug fix: diagnostics update can now span multiple diagnostics levels
 
-## [1.1.005] -- 2015-06-09
+## [1.1.005] - 2015-06-09
 ### Added
   - Now also build HEMCO standalone executable
   - New extension module `hcox_aerocom_mod.F90`
@@ -307,7 +307,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     COARDS compliance.
   - Unit strings `%` and `percent` are now treated as unitless.
 
-## [1.1.004] -- 2015-05-20
+## [1.1.004] - 2015-05-20
 ### Added
   - New capability to apply scale factors to meteorological fields.
   - Bug fix: Now allow FINN biomass emission diagnostics to be archived.
@@ -319,7 +319,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now compute `SUNCOS` and `SUNCOS - 5` in the PARANOX extension
     instead of reading these as restarrt fields.
 
-## [1.1] -- 2015-04-16
+## [1.1] - 2015-04-16
 ### Added
   - Various updates to PARANOX:
     - Bug fix in calculation of H2O ambient air concentration'
@@ -346,7 +346,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Various updates to the HEMCO standalone code
   - Modifications to on/off switches in the HEMCO configuration file
 
-## [1.0] -- 2014-11-07
+## [1.0] - 2014-11-07
 Initial HEMCO release
 ### Added
   - Bug fix: Prevent seg fault when emissions are turned off
