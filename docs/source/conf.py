@@ -77,7 +77,7 @@ bibtex_footbibliography_header = bibtex_bibliography_header
 
 bibtex_bibfiles = [
     'geos-chem-shared-docs/biblio/geos-chem.bib',
-    'reference/hco.bib'
+    'hco-ref-guide/hco.bib'
 ]
 
 # List of patterns, relative to source directory, that match files and

@@ -27,49 +27,36 @@ atmospheric model <hemco-coupling>`.  A more detailed description of
 HEMCO is given in :cite:t:`Keller_et_al._2014` and :cite:t:`Lin_et_al._2021`.
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Getting Started
+   :maxdepth: 2
+   :caption: HEMCO Standalone User Guide
 
-   getting-started/quick-start.rst
-   getting-started/hardware-requirements.rst
-   getting-started/software-requirements.rst
-
+   hco-sa-guide/intro.rst	   
+   hco-sa-guide/hardware.rst
+   hco-sa-guide/software.rst
+   hco-sa-guide/login-env.rst
+   hco-sa-guide/download-code.rst
+   hco-sa-guide/create-rundir.rst
+   hco-sa-guide/compiling.rst
+   hco-sa-guide/config-sim.rst
+   hco-sa-guide/download-data.rst
+   hco-sa-guide/run-standalone.rst
+	     
 .. toctree::
    :maxdepth: 2
-   :caption: User Guide (HEMCO Standalone)
+   :caption: HEMCO Reference Guide
 
-   user-guide/downloading.rst
-   user-guide/compiling.rst
-   user-guide/rundir-init.rst
-   user-guide/rundir-config.rst
-   user-guide/running.rst
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Configuring HEMCO
-
-   config/basic-examples.rst
-   config/hemco-config.rst
-   config/extensions.rst
-   config/diagnostics.rst
-   config/units.rst
-   config/more-examples.rst
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Technical information
-
-   tech-info/input-file-format.rst
-   tech-info/under-the-hood.rst
+   hco-ref-guide/basic-examples.rst
+   hco-ref-guide/hemco-config.rst
+   hco-ref-guide/extensions.rst
+   hco-ref-guide/diagnostics.rst
+   hco-ref-guide/more-examples.rst
+   hco-ref-guide/under-the-hood.rst
+   hco-ref-guide/units.rst
+   hco-ref-guide/input-file-format.rst
    coupling/intro.rst
-
-.. toctree::
-   :maxdepth: 1
-   :caption: HEMCO reference
-
-   reference/key-references.rst
-   reference/version-history.rst
-   reference/known-bugs.rst
+   hco-ref-guide/known-bugs.rst
+   hco-ref-guide/version-history.rst
+   hco-ref-guide/key-references.rst
 
 .. toctree::
    :maxdepth: 1
@@ -83,11 +70,10 @@ HEMCO is given in :cite:t:`Keller_et_al._2014` and :cite:t:`Lin_et_al._2021`.
    geos-chem-shared-docs/supplemental-guides/coards-guide.rst
    geos-chem-shared-docs/supplemental-guides/related-docs.rst
 
-
 .. toctree::
    :maxdepth: 1
-   :caption: Additional information
+   :caption: Help and Reference
 
-   reference/CONTRIBUTING.md
-   reference/SUPPORT.md
+   ../../../CONTRIBUTING.md
+   ../../../SUPPORT.md
    geos-chem-shared-docs/editing_these_docs.rst

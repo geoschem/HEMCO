@@ -1,8 +1,8 @@
-.. _hco-running:
+.. _hco-sa-run:
 
-#############
-Running HEMCO
-#############
+################
+Run a simulation
+################
 
 .. note::
 
@@ -10,34 +10,37 @@ Running HEMCO
    `YouTube tutorial
    <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`_.
 
+.. _hco-sa-run-int:
+
 =================
 Run interactively
 =================
 
-:program:`HEMCO` may be run interactively at the command line by typing the
-following within your run directory
+First, navigate to your run directory (if you aren't already there):
 
 .. code-block:: console
 
-   $ ./hemco_standalone
+   $ cd /path/to/hemco/run/dir
 
-You may also specify the path to the :program:`HEMCO` standalone configuration
-file using:
+You can run HEMCO standalone interactively at the command line by typing:
 
 .. code-block:: console
 
-   $ ./hemco_stantalone -c HEMCO_sa_Config.rc
+   $ ./hemco_standalone -c HEMCO_sa_Config.rc
 
-If not specified, :file:`HEMCO_sa_Config.rc` will be used by default.
+where :literal:`-c` specifies the path to the
+:option:`HEMCO_sa_Config.rc` configuraiton file.
+
+.. _hco-sa-run-batch:
 
 ================
 Run as batch job
 ================
 
 Batch job run scripts will vary based on what job scheduler you have
-available. The example run script included in :program:`HEMCO` run directories
-(:file:`runHEMCO.sh`) is for use with SLURM. You may modify this file
-for your system and preferences as needed.
+available. The example run script included in HEMCO standalone run
+directories (:file:`runHEMCO.sh`) is for use with SLURM. You may
+modify this file for your system and preferences as needed.
 
 At the top of all batch job scripts are configurable run
 settings. Most critically are requested # cores, # nodes, time, and
@@ -64,19 +67,21 @@ line. For example, type :command:`man sbatch` to scroll through
 options for SLURM, including various ways of specifying number of
 cores, time and memory requested.
 
+.. _hco-sa-run-verify:
+
 =======================
 Verify a successful run
 =======================
 
 There are several ways to verify that your run was successful.
 
-#. :ref:`NetCDF <ncguide>` files are present in the :file:`OutputDir/`
-   subdirectory;
-#. :program:`HEMCO` log file :file:`HEMCO.log` ends with :literal:`HEMCO X.Y.Z
-   FINISHED.`;
-#. Standard output file :file:`HEMCO_SA.log` ends with
-   :literal:`HEMCO_STANDALONE FINISHED!`;
-#. The job scheduler log does not contain any error messages
+- :ref:`NetCDF <ncguide>` files are present in the :file:`OutputDir/`
+  subdirectory;
+- The HEMCO log file :file:`HEMCO.log` ends with :literal:`HEMCO X.Y.Z
+  FINISHED.`;
+- Standard output file :file:`HEMCO_SA.log` ends with
+  :literal:`HEMCO_STANDALONE FINISHED!`;
+- The job scheduler log does not contain any error messages
 
 If it looks like something went wrong, scan through the log files to
 determine where there may have been an error. Here are a few debugging
@@ -84,7 +89,7 @@ tips:
 
 - Review all of your configuration files to ensure you have proper setup
 - Check to make sure you have downloaded all input files needed for
-  your :program:`HEMCO` standalone simulation
+  your HEMCO standalone simulation.
 
 If you cannot figure out where the problem is please do not hesitate
 to create a `GitHub issue
