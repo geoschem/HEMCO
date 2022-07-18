@@ -165,12 +165,16 @@ done
 # Ask user to provide path to HEMCO_Config.template file
 #-----------------------------------------------------------------
 printf "${thinline}Enter the file path to a HEMCO_Config.rc with your \n"
-printf " emissions settings.\n\n"
-printf "NOTES- This should be a HEMCO_Config.rc file from a \n"
-printf "       pre-generated GEOS-Chem run directory and not a template\n"
-printf "       config file from the GEOS-Chem repository.\n"
-printf "     - A sample file is included at ./HEMCO_Config.rc.sample for\n"
-printf "       generating your own configuration file if preferred.${thinline}"
+printf "emissions settings.\n\n"
+printf " - This should be a HEMCO_Config.rc file from a \n"
+printf "   pre-generated GEOS-Chem run directory and not a\n"
+printf "   template config file from the GEOS-Chem repository.\n"
+printf "\n"
+printf " - If you do not have a pre-generated HEMCO_Config.rc file,\n"
+printf "   type ./HEMCO_Config.rc.sample at the prompt below.\n"
+printf "   This will copy a sample configuration file into your\n"
+printf "   run directory.  You can then edit this configuration\n"
+printf "   file with your preferred emission settings.${thinline}"
 
 valid_path=0
 while [ "$valid_path" -eq 0 ]; do
@@ -296,11 +300,13 @@ cp ./HEMCO_sa_Spec.rc               ${rundir}
 cp ./${grid_file}                   ${rundir}
 cp ./runHEMCO.sh                    ${rundir}
 cp ./README                         ${rundir}
-cp ${hco_config_dir}/HEMCO_Config.* ${rundir}
-if  [[ -f ${hco_config_dir}/HEMCO_Diagn.rc ]]; then
+if  [[ -f ${hco_config_dir}/HEMCO_Config.rc ]]; then
+    cp ${hco_config_dir}/HEMCO_Config.rc ${rundir}
     cp ${hco_config_dir}/HEMCO_Diagn.rc ${rundir}
 else
-    printf "\nNo HEMCO_Diagn.rc file found corresponding to the provided HEMCO_Config.rc. A sample one will be included instead."
+    printf "\nCould not find a HEMCO_Diagn.rc file corresponding to HEMCO_Config.rc!\n"
+    printf "A sample HEMCO_Diagn.rc will be copied to the run directory.\n"
+    cp ./HEMCO_Config.rc.sample ${rundir}/HEMCO_Config.rc
     cp ./HEMCO_Diagn.rc.sample ${rundir}/HEMCO_Diagn.rc
 fi
 
