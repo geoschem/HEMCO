@@ -1,3 +1,5 @@
+.. _hco:
+
 ##########################################
 The Harmonized Emissions Component (HEMCO)
 ##########################################
@@ -22,15 +24,16 @@ and :ref:`scale factors <hco-cfg-scalefac>`, as specified by the user
 through :ref:`the HEMCO configuration file <hco-cfg>`. Emissions that
 depend on environmental variables and non-linear parameterizations are
 calculated in separate :ref:`hco-ext`. HEMCO can be run in
-:ref:`standalone mode <hco-running>` or :ref:`coupled to an
+:ref:`standalone mode <hco-sa-guide>` or :ref:`coupled to an
 atmospheric model <hemco-coupling>`.  A more detailed description of
-HEMCO is given in :cite:t:`Keller_et_al._2014` and :cite:t:`Lin_et_al._2021`.
+HEMCO is given in :cite:t:`Keller_et_al._2014` and
+:cite:t:`Lin_et_al._2021`. 
 
 .. toctree::
    :maxdepth: 2
    :caption: HEMCO Standalone User Guide
 
-   hco-sa-guide/intro.rst	   
+   hco-sa-guide/intro.rst
    hco-sa-guide/hardware.rst
    hco-sa-guide/software.rst
    hco-sa-guide/login-env.rst
@@ -40,18 +43,19 @@ HEMCO is given in :cite:t:`Keller_et_al._2014` and :cite:t:`Lin_et_al._2021`.
    hco-sa-guide/config-sim.rst
    hco-sa-guide/download-data.rst
    hco-sa-guide/run-standalone.rst
-	     
+
 .. toctree::
    :maxdepth: 2
    :caption: HEMCO Reference Guide
 
+   hco-ref-guide/intro.rst
    hco-ref-guide/basic-examples.rst
    hco-ref-guide/hemco-config.rst
    hco-ref-guide/extensions.rst
+   hco-ref-guide/units.rst
    hco-ref-guide/diagnostics.rst
    hco-ref-guide/more-examples.rst
    hco-ref-guide/under-the-hood.rst
-   hco-ref-guide/units.rst
    hco-ref-guide/input-file-format.rst
    coupling/intro.rst
    hco-ref-guide/known-bugs.rst
@@ -74,6 +78,6 @@ HEMCO is given in :cite:t:`Keller_et_al._2014` and :cite:t:`Lin_et_al._2021`.
    :maxdepth: 1
    :caption: Help and Reference
 
-   ../../../CONTRIBUTING.md
-   ../../../SUPPORT.md
+   reference/CONTRIBUTING.md
+   reference/SUPPORT.md
    geos-chem-shared-docs/editing_these_docs.rst

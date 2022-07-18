@@ -147,8 +147,8 @@ properly. The initialization of HEMCO occurs in three steps:
    emission grid). The :code:`EmisList` linked list is only created in
    the run call.
 
-Note that steps 1 and 2 occur at the interface level (see
-:ref:`hco-hood-int-to-model`).
+Note that steps 1 and 2 occur at the :ref:`the HEMCO-to-model
+interface level <hco-hood-int-to-model>`.
 
 .. _hco-hood-run:
 
@@ -224,9 +224,9 @@ are added to the HEMCO emission array using subroutine
 Meteorological input data is passed to the individual extension
 routines through the extension state object ExtState, which provides a
 pointer slot for all met fields used by any of the extension (see
-:file:`src/Extensions/hcox_state_mod.F90). These pointers must be
+:file:`src/Extensions/hcox_state_mod.F90`). These pointers must be
 assigned at the interface level (see :ref:`the HEMCO-model interface
-section <hco-cfg-int>`).
+section <hco-hood-int>`).
 
 In analogy to the core module, the three main routines for the
 extensions are (in :file:`src/Extensions/hcox_driver_mod.F90`):
@@ -271,7 +271,7 @@ HEMCO-to-model interface
 .. note::
 
    For additional information about coupling HEMCO to other models,
-   please see our :ref:`hemco-coupling` section.
+   please see our :ref:`hemco-coupling` chapter.
 
 The interface provides the link between HEMCO and the model environment.
 This may be a sophisticated Earth System model or a simple environment
@@ -351,7 +351,7 @@ Initialization:
 .. _hco-hood-int-to-model-run:
 
 Run:
-~~~
+~~~~
 
 -  Set current time (:code:`HcoClock_Set` in
    :file:`src/Core/hco_clock_mod.F90`) |br|

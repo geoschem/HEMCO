@@ -37,7 +37,7 @@ We recommend that you place module load commands into a separate
 **environment file**  rather than directly into your :file:`~/.bashrc`
 or :file:`~/.bash_aliases` startup scripts.
 
-.. _hco-sa-gnu10:
+.. _hco-sa-login-gnu:
 
 ================================================
 Sample environment file for GNU 10.2.0 compilers
@@ -117,15 +117,15 @@ Then you can activate these seetings from the command line by typing:
 
    $ source ~/gnu102.env
 
-.. _hco-sa-intel19:
+.. _hco-sa-login-intel:
 
 ==============================================
 Sample environment file for Intel 19 compilers
 ==============================================
 
 To load software libraries based on the Intel 19 compilers, we can
-start from our :ref:`GNU 10.2.0 environment file <gnu_10_example>` and
-add the proper :command:`module load` commands for Intel 19.
+start from our :ref:`GNU 10.2.0 environment file <hco-sa-login-gnu>`
+and add the proper :command:`module load` commands for Intel 19.
 
 Add the code below (with the appropriate modifications for your
 system) into a file named :file:`~/intel19.env`.
@@ -225,7 +225,7 @@ specify the compilers that you wish to use:
    +---------------+------------------+--------------------+-----------------+
 
 These environment variables should be defined in your
-:ref:`environment file <environment_files>`.
+:ref:`environment file <hco-sa-login>`.
 
 .. note::
 

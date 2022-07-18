@@ -26,7 +26,7 @@ The following files can be modified to set up your HEMCO standalone simulation.
 
    Main configuration file for the HEMCO standalone simulation. This
    file points to the other configuration files used to set up your
-   simulation (e.g. :option:`HEMCO_sa_Grid.4x5`,
+   simulation (e.g. :option:`HEMCO_sa_Grid.4x5.rc`,
    :option:`HEMCO_sa_Time.rc`).
 
    This file typically references a :option:`HEMCO_Config.rc` file
@@ -61,7 +61,7 @@ The following files can be modified to set up your HEMCO standalone simulation.
    Specifies which fields to save out to the HEMCO diagnostics file
    saved in :file:`OutputDir` by default. The frequency to save out
    diagnostics is controlled by the :option:`DiagnFreq` setting in
-   :option:`HEMCO_Config_sa.rc`
+   :option:`HEMCO_sa_Config.rc`
 
    For more information, please see the chapter entitled
    :ref:`hco-diag-configfile`.

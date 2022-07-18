@@ -9,7 +9,7 @@ HEMCO in **standalone mode** (i.e. not connected to an external model).
 
 For more information about how to configure HEMCO simulations and how
 to interface HEMCO to external models, please see the :ref:`HEMCO
-Reference Guide`.
+Reference Guide <hco-ref-guide>`.
 
 ================
 Steps to follow:
@@ -18,7 +18,6 @@ Steps to follow:
 .. toctree::
    :maxdepth: 1
 
-   intro.rst
    hardware.rst
    software.rst
    login-env.rst

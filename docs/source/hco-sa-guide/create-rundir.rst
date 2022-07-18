@@ -129,7 +129,7 @@ This will copy sample :file:`HEMCO_Config.rc` and
 :file:`HEMCO_Diagn.rc` files to the run directory.  You can edit these
 configuration files to include your preferred emission settings.
 
-Refer to the :ref:`HEMCO Reference Guide <hco-ref>`
+Refer to the :ref:`HEMCO Reference Guide <hco-ref-guide>`
 for more information about how to edit :ref:`the HEMCO configuration
 file <hco-cfg>`.
 
@@ -207,7 +207,7 @@ directory listing:
    CodeDir@  HEMCO_Diagn.rc   HEMCO_sa_Grid.4x5.rc  HEMCO_sa_Time.rc  README      runHEMCO.sh*
 
 :file:`build` is the folder is where you will :ref:`compile HEMCO
-standalone<hco-sa-compile>`.
+standalone <hco-sa-compile>`.
 
 :file:`CodeDir` is a symbolic link back to the HEMCO source code.
 
@@ -215,7 +215,7 @@ standalone<hco-sa-compile>`.
 
 Files ending in :file:`.rc` are user-edtiable configuration files
 that control HEMCO standalone simulation options.  We will discuss
-these in more detail more in the :ref:`hco-sa-config` chapter.
+these in more detail more in the :ref:`hco-sa-sim-config` chapter.
 
 The :file:`rundir.version` file contains information about the Git
 commit in the HEMCO source code corresponding to this run directory.

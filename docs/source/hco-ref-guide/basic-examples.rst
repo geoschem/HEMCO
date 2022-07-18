@@ -4,6 +4,13 @@
 Basic examples
 ##############
 
+.. note::
+
+   The following sections contain simple HEMCO configuration file
+   examples for demonstration purposes.  If you are using HEMCO with
+   an external model, then your HEMCO configuration file may be more
+   complex than the examples shown below.
+
 All emission calculation settings are specified in :ref:`the HEMCO
 configuration file <hco-cfg>`, which is named :file:`HEMCO_Config.rc`.
 
@@ -14,13 +21,6 @@ environent (see sections :ref:`hco-hood` and :ref:`hco-hood-int`).
 In the sections that follow, we provide some basic examples that
 demonstrate how to modify the configuration file to customize your
 HEMCO simulation.
-
-.. note::
-
-   The following sections contain simple HEMCO configuration file
-   examples for demonstration purposes.  If you are using HEMCO with
-   an external model, then your HEMCO configuration file may be more
-   complex than the examples shown below.
 
 .. _edit-hco-cfg-ex1:
 

@@ -142,8 +142,8 @@ where :literal:`<NAME>` is the name of the setting, and
 :literal:`<VALUE>` is the value that you are assigning it. These
 settings are persistent and saved in your build
 directory. You can set multiple variables in a single command, and you
-can run :ref:`:program:`cmake` as many times as you need to configure
-your desired settings.
+can run :ref:`hco-sa-soft-cmake` as many times as you need to
+configure your desired settings.
 
 .. note::
 
@@ -151,7 +151,7 @@ your desired settings.
    build directory which is :literal:`.` here.
 
 HEMCO has no required build settings. You can find the complete list
-of :ref:`HEMCO's build settings here <hemco_build_options>`. The most
+of :ref:`HEMCO's build settings here <hco-sa-compile-options>`. The most
 frequently used build setting is :literal:`RUNDIR` which lets you
 specify one or more run directories where CMake will install
 HEMCO. Here, "install" refers to copying the compiled executable, and
