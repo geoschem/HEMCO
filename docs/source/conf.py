@@ -97,14 +97,16 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = [
-    'geos-chem-shared-docs/_static'
+    '_static',
+    'geos-chem-shared-docs/_static',
 ]
 
+# Override default settings in sphinx-rtd-theme
 html_context = {
     'css_files': [
-        'theme_overrides.css',  # overrides for wide tables in RTD theme
-        ],
-    }
+        '_static/theme_overrides.css',
+    ],
+}
 
 # Display GEOS-Chem logo
 html_favicon = 'geos-chem-shared-docs/_static/favicon.png'
