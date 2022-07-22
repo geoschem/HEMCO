@@ -300,13 +300,12 @@ cp ./HEMCO_sa_Spec.rc               ${rundir}
 cp ./${grid_file}                   ${rundir}
 cp ./runHEMCO.sh                    ${rundir}
 cp ./README                         ${rundir}
-if  [[ -f ${hco_config_dir}/HEMCO_Config.rc ]]; then
-    cp ${hco_config_dir}/HEMCO_Config.rc ${rundir}
+cp ${hco_config_dir}/HEMCO_Config.* ${rundir}
+if  [[ -f ${hco_config_dir}/HEMCO_Diagn.rc ]]; then
     cp ${hco_config_dir}/HEMCO_Diagn.rc ${rundir}
 else
     printf "\nCould not find a HEMCO_Diagn.rc file corresponding to HEMCO_Config.rc!\n"
     printf "A sample HEMCO_Diagn.rc will be copied to the run directory.\n"
-    cp ./HEMCO_Config.rc.sample ${rundir}/HEMCO_Config.rc
     cp ./HEMCO_Diagn.rc.sample ${rundir}/HEMCO_Diagn.rc
 fi
 
