@@ -9,7 +9,7 @@ The HEMCO configuration file
 ############################
 
 The HEMCO Configuration file is composed of several sections:
-:ref:`Section Settings <hco-cfg-settings>`,
+:ref:`Settings <hco-cfg-settings>`,
 :ref:`Base Emissions <hco-cfg-base>`,
 :ref:`Scale Factors, <hco-cfg-scalefac>`, and
 :ref:`Masks <hco-cfg-masks>`.
@@ -22,9 +22,9 @@ can be found in Figure 2 of :cite:t:`Lin_et_al._2021`:
 
 .. _hco-cfg-settings:
 
-================
-Section settings
-================
+========
+Settings
+========
 
 Parameters and variables used by HEMCO are defined in between these
 comment lines:
