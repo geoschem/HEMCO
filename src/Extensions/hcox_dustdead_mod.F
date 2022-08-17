@@ -5641,13 +5641,40 @@ c Fix up for negative argument, erf, etc.
       !-----------------------------------------------------------------
       ! Nullify pointers
       !-----------------------------------------------------------------
-      IF(ASSOCIATED( Inst%ERD_FCT_GEO  )) DEALLOCATE(Inst%ERD_FCT_GEO  )
-      IF(ASSOCIATED( Inst%SRCE_FUNC    )) DEALLOCATE(Inst%SRCE_FUNC    )
-      IF(ASSOCIATED( Inst%LND_FRC_DRY  )) DEALLOCATE(Inst%LND_FRC_DRY  )
-      IF(ASSOCIATED( Inst%MSS_FRC_CACO3)) DEALLOCATE(Inst%MSS_FRC_CACO3)
-      IF(ASSOCIATED( Inst%MSS_FRC_SND  )) DEALLOCATE(Inst%MSS_FRC_SND  )
-      IF(ASSOCIATED( Inst%SFC_TYP      )) DEALLOCATE(Inst%SFC_TYP      )
-      IF(ASSOCIATED( Inst%VAI_DST      )) DEALLOCATE(Inst%VAI_DST      )
+      IF ( ASSOCIATED( Inst%ERD_FCT_GEO ) ) THEN
+         DEALLOCATE(Inst%ERD_FCT_GEO  )
+      ENDIF
+      Inst%ERD_FCT_GEO => NULL()
+
+      IF ( ASSOCIATED( Inst%SRCE_FUNC ) ) THEN
+         DEALLOCATE(Inst%SRCE_FUNC )
+      ENDIF
+      Inst%SRCE_FUNC => NULL()
+
+      IF ( ASSOCIATED( Inst%LND_FRC_DRY ) ) THEN
+         DEALLOCATE(Inst%LND_FRC_DRY )
+      ENDIF
+      Inst%LND_FRC_DRY   => NULL()
+
+      IF ( ASSOCIATED( Inst%MSS_FRC_CACO3 ) ) THEN
+         DEALLOCATE(Inst%MSS_FRC_CACO3)
+      ENDIF
+      Inst%MSS_FRC_CACO3 => NULL()
+
+      IF ( ASSOCIATED( Inst%MSS_FRC_SND ) ) THEN
+         DEALLOCATE(Inst%MSS_FRC_SND )
+      ENDIF
+      Inst%MSS_FRC_SND => NULL()
+
+      IF ( ASSOCIATED( Inst%SFC_TYP ) ) THEN
+         DEALLOCATE(Inst%SFC_TYP )
+      ENDIF
+      Inst%SFC_TYP => NULL()
+
+      IF ( ASSOCIATED( Inst%VAI_DST ) ) THEN
+         DEALLOCATE(Inst%VAI_DST )
+      ENDIF
+      Inst%VAI_DST => NULL()
 
       !-----------------------------------------------------------------
       ! Cleanup module arrays
