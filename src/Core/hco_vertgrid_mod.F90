@@ -299,15 +299,20 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 !
-    ! Eventually deallocate Ap/Bp vectors
-    IF( ASSOCIATED(zGrid%Ap) ) THEN
-       DEALLOCATE(zGrid%Ap)
-       zGrid%Ap => NULL()
+    IF( ASSOCIATED( zGrid%Ap ) ) THEN
+       DEALLOCATE( zGrid%Ap )
     ENDIF
-    IF( ASSOCIATED(zGrid%Bp) ) THEN
-       DEALLOCATE(zGrid%Bp)
-       zGrid%Bp => NULL()
+    zGrid%Ap => NULL()
+
+    IF( ASSOCIATED( zGrid%Bp ) ) THEN
+       DEALLOCATE( zGrid%Bp )
     ENDIF
+    zGrid%Bp => NULL()
+
+    IF ( ASSOCIATED( zGrid ) ) THEN
+       DEALLOCATE( zGrid )
+    ENDIF
+    zGrid => NULL()
 
   END SUBROUTINE HCO_VertGrid_Cleanup
 !EOC

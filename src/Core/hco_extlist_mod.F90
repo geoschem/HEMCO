@@ -1430,9 +1430,9 @@ CONTAINS
        ! Archive next option in list
        NextOpt => ThisOpt%NextOpt
 
-       ! Cleanup option
+       ! Free the memory allocated to ThisOpt (this avoids memory leaks)
        ThisOpt%NextOpt => NULL()
-       NULLIFY(ThisOpt)
+       DEALLOCATE( ThisOpt )
 
        ! Go to next option in list (previously archived)
        ThisOpt => NextOpt

@@ -3867,7 +3867,7 @@ CONTAINS
 !
 ! !ARGUMENTS:
 !
-    TYPE(DiagnCollection), POINTER :: NewCollection => NULL()
+    TYPE(DiagnCollection), POINTER :: NewCollection
     INTEGER                        :: PS
     CHARACTER(LEN=255)             :: MSG
     CHARACTER(LEN=255)             :: LOC = 'DiagnCollection_Create (hco_diagn_mod.F90)'
@@ -3994,7 +3994,13 @@ CONTAINS
        ! Advance
        NextColl                => ThisColl%NextCollection
        ThisColl%NextCollection => NULL()
+
+       ! Free the memory given to ThisColl to avoid memory leaks
+       DEALLOCATE( ThisColl )
+
+       ! Point to the next collection in the list for the next iteration
        ThisColl                => NextColl
+
     ENDDO
 
   END SUBROUTINE DiagnCollection_Cleanup
