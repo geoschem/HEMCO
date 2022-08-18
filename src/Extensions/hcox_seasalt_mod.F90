@@ -1753,38 +1753,124 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%NR ) ) THEN
+          DEALLOCATE( Inst%NR )
+       ENDIF
+       Inst%NR => NULL()
+
+       IF ( ASSOCIATED( Inst%SS_DEN ) ) THEN
+          DEALLOCATE( Inst%SS_DEN )
+       ENDIF
+       Inst%SS_DEN => NULL()
+
+       IF ( ASSOCIATED( Inst%SRRC ) ) THEN
+          DEALLOCATE( Inst%SRRC )
+       ENDIF
+       Inst%SRRC => NULL()
+
+       IF ( ASSOCIATED( Inst%SRRC_N ) ) THEN
+          DEALLOCATE( Inst%SRRC_N )
+       ENDIF
+       Inst%SRRC_N => NULL()
+
+       IF ( ASSOCIATED( Inst%RREDGE ) ) THEN
+          DEALLOCATE( Inst%RREDGE )
+       ENDIF
+       Inst%RREDGE => NULL()
+
+       IF ( ASSOCIATED( Inst%RRMID  ) ) THEN
+          DEALLOCATE( Inst%RRMID )
+       ENDIF
+       Inst%RRMID => NULL()
+
+       IF ( ASSOCIATED( Inst%NDENS_SALA ) ) THEN
+          DEALLOCATE( Inst%NDENS_SALA )
+       ENDIF
+       Inst%NDENS_SALA => NULL()
+
+       IF ( ASSOCIATED( Inst%NDENS_SALC ) ) THEN
+          DEALLOCATE( Inst%NDENS_SALC )
+       ENDIF
+       Inst%NDENS_SALC => NULL()
+
+       IF ( ASSOCIATED( Inst%NDENS_MOPO ) ) THEN
+          DEALLOCATE( Inst%NDENS_MOPO )
+       ENDIF
+       Inst%NDENS_MOPO => NULL()
+
+       IF ( ASSOCIATED( Inst%NDENS_MOPI ) ) THEN
+          DEALLOCATE( Inst%NDENS_MOPI )
+       ENDIF
+       Inst%NDENS_MOPI => NULL()
+
+       IF ( ASSOCIATED( Inst%CHLR ) ) THEN
+          DEALLOCATE( Inst%CHLR )
+       ENDIF
+       Inst%CHLR => NULL()
+       
+       IF ( ASSOCIATED( Inst%F_DI_N_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_N_FYI )
+       ENDIF
+       Inst%F_DI_N_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DI_N_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_N_MYI )
+       ENDIF
+       Inst%F_DI_N_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DI_S_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_S_FYI )
+       ENDIF
+       Inst%F_DI_S_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DI_S_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_S_MYI )
+       ENDIF
+       Inst%F_DI_S_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_N_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_N_FYI )
+       ENDIF
+       Inst%F_DN_N_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_N_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_N_MYI )
+       ENDIF
+       Inst%F_DN_N_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_S_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_S_FYI )
+       ENDIF
+       Inst%F_DN_S_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_S_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_S_MYI )
+       ENDIF
+       Inst%F_DN_S_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%MULTIICE ) ) THEN
+          DEALLOCATE( Inst%MULTIICE )
+       ENDIF
+       Inst%MULTIICE => NULL()
+       
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
-
-          ! Cleanup module arrays
-          IF ( ASSOCIATED( Inst%NR         ) ) DEALLOCATE( Inst%NR         )
-          IF ( ASSOCIATED( Inst%SS_DEN     ) ) DEALLOCATE( Inst%SS_DEN     )
-          IF ( ASSOCIATED( Inst%SRRC       ) ) DEALLOCATE( Inst%SRRC       )
-          IF ( ASSOCIATED( Inst%SRRC_N     ) ) DEALLOCATE( Inst%SRRC_N     )
-          IF ( ASSOCIATED( Inst%RREDGE     ) ) DEALLOCATE( Inst%RREDGE     )
-          IF ( ASSOCIATED( Inst%RRMID      ) ) DEALLOCATE( Inst%RRMID      )
-          IF ( ASSOCIATED( Inst%NDENS_SALA ) ) DEALLOCATE( Inst%NDENS_SALA )
-          IF ( ASSOCIATED( Inst%NDENS_SALC ) ) DEALLOCATE( Inst%NDENS_SALC )
-          IF ( ASSOCIATED( Inst%NDENS_MOPO ) ) DEALLOCATE( Inst%NDENS_MOPO )
-          IF ( ASSOCIATED( Inst%NDENS_MOPI ) ) DEALLOCATE( Inst%NDENS_MOPI )
-          IF ( ASSOCIATED( Inst%CHLR       ) ) DEALLOCATE( Inst%CHLR       )
-          IF ( ASSOCIATED( Inst%F_DI_N_FYI ) ) DEALLOCATE( Inst%F_DI_N_FYI )
-          IF ( ASSOCIATED( Inst%F_DI_N_MYI ) ) DEALLOCATE( Inst%F_DI_N_MYI )
-          IF ( ASSOCIATED( Inst%F_DI_S_FYI ) ) DEALLOCATE( Inst%F_DI_S_FYI )
-          IF ( ASSOCIATED( Inst%F_DI_S_MYI ) ) DEALLOCATE( Inst%F_DI_S_MYI )
-          IF ( ASSOCIATED( Inst%F_DN_N_FYI ) ) DEALLOCATE( Inst%F_DN_N_FYI )
-          IF ( ASSOCIATED( Inst%F_DN_N_MYI ) ) DEALLOCATE( Inst%F_DN_N_MYI )
-          IF ( ASSOCIATED( Inst%F_DN_S_FYI ) ) DEALLOCATE( Inst%F_DN_S_FYI )
-          IF ( ASSOCIATED( Inst%F_DN_S_MYI ) ) DEALLOCATE( Inst%F_DN_S_MYI )
-          IF ( ASSOCIATED( Inst%MULTIICE   ) ) DEALLOCATE( Inst%MULTIICE   )
-
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

@@ -1350,11 +1350,10 @@ CONTAINS
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
 
     ENDIF
 
-    ! Nullify local pointers for safety's sake 
+    ! Free pointers before exiting
     PrevInst => NULL()
     Inst     => NULL()
 

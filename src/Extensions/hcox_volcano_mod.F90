@@ -1247,42 +1247,34 @@ CONTAINS
        IF ( ALLOCATED( Inst%VolcSlf ) ) THEN
           DEALLOCATE( Inst%VolcSlf )
        ENDIF
-       Inst%VolcSlf => NULL()
 
        IF ( ALLOCATED( Inst%VolcElv ) ) THEN
           DEALLOCATE( Inst%VolcElv )
        ENDIF
-       Inst%VolcElv => NULL()
 
        IF ( ALLOCATED( Inst%VolcCld ) ) THEN
           DEALLOCATE( Inst%VolcCld )
        ENDIF
-       Inst%VolcCld => NULL()
 
        IF ( ALLOCATED( Inst%VolcIdx ) ) THEN
           DEALLOCATE( Inst%VolcIdx )
        ENDIF
-       Inst%VolcIdx => NULL()
 
        IF ( ALLOCATED( Inst%VolcJdx ) ) THEN
           DEALLOCATE( Inst%VolcJdx )
        ENDIF
-       Inst%VolcJdx => NULL()
 
        IF ( ALLOCATED( Inst%SpcIDs ) ) THEN
           DEALLOCATE( Inst%SpcIDs )
        ENDIF
-       Inst%SpcIDs => NULL()
 
        IF ( ALLOCATED( Inst%SpcScl ) ) THEN
           DEALLOCATE( Inst%SpcScl )
        ENDIF
-       Inst%SpcScl => NULL()
 
        IF ( ALLOCATED( Inst%SpcScalFldNme ) ) THEN
           DEALLOCATE( Inst%SpcScalFldNme )
        ENDIF
-       Inst%SpcScalFldNme => NULL()
 
        !---------------------------------------------------------------------
        ! Pop off instance from list
@@ -1293,8 +1285,11 @@ CONTAINS
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

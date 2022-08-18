@@ -1143,11 +1143,6 @@ CONTAINS
     Inst     => NULL()
 
     !=================================================================
-    ! Deallocate module arrays
-    !=================================================================
-
-
-    !=================================================================
     ! Finalize all instances
     !=================================================================
 
@@ -1245,10 +1240,9 @@ CONTAINS
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE( Inst )
-       Inst => NULL()
     ENDIF
 
-    ! Free pointers for safety's sake
+    ! Free pointers before exiting
     PrevInst => NULL()
     Inst     => NULL()
 

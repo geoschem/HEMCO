@@ -1329,32 +1329,72 @@ CONTAINS
     ! InstRemove begins here!
     !=================================================================
 
-    ! Get instance. Also archive previous instance.
+    ! Init
     PrevInst => NULL()
     Inst     => NULL()
+
+    ! Get instance. Also archive previous instance.
     CALL InstGet ( Instance, Inst, RC, PrevInst=PrevInst )
 
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
-       ! Free pointer
-       IF ( ASSOCIATED( Inst%PROFILE       ) ) DEALLOCATE ( Inst%PROFILE       )
-       IF ( ASSOCIATED( Inst%SLBASE        ) ) DEALLOCATE ( Inst%SLBASE        )
-       IF ( ASSOCIATED( Inst%FLASH_DENS_TOT) ) DEALLOCATE ( Inst%FLASH_DENS_TOT)
-       !IF ( ASSOCIATED( Inst%FLASH_DENS_IC ) ) DEALLOCATE ( Inst%FLASH_DENS_IC )
-       !IF ( ASSOCIATED( Inst%FLASH_DENS_CG ) ) DEALLOCATE ( Inst%FLASH_DENS_CG )
-       IF ( ASSOCIATED( Inst%CONV_DEPTH    ) ) DEALLOCATE ( Inst%CONV_DEPTH    )
-       IF ( ALLOCATED ( Inst%SpcScalVal    ) ) DEALLOCATE ( Inst%SpcScalVal    )
-       IF ( ALLOCATED ( Inst%SpcScalFldNme ) ) DEALLOCATE ( Inst%SpcScalFldNme )
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------   
+       IF ( ASSOCIATED( Inst%PROFILE ) ) THEN
+          DEALLOCATE( Inst%PROFILE )
+       ENDIF
+       Inst%PROFILE => NULL()
+
+       IF ( ASSOCIATED( Inst%SLBASE ) ) THEN
+          DEALLOCATE( Inst%SLBASE )
+       ENDIF
+       Inst%SLBASE => NULL()
+
+       IF ( ASSOCIATED( Inst%FLASH_DENS_TOT ) ) THEN
+          DEALLOCATE( Inst%FLASH_DENS_TOT )
+       ENDIF
+       Inst%FLASH_DENS_TOT => NULL()
+
+       !IF ( ASSOCIATED( Inst%FLASH_DENS_IC ) ) THEN
+       !   DEALLOCATE( Inst%FLASH_DENS_IC )
+       !ENDIF
+       Inst%FLASH_DENS_IC => NULL()
+
+       !IF ( ASSOCIATED( Inst%FLASH_DENS_CG ) ) THEN
+       !   DEALLOCATE ( Inst%FLASH_DENS_CG )
+       !ENDIF
+       Inst%FLASH_DENS_CG => NULL()
+
+       IF ( ASSOCIATED( Inst%CONV_DEPTH ) ) THEN
+          DEALLOCATE( Inst%CONV_DEPTH )
+       ENDIF
+       Inst%CONV_DEPTH => NULL()
+
+       IF ( ALLOCATED ( Inst%SpcScalVal ) ) THEN
+          DEALLOCATE( Inst%SpcScalVal )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%SpcScalFldNme ) ) THEN
+          DEALLOCATE( Inst%SpcScalFldNme )
+       ENDIF
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

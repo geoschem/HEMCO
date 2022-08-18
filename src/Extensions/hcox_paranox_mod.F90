@@ -3024,46 +3024,144 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%ShipNO ) ) THEN
+          DEALLOCATE ( Inst%ShipNO )
+       ENDIF
+       Inst%ShipNO => NULL()
+
+       IF ( ASSOCIATED( Inst%SC5 ) ) THEN
+          DEALLOCATE ( Inst%SC5 )
+       ENDIF
+       Inst%SC5 => NULL()
+
+       IF ( ASSOCIATED( Inst%FRACNOX_LUT02 ) ) THEN
+          DEALLOCATE( Inst%FRACNOX_LUT02 )
+       ENDIF
+       Inst%FRACNOX_LUT02 => NULL()
+
+       IF ( ASSOCIATED( Inst%FRACNOX_LUT06 ) ) THEN
+          DEALLOCATE( Inst%FRACNOX_LUT06 )
+       ENDIF
+       Inst%FRACNOX_LUT06 => NULL()
+
+       IF ( ASSOCIATED( Inst%FRACNOX_LUT10 ) ) THEN
+          DEALLOCATE( Inst%FRACNOX_LUT10 )
+       ENDIF
+       Inst%FRACNOX_LUT10 => NULL()
+
+       IF ( ASSOCIATED( Inst%FRACNOX_LUT14 ) ) THEN
+          DEALLOCATE( Inst%FRACNOX_LUT14 )
+       ENDIF
+       Inst%FRACNOX_LUT14 => NULL()
+
+       IF ( ASSOCIATED( Inst%FRACNOX_LUT18 ) ) THEN
+          DEALLOCATE( Inst%FRACNOX_LUT18 )
+       ENDIF
+       Inst%FRACNOX_LUT18 => NULL()
+
+       IF ( ASSOCIATED( Inst%OPE_LUT02 ) ) THEN
+          DEALLOCATE( Inst%OPE_LUT02 )
+       ENDIF
+       Inst%OPE_LUT02 => NULL()
+
+       IF ( ASSOCIATED( Inst%OPE_LUT06 ) ) THEN
+          DEALLOCATE( Inst%OPE_LUT06 )
+       ENDIF
+       Inst%OPE_LUT06 => NULL()
+
+       IF ( ASSOCIATED( Inst%OPE_LUT10 ) ) THEN
+          DEALLOCATE( Inst%OPE_LUT10 )
+       ENDIF
+       Inst%OPE_LUT10 => NULL()
+
+       IF ( ASSOCIATED( Inst%OPE_LUT14 ) ) THEN
+          DEALLOCATE( Inst%OPE_LUT14 )
+       ENDIF
+       Inst%OPE_LUT14 => NULL()
+
+       IF ( ASSOCIATED( Inst%OPE_LUT18 ) ) THEN
+          DEALLOCATE( Inst%OPE_LUT18 )
+       ENDIF
+       Inst%OPE_LUT18 => NULL()
+
+       IF ( ASSOCIATED( Inst%MOE_LUT02 ) ) THEN
+          DEALLOCATE( Inst%MOE_LUT02 )
+       ENDIF
+       Inst%MOE_LUT02 => NULL()
+
+       IF ( ASSOCIATED( Inst%MOE_LUT06 ) ) THEN
+          DEALLOCATE( Inst%MOE_LUT06 )
+       ENDIF
+       Inst%MOE_LUT06 => NULL()
+
+       IF ( ASSOCIATED( Inst%MOE_LUT10 ) ) THEN
+          DEALLOCATE( Inst%MOE_LUT10 )
+       ENDIF
+       Inst%MOE_LUT10 => NULL()
+
+       IF ( ASSOCIATED( Inst%MOE_LUT14 ) ) THEN
+          DEALLOCATE( Inst%MOE_LUT14 )
+       ENDIF
+       Inst%MOE_LUT14 => NULL()
+
+       IF ( ASSOCIATED( Inst%MOE_LUT18 ) ) THEN
+          DEALLOCATE( Inst%MOE_LUT18 )
+       ENDIF
+       Inst%MOE_LUT18 => NULL()
+
+       IF ( ASSOCIATED( Inst%DNOx_LUT02 ) ) THEN
+          DEALLOCATE( Inst%DNOx_LUT02 )
+       ENDIF
+       Inst%DNOx_LUT02 => NULL()
+
+       IF ( ASSOCIATED( Inst%DNOx_LUT06 ) ) THEN
+          DEALLOCATE( Inst%DNOx_LUT06 )
+       ENDIF
+       Inst%DNOx_LUT06 => NULL()
+
+       IF ( ASSOCIATED( Inst%DNOx_LUT10 ) ) THEN
+          DEALLOCATE( Inst%DNOx_LUT10 )
+       ENDIF
+       Inst%DNOx_LUT10 => NULL()
+
+       IF ( ASSOCIATED( Inst%DNOx_LUT14 ) ) THEN
+          DEALLOCATE( Inst%DNOx_LUT14 )
+       ENDIF
+       Inst%DNOx_LUT14 => NULL()
+
+       IF ( ASSOCIATED( Inst%DNOx_LUT18 ) ) THEN
+          DEALLOCATE( Inst%DNOx_LUT18 )
+       ENDIF
+       Inst%DNOx_LUT18 => NULL()
+
+       IF ( ASSOCIATED( Inst%DEPO3 ) ) THEN
+          DEALLOCATE( Inst%DEPO3  )
+       ENDIF
+       Inst%DEPO3 => NULL()
+
+       IF ( ASSOCIATED( Inst%DEPHNO3 ) ) THEN
+          DEALLOCATE( Inst%DEPHNO3 )
+       ENDIF
+       Inst%DEPHNO3 => NULL()
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
-
-          IF ( ASSOCIATED( Inst%ShipNO) ) DEALLOCATE ( Inst%ShipNO )
-          IF ( ASSOCIATED( Inst%SC5   ) ) DEALLOCATE ( Inst%SC5    )
-
-          IF ( ASSOCIATED( Inst%FRACNOX_LUT02 ) ) DEALLOCATE( Inst%FRACNOX_LUT02 )
-          IF ( ASSOCIATED( Inst%FRACNOX_LUT06 ) ) DEALLOCATE( Inst%FRACNOX_LUT06 )
-          IF ( ASSOCIATED( Inst%FRACNOX_LUT10 ) ) DEALLOCATE( Inst%FRACNOX_LUT10 )
-          IF ( ASSOCIATED( Inst%FRACNOX_LUT14 ) ) DEALLOCATE( Inst%FRACNOX_LUT14 )
-          IF ( ASSOCIATED( Inst%FRACNOX_LUT18 ) ) DEALLOCATE( Inst%FRACNOX_LUT18 )
-
-          IF ( ASSOCIATED( Inst%OPE_LUT02     ) ) DEALLOCATE( Inst%OPE_LUT02     )
-          IF ( ASSOCIATED( Inst%OPE_LUT06     ) ) DEALLOCATE( Inst%OPE_LUT06     )
-          IF ( ASSOCIATED( Inst%OPE_LUT10     ) ) DEALLOCATE( Inst%OPE_LUT10     )
-          IF ( ASSOCIATED( Inst%OPE_LUT14     ) ) DEALLOCATE( Inst%OPE_LUT14     )
-          IF ( ASSOCIATED( Inst%OPE_LUT18     ) ) DEALLOCATE( Inst%OPE_LUT18     )
-
-          IF ( ASSOCIATED( Inst%MOE_LUT02     ) ) DEALLOCATE( Inst%MOE_LUT02     )
-          IF ( ASSOCIATED( Inst%MOE_LUT06     ) ) DEALLOCATE( Inst%MOE_LUT06     )
-          IF ( ASSOCIATED( Inst%MOE_LUT10     ) ) DEALLOCATE( Inst%MOE_LUT10     )
-          IF ( ASSOCIATED( Inst%MOE_LUT14     ) ) DEALLOCATE( Inst%MOE_LUT14     )
-          IF ( ASSOCIATED( Inst%MOE_LUT18     ) ) DEALLOCATE( Inst%MOE_LUT18     )
-
-          IF ( ASSOCIATED( Inst%DNOx_LUT02    ) ) DEALLOCATE( Inst%DNOx_LUT02    )
-          IF ( ASSOCIATED( Inst%DNOx_LUT06    ) ) DEALLOCATE( Inst%DNOx_LUT06    )
-          IF ( ASSOCIATED( Inst%DNOx_LUT10    ) ) DEALLOCATE( Inst%DNOx_LUT10    )
-          IF ( ASSOCIATED( Inst%DNOx_LUT14    ) ) DEALLOCATE( Inst%DNOx_LUT14    )
-          IF ( ASSOCIATED( Inst%DNOx_LUT18    ) ) DEALLOCATE( Inst%DNOx_LUT18    )
-
-          IF ( ASSOCIATED( Inst%DEPO3         ) ) DEALLOCATE( Inst%DEPO3         )
-          IF ( ASSOCIATED( Inst%DEPHNO3       ) ) DEALLOCATE( Inst%DEPHNO3       )
-
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

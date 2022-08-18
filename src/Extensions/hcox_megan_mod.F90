@@ -4817,83 +4817,324 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
-       IF ( ASSOCIATED( Inst%ARRAY_16    ) ) DEALLOCATE( Inst%ARRAY_16    )
-       IF ( ASSOCIATED( Inst%NORM_FAC    ) ) DEALLOCATE( Inst%NORM_FAC    )
-       IF ( ASSOCIATED( Inst%AEF_ISOP    ) ) DEALLOCATE( Inst%AEF_ISOP    )
-       IF ( ASSOCIATED( Inst%AEF_MBOX    ) ) DEALLOCATE( Inst%AEF_MBOX    )
-       IF ( ASSOCIATED( Inst%AEF_BPIN    ) ) DEALLOCATE( Inst%AEF_BPIN    )
-       IF ( ASSOCIATED( Inst%AEF_CARE    ) ) DEALLOCATE( Inst%AEF_CARE    )
-       IF ( ASSOCIATED( Inst%AEF_LIMO    ) ) DEALLOCATE( Inst%AEF_LIMO    )
-       IF ( ASSOCIATED( Inst%AEF_OCIM    ) ) DEALLOCATE( Inst%AEF_OCIM    )
-       IF ( ASSOCIATED( Inst%AEF_SABI    ) ) DEALLOCATE( Inst%AEF_SABI    )
-       IF ( ASSOCIATED( Inst%AEF_APIN    ) ) DEALLOCATE( Inst%AEF_APIN    )
-       IF ( ASSOCIATED( Inst%AEF_MYRC    ) ) DEALLOCATE( Inst%AEF_MYRC    )
-       IF ( ASSOCIATED( Inst%AEF_OMON    ) ) DEALLOCATE( Inst%AEF_OMON    )
-       IF ( ASSOCIATED( Inst%AEF_ACET    ) ) DEALLOCATE( Inst%AEF_ACET    )
-       IF ( ASSOCIATED( Inst%AEF_MOH     ) ) DEALLOCATE( Inst%AEF_MOH     )
-       IF ( ASSOCIATED( Inst%AEF_EOH     ) ) DEALLOCATE( Inst%AEF_EOH     )
-       IF ( ASSOCIATED( Inst%AEF_CH2O    ) ) DEALLOCATE( Inst%AEF_CH2O    )
-       IF ( ASSOCIATED( Inst%AEF_ALD2    ) ) DEALLOCATE( Inst%AEF_ALD2    )
-       IF ( ASSOCIATED( Inst%AEF_FAXX    ) ) DEALLOCATE( Inst%AEF_FAXX    )
-       IF ( ASSOCIATED( Inst%AEF_AAXX    ) ) DEALLOCATE( Inst%AEF_AAXX    )
-       IF ( ASSOCIATED( Inst%AEF_C2H4    ) ) DEALLOCATE( Inst%AEF_C2H4    )
-       IF ( ASSOCIATED( Inst%AEF_TOLU    ) ) DEALLOCATE( Inst%AEF_TOLU    )
-       IF ( ASSOCIATED( Inst%AEF_HCNX    ) ) DEALLOCATE( Inst%AEF_HCNX    )
-       IF ( ASSOCIATED( Inst%AEF_PRPE    ) ) DEALLOCATE( Inst%AEF_PRPE    )
-       IF ( ASSOCIATED( Inst%AEF_FARN    ) ) DEALLOCATE( Inst%AEF_FARN    )
-       IF ( ASSOCIATED( Inst%AEF_BCAR    ) ) DEALLOCATE( Inst%AEF_BCAR    )
-       IF ( ASSOCIATED( Inst%AEF_OSQT    ) ) DEALLOCATE( Inst%AEF_OSQT    )
-       IF ( ASSOCIATED( Inst%FLUXISOP    ) ) DEALLOCATE( Inst%FLUXISOP    )
-       IF ( ASSOCIATED( Inst%FLUXMONO    ) ) DEALLOCATE( Inst%FLUXMONO    )
-       IF ( ASSOCIATED( Inst%FLUXACET    ) ) DEALLOCATE( Inst%FLUXACET    )
-       IF ( ASSOCIATED( Inst%FLUXACETmb  ) ) DEALLOCATE( Inst%FLUXACETmb  )
-       IF ( ASSOCIATED( Inst%FLUXACETbg  ) ) DEALLOCATE( Inst%FLUXACETbg  )
-       IF ( ASSOCIATED( Inst%FLUXPRPE    ) ) DEALLOCATE( Inst%FLUXPRPE    )
-       IF ( ASSOCIATED( Inst%FLUXC2H4    ) ) DEALLOCATE( Inst%FLUXC2H4    )
-       IF ( ASSOCIATED( Inst%FLUXLIMO    ) ) DEALLOCATE( Inst%FLUXLIMO    )
-       IF ( ASSOCIATED( Inst%FLUXMTPA    ) ) DEALLOCATE( Inst%FLUXMTPA    )
-       IF ( ASSOCIATED( Inst%FLUXMTPO    ) ) DEALLOCATE( Inst%FLUXMTPO    )
-       IF ( ASSOCIATED( Inst%FLUXSESQ    ) ) DEALLOCATE( Inst%FLUXSESQ    )
-       IF ( ASSOCIATED( Inst%FLUXSOAP    ) ) DEALLOCATE( Inst%FLUXSOAP    )
-       IF ( ASSOCIATED( Inst%FLUXSOAS    ) ) DEALLOCATE( Inst%FLUXSOAS    )
-       IF ( ASSOCIATED( Inst%FLUXALD2    ) ) DEALLOCATE( Inst%FLUXALD2    )
-       IF ( ASSOCIATED( Inst%FLUXMOH     ) ) DEALLOCATE( Inst%FLUXMOH     )
-       IF ( ASSOCIATED( Inst%FLUXEOH     ) ) DEALLOCATE( Inst%FLUXEOH     )
-       IF ( ASSOCIATED( Inst%FLUXAPIN    ) ) DEALLOCATE( Inst%FLUXAPIN    )
-       IF ( ASSOCIATED( Inst%FLUXBPIN    ) ) DEALLOCATE( Inst%FLUXBPIN    )
-       IF ( ASSOCIATED( Inst%FLUXSABI    ) ) DEALLOCATE( Inst%FLUXSABI    )
-       IF ( ASSOCIATED( Inst%FLUXMYRC    ) ) DEALLOCATE( Inst%FLUXMYRC    )
-       IF ( ASSOCIATED( Inst%FLUXCARE    ) ) DEALLOCATE( Inst%FLUXCARE    )
-       IF ( ASSOCIATED( Inst%FLUXOCIM    ) ) DEALLOCATE( Inst%FLUXOCIM    )
-       IF ( ASSOCIATED( Inst%FLUXOMON    ) ) DEALLOCATE( Inst%FLUXOMON    )
-       IF ( ASSOCIATED( Inst%FLUXMBOX    ) ) DEALLOCATE( Inst%FLUXMBOX    )
-       IF ( ASSOCIATED( Inst%FLUXFAXX    ) ) DEALLOCATE( Inst%FLUXFAXX    )
-       IF ( ASSOCIATED( Inst%FLUXAAXX    ) ) DEALLOCATE( Inst%FLUXAAXX    )
-       IF ( ASSOCIATED( Inst%FLUXFARN    ) ) DEALLOCATE( Inst%FLUXFARN    )
-       IF ( ASSOCIATED( Inst%FLUXBCAR    ) ) DEALLOCATE( Inst%FLUXBCAR    )
-       IF ( ASSOCIATED( Inst%FLUXOSQT    ) ) DEALLOCATE( Inst%FLUXOSQT    )
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%ARRAY_16 ) ) THEN
+          DEALLOCATE( Inst%ARRAY_16 )
+       ENDIF
+       Inst%ARRAY_16 => NULL()
 
-       IF ( ASSOCIATED( Inst%LAI_PREVDAY ) ) DEALLOCATE( Inst%LAI_PREVDAY )
-       IF ( ASSOCIATED( Inst%T_LASTXDAYS ) ) DEALLOCATE( Inst%T_LASTXDAYS )
-       IF ( ASSOCIATED( Inst%T_LAST24H   ) ) DEALLOCATE( Inst%T_LAST24H   )
+       IF ( ASSOCIATED( Inst%NORM_FAC ) ) THEN
+          DEALLOCATE( Inst%NORM_FAC )
+       ENDIF
+       Inst%NORM_FAC => NULL()
 
-       IF ( ASSOCIATED( Inst%PARDF_LASTXDAYS ) ) &
-            DEALLOCATE( Inst%PARDF_LASTXDAYS )
-       IF ( ASSOCIATED( Inst%PARDR_LASTXDAYS ) ) &
-            DEALLOCATE( Inst%PARDR_LASTXDAYS )
+       IF ( ASSOCIATED( Inst%AEF_ISOP ) ) THEN
+          DEALLOCATE( Inst%AEF_ISOP )
+       ENDIF
+       Inst%AEF_ISOP => NULL()
 
-       ! ----------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%AEF_MBOX ) ) THEN
+          DEALLOCATE( Inst%AEF_MBOX )
+       ENDIF
+       Inst%AEF_MBOX => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_BPIN ) ) THEN
+          DEALLOCATE( Inst%AEF_BPIN )
+       ENDIF
+       Inst%AEF_BPIN => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_CARE ) ) THEN
+          DEALLOCATE( Inst%AEF_CARE )
+       ENDIF
+       Inst%AEF_CARE => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_LIMO ) ) THEN
+          DEALLOCATE( Inst%AEF_LIMO )
+       ENDIF
+       Inst%AEF_LIMO => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_OCIM ) ) THEN
+          DEALLOCATE( Inst%AEF_OCIM )
+       ENDIF
+       Inst%AEF_OCIM => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_SABI ) ) THEN
+          DEALLOCATE( Inst%AEF_SABI )
+       ENDIF
+       Inst%AEF_SABI => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_APIN ) ) THEN
+          DEALLOCATE( Inst%AEF_APIN )
+       ENDIF
+       Inst%AEF_APIN => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_MYRC ) ) THEN
+          DEALLOCATE( Inst%AEF_MYRC )
+       ENDIF
+       Inst%AEF_MYRC => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_OMON ) ) THEN
+          DEALLOCATE( Inst%AEF_OMON )
+       ENDIF
+       Inst%AEF_OMON => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_ACET ) ) THEN
+          DEALLOCATE( Inst%AEF_ACET )
+       ENDIF
+       Inst%AEF_ACET => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_MOH  ) ) THEN
+          DEALLOCATE( Inst%AEF_MOH  )
+       ENDIF
+       Inst%AEF_MOH => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_EOH  ) ) THEN
+          DEALLOCATE( Inst%AEF_EOH  )
+       ENDIF
+       Inst%AEF_EOH  => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_CH2O ) ) THEN
+          DEALLOCATE( Inst%AEF_CH2O )
+       ENDIF
+       Inst%AEF_CH2O => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_ALD2 ) ) THEN
+          DEALLOCATE( Inst%AEF_ALD2 )
+       ENDIF
+       Inst%AEF_ALD2 => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_FAXX ) ) THEN
+          DEALLOCATE( Inst%AEF_FAXX )
+       ENDIF
+       Inst%AEF_FAXX => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_AAXX ) ) THEN
+          DEALLOCATE( Inst%AEF_AAXX )
+       ENDIF
+       Inst%AEF_AAXX => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_C2H4 ) ) THEN
+          DEALLOCATE( Inst%AEF_C2H4 )
+       ENDIF
+       Inst%AEF_C2H4 => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_TOLU ) ) THEN
+          DEALLOCATE( Inst%AEF_TOLU )
+       ENDIF
+       Inst%AEF_TOLU => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_HCNX ) ) THEN
+          DEALLOCATE( Inst%AEF_HCNX )
+       ENDIF
+       Inst%AEF_HCNX => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_PRPE ) ) THEN
+          DEALLOCATE( Inst%AEF_PRPE )
+       ENDIF
+       Inst%AEF_PRPE => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_FARN ) ) THEN
+          DEALLOCATE( Inst%AEF_FARN )
+       ENDIF
+       Inst%AEF_FARN => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_BCAR ) ) THEN
+          DEALLOCATE( Inst%AEF_BCAR )
+       ENDIF
+       Inst%AEF_BCAR => NULL()
+
+       IF ( ASSOCIATED( Inst%AEF_OSQT ) ) THEN
+          DEALLOCATE( Inst%AEF_OSQT )
+       ENDIF
+       Inst%AEF_OSQT => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXISOP ) ) THEN
+          DEALLOCATE( Inst%FLUXISOP )
+       ENDIF
+       Inst%FLUXISOP => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXMONO ) ) THEN
+          DEALLOCATE( Inst%FLUXMONO )
+       ENDIF
+       Inst%FLUXMONO => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXACET ) ) THEN
+          DEALLOCATE( Inst%FLUXACET )
+       ENDIF
+       Inst%FLUXACET => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXACETmb ) ) THEN
+          DEALLOCATE( Inst%FLUXACETmb )
+       ENDIF
+       Inst%FLUXACETmb => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXACETbg ) ) THEN
+          DEALLOCATE( Inst%FLUXACETbg )
+       ENDIF
+       Inst%FLUXACETbg => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXPRPE ) ) THEN
+          DEALLOCATE( Inst%FLUXPRPE )
+       ENDIF
+       Inst%FLUXPRPE => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXC2H4 ) ) THEN
+          DEALLOCATE( Inst%FLUXC2H4 )
+       ENDIF
+       Inst%FLUXC2H4 => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXLIMO ) ) THEN
+          DEALLOCATE( Inst%FLUXLIMO )
+       ENDIF
+       Inst%FLUXLIMO => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXMTPA ) ) THEN
+          DEALLOCATE( Inst%FLUXMTPA )
+       ENDIF
+       Inst%FLUXMTPA => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXMTPO ) ) THEN
+          DEALLOCATE( Inst%FLUXMTPO )
+       ENDIF
+       Inst%FLUXMTPO => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXSESQ ) ) THEN
+          DEALLOCATE( Inst%FLUXSESQ )
+       ENDIF
+       Inst%FLUXSESQ => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXSOAP ) ) THEN
+          DEALLOCATE( Inst%FLUXSOAP )
+       ENDIF
+       Inst%FLUXSOAP => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXSOAS ) ) THEN
+          DEALLOCATE( Inst%FLUXSOAS )
+       ENDIF
+       Inst%FLUXSOAS => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXALD2 ) ) THEN
+          DEALLOCATE( Inst%FLUXALD2 )
+       ENDIF
+       Inst%FLUXALD2 => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXMOH ) ) THEN
+          DEALLOCATE( Inst%FLUXMOH )
+       ENDIF
+       Inst%FLUXMOH => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXEOH ) ) THEN
+          DEALLOCATE( Inst%FLUXEOH )
+       ENDIF
+       Inst%FLUXEOH => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXAPIN ) ) THEN
+          DEALLOCATE( Inst%FLUXAPIN )
+       ENDIF
+       Inst%FLUXAPIN => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXBPIN ) ) THEN
+          DEALLOCATE( Inst%FLUXBPIN )
+       ENDIF
+       Inst%FLUXBPIN => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXSABI ) ) THEN
+          DEALLOCATE( Inst%FLUXSABI )
+       ENDIF
+       Inst%FLUXSABI => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXMYRC ) ) THEN
+          DEALLOCATE( Inst%FLUXMYRC )
+       ENDIF
+       Inst%FLUXMYRC => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXCARE ) ) THEN
+          DEALLOCATE( Inst%FLUXCARE )
+       ENDIF
+       Inst%FLUXCARE => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXOCIM ) ) THEN
+          DEALLOCATE( Inst%FLUXOCIM )
+       ENDIF
+       Inst%FLUXOCIM => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXOMON ) ) THEN
+          DEALLOCATE( Inst%FLUXOMON )
+       ENDIF
+       Inst%FLUXOMON => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXMBOX ) ) THEN
+          DEALLOCATE( Inst%FLUXMBOX )
+       ENDIF
+       Inst%FLUXMBOX => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXFAXX ) ) THEN
+          DEALLOCATE( Inst%FLUXFAXX )
+       ENDIF
+       Inst%FLUXFAXX => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXAAXX ) ) THEN
+          DEALLOCATE( Inst%FLUXAAXX )
+       ENDIF
+       Inst%FLUXAAXX => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXFARN ) ) THEN
+          DEALLOCATE( Inst%FLUXFARN )
+       ENDIF
+       Inst%FLUXFARN => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXBCAR ) ) THEN
+          DEALLOCATE( Inst%FLUXBCAR )
+       ENDIF
+       Inst%FLUXBCAR => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUXOSQT ) ) THEN
+          DEALLOCATE( Inst%FLUXOSQT )
+       ENDIF
+       Inst%FLUXOSQT => NULL()
+
+       IF ( ASSOCIATED( Inst%LAI_PREVDAY ) ) THEN
+          DEALLOCATE( Inst%LAI_PREVDAY )
+       ENDIF
+       Inst%LAI_PREVDAY => NULL()
+
+       IF ( ASSOCIATED( Inst%T_LASTXDAYS ) ) THEN
+          DEALLOCATE( Inst%T_LASTXDAYS )
+       ENDIF
+       Inst%T_LASTXDAYS => NULL()
+
+       IF ( ASSOCIATED( Inst%T_LAST24H ) ) THEN
+          DEALLOCATE( Inst%T_LAST24H )
+       ENDIF
+       Inst%T_LAST24H => NULL()
+
+       IF ( ASSOCIATED( Inst%PARDF_LASTXDAYS ) ) THEN
+          DEALLOCATE( Inst%PARDF_LASTXDAYS )
+       ENDIF
+       Inst%PARDF_LASTXDAYS => NULL()
+
+       IF ( ASSOCIATED( Inst%PARDR_LASTXDAYS ) ) THEN
+          DEALLOCATE( Inst%PARDR_LASTXDAYS )
+       ENDIF
+       Inst%PARDR_LASTXDAYS => NULL()  
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
-       ! ----------------------------------------------------------------
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
-
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
   END SUBROUTINE InstRemove
 !EOC

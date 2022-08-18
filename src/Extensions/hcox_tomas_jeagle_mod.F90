@@ -782,22 +782,48 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%TOMAS_DBIN ) ) THEN
+          DEALLOCATE( Inst%TOMAS_DBIN )
+       ENDIF
+       Inst%TOMAS_DBIN => NULL()
+
+       IF ( ASSOCIATED( Inst%DRFAC ) ) THEN
+          DEALLOCATE( Inst%DRFAC )
+       ENDIF
+       Inst%DRFAC => NULL()
+
+       IF ( ASSOCIATED( Inst%TC1 ) ) THEN
+          DEALLOCATE( Inst%TC1 )
+       ENDIF
+       Inst%TC1 => NULL()
+
+       IF ( ASSOCIATED( Inst%TC2 ) ) THEN
+          DEALLOCATE( Inst%TC2 )
+       ENDIF
+       Inst%TC2 => NULL()
+
+       IF ( ALLOCATED ( Inst%HcoIDs ) ) THEN
+          DEALLOCATE( Inst%HcoIDs )
+       ENDIF
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
-
-          IF ( ASSOCIATED( Inst%TOMAS_DBIN ) ) DEALLOCATE( Inst%TOMAS_DBIN )
-          IF ( ASSOCIATED( Inst%DRFAC      ) ) DEALLOCATE( Inst%DRFAC      )
-          IF ( ASSOCIATED( Inst%TC1        ) ) DEALLOCATE( Inst%TC1        )
-          IF ( ASSOCIATED( Inst%TC2        ) ) DEALLOCATE( Inst%TC2        )
-          IF ( ALLOCATED ( Inst%HcoIDs     ) ) DEALLOCATE( Inst%HcoIDs     )
-
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC
