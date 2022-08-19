@@ -2281,11 +2281,46 @@ CONTAINS
              ! can be seen as fully covering a given CPU even though in
              ! reality it may only cover parts of it. Thus, in ESMF mode
              ! always set coverage to zero or partial (ckeller, 3/17/16).
+             !
+             ! This appears to be related to masking for two inventories
+             ! with overlapping temporal coverage. For example, if inventory
+             ! A is 2013-2015, and B is 2010-2018 with higher hierarchy,
+             ! but not the same mask (maybe A covers regions that B does not).
+             ! If both masks are set to ThisCover == 1 (full coverage), because
+             ! a certain CPU might be overlapped by lon1/lat1/lon2/lat2 even
+             ! though the actual netCDF shape of the mask is different,
+             ! then a simulation running 2013-2015 will see inventory B on that CPU
+             ! decide it has full coverage (only through lon1/..), and skip
+             ! inventory A altogether, resulting in missing emissions.
+             ! This behavior is in the line
+             ! IF ( (tmpLct%Dct%Hier > Hier) .AND. (tmpCov==1) ) THEN below.
+             !
+             ! This is a distinct bug from another artifact caused by MPI environments,
+             ! where lon1/lat1/... is set too small, resulting in certain CPUs not
+             ! having overlap (defined by cpux/y) with lon1/lat1/..., and thus
+             ! skipping the base inventory as a bug. This behavior is in the line
+             ! IF ( (mskLct%Dct%DctType  == HCO_DCTTYPE_MASK ) .AND. &
+             ! (mskLct%Dct%Dta%Cover == 0 )        ) THEN
+             ! below.
+             !
+             ! This is fixed by the other fix a few lines down. (hplin, 8/19/22)
 #if defined ( ESMF_ ) || defined( MODEL_WRF ) || defined( MODEL_CESM )
              IF ( ThisCover == 1 ) ThisCover = -1
 #endif
 
           ENDIF
+
+          ! Because the code only distinguishes between full/partial and zero coverage,
+          ! and skips reading the base field if coverage is zero, this may cause
+          ! issues with MPI environments in WRF and CESM where the mask lon1/lat1/lon2/lat2
+          ! boundaries are set too small compared to the mask, and result in the
+          ! base field being skipped over small CPU decompositions where it should not have
+          ! been. The above fix does not fix the issue where ThisCover == 0,
+          ! which is the root cause in WRF and CESM. Thus, always set to partial coverage
+          ! (hplin, 8/19/22)
+#if defined( MODEL_WRF ) || defined( MODEL_CESM )
+          ThisCover = -1
+#endif
 
           ! Update container information
           Lct%Dct%Dta%Cover    = ThisCover
