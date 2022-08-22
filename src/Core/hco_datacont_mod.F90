@@ -262,10 +262,15 @@ CONTAINS
        ENDIF
 
        ! Clean up data container if DeepClean option is enabled.
+       ! Prevent memory leaks by making sure sub-fields of Dct are freed.
+       !   -- Bob Yantosca (22 Aug 2022)
        IF ( DeepClean ) THEN
+          IF ( ASSOCIATED( Dct%Dta ) ) DEALLOCATE( Dct%Dta )
           Dct%Dta => NULL()
-          IF(ASSOCIATED(Dct%Scal_cID)) DEALLOCATE(Dct%Scal_cID)
-          DEALLOCATE ( Dct )
+          IF( ASSOCIATED( Dct%Scal_cID ) ) DEALLOCATE( Dct%Scal_cID )
+          Dct%Scal_cID => NULL()
+          DEALLOCATE( Dct )
+          Dct => NULL()
        ENDIF
 
     ENDIF

@@ -921,8 +921,9 @@ CONTAINS
                 ENDIF
                 Lct%Dct%DtaHome = Lct%Dct%DtaHome - 1
              ELSE
-                Dta => NULL()
-                CALL FileData_Init ( Dta )
+                ! NOTE: FileData_Init now nullifies the Dta object
+                ! befire allocation.  -- Bob Yantosca (22 Aug 2022)
+                CALL FileData_Init( Dta )
 
                 ! Set source file name. Check if the read file name starts
                 ! with the configuration file token '$CFDIR', in which case
@@ -1119,8 +1120,9 @@ CONTAINS
              ENDIF
              Lct%Dct%DtaHome = Lct%Dct%DtaHome - 1
           ELSE
-             Dta => NULL()
-             CALL FileData_Init ( Dta )
+             ! NOTE: FileData_Init now nullifies the Dta object
+             ! before allocation. -- Bob Yantosca (22 Aug 2022)
+             CALL FileData_Init( Dta )
 
              ! Set source file name. Check if the read file name starts
              ! with the configuration file token '$CFDIR', in which case
