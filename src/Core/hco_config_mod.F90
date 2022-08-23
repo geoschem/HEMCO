@@ -3559,8 +3559,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    TYPE(ListCont), POINTER :: NewLct
-    INTEGER                 :: cID
+    INTEGER :: cID
 
     !======================================================================
     ! ConfigList_AddCont begins here
@@ -3570,22 +3569,20 @@ CONTAINS
     ! The DataCont_Init call creates a new data container (type DataCont)
     ! All HEMCO lists (ConfigList, ReadList, EmisList) point to this
     ! container!
-    ALLOCATE ( NewLct )
-    NewLct%Dct      => NULL()
-    NewLct%NextCont => NULL()
+    ALLOCATE ( Lct )
+    Lct%Dct      => NULL()
+    Lct%NextCont => NULL()
 
     ! Get # of containers in list. Set new container ID (cID) to # of
     ! containers + 1.
     cID = ListCont_Length( List )
     cID = cID + 1
-    CALL DataCont_Init ( NewLct%Dct, cID )
+    CALL DataCont_Init ( Lct%Dct, cID )
 
     ! Connect blank container with ConfigList list.
-    NewLct%NextCont => List
-    List            => NewLct
+    Lct%NextCont => List
+    List         => Lct
 
-    ! Output pointer points to the new container
-    Lct => NewLct
 
   END SUBROUTINE ConfigList_AddCont
 !EOC
