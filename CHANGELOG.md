@@ -6,8 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+  - nothing yet
 
-## [3.5.0] - TBD
+## [3.5.1] - 2022-09-16
+### Added
+  - Bug fix for masking issues in MPI environment (for WRF, CESM)
+  - Mapping of CAM-Chem species to GFED4 (for CESM)
+  - New documentation for hemco.readthedocs.io, migrated from GC wiki
+  - Updated documentation on vertical regridding behavior
+
+## [3.5.0] - 2022-09-16
 ### Added
   - Support for MAPL 2.16 (needed by GCHP and GEOS)
   - Bug fix for HEMCO standalone run directory creation
