@@ -292,7 +292,7 @@ if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
         INTERFACE $<TARGET_PROPERTY:MAPL.generic,INTERFACE_INCLUDE_DIRECTORIES>
     )
     target_compile_definitions(HEMCOBuildProperties
-        INTERFACE ESMF_
+        INTERFACE ESMF_ MAPL_ESMF
     )
 
     # Specify the HEMCO interface being used
