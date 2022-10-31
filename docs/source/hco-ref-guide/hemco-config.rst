@@ -871,9 +871,9 @@ are:
 
    .. option:: EF
 
-       **Exact, Forced:** Same as :option:`E`, but HEMCO stops with an
-       error if no data field can be found for the current simulation
-       date and time.
+      **Exact, Forced:** Same as :option:`E`, but HEMCO stops with an
+      error if no data field can be found for the current simulation
+      date and time.
 
    .. option:: EC
 
@@ -883,10 +883,18 @@ are:
 
       **Exact, Read/Query Continuously, Forced.**
 
+   .. option:: EFYO
+
+      **Exact, Forced, Simulation Year, Once**: Same as :option:`EF`,
+      but will also stop the simulation if the start date does not
+      match the file timestamp.  Also tells HEMCO to only read
+      the file once at simulation startup.  This setting is typically
+      only used for restart files (such as the GEOS-Chem restart file).
+
    .. option:: EY
 
       **Exact, Use Smulation Year:** Same as :option:`E`, except don't
-      allow :envvar:`Emission year`  setting to override year value.
+      allow :envvar:`Emission year` setting to override year value.
 
    .. option:: A
 
