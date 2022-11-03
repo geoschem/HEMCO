@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased 3.5.1]
 ### Fixed
+- Changed Inst%NP to Inst%NumP in HCOX_Seasalt_Mod for CESM compatibility
 
 
 ## [3.5.0] - 2022-09-19
