@@ -10,13 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - placeholder
 
 ### Changed
-- placeholder
+- Use fraction surface type inputs instead of ExtState%WLI
 
 ### Fixed
 - placeholder
 
 ### Removed
-- placeholder
+- Removed ExtState field for water-land-ice index (WLI)
 
 ## [3.5.0] - 2022-09-19
 ### Added
