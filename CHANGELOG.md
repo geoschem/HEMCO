@@ -7,16 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased 3.6.0]
 ### Added
-- placeholder
+- Added MAPL_ESMF compiler option for use with GCHP and GEOS
 
 ### Changed
-- placeholder
+- Set HCO_MISSVAL to MAPL missing value (1e15) if using GCHP or GEOS
 
 ### Fixed
 - placeholder
 
 ### Removed
-- placeholder
+- Removed old kludge for MAPL missing data if applying mask
 
 ## [3.5.0] - 2022-09-19
 ### Added
