@@ -74,7 +74,7 @@ MODULE HCOX_SeaSalt_Mod
    REAL*8              :: SSLNT_MYI         ! South Hemisphere snow salinity on MYI (psu)
    REAL*8              :: NAGE              ! North Hemisphere snow age (days)
    REAL*8              :: SAGE              ! South Hemisphere snow age (days)
-   REAL*8              :: NP                ! number of particle per snowflake
+   REAL*8              :: NumP                ! number of particle per snowflake
 
    ! Module variables
    INTEGER              :: NSALT             ! # of seasalt tracers
@@ -962,7 +962,7 @@ CONTAINS
            RETURN
        ENDIF
        CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'N per snowflake', &
-                    OptValDp=Inst%NP, RC=RC )
+                    OptValDp=Inst%NumP, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
            CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
            RETURN
@@ -974,7 +974,7 @@ CONTAINS
        Inst%SSLNT_FYI = 0.015d0 ! default value 0.015 psu for SH MYI snow
        Inst%NAGE = 3.0d0   ! default value 3 days snow age in NH
        Inst%SAGE = 1.5d0   ! default value 1.5 days snow age in SH
-       Inst%NP = 5.0d0     ! default value of 5 particles per snowflake
+       Inst%NumP = 5.0d0     ! default value of 5 particles per snowflake
     ENDIF
 
     ! Final BrSalt flag
@@ -1032,7 +1032,7 @@ CONTAINS
           CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,*) ' - Antarctic Snow age(days): ', Inst%SAGE
           CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) ' - Number of particle per snowflake: ', Inst%NP
+          WRITE(MSG,*) ' - Number of particle per snowflake: ', Inst%NumP
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
 
@@ -1335,7 +1335,7 @@ CONTAINS
          D_SNOW = 1.0d0
          DO ND = 1, NR_MAX
             D_DRY =  ( Inst%NSLNT_FYI * RHOICE / (1000.d0 &
-                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+                  * Inst%NumP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
 
             IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
 
@@ -1362,7 +1362,7 @@ CONTAINS
          D_SNOW = 1.0d0
          DO ND = 1, NR_MAX
             D_DRY =  ( Inst%NSLNT_MYI * RHOICE / (1000.d0 &
-                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+                  * Inst%NumP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
 
             IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
            ! Midpoint of IRth bin
@@ -1382,7 +1382,7 @@ CONTAINS
          D_SNOW = 1.0d0
          DO ND = 1, NR_MAX
             D_DRY =  ( Inst%SSLNT_FYI * RHOICE / (1000.d0 &
-                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+                  * Inst%NumP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
 
             IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
           ! Midpoint of IRth bin
@@ -1401,7 +1401,7 @@ CONTAINS
          D_SNOW = 1.0d0
          DO ND = 1, NR_MAX
             D_DRY =  ( Inst%SSLNT_MYI * RHOICE / (1000.d0 &
-                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+                  * Inst%NumP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
 
             IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
           ! Midpoint of IRth bin
@@ -1693,7 +1693,7 @@ CONTAINS
     Inst%SSLNT_MYI     = 0.0
     Inst%NAGE          = 0.0
     Inst%SAGE          = 0.0
-    Inst%NP            = 1.0
+    Inst%NumP            = 1.0
 
     ! Attach to instance list
     Inst%NextInst => AllInst
