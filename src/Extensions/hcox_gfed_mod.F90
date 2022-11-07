@@ -1221,11 +1221,7 @@ CONTAINS
           DEALLOCATE( Inst%GFED4_EMFAC )
        ENDIF
        Inst%GFED4_EMFAC => NULL()
-
-       IF ( ASSOCIATED( Inst%GFED_EMFAC ) ) THEN
-          DEALLOCATE( Inst%GFED_EMFAC )
-       ENDIF
-       Inst%GFED_EMFAC => NULL()
+       Inst%GFED_EMFAC  => NULL()   ! Points to GFED4_EMFAC
 
        IF ( ASSOCIATED( Inst%GfedIDs ) ) THEN
           DEALLOCATE( Inst%GfedIDs )
