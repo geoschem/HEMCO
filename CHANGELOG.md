@@ -6,13 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased [3.5.2]
+### Added
+  - Added sanitizer option for detecting memory leaks in HEMCO
+    standalone during build
+
 ### Fixed
-- Removed memory leaks that were identified by the code sanitizer
+  - Removed memory leaks that were identified by the code sanitizer
 
 ## [3.5.1] - 2022-11-03
 ### Fixed
-- Changed Inst%NP to Inst%NumP in HCOX_Seasalt_Mod for CESM compatibility
-
+  - Changed Inst%NP to Inst%NumP in HCOX_Seasalt_Mod for CESM compatibility
 
 ## [3.5.0] - 2022-09-19
 ### Added
@@ -345,7 +348,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
   - Various updates to PARANOX:
     - Bug fix in calculation of H2O ambient air concentration'
-	- Bug fix in computation of solar zenith angle for the current date
+ - Bug fix in computation of solar zenith angle for the current date
       calculation of the current date SZA;
     - Loss fluxes of O3 and HNO3 are now passed in kg/m2/s via the
         HEMCO diagnostics instead of converting them to a deposition
@@ -358,12 +361,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Various updates to the HEMCO standalone code
   - Modifications to on/off switches in `HEMCO_Config.rc`:
     - Extension names can be used as switches
-	- Multiple switches can be combined with `.or`
+ - Multiple switches can be combined with `.or`
 
 ### Changed
   - HEMCO has now two run phases:
-      - Phase 1 reads the HEMCO list
-	  - Phase 2 calculates emissions.
+  - Phase 1 reads the HEMCO list
+  - Phase 2 calculates emissions.
   - Environmental fields used by HEMCO (stored in the `ExtState`
     object) can now be read directly from disk.
   - Various updates to the HEMCO standalone code
@@ -377,11 +380,11 @@ Initial HEMCO release
   - Bug fixes for the BIOGENIC_OCPI diagnostic
   - Bug fixes in the computation of alkalinity
   - PARANOx updates:
-    - Can now read the lookup table from netCDF or ASCII format
-	- Wind speed is now accounted for in the parameterization
-	- Dry deposition of N is included va loss of HNO3.
-	- Total tropospheric column mass is used to calculate dry
-      deposition frequencies.
+  - Can now read the lookup table from netCDF or ASCII format
+  - Wind speed is now accounted for in the parameterization
+  - Dry deposition of N is included va loss of HNO3.
+  - Total tropospheric column mass is used to calculate dry
+    deposition frequencies.
   - Local times can now be calculated based on a time zone map (at 1x1
     degree resolution).
   - Non-emissions data may now be specified in `HEMCO_Config.rc` by
