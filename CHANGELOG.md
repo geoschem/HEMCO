@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added sanitizer option for detecting memory leaks in HEMCO
     standalone during build
 
+### Changed
+  - Remove unused, commented-out code in `src/Extensions/hcox_dustdead_mod.F`
+
 ### Fixed
   - Removed memory leaks that were identified by the code sanitizer
 

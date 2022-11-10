@@ -5677,31 +5677,6 @@ c Fix up for negative argument, erf, etc.
          ENDIF
          Inst%VAI_DST => NULL()
 
-! These are not used
-!         IF ( ALLOCATED( Inst%FLX_LW_DWN_SFC  ) ) THEN
-!            DEALLOCATE( Inst%FLX_LW_DWN_SFC )
-!         ENDIF
-!
-!         IF ( ALLOCATED( Inst%FLX_SW_ABS_SFC  ) ) THEN
-!            DEALLOCATE( Inst%FLX_SW_ABS_SFC  )
-!         ENDIF
-!
-!         IF ( ALLOCATED( Inst%TPT_GND ) ) THEN
-!            DEALLOCATE( Inst%TPT_GND )
-!         ENDIF
-!
-!         IF ( ALLOCATED( Inst%TPT_SOI ) ) THEN
-!            DEALLOCATE( Inst%TPT_SOI )
-!         ENDIF
-!
-!         IF ( ALLOCATED( Inst%VWC_SFC ) ) THEN
-!            DEALLOCATE( Inst%VWC_SFC )
-!         ENDIF
-!
-!         IF ( ALLOCATED( Inst%SRC_STR ) ) THEN
-!            DEALLOCATE( Inst%SRC_STR )
-!         ENDIF
-
          IF ( ALLOCATED( Inst%PLN_TYP ) ) THEN
             DEALLOCATE( Inst%PLN_TYP )
          ENDIF
@@ -5718,12 +5693,6 @@ c Fix up for negative argument, erf, etc.
             DEALLOCATE( Inst%DMT_VWR )
          ENDIF
 
-! This is not used
-!         IF ( ALLOCATED( Inst%DNS_AER ) ) THEN
-!            DEALLOCATE( Inst%DNS_AER  )
-!         ENDIF
-
-
          IF ( ALLOCATED( Inst%OVR_SRC_SNK_FRC ) ) THEN
             DEALLOCATE( Inst%OVR_SRC_SNK_FRC )
          ENDIF
@@ -5731,11 +5700,6 @@ c Fix up for negative argument, erf, etc.
          IF ( ALLOCATED( Inst%OVR_SRC_SNK_MSS ) ) THEN
             DEALLOCATE( Inst%OVR_SRC_SNK_MSS )
          ENDIF
-
-! This is not used
-!         IF ( ALLOCATED( Inst%OROGRAPHY ) )
-!            DEALLOCATE( Inst%OROGRAPHY )
-!         ENDIF
 
          IF ( ALLOCATED( Inst%DMT_MIN ) ) THEN
             DEALLOCATE( Inst%DMT_MIN )
