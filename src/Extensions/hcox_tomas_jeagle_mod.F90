@@ -183,7 +183,6 @@ CONTAINS
     CHARACTER(LEN=255):: MSG, LOC
 
     ! New variables for blowing snow (huang, 04/09/20)                                                       
-                          
     REAL*8                 :: SNOWSALT
     REAL*8                 :: FROPEN, FRFIRST
     REAL*8                 :: FRICTVEL, WVMR, TEMP
@@ -234,10 +233,6 @@ CONTAINS
 
     ! For debugging
     !INTEGER            :: ii=50, jj=10
-
-    ! Error handling
-    LOGICAL                :: ERR
-    CHARACTER(LEN=255)     :: MSG
 
     !=================================================================
     ! SRCSALT30 begins here!
