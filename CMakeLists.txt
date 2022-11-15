@@ -1,7 +1,8 @@
 # HEMCO/CMakeLists.txt
 
 cmake_minimum_required(VERSION 3.5)
-project(HEMCO VERSION 3.5.0 LANGUAGES Fortran)
+project(HEMCO VERSION 3.5.1 LANGUAGES Fortran)
+# Reminder: Make sure to also update version in src/Core/hco_error_mod.F90
 
 #-----------------------------------------------------------------------------
 # Add CMakeScripts/ to the module path
