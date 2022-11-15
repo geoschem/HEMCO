@@ -139,7 +139,7 @@ These settings control HEMCO simulation options.
 
 .. option:: Separator
 
-   Separator symbol. On Unix/Linux systems, this should be set to
+   Separator symbol. On Unix/4Linux systems, this should be set to
    :literal:`/`.
 
 .. option:: Mask fractions
@@ -886,10 +886,24 @@ are:
    .. option:: EFYO
 
       **Exact, Forced, Simulation Year, Once**: Same as :option:`EF`,
-      but will also stop the simulation if the start date does not
-      match the file timestamp.  Also tells HEMCO to only read
-      the file once at simulation startup.  This setting is typically
-      only used for restart files (such as the GEOS-Chem restart file).
+      with the following additions:
+
+      - :envvar:`Y`: HEMCO will stop thie simulation if the simulation
+	year does not match the year in the file timestamp.
+      - :envvar:`O`: HEMCO will only read the file once.
+
+      This setting is typically only used for model restart files
+      (such as `GEOS-Chem Classic restart files
+      <https://geos-chem.readthedocs.io/en/stable/gcc-guide/04-data/restart-files-gc.html>`_).
+      This ensures that the simulation will stop unless the restart
+      file timestamp matches the simulation start date and time.
+
+      .. attention::
+
+	 Consider changing the time cycle flag from :option:`EFYO` to
+	 :option:`CYS` if you would like your simulation to read a
+	 data file (such as a simulation restart file) whose file
+	 timestamp differs from the simulaton start date and time.
 
    .. option:: EY
 
