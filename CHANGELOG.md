@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
   - Remove unused, commented-out code in `src/Extensions/hcox_dustdead_mod.F`
+  - Replaced placeholder error messages in
+    `src/Core/hco_config_mod.F90` with more informational messages
+    (often including the line of the HEMCO_Config.rc in the printout)
 
 ### Fixed
   - Removed memory leaks that were identified by the code sanitizer
