@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased [3.5.2]
+## [3.5.2] - 2022-11-29
 ### Added
   - Added sanitizer option for detecting memory leaks in HEMCO
     standalone during build
@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Replaced placeholder error messages in
     `src/Core/hco_config_mod.F90` with more informational messages
     (often including the line of the HEMCO_Config.rc in the printout)
+  - Added improved documentation for time cycle flag `EFYO` in ReadTheDocs
 
 ### Fixed
   - Removed memory leaks that were identified by the code sanitizer

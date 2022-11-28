@@ -139,7 +139,7 @@ These settings control HEMCO simulation options.
 
 .. option:: Separator
 
-   Separator symbol. On Unix/Linux systems, this should be set to
+   Separator symbol. On Unix/4Linux systems, this should be set to
    :literal:`/`.
 
 .. option:: Mask fractions
@@ -871,9 +871,9 @@ are:
 
    .. option:: EF
 
-       **Exact, Forced:** Same as :option:`E`, but HEMCO stops with an
-       error if no data field can be found for the current simulation
-       date and time.
+      **Exact, Forced:** Same as :option:`E`, but HEMCO stops with an
+      error if no data field can be found for the current simulation
+      date and time.
 
    .. option:: EC
 
@@ -883,10 +883,32 @@ are:
 
       **Exact, Read/Query Continuously, Forced.**
 
+   .. option:: EFYO
+
+      **Exact, Forced, Simulation Year, Once**: Same as :option:`EF`,
+      with the following additions:
+
+      - :envvar:`Y`: HEMCO will stop thie simulation if the simulation
+	year does not match the year in the file timestamp.
+      - :envvar:`O`: HEMCO will only read the file once.
+
+      This setting is typically only used for model restart files
+      (such as `GEOS-Chem Classic restart files
+      <https://geos-chem.readthedocs.io/en/stable/gcc-guide/04-data/restart-files-gc.html>`_).
+      This ensures that the simulation will stop unless the restart
+      file timestamp matches the simulation start date and time.
+
+      .. attention::
+
+	 Consider changing the time cycle flag from :option:`EFYO` to
+	 :option:`CYS` if you would like your simulation to read a
+	 data file (such as a simulation restart file) whose file
+	 timestamp differs from the simulaton start date and time.
+
    .. option:: EY
 
       **Exact, Use Smulation Year:** Same as :option:`E`, except don't
-      allow :envvar:`Emission year`  setting to override year value.
+      allow :envvar:`Emission year` setting to override year value.
 
    .. option:: A
 
