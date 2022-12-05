@@ -587,3 +587,63 @@ Extensions supporting built-in scaling/masking
 
 The following extensions currently support the built-in scaling/masking
 tools: :option:`SoilNOx`, :option:`GFED`, :option:`FINN`.
+
+==========================================
+Adding new HEMCO extensions into GEOS-Chem
+==========================================
+
+All HEMCO extensions are called through the extension interface
+routines in :file:`HEMCO/Extensions/hcox_driver_mod.F90`:
+:code:`HCOX_INIT`, :code:`HCOX_RUN`, :code:`HCOX_FINAL`. For
+every new extension, a corresponding subroutine call needs to be added
+to those three routines.  You will quickly see that these calls only
+take a few arguments, most importantly the HEMCO state object
+:code:`HcoState` and the extensions state object :code:`ExtState`.
+
+:code:`ExtState` is defined in
+:file:`HEMCO/src/Extensions/hcox_state_mod.F90`. It contains logical
+switches for each extension as well as pointers to any external data
+(such as met fields). For a new extension, you'll have to add a new
+logical switch to the Ext_State object. If you need external data that
+is not yet included in ExtState, you will also have to add those
+(including the pointer associations in subroutine
+:code:`SET_EXTOPT_FIELDS` in
+:file:`GeosCore/hco_interface_gc_mod.F90`.
+
+The initialization call (:code:`HCOX_XXX_INIT`) should be used to
+initialize all extension variables and to read all settings from the
+HEMCO configuration file. There are a number of helper routines in
+:file:`HEMCO/src/Extensions/hco_extlist_mod.F90` to do this:
+
+- :code:`GetExtNr( ExtName )` returns the extension number for the
+  given extension name. Will return –1 if extension is turned off!
+
+- :code:`GetExtOpt( ExtNr, Attribute, Value, RC )` can be used to read
+  any additional extension options (logical switches, path and names
+  of csv-tables, etc.). Note that value can be of various types
+  (:code:`logical`, :code:`character`, :code:`double`,...).
+
+- :code:`GetExtHcoID( HcoState, ExtNr, HcoIDs, SpcNames, nSpc, RC )`
+  matches the extension species names (as defined in the configuration
+  file) to the species defined in HEMCO state (i.e. to all available
+  HEMCO species). A value of –1 is returned if the given species is
+  not defined in HEMCO.
+
+All :code:`ExtState` variables used by this extension should be
+updated. This includes the logical switch and all external data needed
+by the extension. For example, if the extension needs temperature
+data, this pointer should be activated by setting
+:code:`ExtState%TK%DoUse = .TRUE.`
+
+The run call (:code:`HCOX_XXX_RUN`) calculates the 2D fluxes and
+passes them to HcoState via subroutine :code:`HCO_EmisAdd( HcoState,
+Flux, HcoID, RC)`. External data is assessed through :code:`ExtState`
+(e.g. :code:`ExtState%TX%Arr%Val(I,J,L)`), and any data automatically
+read from netCDF files (through the HEMCO interface) can be obtained
+through :code:`EmisList_GetDataArr( am_I_Root, FieldName, Pointer,
+RC )` The body of the run routine is typically just the code of the
+original module.
+
+It's probably easiest to start from an existing extension (or the
+:file:`Custom` extension template) and to add any modifications as is
+needed.
