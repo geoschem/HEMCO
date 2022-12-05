@@ -588,9 +588,9 @@ Extensions supporting built-in scaling/masking
 The following extensions currently support the built-in scaling/masking
 tools: :option:`SoilNOx`, :option:`GFED`, :option:`FINN`.
 
-==========================================
-Adding new HEMCO extensions into GEOS-Chem
-==========================================
+===========================
+Adding new HEMCO extensions
+===========================
 
 All HEMCO extensions are called through the extension interface
 routines in :file:`HEMCO/Extensions/hcox_driver_mod.F90`:
