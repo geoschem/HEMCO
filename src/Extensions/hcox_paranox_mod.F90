@@ -1080,8 +1080,16 @@ CONTAINS
 
       ! Verbose mode
       IF ( HcoState%amIRoot ) THEN
-         MSG = 'Use ParaNOx ship emissions (extension module)'
-         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+
+         ! Write the name of the extension regardless of the verbose setting
+         MSG = 'Using HEMCO extension: ParaNOx (ship emission plumes)'
+         IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+            CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+         ELSE
+            CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+         ENDIF
+
+         ! Write the rest of the information only when verbose is set
          MSG = '    - Use the following species: (MW, emitted as HEMCO ID) '
          CALL HCO_MSG(HcoState%Config%Err,MSG )
          WRITE(MSG,"(a,F5.2,I5)") '     NO  : ', Inst%MW_NO, Inst%IDTNO
@@ -1275,7 +1283,8 @@ CONTAINS
    CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'LUT source dir', &
                    OptValChar=Inst%LutDir, RC=RC)
    IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
+       CALL HCO_ERROR( &
+            'PARANOX: Could not read "LUT source dir"!', RC, THISLOC=LOC )
        RETURN
    ENDIF
 
@@ -1284,7 +1293,8 @@ CONTAINS
    ! provide some dummy variables here
    CALL HCO_CharParse( HcoState%Config, Inst%LutDir, -999, -1, -1, -1, -1, RC )
    IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
+       CALL HCO_ERROR( &
+            'PARANOX: Error encountered in "HCO_CharParse"', RC, THISLOC=LOC )
        RETURN
    ENDIF
 
@@ -1293,7 +1303,8 @@ CONTAINS
    CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'LUT data format', &
                    OptValChar=Dummy, RC=RC)
    IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
+       CALL HCO_ERROR( &
+            'PARANOX: Could not read "LUT data format"', RC, THISLOC=LOC )
        RETURN
    ENDIF
    IF ( TRIM(Dummy) == 'txt' ) Inst%IsNc = .FALSE.
@@ -1307,13 +1318,15 @@ CONTAINS
    IF ( Inst%IsNc ) THEN
       CALL READ_PARANOX_LUT_NC( HcoState, Inst, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+          CALL HCO_ERROR( &
+               'PARANOX: Error in "READ_PARANOX_LUT_NC"!', RC, THISLOC=LOC )
           RETURN
       ENDIF
    ELSE
       CALL READ_PARANOX_LUT_TXT( HcoState, Inst, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+          CALL HCO_ERROR( &
+               'PARANOX: Error in "READ_PARANOX_LUT_NC"!', RC, THISLOC=LOC )
           RETURN
       ENDIF
    ENDIF

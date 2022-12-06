@@ -253,9 +253,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use emissions extension <yourname>:'
-       CALL HCO_MSG( HcoState%Config%Err,  MSG )
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: <yourname> (<your description>)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+       ELSE
+          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+       ENDIF
+
+       ! Write all other messages as debug printout only
        MSG = ' - use the following species (Name, HcoID, Scaling):'
        CALL HCO_MSG( HcoState%Config%Err, MSG)
        DO N = 1, Inst%nSpc

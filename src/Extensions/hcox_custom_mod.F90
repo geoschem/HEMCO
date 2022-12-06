@@ -312,10 +312,17 @@ CONTAINS
     Inst%IceSrcIDs(:) = HcoIDs(N:nSpc)
 
     ! Verbose mode
-    IF ( verb ) THEN
-       MSG = 'Use custom emissions module (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+    IF ( Hcostate%amIRoot ) THEN
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: Custom (custom emissions module)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+       ELSE
+          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+       ENDIF
+
+       ! Write all other messages as debug printout only
        MSG = 'Use the following species (Name: HcoID):'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        DO N = 1, nSpc

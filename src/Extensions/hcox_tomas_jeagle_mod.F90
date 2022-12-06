@@ -382,6 +382,19 @@ CONTAINS
         RETURN
     ENDIF
 
+    ! Only print on the root core
+    IF ( HcoState%amIRoot ) THEN
+
+       ! Write the name of the extension regardless of the verbose setting
+       msg = &
+        'Using HEMCO extension: TOMAS_Jeagle (sea salt emissions for TOMAS)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+       ELSE
+          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+       ENDIF
+    ENDIF
+
     ! Create Instance
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%TOMAS_Jeagle, Inst, RC )

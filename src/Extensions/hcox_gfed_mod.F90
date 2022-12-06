@@ -766,8 +766,16 @@ CONTAINS
 
     ! Prompt to log file
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use GFED extension'
-       CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: GFED (biomass burning)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+       ELSE
+          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+       ENDIF
+
+       ! Write all other messages as debug printout only
        WRITE(MSG,*) '   - Use GFED-4              : ', Inst%IsGFED4
        CALL HCO_MSG(HcoState%Config%Err,MSG )
        WRITE(MSG,*) '   - Use daily scale factors : ', Inst%DoDay

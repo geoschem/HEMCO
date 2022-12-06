@@ -698,8 +698,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use air-sea flux emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='-' )
+
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: SeaFlux (air-sea flux emissions)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+       ELSE
+          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+       ENDIF
+
+       ! Write all other messages as debug printout only
        MSG = '   - Use species:'
        CALL HCO_MSG(HcoState%Config%Err,MSG )
     ENDIF

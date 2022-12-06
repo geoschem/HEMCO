@@ -948,8 +948,16 @@ CONTAINS
 
     ! Echo info about this extension
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use lightning NOx emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+
+       ! Print the name of the module regardless of verbose
+       msg = 'Using HEMCO extension: LightNOx (lightning NOx emissions'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+       ELSE
+          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+       ENDIF
+
+       ! Other information will be printed only when verbose is true
        WRITE(MSG,*) ' - Use species ', TRIM(SpcNames(1)), '->', Inst%IDTNO
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) ' - Use GEOS-5 flash rates: ', Inst%LLFR

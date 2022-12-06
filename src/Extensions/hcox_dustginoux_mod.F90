@@ -560,9 +560,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use Ginoux dust emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: DustGinoux (dust mobilization)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+       ELSE
+          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+       ENDIF
+     
+       ! Write all other messages as debug printout only
        IF ( Inst%ExtNrAlk > 0 ) THEN
           MSG = 'Use dust alkalinity option'
           CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
