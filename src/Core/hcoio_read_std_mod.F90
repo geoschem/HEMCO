@@ -1094,10 +1094,11 @@ CONTAINS
        ENDIF
 
        ! Prompt a warning if thisUnit is not recognized as unitless.
+       ! TODO: Merge warnings w/ verbose, and toggle with a simple on/off
        IF ( Flag /= 0 ) THEN
           MSG = 'Data is treated as unitless, but file attribute suggests ' // &
                 'it is not: ' // TRIM(thisUnit) // '. File: ' // TRIM(srcFile)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=2 )
        ENDIF
 
        ! Verbose mode
