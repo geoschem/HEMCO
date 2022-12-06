@@ -113,6 +113,12 @@ MODULE HCO_Error_Mod
      MODULE PROCEDURE HCO_MsgNoErr
      MODULE PROCEDURE HCO_MsgErr
   END INTERFACE HCO_MSG
+
+  INTERFACE HCO_IsVerb
+     MODULE PROCEDURE HCO_IsVerb_NoVerbNr
+     MODULE PROCEDURE HCO_IsVerb_VerbNr
+  END INTERFACE HCO_IsVerb
+
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
@@ -455,11 +461,16 @@ CONTAINS
        ! Don't print if this is not the root CPU
        IF ( .NOT. Err%IsRoot ) RETURN
 
-       ! Don't print if verbose level is smaller than verbose level of this
-       ! CPU.
-       IF ( PRESENT( Verb ) ) THEN
-          IF ( Verb < Err%Verbose ) RETURN
-       ENDIF
+       !----------------------------------------------------------------------
+       ! REDUCE LOGFILE OUTPUT: Only print if VERBOSE=3
+       ! TODO: Convert VERBOSE from integer to a logical on/off switch
+       !! Don't print if verbose level is smaller than verbose level of this
+       !! CPU.
+       !IF ( PRESENT( Verb ) ) THEN
+       !   IF ( Verb < Err%Verbose ) RETURN
+       !ENDIF
+       !----------------------------------------------------------------------
+       IF ( .not. HCO_IsVerb( Err ) ) RETURN
     ENDIF
 
     ! Use standard output if file not open
@@ -472,25 +483,23 @@ CONTAINS
 
        IF (LUN > 0 ) THEN
           IF ( PRESENT(SEP1) ) THEN
-             WRITE(LUN,'(a)') REPEAT( SEP1, 79)
+             WRITE( LUN,'(a)' ) REPEAT( SEP1, 79 )
           ENDIF
           IF ( PRESENT(MSG) ) THEN
-!             WRITE(LUN,*) TRIM(MSG)
-             WRITE(LUN,'(a)') TRIM(MSG)
+             WRITE( LUN,'(a)' ) TRIM( MSG )
           ENDIF
           IF ( PRESENT(SEP2) ) THEN
-             WRITE(LUN,'(a)') REPEAT( SEP2, 79)
+             WRITE( LUN,'(a)' ) REPEAT( SEP2, 79 )
           ENDIF
        ELSE
           IF ( PRESENT(SEP1) ) THEN
-             WRITE(*,'(a)') REPEAT( SEP1, 79)
+             WRITE( 6, '(a)' ) REPEAT( SEP1, 79 )
           ENDIF
           IF ( PRESENT(MSG) ) THEN
-!             WRITE(*,*) TRIM(MSG)
-             WRITE(*,'(a)') TRIM(MSG)
+             WRITE( 6, '(a)' ) TRIM( MSG )
           ENDIF
           IF ( PRESENT(SEP2) ) THEN
-             WRITE(*,'(a)') REPEAT( SEP2, 79)
+             WRITE( 6, '(a)' ) REPEAT( SEP2, 79 )
           ENDIF
        ENDIF
     ENDIF
@@ -535,12 +544,21 @@ CONTAINS
     ! HCO_MSG begins here
     !======================================================================
 
-    IF ( PRESENT(SEP1) ) THEN
-       WRITE(*,'(a)') REPEAT( SEP1, 79)
+    !----------------------------------------------------------------------
+    ! REDUCE LOGFILE OUTPUT: Only print if VERBOSE=3
+    ! TODO: Convert VERBOSE from integer to a logical on/off switch
+    !  -- Bob Yantosca (05 Dec 2022)
+    IF ( Verb < 3 ) RETURN
+    !----------------------------------------------------------------------
+
+    IF ( PRESENT( SEP1 ) ) THEN
+       WRITE( 6,'(a)' ) REPEAT( SEP1, 79 )
     ENDIF
-    IF ( PRESENT(MSG) ) PRINT *, TRIM(MSG)
-    IF ( PRESENT(SEP2) ) THEN
-       WRITE(*,'(a)') REPEAT( SEP2, 79)
+    IF ( PRESENT( msg ) ) THEN
+       WRITE( 6, '(a)' ) TRIM( msg )
+    ENDIF
+    IF ( PRESENT( SEP2 ) ) THEN
+       WRITE( 6,'(a)' ) REPEAT( SEP2, 79 )
     ENDIF
 
   END SUBROUTINE HCO_MsgNoErr
@@ -607,7 +625,7 @@ CONTAINS
     Err%Loc(Err%CurrLoc) = thisLoc
 
     ! Track location if enabled
-    IF ( Err%Verbose >= 3 ) THEN
+    IF ( HCO_IsVerb( Err ) ) THEN
        WRITE(MSG,100) TRIM(thisLoc), Err%CurrLoc
        CALL HCO_Msg( Err, MSG )
     ENDIF
@@ -659,7 +677,7 @@ CONTAINS
     IF ( .NOT. ASSOCIATED(Err) ) RETURN
 
     ! Track location if enabled
-    IF ( Err%Verbose >= 3 ) THEN
+    IF ( HCO_IsVerb( Err ) ) THEN
        WRITE(MSG,110) TRIM(Err%Loc(Err%CurrLoc)), Err%CurrLoc
        CALL HCO_MSG( Err, MSG )
     ENDIF
@@ -858,15 +876,59 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: HCO_IsVerb
+! !IROUTINE: HCO_IsVerb_NoVerbNr
 !
-! !DESCRIPTION: Function HCO\_IsVerb returns true if the HEMCO verbose number
-!  is equal to or larger than the passed number.
+! !DESCRIPTION: Returns true if the HEMCO verbose number is set to 3 or larger.
+!  Does not use an "Verb" argument
 !\\
 !\\
 ! !INTERFACE:
 !
-  FUNCTION HCO_IsVerb ( Err, VerbNr ) RESULT ( IsVerb )
+  FUNCTION HCO_IsVerb_NoVerbNr( Err ) RESULT ( IsVerb )
+!
+! !INPUT PARAMETERS:
+!
+    TYPE(HcoErr),  POINTER :: Err            ! Error object
+!
+! !OUTPUT PARAMETERS:
+!
+    LOGICAL                :: isVerb
+!
+! !REMARKS:
+!  TODO: Convert VERBOSE to a simple logical on/off switch.
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+
+    !======================================================================
+    ! HCO_IsVerb begins here
+    !======================================================================
+
+    ! Initialize
+    isVerb = .FALSE.
+
+    ! Return if the Err object is null
+    IF ( .not. ASSOCIATED( Err ) ) RETURN
+
+    ! Check if "Verbose: 3" was set in the HEMCO_Config.rc file
+    isVerb = ( Err%Verbose >= 3 )
+
+  END FUNCTION HCO_IsVerb_NoVerbNr
+!EOC
+!------------------------------------------------------------------------------
+!                   Harmonized Emissions Component (HEMCO)                    !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: HCO_IsVerb_VerbNr
+!
+! !DESCRIPTION: Function HCO\_IsVerb\_VerbNr returns true if the HEMCO
+!  verbose number is equal to or larger than the passed number.
+!\\
+!\\
+! !INTERFACE:
+!
+  FUNCTION HCO_IsVerb_VerbNr( Err, VerbNr ) RESULT ( IsVerb )
 !
 ! !INPUT PARAMETERS:
 !
@@ -877,6 +939,9 @@ CONTAINS
 !
     LOGICAL                   :: IsVerb
 !
+! !REMARKS:
+!  HCO_IsVerb will be phased out and replaced by HCO_IsVerbose.
+!
 ! !REVISION HISTORY:
 !  15 Mar 2015 - C. Keller - Initialization
 !  See https://github.com/geoschem/hemco for complete history
@@ -885,16 +950,20 @@ CONTAINS
 !BOC
 
     !======================================================================
-    ! HCO_IsVerb begins here
+    ! HCO_IsVerb_VerbNr begins here
     !======================================================================
 
-    IF ( .NOT. ASSOCIATED(Err) ) THEN
-       IsVerb = .FALSE.
-    ELSE
-       IsVerb = ( Err%Verbose >= VerbNr )
-    ENDIF
+    ! Initialize
+    isVerb = .FALSE.
 
-  END FUNCTION HCO_IsVerb
+    ! Return FALSE if the Err object is NULL
+    IF ( .NOT. ASSOCIATED( Err ) ) RETURN
+
+    ! Otherwise determine if this verbose level is greater or equal
+    ! to the verbose level specified in HEMCO_Config.rc
+    isVerb = ( Err%Verbose >= VerbNr )
+
+  END FUNCTION HCO_IsVerb_VerbNr
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -1019,18 +1088,27 @@ CONTAINS
           LUN = Err%LUN          ! Log gets written to file
        ENDIF
 
-       ! Write header
-       WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
-       WRITE( LUN, '(a12, a)' ) 'Using HEMCO ', HCO_VERSION
-       WRITE( LUN, '(a)'        )
+       !------------------------------------------------------------------
+       ! REDUCE LOGFILE OUTPUT:
+       ! Only write splash screen when VERBOSE=3
+       ! TODO: Change VERBOSE from integer to a logical on/off switch
+       !  -- Bob Yantosca (05 Dec 2022)
+       !------------------------------------------------------------------
+       IF ( HCO_IsVerb( Err ) ) THEN
+
+          ! Write header
+          WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
+          WRITE( LUN, '(a12, a)' ) 'Using HEMCO ', HCO_VERSION
+          WRITE( LUN, '(a)'        )
 #ifdef USE_REAL8
-       WRITE( LUN,  100       )
- 100   FORMAT('HEMCO precision (hp) is set to is 8-byte real (aka REAL*8)')
+          WRITE( LUN,  100       )
+100       FORMAT('HEMCO precision (hp) is set to is 8-byte real (aka REAL*8)')
 #else
-       WRITE( LUN,  110       )
- 110   FORMAT('HEMCO precision (hp) is set to is 4-byte real (aka REAL*4)')
+          WRITE( LUN,  110       )
+110       FORMAT('HEMCO precision (hp) is set to is 4-byte real (aka REAL*4)')
 #endif
-       WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
+          WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
+       ENDIF
 
        Err%FirstOpen = .FALSE.
     ENDIF
