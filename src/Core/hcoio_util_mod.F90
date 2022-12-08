@@ -197,7 +197,7 @@ CONTAINS
     IF ( (refYear <= 1900) .AND. (nTime > 0) ) THEN
        MSG = 'ncdf reference year is prior to 1901 - ' // &
             'time stamps may be wrong!'
-       CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+       CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
     ENDIF
 
     ! verbose mode
@@ -1235,7 +1235,7 @@ CONTAINS
                 'slice. Interpolation will be performed from ',           &
                 availYMDhm(tidx1), ' to ', availYMDhm(tidx2), '. Data ',    &
                 'container: ', TRIM(Lct%Dct%cName)
-          CALL HCO_WARNING(HcoState%Config%Err, MSG, RC, WARNLEV=1, THISLOC=LOC)
+          CALL HCO_WARNING(HcoState%Config%Err, MSG, RC, THISLOC=LOC)
        ENDIF
 
        ! Calculate weights wgt1 and wgt2 to be given to slice 1 and
@@ -1483,7 +1483,7 @@ CONTAINS
 
     ! Prompt a warning
     WRITE(MSG,*) 'No area unit found in ' // TRIM(FN) // ' - convert to m-2!'
-    CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1, THISLOC=LOC )
+    CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
 
     ! Leave w/ success
     RC = HCO_SUCCESS
@@ -2403,7 +2403,7 @@ CONTAINS
        Lct%Dct%Dta%IsLocTime = .TRUE.
        MSG = 'Data assigned to mask regions will be treated in local time: '//&
               TRIM(Lct%Dct%cName)
-       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=2, THISLOC=LOC )
+       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Cleanup
@@ -2563,8 +2563,7 @@ CONTAINS
           Lct%Dct%Dta%IsLocTime = .TRUE.
           MSG = 'Scale factors read from file are treated as local time: '// &
                  TRIM(Lct%Dct%cName)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=2, &
-                            THISLOC=LOC )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
        ENDIF
 
     ENDIF
@@ -2970,22 +2969,19 @@ CONTAINS
              FileArr(1,1,1,:) = 0.0_hp
              MSG = 'Base field outside of range - set to zero: ' // &
                    TRIM(Lct%Dct%cName)
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1, &
-                                THISLOC=LOC )
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
 #if defined( MODEL_GEOS )
           ELSEIF ( Lct%Dct%DctType == HCO_DCTTYPE_MASK ) THEN
              FileArr(1,1,1,:) = 0.0_hp
              MSG = 'Mask outside of range - set to zero: ' // &
                    TRIM(Lct%Dct%cName)
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1, &
-                                THISLOC=LOC )
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
 #endif
           ELSE
              FileArr(1,1,1,:) = 1.0_hp
              MSG = 'Scale factor outside of range - set to one: ' // &
                    TRIM(Lct%Dct%cName)
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1, &
-                                THISLOC=LOC )
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
           ENDIF
        ELSE
           FileArr(1,1,1,:) = FileVals(IDX1:IDX2)
@@ -3035,8 +3031,7 @@ CONTAINS
           FileArr = FileArr * HcoState%TS_EMIS
           MSG = 'Data converted from kg/m3/s to kg/m3: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(Lct%Dct%Dta%OrigUnit)
-          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1, &
-                             THISLOC=LOC )
+          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
 
        ! ... emissions or unitless ...
        ELSEIF ( (AreaFlag == -1 .AND. TimeFlag == -1) .OR. &

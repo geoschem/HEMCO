@@ -2064,7 +2064,7 @@ CONTAINS
     UseLL = MIN( MAX(useLL,1), SIZE(Arr3D,3) )
     IF ( UseLL /= 1 ) THEN
        WRITE(MSG,*) "2D data was emitted above surface - this information might be lost: " , TRIM(cName), UseLL
-       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC, WARNLEV=2 )
+       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Pass 3D data to 2D array
@@ -2626,7 +2626,7 @@ END FUNCTION GetEmisLUnit
        IF ( lidx == -1 .AND. alt >= altt ) THEN
           lidx = HcoState%NZ
           WRITE(MSG,*)  'Level is above max. grid box level - use top level ', alt
-          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC, WARNLEV=2 )
+          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 

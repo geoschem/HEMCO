@@ -384,7 +384,7 @@ CONTAINS
        ELSE
           WRITE(MSG,*) 'Unrecognized output time stamp location: ', &
              TRIM(OutTimeStampChar), ' - will use default (start)'
-          CALL HCO_WARNING(HcoState%Config%Err,MSG,RC,THISLOC=LOC,WARNLEV=1)
+          CALL HCO_WARNING(HcoState%Config%Err,MSG,RC,THISLOC=LOC)
           OutTimeStamp = HcoDiagnStart
        ENDIF
     ENDIF
@@ -495,7 +495,7 @@ CONTAINS
        ELSE
           WRITE(MSG,*) 'Unrecognized output time stamp location: ', &
              TRIM(OutTimeStampChar), ' - will use default (start)'
-          CALL HCO_WARNING(HcoState%Config%Err,MSG,RC,THISLOC=LOC,WARNLEV=1)
+          CALL HCO_WARNING(HcoState%Config%Err,MSG,RC,THISLOC=LOC)
           OutTimeStamp = HcoDiagnStart
        ENDIF 
     ENDIF
@@ -3137,7 +3137,7 @@ CONTAINS
        ! Prompt warning
        MSG = 'Diagnostics counter is zero - return empty array: ' // &
              TRIM(DgnCont%cName)
-       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC, WARNLEV=2 )
+       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -3531,7 +3531,7 @@ CONTAINS
        MSG = 'Target diagnostics has AutoFill flag of 1 - reset to 0: ' &
            // TRIM(DgnCont%cName)
        IF ( PRESENT(HcoState) ) THEN
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC, WARNLEV=2 )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
        ELSE
           WRITE(*,*) 'HEMCO WARNING: ', TRIM(MSG)
        ENDIF
@@ -3644,7 +3644,7 @@ CONTAINS
        MSG = 'Target diagnostics has autofill flag of 1 - reset to 0: ' &
            // TRIM(DgnCont%cName)
        IF ( PRESENT(HcoState) ) THEN
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC, WARNLEV=2 )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
        ELSE
           WRITE(*,*) 'HEMCO WARNING: ', TRIM(MSG)
        ENDIF

@@ -321,7 +321,7 @@ CONTAINS
     IF ( .NOT. ASSOCIATED(HcoState%Clock) ) THEN
        CALL HCO_WARNING( HcoState%Config%Err, &
         'CANNOT SET TIMEZONES - HEMCO CLOCK IS NOT DEFINED', &
-        RC, WARNLEV=1, THISLOC='HcoClock_InitTzPtr (hco_clock_mod.F90)' )
+        RC, THISLOC='HcoClock_InitTzPtr (hco_clock_mod.F90)' )
         RETURN
     ENDIF
 

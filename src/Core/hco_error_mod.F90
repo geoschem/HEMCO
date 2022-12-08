@@ -298,13 +298,12 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_WarningErr( Err, ErrMsg, RC, WARNLEV, THISLOC )
+  SUBROUTINE HCO_WarningErr( Err, ErrMsg, RC, THISLOC )
 !
 ! !INPUT PARAMETERS"
 !
     TYPE(HcoErr),     POINTER                  :: Err
     CHARACTER(LEN=*), INTENT(IN   )            :: ErrMsg
-    INTEGER         , INTENT(IN   ), OPTIONAL  :: WARNLEV
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: THISLOC
 !
 ! !INPUT/OUTPUT PARAMETERS:
@@ -324,13 +323,8 @@ CONTAINS
     ! HCO_WARNING begins here
     !======================================================================
 
-    IF ( PRESENT(WARNLEV) ) THEN
-       WLEV = WARNLEV
-    ELSE
-       WLEV = 3
-    ENDIF
-
-    IF ( Err%Warnings >= WLEV ) THEN
+    ! Only print warnings when verbose output is requested
+    IF ( HCO_IsVerb( Err ) ) THEN
 
        ! Print warning
        MSG = 'HEMCO WARNING: ' // TRIM( ErrMsg )
@@ -367,12 +361,12 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_WarningNoErr( ErrMsg, RC, WARNLEV, THISLOC )
+  SUBROUTINE HCO_WarningNoErr( ErrMsg, RC, verb, THISLOC )
 !
 ! !INPUT PARAMETERS"
 !
     CHARACTER(LEN=*), INTENT(IN   )            :: ErrMsg
-    INTEGER         , INTENT(IN   ), OPTIONAL  :: WARNLEV
+    LOGICAL         , INTENT(IN   ), OPTIONAL  :: verb
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: THISLOC
 !
 ! !INPUT/OUTPUT PARAMETERS:
@@ -392,14 +386,17 @@ CONTAINS
     ! HCO_WARNING begins here
     !======================================================================
 
+    ! Exit if verbose output is not requested
+    IF ( .not. verb ) RETURN
+
     ! Print warning
     MSG = 'HEMCO WARNING: ' // TRIM( ErrMsg )
-    WRITE(*,*) TRIM(MSG)
+    WRITE( 6, '(a)' ) TRIM(MSG)
 
     ! Print location
     IF ( PRESENT(THISLOC) ) THEN
        MSG = '--> LOCATION: ' // TRIM(THISLOC)
-       WRITE(*,*) TRIM(MSG)
+       WRITE( 6, '(a)' ) TRIM(MSG)
     ENDIF
 
     ! Return w/ success

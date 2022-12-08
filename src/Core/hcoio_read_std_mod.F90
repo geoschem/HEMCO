@@ -268,7 +268,7 @@ CONTAINS
           doPrintWarning = .FALSE.
           MSG = 'No further attempts will be made to read file: ' //         &
                 TRIM( Lct%Dct%Dta%NcFile )
-          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
        ENDIF
 
        ! Return without reading
@@ -317,7 +317,7 @@ CONTAINS
                 CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE. )
                 MSG = 'No valid file found for current simulation time - data '// &
                      'will be ignored for time being - ' // TRIM(Lct%Dct%cName)
-                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
                 CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
                 RETURN
              ENDIF
@@ -358,7 +358,7 @@ CONTAINS
                      TRIM(srcFile) // ' - Cannot get field '              // &
                      TRIM(Lct%Dct%cName) // '. Please check file name '   // &
                      'and time (incl. time range flag) in the config. file'
-                CALL HCO_Warning( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+                CALL HCO_Warning( HcoState%Config%Err, MSG, RC )
 
                 ! Write a msg to stdout (NOT FOUND)
                 WRITE( 6, 300 ) TRIM( srcFile )
@@ -371,7 +371,7 @@ CONTAINS
                 MSG = 'No valid file found for current simulation time - '// &
                      'data will be ignored for time being - '             // &
                      TRIM(Lct%Dct%cName)
-                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
 
                 ! Write a msg to stdout (OPTIONAL)
                 WRITE( 6, 310 ) TRIM( srcFile )
@@ -385,7 +385,7 @@ CONTAINS
                   TRIM(srcFile) // ' - Cannot get field '                 // &
                   TRIM(Lct%Dct%cName) // '. Please check file name '      // &
                   'and time (incl. time range flag) in the config. file'
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
 
              ! Write a msg to stdout (NOT FOUND)
              WRITE( 6, 300 ) TRIM(srcFile)
@@ -507,7 +507,7 @@ CONTAINS
              CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE.)
              MSG = 'Simulation time is outside of time range provided for '//&
                   TRIM(Lct%Dct%cName) // ' - field is ignored for the time being!'
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
              DoReturn = .TRUE.
              CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
           ENDIF
@@ -539,7 +539,7 @@ CONTAINS
           CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE. )
           MSG = 'Cannot find field ' // TRIM(Lct%Dct%cName) // &
                 '. Will be ignored for time being.'
-          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
           CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
           RETURN
        ENDIF
@@ -1098,7 +1098,7 @@ CONTAINS
        IF ( Flag /= 0 ) THEN
           MSG = 'Data is treated as unitless, but file attribute suggests ' // &
                 'it is not: ' // TRIM(thisUnit) // '. File: ' // TRIM(srcFile)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=2 )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
        ENDIF
 
        ! Verbose mode
@@ -1123,7 +1123,7 @@ CONTAINS
              CALL HCO_ERROR( MSG, RC )
              RETURN
           ELSE
-             CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+             CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
           ENDIF
        ENDIF
 
@@ -1212,7 +1212,7 @@ CONTAINS
           ncArr = ncArr * HcoState%TS_EMIS
           MSG = 'Data converted from kg/m3/s to kg/m3: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(thisUnit)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
 
        ! Unitless data
        ELSEIF ( AreaFlag == -1 .AND. TimeFlag == -1 ) THEN
@@ -1227,7 +1227,7 @@ CONTAINS
           ncArr = ncArr / HcoState%TS_EMIS
           MSG = 'Data converted from kg/m2 to kg/m2/s: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(thisUnit)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
 
        ! Emission data that is not per area (i.e. kg/s) needs to be converted
        ! to per area manually.

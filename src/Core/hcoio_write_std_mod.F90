@@ -609,7 +609,7 @@ CONTAINS
     ELSE
        MSG = 'Unrecognized output reference time, will ' // &
              'assume `days since`: '//TRIM(timeunit)
-       CALL HCO_WARNING( MSG, WARNLEV=2, THISLOC=LOC, RC=RC )
+       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Special case where we have an old file but it has the same time stamp: in
