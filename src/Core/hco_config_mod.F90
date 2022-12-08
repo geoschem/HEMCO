@@ -555,8 +555,8 @@ CONTAINS
     HcoState%SetReadListCalled = .TRUE.
 
     ! Debug
-    IF ( HCO_IsVerb( HcoState%Config%Err, 1 ) ) THEN
-       CALL ReadList_Print( HcoState, HcoState%ReadLists, 1 )
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       CALL ReadList_Print( HcoState, HcoState%ReadLists )
     ENDIF
 
     ! Leave w/ success
@@ -1354,7 +1354,7 @@ CONTAINS
     !======================================================================
 
     ! Init
-    verb = HCO_IsVerb( HcoConfig%Err, 1 )
+    verb = HCO_IsVerb( HcoConfig%Err )
 
     ! Get name of this bracket
     IF ( STAT == 5 .OR. STAT == 6 ) THEN
@@ -1587,7 +1587,7 @@ CONTAINS
     ENDIF
 
     ! Init
-    verb = HCO_IsVerb( HcoConfig%Err, 1 )
+    verb = HCO_IsVerb( HcoConfig%Err )
     Shd  => NULL()
 
 
@@ -1750,7 +1750,7 @@ CONTAINS
        Lct%Dct%Dta => Dta
 
        ! verbose mode
-       IF ( HCO_IsVerb( HcoConfig%Err, 2 ) ) THEN
+       IF ( HCO_IsVerb( HcoConfig%Err ) ) THEN
           MSG = 'Created a fake scale factor with zeros'
           CALL HCO_MSG(HcoConfig%Err,MSG)
           MSG = 'This field will be used to artificially expand ' // &
@@ -1991,9 +1991,10 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
+    LOGICAL               :: doVerbose
     LOGICAL               :: FOUND
     INTEGER               :: I, N, POS
-    INTEGER               :: verb
+   !INTEGER               :: verb
     INTEGER               :: warn
 
     ! Strings
@@ -2105,16 +2106,31 @@ CONTAINS
     !-----------------------------------------------------------------------
     IF ( .NOT. ASSOCIATED(HcoConfig%Err) ) THEN
 
+       !--------------------------------------------------------------------
+       !! Verbose mode?
+       !CALL GetExtOpt( HcoConfig, CoreNr, 'Verbose', &
+       !                OptValInt=verb, FOUND=FOUND, RC=RC )
+       !IF ( RC /= HCO_SUCCESS ) THEN
+       !   msg = 'Error looking for "Verbose" HEMCO_Config.rc!'
+       !   CALL HCO_Error( msg, RC, thisLoc=loc )
+       !   RETURN
+       !ENDIF
+       !IF ( .NOT. FOUND ) THEN
+       !   verb = 3
+       !   WRITE(*,*) 'Setting `Verbose` not found in HEMCO logfile - use 3'
+       !ENDIF
+       !--------------------------------------------------------------------
+
        ! Verbose mode?
-       CALL GetExtOpt( HcoConfig, CoreNr, 'Verbose', &
-                       OptValInt=verb, FOUND=FOUND, RC=RC )
+       CALL GetExtOpt( HcoConfig,            CoreNr,     'Verbose',          &
+                       OptValBool=doVerbose, found=found, RC=RC             )
        IF ( RC /= HCO_SUCCESS ) THEN
           msg = 'Error looking for "Verbose" HEMCO_Config.rc!'
           CALL HCO_Error( msg, RC, thisLoc=loc )
           RETURN
        ENDIF
        IF ( .NOT. FOUND ) THEN
-          verb = 3
+          doVerbose=.FALSE.
           WRITE(*,*) 'Setting `Verbose` not found in HEMCO logfile - use 3'
        ENDIF
 
@@ -2131,18 +2147,22 @@ CONTAINS
           WRITE(*,*) 'Setting `Logfile` not found in HEMCO logfile - use `HEMCO.log`'
        ENDIF
 
-       ! Prompt warnings to logfile?
-       CALL GetExtOpt( HcoConfig, CoreNr, 'Warnings', &
-                       OptValInt=warn, FOUND=FOUND, RC=RC  )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          msg = 'Error looking for "Warnings" in HEMCO_Config.rc!'
-          CALL HCO_Error( msg, RC, thisLoc=loc )
-          RETURN
-       ENDIF
-       IF ( .NOT. FOUND ) THEN
-          warn = 3
-          WRITE(*,*) 'Setting `Warnings` not found in HEMCO logfile - use 3'
-       ENDIF
+       !---------------------------------------------------------------------
+       ! REDUCE LOGFILE OUTPUT:
+       ! Combine verbose and warnings (bmy, 07 Dec 2022)
+       !! Prompt warnings to logfile?
+       !CALL GetExtOpt( HcoConfig, CoreNr, 'Warnings', &
+       !                OptValInt=warn, FOUND=FOUND, RC=RC  )
+       !IF ( RC /= HCO_SUCCESS ) THEN
+       !   msg = 'Error looking for "Warnings" in HEMCO_Config.rc!'
+       !   CALL HCO_Error( msg, RC, thisLoc=loc )
+       !   RETURN
+       !ENDIF
+       !IF ( .NOT. FOUND ) THEN
+       !   warn = 3
+       !   WRITE(*,*) 'Setting `Warnings` not found in HEMCO logfile - use 3'
+       !ENDIF
+       !---------------------------------------------------------------------
 
        ! Initialize (standard) HEMCO tokens
        CALL HCO_SetDefaultToken( HcoConfig, RC )
@@ -2158,9 +2178,12 @@ CONTAINS
        IF ( TRIM(LogFile) == HCO_GetOpt(HcoConfig%ExtList,'Wildcard') )      &
             LogFile = '*'
 
+       !! We should now have everything to define the HEMCO error settings
+       !CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err, LogFile, &
+       !                    verb, warn, RC )
        ! We should now have everything to define the HEMCO error settings
-       CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err, LogFile, &
-                           verb, warn, RC )
+       CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err, LogFile,        &
+                           doVerbose,         RC                            )
        IF ( RC /= HCO_SUCCESS ) THEN
           msg = 'Error encountered in routine "Hco_Error_Set"!'
           CALL HCO_Error( msg, RC, thisLoc=loc )
@@ -2260,7 +2283,7 @@ CONTAINS
     IF ( cpux2 >= 180 ) cpux2 = cpux2 - 360
 
     ! verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Start to prepare fields for registering!'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) 'This CPU x-range: ', cpux1, cpux2
@@ -2282,7 +2305,7 @@ CONTAINS
        ENDIF
 
        ! verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Prepare ', TRIM(Lct%Dct%cName)
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -2300,7 +2323,7 @@ CONTAINS
              Lct%Dct%HcoID = ThisHcoID
 
              ! verbose
-             IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+             IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
                 WRITE(MSG,*) 'Assigned HEMCO species ID: ', Lct%Dct%HcoID
                 CALL HCO_MSG(HcoState%Config%Err,MSG)
              ENDIF
@@ -2380,7 +2403,7 @@ CONTAINS
           Lct%Dct%Dta%ncYrs(:) = -999
           Lct%Dct%Dta%ncMts(:) = -999
 
-          IF ( HCO_IsVerb(HcoSTate%Config%Err,3) ) THEN
+          IF ( HCO_IsVerb(HcoSTate%Config%Err ) ) THEN
              WRITE(MSG,*) 'Coverage: ', Lct%Dct%Dta%Cover
              CALL HCO_MSG( HcoState%Config%Err, msg )
           ENDIF
@@ -2500,7 +2523,7 @@ CONTAINS
        ENDIF
 
        IF ( Ignore ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) &
                   'Register_Base: Ignore (and remove) base field ', &
                   TRIM(Lct%Dct%cName)
@@ -2515,7 +2538,7 @@ CONTAINS
        ENDIF
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Register_Base: Checking ', TRIM(Lct%Dct%cName)
           CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='-')
        ENDIF
@@ -2550,7 +2573,7 @@ CONTAINS
        ENDIF
 
        ! verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Container ID     : ', Lct%Dct%cID
           CALL HCO_MSG( HcoState%Config%Err, msg )
           WRITE(MSG,*) 'Assigned targetID: ', targetID
@@ -2583,7 +2606,7 @@ CONTAINS
        ENDIF
 
        ! Print some information if verbose mode is on
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Base field registered: ', TRIM(Lct%Dct%cName)
           CALL HCO_MSG( HcoState%Config%Err, msg )
        ENDIF
@@ -2727,7 +2750,7 @@ CONTAINS
        ENDIF
 
        ! Print some information if verbose mode is on
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Scale field registered: ', TRIM(Lct%Dct%cName)
           CALL HCO_MSG( HcoState%Config%Err, msg )
        ENDIF
@@ -2896,7 +2919,7 @@ CONTAINS
           IF ( (mskLct%Dct%DctType  == HCO_DCTTYPE_MASK ) .AND. &
                (mskLct%Dct%Dta%Cover == 0 )        ) THEN
              targetID = -999
-             IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+             IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
                 WRITE(MSG,*) 'Data not defined over this CPU, skip ' // &
                      TRIM(Lct%Dct%cName)
                 CALL HCO_MSG( HcoState%Config%Err, msg )
@@ -3035,7 +3058,7 @@ CONTAINS
          ! replace all values of Lct. Hence, set targetID to -999
          ! (= ignore container) and return here.
        IF ( (tmpLct%Dct%Hier > Hier) .AND. (tmpCov==1) ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Skip container ', TRIM(Lct%Dct%cName), &
                           ' because of ', TRIM(tmpLct%Dct%cName)
              CALL HCO_MSG( HcoState%Config%Err, msg )
@@ -4526,7 +4549,7 @@ CONTAINS
        ENDIF
 
        ! Verbose
-       IF ( HcoConfig%amIRoot .AND. HCO_IsVerb(HcoConfig%Err,2) ) THEN
+       IF ( HcoConfig%amIRoot .AND. HCO_IsVerb(HcoConfig%Err ) ) THEN
           WRITE(MSG,*) 'Will use additional dimension on file ', &
              TRIM(Dta%ncFile), ': ', TRIM(Dta%ArbDimName), ' = ', &
              TRIM(Dta%ArbDimVal)

@@ -1,3 +1,4 @@
+
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -607,7 +608,7 @@ CONTAINS
     ! ----------------------------------------------------------------
     ! Verbose mode
     ! ----------------------------------------------------------------
-    IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
        IF ( NewStep ) THEN
           WRITE(MSG,110) Clock%ThisYear, Clock%ThisMonth, &
                          Clock%ThisDay,  Clock%ThisHour,  &

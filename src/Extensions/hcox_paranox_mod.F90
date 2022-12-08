@@ -1082,11 +1082,11 @@ CONTAINS
       IF ( HcoState%amIRoot ) THEN
 
          ! Write the name of the extension regardless of the verbose setting
-         MSG = 'Using HEMCO extension: ParaNOx (ship emission plumes)'
+         msg = 'Using HEMCO extension: ParaNOx (ship emission plumes)'
          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-            CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+            CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
          ELSE
-            CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+            CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
          ENDIF
 
          ! Write the rest of the information only when verbose is set

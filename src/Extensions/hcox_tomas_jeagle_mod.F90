@@ -389,9 +389,9 @@ CONTAINS
        msg = &
         'Using HEMCO extension: TOMAS_Jeagle (sea salt emissions for TOMAS)'
        IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
        ENDIF
     ENDIF
 

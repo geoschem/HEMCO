@@ -952,9 +952,9 @@ CONTAINS
        ! Print the name of the module regardless of verbose
        msg = 'Using HEMCO extension: LightNOx (lightning NOx emissions'
        IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
        ENDIF
 
        ! Other information will be printed only when verbose is true

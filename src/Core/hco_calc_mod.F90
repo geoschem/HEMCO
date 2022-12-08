@@ -247,7 +247,7 @@ CONTAINS
     DoDiagn = HcoState%Options%AutoFillDiagn !Write AutoFill diagnostics?
 
     ! Verbose mode
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
        WRITE (MSG, *) 'Run HEMCO calculation w/ following options:'
        CALL HCO_MSG ( HcoState%Config%Err, MSG )
        WRITE (MSG, "(A20,I5)")    'Extension number:', ExtNr
@@ -278,11 +278,8 @@ CONTAINS
     ! Do until end of EmisList (==> loop over all emission containers)
     DO
        ! Have we reached the end of the list?
-       IF ( FLAG /= HCO_SUCCESS ) THEN
-          EOL = .TRUE.
-       ELSE
-          EOL = .FALSE.
-       ENDIF
+       EOL = .FALSE.
+       IF ( FLAG /= HCO_SUCCESS ) EOL = .TRUE.
 
        ! ------------------------------------------------------------
        ! Select container and update all working variables & arrays.
@@ -394,7 +391,7 @@ CONTAINS
           SpcFlx(:,:,:) = SpcFlx(:,:,:) + CatFlx(:,:,:)
 
           ! verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Added category emissions to species array: '
              CALL HCO_MSG(HcoState%Config%Err,MSG)
              WRITE(MSG,*) 'Species       : ', PrevSpc
@@ -455,7 +452,7 @@ CONTAINS
           OutArr(:,:,:) = OutArr(:,:,:) + SpcFlx(:,:,:)
 
           ! testing only
-          IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Added total emissions to output array: '
              CALL HCO_MSG(HcoState%Config%Err,MSG)
              WRITE(MSG,*) 'Species: ', PrevSpc
@@ -571,7 +568,7 @@ CONTAINS
           ENDIF
 
           ! verbose mode
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Calculating emissions for species ', &
                            TRIM(HcoState%Spc(ThisSpc)%SpcName)
              CALL HCO_MSG( HcoState%Config%Err, MSG, SEP1='-', SEP2='-' )
@@ -704,7 +701,7 @@ CONTAINS
     OutArr => NULL()
 
     ! verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
        WRITE (MSG, *) 'HEMCO emissions successfully calculated!'
        CALL HCO_MSG ( HcoState%Config%Err, MSG )
     ENDIF
@@ -881,7 +878,7 @@ CONTAINS
     MaskFractions = HcoState%Options%MaskFractions
 
     ! Verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Evaluate field ', TRIM(BaseDct%cName)
        CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1=' ')
     ENDIF
@@ -1123,7 +1120,7 @@ CONTAINS
        ! if scale factors are only defined for a given time range and
        ! the simulation datetime is outside of this range.
        IF ( .NOT. FileData_ArrIsDefined(ScalDct%Dta) ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              MSG = 'Skip scale factor '//TRIM(ScalDct%cName)// &
                    ' because it is not defined for this datetime.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -1132,7 +1129,7 @@ CONTAINS
        ENDIF
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           MSG = 'Applying scale factor ' // TRIM(ScalDct%cName)
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -1236,8 +1233,8 @@ CONTAINS
              MASK(I,J,:) = MASK(I,J,:) * TMPVAL
 
              ! testing only
-             IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND. I==1 .AND. J==1 ) THEN
-                write(MSG,*) 'Mask field ', TRIM(ScalDct%cName),   &
+             IF ( HCO_IsVerb(HcoState%Config%Err) .AND. I==1 .AND. J==1 ) THEN
+               write(MSG,*) 'Mask field ', TRIM(ScalDct%cName),   &
                      ' found and added to temporary mask.'
                 CALL HCO_MSG(HcoState%Config%Err,MSG)
              ENDIF
@@ -1341,7 +1338,7 @@ CONTAINS
           ENDDO !LL
 
           ! Verbose mode
-          if ( HCO_IsVerb(HcoState%Config%Err,3) .and. i == ix .and. j == iy ) then
+          if ( HCO_IsVerb(HcoState%Config%Err) .and. i == ix .and. j == iy ) then
              write(MSG,*) 'Scale field ', TRIM(ScalDct%cName)
              CALL HCO_MSG(HcoState%Config%Err,MSG)
              write(MSG,*) 'Time slice: ', tIdx
@@ -1488,7 +1485,7 @@ CONTAINS
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! testing only
-    verb = HCO_IsVerb(HcoState%Config%Err,1)
+    verb = HCO_IsVerb(HcoState%Config%Err)
     IX = 60 !40 !19 43 61
     IY = 32 !36 !33 26 37
 
@@ -2949,7 +2946,7 @@ END FUNCTION GetEmisLUnit
     MaskFractions = HcoState%Options%MaskFractions
 
     ! Verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+    IF ( HCO_IsVerb(HcoState%Config%Err) ) THEN
        WRITE(MSG,*) 'Evaluate field ', TRIM(BaseDct%cName)
        CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1=' ')
     ENDIF
@@ -3166,7 +3163,7 @@ END FUNCTION GetEmisLUnit
        ! if scale factors are only defined for a given time range and
        ! the simulation datetime is outside of this range.
        IF ( .NOT. FileData_ArrIsDefined(ScalDct%Dta) ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              MSG = 'Skip scale factor '//TRIM(ScalDct%cName)// &
                    ' because it is not defined for this datetime.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -3175,7 +3172,7 @@ END FUNCTION GetEmisLUnit
        ENDIF
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           MSG = 'Applying scale factor ' // TRIM(ScalDct%cName)
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -3274,7 +3271,7 @@ END FUNCTION GetEmisLUnit
              MASK(I,J,:) = MASK(I,J,:) * TMPVAL
 
              ! testing only
-             IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND. I==1 .AND. J==1 ) THEN
+             IF ( HCO_IsVerb(HcoState%Config%Err) .AND. I==1 .AND. J==1 ) THEN
                 write(MSG,*) 'Mask field ', TRIM(ScalDct%cName),   &
                      ' found and added to temporary mask.'
                 CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -3379,7 +3376,7 @@ END FUNCTION GetEmisLUnit
           ENDDO !LL
 
           ! Verbose mode
-          if ( HCO_IsVerb(HcoState%Config%Err,3) .and. i == ix .and. j == iy ) then
+          if ( HCO_IsVerb(HcoState%Config%Err) .and. i == ix .and. j == iy ) then
              write(MSG,*) 'Scale field ', TRIM(ScalDct%cName)
              CALL HCO_MSG(HcoState%Config%Err,MSG)
              write(MSG,*) 'Time slice: ', tIdx

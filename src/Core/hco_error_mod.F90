@@ -114,11 +114,6 @@ MODULE HCO_Error_Mod
      MODULE PROCEDURE HCO_MsgErr
   END INTERFACE HCO_MSG
 
-  INTERFACE HCO_IsVerb
-     MODULE PROCEDURE HCO_IsVerb_NoVerbNr
-     MODULE PROCEDURE HCO_IsVerb_VerbNr
-  END INTERFACE HCO_IsVerb
-
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
@@ -131,8 +126,9 @@ MODULE HCO_Error_Mod
 !
   TYPE, PUBLIC :: HcoErr
      LOGICAL                     :: FirstOpen = .TRUE.
-     LOGICAL                     :: IsRoot    =  .FALSE.
-     LOGICAL                     :: LogIsOpen =  .FALSE.
+     LOGICAL                     :: IsRoot    = .FALSE.
+     LOGICAL                     :: LogIsOpen = .FALSE.
+     LOGICAL                     :: doVerbose = .FALSE.
      INTEGER                     :: Warnings  =  0
      INTEGER                     :: Verbose   =  0
      INTEGER                     :: nWarnings =  0
@@ -429,7 +425,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_MSGErr( Err, Msg, Sep1, Sep2, Verb )
+  SUBROUTINE HCO_MSGErr( Err, Msg, Sep1, Sep2 )
 !
 ! !INPUT PARAMETERS:
 !
@@ -437,7 +433,9 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: Msg
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep1
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep2
-    INTEGER,          INTENT(IN   ), OPTIONAL  :: Verb
+!
+! !REMARKS:
+!  Refactored to avoid ELSE statements, which are a computational bottleneck.
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
@@ -445,63 +443,39 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    LOGICAL  :: IsOpen
-    INTEGER  :: LUN
+    INTEGER :: LUN
 
-    !======================================================================
+    !=======================================================================
     ! HCO_MSG begins here
-    !======================================================================
+    !=======================================================================
 
-    ! Check if Err object is indeed defined
-    IF ( .NOT. ASSOCIATED(Err) ) THEN
-       IsOpen = .FALSE.
-    ELSE
-       IsOpen = Err%LogIsOpen
+    ! Exit if Err is NULL
+    IF ( .NOT. ASSOCIATED( Err) ) RETURN
 
-       ! Don't print if this is not the root CPU
-       IF ( .NOT. Err%IsRoot ) RETURN
+    ! Exit if we are not on the root core
+    IF ( .NOT. Err%IsRoot ) RETURN
 
-       !----------------------------------------------------------------------
-       ! REDUCE LOGFILE OUTPUT: Only print if VERBOSE=3
-       ! TODO: Convert VERBOSE from integer to a logical on/off switch
-       !! Don't print if verbose level is smaller than verbose level of this
-       !! CPU.
-       !IF ( PRESENT( Verb ) ) THEN
-       !   IF ( Verb < Err%Verbose ) RETURN
-       !ENDIF
-       !----------------------------------------------------------------------
-       IF ( .not. HCO_IsVerb( Err ) ) RETURN
+    ! Exit if Verbose is turned off
+    IF ( .not. Err%doVerbose ) RETURN
+
+    !=======================================================================
+    ! Write message
+    !=======================================================================
+
+    ! Get the file unit, or if the file is not open, use stdout
+    LUN = Err%LUN
+    IF ( ( .not. Err%LogIsOpen ) .or. ( LUN <= 0 ) ) LUN = 6
+
+    ! If logfile is open then write to it
+    ! Otherwise write to stdout (unit #6)
+    IF ( PRESENT(SEP1) ) THEN
+       WRITE( LUN,'(a)' ) REPEAT( SEP1, 79 )
     ENDIF
-
-    ! Use standard output if file not open
-    IF ( .NOT. IsOpen ) THEN
-       IF ( PRESENT(MSG) ) PRINT *, TRIM(MSG)
-
-    ! Print message to error file
-    ELSE
-       LUN = Err%LUN
-
-       IF (LUN > 0 ) THEN
-          IF ( PRESENT(SEP1) ) THEN
-             WRITE( LUN,'(a)' ) REPEAT( SEP1, 79 )
-          ENDIF
-          IF ( PRESENT(MSG) ) THEN
-             WRITE( LUN,'(a)' ) TRIM( MSG )
-          ENDIF
-          IF ( PRESENT(SEP2) ) THEN
-             WRITE( LUN,'(a)' ) REPEAT( SEP2, 79 )
-          ENDIF
-       ELSE
-          IF ( PRESENT(SEP1) ) THEN
-             WRITE( 6, '(a)' ) REPEAT( SEP1, 79 )
-          ENDIF
-          IF ( PRESENT(MSG) ) THEN
-             WRITE( 6, '(a)' ) TRIM( MSG )
-          ENDIF
-          IF ( PRESENT(SEP2) ) THEN
-             WRITE( 6, '(a)' ) REPEAT( SEP2, 79 )
-          ENDIF
-       ENDIF
+    IF ( PRESENT(MSG) ) THEN
+       WRITE( LUN,'(a)' ) TRIM( MSG )
+    ENDIF
+    IF ( PRESENT(SEP2) ) THEN
+       WRITE( LUN,'(a)' ) REPEAT( SEP2, 79 )
     ENDIF
 
   END SUBROUTINE HCO_MsgErr
@@ -531,7 +505,7 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: Msg
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep1
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep2
-    INTEGER,          INTENT(IN   ), OPTIONAL  :: Verb
+    LOGICAL,          INTENT(IN   ), OPTIONAL  :: Verb
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
@@ -544,21 +518,18 @@ CONTAINS
     ! HCO_MSG begins here
     !======================================================================
 
-    !----------------------------------------------------------------------
-    ! REDUCE LOGFILE OUTPUT: Only print if VERBOSE=3
-    ! TODO: Convert VERBOSE from integer to a logical on/off switch
-    !  -- Bob Yantosca (05 Dec 2022)
-    IF ( Verb < 3 ) RETURN
-    !----------------------------------------------------------------------
+    ! Exit if verbose is not requested
+    IF ( .not. Verb ) RETURN
 
+    ! Print message and optional separator lines
     IF ( PRESENT( SEP1 ) ) THEN
-       WRITE( 6,'(a)' ) REPEAT( SEP1, 79 )
+       WRITE( 6, '(a)' ) REPEAT( SEP1, 79 )
     ENDIF
     IF ( PRESENT( msg ) ) THEN
        WRITE( 6, '(a)' ) TRIM( msg )
     ENDIF
     IF ( PRESENT( SEP2 ) ) THEN
-       WRITE( 6,'(a)' ) REPEAT( SEP2, 79 )
+       WRITE( 6, '(a)' ) REPEAT( SEP2, 79 )
     ENDIF
 
   END SUBROUTINE HCO_MsgNoErr
@@ -718,8 +689,8 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_ERROR_SET( am_I_Root, Err, LogFile, &
-                            Verbose, WarningLevel, RC )
+  SUBROUTINE HCO_ERROR_SET( am_I_Root, Err, LogFile, doVerbose, RC )
+
 !
 !  !INPUT PARAMETERS:
 !
@@ -729,8 +700,7 @@ CONTAINS
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,          INTENT(INOUT)  :: Verbose        ! verbose level
-    INTEGER,          INTENT(INOUT)  :: WarningLevel   ! warning level
+    LOGICAL,          INTENT(INOUT)  :: doVerbose
     INTEGER,          INTENT(INOUT)  :: RC
 !
 ! !REVISION HISTORY:
@@ -758,20 +728,21 @@ CONTAINS
     ! Set verbose to -1 if this is not the root CPU. This will disable any
     ! log-file messages
     IF ( .NOT. am_I_Root ) THEN
-       Verbose      = -1
-       WarningLevel =  0
+       !Verbose      = -1
+       !WarningLevel =  0
+       doVerbose = .FALSE.
     ENDIF
 
     ! Pass values
     Err%IsRoot       = am_I_Root 
     Err%LogFile      = TRIM(LogFile)
-    Err%Verbose      = Verbose
-    Err%Warnings     = WarningLevel
+    Err%doVerbose    = doVerbose
+    !Err%Warnings     = WarningLevel
 
     ! Init misc. values
     Err%FirstOpen = .TRUE.
     Err%LogIsOpen = .FALSE.
-    Err%nWarnings = 0
+    !Err%nWarnings = 0
     Err%CurrLoc   = 0
 
     ! If Logfile is set to '*', set lun to -1 (--> write into default file).
@@ -876,7 +847,7 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: HCO_IsVerb_NoVerbNr
+! !IROUTINE: HCO_IsVerb_NoVerb
 !
 ! !DESCRIPTION: Returns true if the HEMCO verbose number is set to 3 or larger.
 !  Does not use an "Verb" argument
@@ -884,7 +855,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  FUNCTION HCO_IsVerb_NoVerbNr( Err ) RESULT ( IsVerb )
+  FUNCTION HCO_IsVerb( Err ) RESULT ( IsVerb )
 !
 ! !INPUT PARAMETERS:
 !
@@ -911,59 +882,9 @@ CONTAINS
     IF ( .not. ASSOCIATED( Err ) ) RETURN
 
     ! Check if "Verbose: 3" was set in the HEMCO_Config.rc file
-    isVerb = ( Err%Verbose >= 3 )
+    isVerb = Err%doVerbose
 
-  END FUNCTION HCO_IsVerb_NoVerbNr
-!EOC
-!------------------------------------------------------------------------------
-!                   Harmonized Emissions Component (HEMCO)                    !
-!------------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: HCO_IsVerb_VerbNr
-!
-! !DESCRIPTION: Function HCO\_IsVerb\_VerbNr returns true if the HEMCO
-!  verbose number is equal to or larger than the passed number.
-!\\
-!\\
-! !INTERFACE:
-!
-  FUNCTION HCO_IsVerb_VerbNr( Err, VerbNr ) RESULT ( IsVerb )
-!
-! !INPUT PARAMETERS:
-!
-    TYPE(HcoErr),  POINTER    :: Err            ! Error object
-    INTEGER,       INTENT(IN) :: VerbNr
-!
-! !OUTPUT PARAMETERS:
-!
-    LOGICAL                   :: IsVerb
-!
-! !REMARKS:
-!  HCO_IsVerb will be phased out and replaced by HCO_IsVerbose.
-!
-! !REVISION HISTORY:
-!  15 Mar 2015 - C. Keller - Initialization
-!  See https://github.com/geoschem/hemco for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-
-    !======================================================================
-    ! HCO_IsVerb_VerbNr begins here
-    !======================================================================
-
-    ! Initialize
-    isVerb = .FALSE.
-
-    ! Return FALSE if the Err object is NULL
-    IF ( .NOT. ASSOCIATED( Err ) ) RETURN
-
-    ! Otherwise determine if this verbose level is greater or equal
-    ! to the verbose level specified in HEMCO_Config.rc
-    isVerb = ( Err%Verbose >= VerbNr )
-
-  END FUNCTION HCO_IsVerb_VerbNr
+  END FUNCTION HCO_IsVerb
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -1082,18 +1003,10 @@ CONTAINS
 
     ! Write header on first call
     IF ( Err%FirstOpen ) THEN
-       IF ( Err%LUN < 0 ) THEN
-          LUN = 6                ! Log gets written to stdout
-       ELSE
-          LUN = Err%LUN          ! Log gets written to file
-       ENDIF
+       LUN = Err%Lun                ! Log gets written to file
+       IF ( Err%LUN < 0 ) LUN = 6   ! ,,, or to stdout if file isn't open
 
-       !------------------------------------------------------------------
-       ! REDUCE LOGFILE OUTPUT:
-       ! Only write splash screen when VERBOSE=3
-       ! TODO: Change VERBOSE from integer to a logical on/off switch
-       !  -- Bob Yantosca (05 Dec 2022)
-       !------------------------------------------------------------------
+       ! Only write the version info if verbose output is requested
        IF ( HCO_IsVerb( Err ) ) THEN
 
           ! Write header

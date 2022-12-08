@@ -942,7 +942,7 @@ CONTAINS
 
           ! Exit if found
           IF ( FOUND ) THEN
-             IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+             IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
                 WRITE(MSG,*) 'Diagnostics already exists - ', &
                              'will not be added again: ', TRIM(cName)
                 CALL HCO_MSG ( HcoState%Config%Err, MSG )
@@ -1106,7 +1106,7 @@ CONTAINS
              ThisDiagn%AreaScal = 1.0_hp / Scal
           ENDIF
 
-          IF (HCO_IsVerb(HcoState%Config%Err,3)) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err) ) THEN
              WRITE(MSG, *) '  ThisDiagn%AreaScal = ', ThisDiagn%AreaScal
              CALL HCO_MSG( HcoState%Config%Err, MSG)
              WRITE(MSG, *) '  ThisDiagn%MassScal = ', ThisDiagn%MassScal
@@ -1213,7 +1213,7 @@ CONTAINS
     ThisColl%nnDiagn = ThisColl%nnDiagn + 1
 
     ! Verbose mode
-    IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
        WRITE(MSG,'(a, i4)') 'Successfully added diagnostic '// &
                              TRIM(ThisDiagn%cName) // ' to collection ', PS
        CALL HCO_MSG ( HcoState%Config%Err, MSG )
@@ -1934,7 +1934,7 @@ CONTAINS
              CYCLE
           ENDIF
 
-          IF (HCO_IsVerb(HcoState%Config%Err, 3)) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'ThisDiagn%cName:    ', trim(ThisDiagn%cName)
              CALL HCO_MSG(HcoState%Config%Err, MSG)
              WRITE(MSG,*) 'ThisDiagn%AvgFlag:  ', ThisDiagn%AvgFlag
@@ -2232,7 +2232,7 @@ CONTAINS
           ThisDiagn%nnGetCalls  = 0
 
           ! Verbose mode
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,'(a,a,a,I3,a)') 'Successfully updated diagnostics: ', &
                 TRIM(ThisDiagn%cName), ' (counter:', ThisDiagn%Counter, ')'
              CALL HCO_MSG ( HcoState%Config%Err, MSG )
@@ -3774,7 +3774,7 @@ CONTAINS
     CALL HCO_MSG(HcoState%Config%Err,MSG)
 
     ! Eventually add details
-    IF ( HCO_IsVerb( HcoState%Config%Err, VerbNr ) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
 
        ! General information
        WRITE(MSG,*) '   --> Collection         : ', Dgn%CollectionID
@@ -3927,7 +3927,7 @@ CONTAINS
 
     ! verbose
     IF ( PRESENT(HcoState) ) THEN
-       IF ( HCO_IsVerb( HcoState%Config%Err, 1 ) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           MSG = 'Created diagnostics collection: '
           CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,'(a21,i2)') ' - Collection ID  : ', COL

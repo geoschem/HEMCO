@@ -359,9 +359,9 @@ CONTAINS
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: Volcano (volcanic SO2 emissions)'
        IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
        ENDIF
     ELSE
        MSG = 'The Volcano extension is turned off.'
@@ -721,7 +721,7 @@ CONTAINS
        ENDDO
 
        ! Verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Number of volcanoes: ', nVolc
           CALL HCO_MSG( HcoState%Config%Err, MSG)
        ENDIF
@@ -1048,7 +1048,7 @@ CONTAINS
           ENDDO
 
           ! testing
-          !IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+          !IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           !   WRITE(MSG,*) 'Total eruptive  emissions of volcano ', N, ' [kgS/s]: ', volcE
           !   CALL HCO_MSG(HcoState%Config%Err,MSG)
           !   WRITE(MSG,*) 'Total degassing emissions of volcano ', N, ' [kgS/s]: ', volcD
@@ -1063,7 +1063,7 @@ CONTAINS
     ENDIF
 
     ! verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Total eruptive  emissions [kgS/s]: ', totE
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) 'Total degassing emissions [kgS/s]: ', totD

@@ -248,7 +248,7 @@ CONTAINS
     NY = HcoState%NY
 
     ! Verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Processing container: ', TRIM(Lct%Dct%cName)
        CALL HCO_MSG( HcoState%Config%Err, MSG, SEP1='-' )
     ENDIF
@@ -432,7 +432,7 @@ CONTAINS
     IF ( ncLun > 0 ) THEN
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Reading from existing stream: ', TRIM(srcFile)
           CALL HCO_MSG( HcoState%Config%Err, MSG )
        ENDIF
@@ -442,7 +442,7 @@ CONTAINS
        CALL NC_OPEN ( TRIM(srcFile), ncLun )
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Opening file: ', TRIM(srcFile)
           CALL HCO_MSG( HcoState%Config%Err, MSG )
        ENDIF
@@ -729,7 +729,7 @@ CONTAINS
        ENDIF
 
        ! Verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Will read vertical levels ', lev1, ' to ', lev2
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -758,7 +758,7 @@ CONTAINS
     ! ----------------------------------------------------------------
 
     ! Verbose mode
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Reading variable ', TRIM(Lct%Dct%Dta%ncPara)
        CALL HCO_MSG(HcoState%Config%Err,MSG)
     ENDIF
@@ -894,7 +894,7 @@ CONTAINS
           ncArr = (wgt1 * ncArr) + (wgt2 * ncArr2)
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              MSG = 'Interpolated data between two files:'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
              MSG = '- File 1: ' // TRIM(srcFile)
@@ -1037,7 +1037,7 @@ CONTAINS
           ncArr = ncArr / REAL(nYears,sp)
 
           ! Verbose
-          IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+          IF ( HcoState%amIRoot .AND. HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,110) TRIM(Lct%Dct%cName), Yr1, Yr2
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -1102,7 +1102,7 @@ CONTAINS
        ENDIF
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Based on srcUnit attribute (', TRIM(Lct%Dct%Dta%OrigUnit), &
                        '), no unit conversion is performed.'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -1156,7 +1156,7 @@ CONTAINS
        ENDIF
 
        ! Verbose mode
-       IF ( HcoState%amIRoot .and. HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       IF ( HcoState%amIRoot .and. HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Unit conversion settings: '
           CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,*) '- Year, month        : ', ncYr, ncMt
@@ -1182,14 +1182,14 @@ CONTAINS
 
        ! Verbose mode
        IF ( UnitFactor /= 1.0_hp ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Data was in units of ', TRIM(thisUnit), &
                           ' - converted to HEMCO units by applying ', &
                           'scale factor ', UnitFactor
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
        ELSE
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Data was in units of ', TRIM(thisUnit), &
                           ' - unit conversion factor is ', UnitFactor
              CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -1320,7 +1320,7 @@ CONTAINS
     IF ( nlev > 1 ) THEN
       UseMESSy = .TRUE.
 
-      IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+      IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
         WRITE(MSG,*) '  ==> WRF/CESM: Always forcing MESSy regridding for number of verticals', nlev, IsModelLevel
         CALL HCO_MSG(HcoState%Config%Err,MSG)
       ENDIF
@@ -1338,7 +1338,7 @@ CONTAINS
     ! Use MESSy regridding
     !-----------------------------------------------------------------
     IF ( UseMESSy ) THEN
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) '  ==> Use MESSy regridding (NCREGRID)'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -1379,7 +1379,7 @@ CONTAINS
        ! Ported from the original WRF-GC implementation (hplin, 5/27/20)
        !--------------------------------------------------------------
        IF ( nlev > 1 .AND. IsModelLevel ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
             WRITE(MSG,*) '  ==> WRF/CESM: Writing in fixed sigma coordinates for GEOS-Chem levels', nlon, nlat
             CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -1472,7 +1472,7 @@ CONTAINS
     ! Use map_a2a regridding
     !-----------------------------------------------------------------
     ELSE
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) '  ==> Use map_a2a regridding'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF

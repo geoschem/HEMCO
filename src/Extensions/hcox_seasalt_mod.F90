@@ -1002,11 +1002,11 @@ CONTAINS
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: SeaSalt (sea salt aerosol emissions)'
        IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
        ENDIF
-
+     
        ! Write all other messages as debug printout only
        IF ( HcoState%MarinePOA ) THEN
           MSG = 'Use marine organic aerosols option'

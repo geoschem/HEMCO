@@ -830,7 +830,7 @@ CONTAINS
 
     ! Verbose statements
     IF ( HcoState%amIRoot .AND. FIRST .AND. &
-         HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+         HCO_IsVerb(HcoState%Config%Err) ) THEN
        Verb = .TRUE.
     ENDIF
     IF ( Verb ) THEN
@@ -1406,7 +1406,7 @@ CONTAINS
        ENDIF
 
        ! Verbose
-       IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err ) ) THEN
           IF ( FOUND ) THEN
              WRITE(MSG,*) 'HEMCO PBL heights obtained from field ',TRIM(FldName)
              CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
@@ -1432,7 +1432,7 @@ CONTAINS
              FOUND                       = .TRUE.
 
              ! Verbose
-             IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+             IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err ) ) THEN
                 WRITE(MSG,*) 'HEMCO PBL heights obtained from provided 2D field.'
                 CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
              ENDIF
@@ -1457,7 +1457,7 @@ CONTAINS
           FOUND                       = .TRUE.
 
           ! Verbose
-          IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'HEMCO PBL heights uniformly set to ', DefVal
              CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
           ENDIF

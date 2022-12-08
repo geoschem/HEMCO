@@ -346,11 +346,11 @@ CONTAINS
     ENDIF
 
     ! verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND. PS==1 ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) .AND. PS==1 ) THEN
        MSG = 'Write diagnostics into file '//TRIM(ncFile)
        CALL HCO_MSG( HcoState%Config%Err, MSG )
     ENDIF
-    IF ( HCO_IsVerb(HcoState%Config%Err,3) .AND. PS==1 ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) .AND. PS==1 ) THEN
        WRITE(MSG,*) '--> write level dimension: ', .NOT.NoLevDim
        CALL HCO_MSG( HcoState%Config%Err, MSG )
     ENDIF
@@ -783,7 +783,7 @@ CONTAINS
           ENDIF
 
           ! verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND. PS==1 ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) .AND. PS==1 ) THEN
              MSG = '--- Added diagnostics: '//TRIM(myName)
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF

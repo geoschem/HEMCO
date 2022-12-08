@@ -235,7 +235,7 @@ CONTAINS
     ENDIF
 
     ! Verbose
-    IF ( HcoConfig%amIRoot .AND. HCO_IsVerb(HcoConfig%Err,2) .AND. InUse ) THEN
+    IF ( HcoConfig%amIRoot .AND. HCO_IsVerb(HcoConfig%Err) .AND. InUse ) THEN
        WRITE(MSG,*) 'Added HEMCO extension: ', TRIM(ExtName), ExtNr
        CALL HCO_MSG(HcoConfig%Err,MSG)
     ENDIF
@@ -935,7 +935,7 @@ CONTAINS
     !======================================================================
 
     ! verbose?
-    verb = HCO_IsVerb( HcoConfig%Err, 1 )
+    verb = HCO_IsVerb( HcoConfig%Err )
 
     ! Pass name to module and set to lower case
     IF ( PRESENT(ExtName) ) THEN
@@ -1241,7 +1241,7 @@ CONTAINS
     ThisExt%Opts => NewOpt
 
     ! Verbose
-    IF ( VRB .AND. HcoConfig%amIRoot .AND. HCO_IsVerb(HcoConfig%Err,2) ) THEN
+    IF ( VRB .AND. HcoConfig%amIRoot .AND. HCO_IsVerb(HcoConfig%Err) ) THEN
        MSG = 'Added the following option: ' // TRIM(OptName)//': '//TRIM(OptValue)
        CALL HCO_MSG(HcoConfig%Err,MSG)
     ENDIF

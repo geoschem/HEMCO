@@ -157,7 +157,7 @@ CONTAINS
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
     ENDIF
-    verb = HCO_IsVerb(HcoState%Config%Err,3)
+    verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! Initialize local variables for safety's sake
     nTime      =  0
@@ -1118,7 +1118,7 @@ CONTAINS
     !=================================================================
 
     ! Verbose mode?
-    verb = HCO_IsVerb(HcoState%Config%Err,3)
+    verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! If the originally wanted datetime was below the available data
     ! range, set all weights to the first index.
@@ -1573,7 +1573,7 @@ CONTAINS
     srcFile = Lct%Dct%Dta%ncFile
 
     ! verbose mode
-    IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Parsing source file and replacing tokens'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
     ENDIF
@@ -2105,7 +2105,7 @@ CONTAINS
     ENDIF
 
     ! Verbose
-    IF ( HcoState%amIRoot .AND. HCO_IsVerb( HcoState%Config%Err, 2 ) ) THEN
+    IF ( HcoState%amIRoot .AND. HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Additional dimension ', TRIM(Lct%Dct%Dta%ArbDimName), &
                     ' in ', TRIM(Lct%Dct%Dta%ncFile), ': use index ',      &
                     ArbIdx, ' (set: ', Lct%Dct%Dta%ArbDimVal, ')'
@@ -2255,7 +2255,7 @@ CONTAINS
     Vals => NULL()
 
     ! verbose mode?
-    Verb = HCO_IsVerb(HcoState%Config%Err,2)
+    Verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! Verbose
     IF ( Verb ) THEN
@@ -2313,7 +2313,7 @@ CONTAINS
           CIDS = NINT(CNTR)
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              MSG = '- Use ID mask ' // TRIM(LINE)
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -2379,7 +2379,7 @@ CONTAINS
        ENDDO
 
        ! Verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) '- Obtained values for ',TRIM(CNT),' ==> ID:', CID
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -2478,7 +2478,7 @@ CONTAINS
     Vals => NULL()
 
     ! Verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG, *) 'Read from config file: ', TRIM(Lct%Dct%cName)
        CALL HCO_MSG(HcoState%Config%Err,MSG)
     ENDIF
@@ -3011,14 +3011,14 @@ CONTAINS
 
        ! Verbose mode
        IF ( UnitFactor /= 1.0_hp ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Data was in units of ', TRIM(Lct%Dct%Dta%OrigUnit), &
                           ' - converted to HEMCO units by applying ', &
                           'scale factor ', UnitFactor
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
        ELSE
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Data was in units of ', TRIM(Lct%Dct%Dta%OrigUnit), &
                           ' - unit conversion factor is ', UnitFactor
              CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -3454,7 +3454,7 @@ CONTAINS
           Vals(I) = Val
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Evaluated function: ',TRIM(func),' --> ', Val
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF

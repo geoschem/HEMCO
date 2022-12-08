@@ -257,7 +257,6 @@ CONTAINS
 !
     INTEGER                        :: ExtNr, N, nSpc, AS
     INTEGER,           ALLOCATABLE :: HcoIDs(:)
-    LOGICAL                        :: verb
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
     CHARACTER(LEN=255)             :: MSG, LOC
     TYPE(MyInst), POINTER          :: Inst
@@ -277,7 +276,6 @@ CONTAINS
         CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
         RETURN
     ENDIF
-    verb = HCO_IsVerb(HcoState%Config%Err,1)
 
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%Custom, Inst, RC )
@@ -317,9 +315,9 @@ CONTAINS
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: Custom (custom emissions module)'
        IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( msg, verb=3, sep1='-' ) ! With separator line
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, verb=3           ) ! Without separator line
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
        ENDIF
 
        ! Write all other messages as debug printout only
