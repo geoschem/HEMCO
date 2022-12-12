@@ -546,9 +546,24 @@ CONTAINS
 
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
+
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%OcWindIDs ) ) THEN
+          DEALLOCATE ( Inst%OcWindIDs )
+       ENDIF
+       Inst%OcWindIDs => NULL()
+
+       IF ( ASSOCIATED( Inst%IceSrcIDs ) ) THEN
+          DEALLOCATE ( Inst%IceSrcIDs )
+       ENDIF
+       Inst%IceSrcIDs => NULL()
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
-       IF ( ASSOCIATED(Inst%OcWindIDs) ) DEALLOCATE ( Inst%OcWindIDs )
-       IF ( ASSOCIATED(Inst%IceSrcIDs) ) DEALLOCATE ( Inst%IceSrcIDs )
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
           PrevInst%NextInst => Inst%NextInst
        ELSE
@@ -557,6 +572,10 @@ CONTAINS
        DEALLOCATE(Inst)
        Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

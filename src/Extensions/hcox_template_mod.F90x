@@ -467,22 +467,42 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
     INTEGER                     :: RC
-    TYPE(MyInst), POINTER       :: PrevInst => NULL()
-    TYPE(MyInst), POINTER       :: Inst     => NULL()
+    TYPE(MyInst), POINTER       :: PrevInst
+    TYPE(MyInst), POINTER       :: Inst
 
     !=================================================================
     ! InstRemove begins here!
     !=================================================================
+
+    ! Initialize
+    PrevInst => NULL()
+    Inst     => NULL()
 
     ! Get instance. Also archive previous instance.
     CALL InstGet ( Instance, Inst, RC, PrevInst=PrevInst )
 
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
-       IF ( ALLOCATED(Inst%SpcIDs       ) ) DEALLOCATE ( Inst%SpcIDs        )
-       IF ( ALLOCATED(Inst%SpcScl       ) ) DEALLOCATE ( Inst%SpcScl        )
-       IF ( ALLOCATED(Inst%SpcNames     ) ) DEALLOCATE ( Inst%SpcNames      )
-       IF ( ALLOCATED(Inst%SpcScalFldNme) ) DEALLOCATE ( Inst%SpcScalFldNme )
+
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ALLOCATED( Inst%SpcIDs ) ) THEN
+          DEALLOCATE ( Inst%SpcIDs )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%SpcScl ) ) THEN
+          DEALLOCATE ( Inst%SpcScl )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%SpcNames ) ) THEN
+          DEALLOCATE ( Inst%SpcNames )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%SpcScalFldNme ) ) THEN
+          DEALLOCATE( Inst%SpcScalFldNme  )
+       ENDIF
 
        ! ----------------------------------------------------------------
        ! Type specific initialization statements follow below
@@ -498,8 +518,11 @@ CONTAINS
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

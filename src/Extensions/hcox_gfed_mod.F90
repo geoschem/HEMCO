@@ -1163,42 +1163,106 @@ CONTAINS
     PrevInst => NULL()
     Inst     => NULL()
 
+    !=================================================================
+    ! Finalize all instances
+    !=================================================================
+
     ! Get instance. Also archive previous instance.
     CALL InstGet ( Instance, Inst, RC, PrevInst=PrevInst )
 
     ! Instance-specific deallocation
-    IF ( ASSOCIATED(Inst) ) THEN
+    IF ( ASSOCIATED( Inst ) ) THEN
 
-       ! Pop off instance from list
-       IF ( ASSOCIATED(PrevInst) ) THEN
-          ! Free pointers
-          Inst%GFED_EMFAC => NULL()
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping Inst off the list
+       ! in order to avoid memory leaks (Bob Yantosca, 17 Aug 2020)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%GFED_SAVA ) ) THEN
+          DEALLOCATE( Inst%GFED_SAVA )
+       ENDIF
+       Inst%GFED_SAVA => NULL()
 
-          DEALLOCATE( Inst%GFED_SAVA)
-          DEALLOCATE( Inst%GFED_BORF)
-          DEALLOCATE( Inst%GFED_TEMP)
-          DEALLOCATE( Inst%GFED_DEFO)
-          DEALLOCATE( Inst%GFED_PEAT)
-          DEALLOCATE( Inst%GFED_AGRI)
+       IF ( ASSOCIATED( Inst%GFED_BORF ) ) THEN
+          DEALLOCATE( Inst%GFED_BORF )
+       ENDIF
+       Inst%GFED_BORF => NULL()
+
+       IF ( ASSOCIATED( Inst%GFED_TEMP ) ) THEN
+          DEALLOCATE( Inst%GFED_TEMP )
+       ENDIF
+       Inst%GFED_TEMP => NULL()
+
+       IF ( ASSOCIATED( Inst%GFED_DEFO ) ) THEN
+          DEALLOCATE( Inst%GFED_DEFO )
+       ENDIF
+       Inst%GFED_DEFO => NULL()
+
+       IF ( ASSOCIATED( Inst%GFED_PEAT ) ) THEN
+          DEALLOCATE( Inst%GFED_PEAT )
+       ENDIF
+       Inst%GFED_PEAT => NULL()
+
+       IF ( ASSOCIATED( Inst%GFED_AGRI ) ) THEN
+          DEALLOCATE( Inst%GFED_AGRI )
+       ENDIF
+       Inst%GFED_AGRI => NULL()
+
+       IF ( ASSOCIATED( Inst%DAYSCAL ) ) THEN
           DEALLOCATE( Inst%DAYSCAL )
-          DEALLOCATE( Inst%HRSCAL  )
+       ENDIF
+       Inst%DAYSCAL => NULL()
 
-          ! Cleanup module arrays
-          IF ( ASSOCIATED( Inst%GFED4_EMFAC  ) ) DEALLOCATE( Inst%GFED4_EMFAC  )
-          IF ( ASSOCIATED( Inst%GfedIDs      ) ) DEALLOCATE( Inst%GfedIds      )
-          IF ( ASSOCIATED( Inst%HcoIDs       ) ) DEALLOCATE( Inst%HcoIDs       )
-          IF ( ASSOCIATED( Inst%SpcNames     ) ) DEALLOCATE( Inst%SpcNames     )
-          IF ( ASSOCIATED( Inst%SpcScal      ) ) DEALLOCATE( Inst%SpcScal      )
-          IF ( ASSOCIATED( Inst%SpcScalFldNme) ) DEALLOCATE( Inst%SpcScalFldNme)
+       IF ( ASSOCIATED( Inst%HRSCAL ) ) THEN
+          DEALLOCATE( Inst%HRSCAL )
+       ENDIF
+       Inst%HRSCAL => NULL()
 
-          PrevInst%NextInst => Inst%NextInst
+       IF ( ASSOCIATED( Inst%GFED4_EMFAC ) ) THEN
+          DEALLOCATE( Inst%GFED4_EMFAC )
+       ENDIF
+       Inst%GFED4_EMFAC => NULL()
+       Inst%GFED_EMFAC  => NULL()   ! Points to GFED4_EMFAC
+
+       IF ( ASSOCIATED( Inst%GfedIDs ) ) THEN
+          DEALLOCATE( Inst%GfedIDs )
+       ENDIF
+       Inst%GfedIDs => NULL()
+
+       IF ( ASSOCIATED( Inst%HcoIDs ) ) THEN
+          DEALLOCATE( Inst%HcoIDs )
+       ENDIF
+       Inst%HcoIDs => NULL()
+
+       IF ( ASSOCIATED( Inst%SpcNames ) ) THEN
+          DEALLOCATE( Inst%SpcNames )
+       ENDIF
+       Inst%SpcNames => NULL()
+
+       IF ( ASSOCIATED( Inst%SpcScal ) ) THEN
+          DEALLOCATE( Inst%SpcScal )
+       ENDIF
+       Inst%SpcScal => NULL()
+
+       IF ( ASSOCIATED( Inst%SpcScalFldNme ) ) THEN
+          DEALLOCATE( Inst%SpcScalFldNme )
+       ENDIF
+       Inst%SpcScalFldNme => NULL()
+
+       !---------------------------------------------------------------------
+       ! Pop off instance from list
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( PrevInst ) ) THEN
+           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
-       DEALLOCATE(Inst)
-       Inst => NULL()
+       DEALLOCATE( Inst )
     ENDIF
 
-   END SUBROUTINE InstRemove
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
+
+  END SUBROUTINE InstRemove
 !EOC
 END MODULE HCOX_GFED_MOD

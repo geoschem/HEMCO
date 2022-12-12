@@ -264,8 +264,10 @@ CONTAINS
        ! Clean up data container if DeepClean option is enabled.
        IF ( DeepClean ) THEN
           Dct%Dta => NULL()
-          IF(ASSOCIATED(Dct%Scal_cID)) DEALLOCATE(Dct%Scal_cID)
-          DEALLOCATE ( Dct )
+          IF( ASSOCIATED( Dct%Scal_cID ) ) DEALLOCATE( Dct%Scal_cID )
+          Dct%Scal_cID => NULL()
+          DEALLOCATE( Dct )
+          Dct => NULL()
        ENDIF
 
     ENDIF

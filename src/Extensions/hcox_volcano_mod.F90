@@ -1239,24 +1239,57 @@ CONTAINS
 
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
-       IF ( ALLOCATED(Inst%VolcSlf      ) ) DEALLOCATE ( Inst%VolcSlf       )
-       IF ( ALLOCATED(Inst%VolcElv      ) ) DEALLOCATE ( Inst%VolcElv       )
-       IF ( ALLOCATED(Inst%VolcCld      ) ) DEALLOCATE ( Inst%VolcCld       )
-       IF ( ALLOCATED(Inst%VolcIdx      ) ) DEALLOCATE ( Inst%VolcIdx       )
-       IF ( ALLOCATED(Inst%VolcJdx      ) ) DEALLOCATE ( Inst%VolcJdx       )
-       IF ( ALLOCATED(Inst%SpcIDs       ) ) DEALLOCATE ( Inst%SpcIDs        )
-       IF ( ALLOCATED(Inst%SpcScl       ) ) DEALLOCATE ( Inst%SpcScl        )
-       IF ( ALLOCATED(Inst%SpcScalFldNme) ) DEALLOCATE ( Inst%SpcScalFldNme )
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ALLOCATED( Inst%VolcSlf ) ) THEN
+          DEALLOCATE( Inst%VolcSlf )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%VolcElv ) ) THEN
+          DEALLOCATE( Inst%VolcElv )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%VolcCld ) ) THEN
+          DEALLOCATE( Inst%VolcCld )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%VolcIdx ) ) THEN
+          DEALLOCATE( Inst%VolcIdx )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%VolcJdx ) ) THEN
+          DEALLOCATE( Inst%VolcJdx )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%SpcIDs ) ) THEN
+          DEALLOCATE( Inst%SpcIDs )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%SpcScl ) ) THEN
+          DEALLOCATE( Inst%SpcScl )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%SpcScalFldNme ) ) THEN
+          DEALLOCATE( Inst%SpcScalFldNme )
+       ENDIF
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

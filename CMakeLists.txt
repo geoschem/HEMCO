@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 3.5)
 project(HEMCO VERSION 3.6.0 LANGUAGES Fortran)
-# Reminder: Make sure to also update version in Core/hco_error_mod.F90
+# Reminder: Make sure to also update version in src/Core/hco_error_mod.F90
 
 #-----------------------------------------------------------------------------
 # Add CMakeScripts/ to the module path
@@ -263,6 +263,36 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
         CACHE STRING "Executable targets that get built as a part of \"all\""
     )
 
+    # Add code sanitization options (GNU Fortran only) to HEMCO standalone
+    # We need to add these options to both compiler & linker.
+    set(SANITIZE OFF CACHE BOOL
+        "Switch to turn on code sanitation (i.e. identify memory leaks and similar conditions)"
+    )
+    if(${SANITIZE})
+      if(CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
+	target_compile_options(HEMCOBuildProperties
+          INTERFACE "-fsanitize=address"
+	)
+	target_link_libraries(HEMCOBuildProperties
+          INTERFACE "-fsanitize=address"
+	)
+	target_compile_options(HEMCOBuildProperties
+          INTERFACE "-fsanitize=leak"
+	)
+	target_link_libraries(HEMCOBuildProperties
+          INTERFACE "-fsanitize=leak"
+	)
+	target_compile_options(HEMCOBuildProperties
+          INTERFACE "-fsanitize=undefined"
+	)
+	target_link_libraries(HEMCOBuildProperties
+          INTERFACE "-fsanitize=undefined"
+	)
+      else()
+        message( FATAL_ERROR "The SANITIZE option is only defined for GNU Fortran.")
+      endif()
+    endif()
+
 endif()
 
 #-----------------------------------------------------------------------------
@@ -405,6 +435,7 @@ if(NOT HEMCO_EXTERNAL_CONFIG)
     hco_pretty_print(SECTION "Settings")
     hco_pretty_print(VARIABLE OMP IS_BOOLEAN)
     hco_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
+    hco_pretty_print(VARIABLE SANITIZE IS_BOOLEAN)
 endif()
 
 #-----------------------------------------------------------------------------

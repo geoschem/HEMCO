@@ -74,7 +74,7 @@ MODULE HCOX_SeaSalt_Mod
    REAL*8              :: SSLNT_MYI         ! South Hemisphere snow salinity on MYI (psu)
    REAL*8              :: NAGE              ! North Hemisphere snow age (days)
    REAL*8              :: SAGE              ! South Hemisphere snow age (days)
-   REAL*8              :: NP                ! number of particle per snowflake
+   REAL*8              :: NumP                ! number of particle per snowflake
 
    ! Module variables
    INTEGER              :: NSALT             ! # of seasalt tracers
@@ -962,7 +962,7 @@ CONTAINS
            RETURN
        ENDIF
        CALL GetExtOpt( HcoState%Config, Inst%ExtNrSS, 'N per snowflake', &
-                    OptValDp=Inst%NP, RC=RC )
+                    OptValDp=Inst%NumP, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
            CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
            RETURN
@@ -974,7 +974,7 @@ CONTAINS
        Inst%SSLNT_FYI = 0.015d0 ! default value 0.015 psu for SH MYI snow
        Inst%NAGE = 3.0d0   ! default value 3 days snow age in NH
        Inst%SAGE = 1.5d0   ! default value 1.5 days snow age in SH
-       Inst%NP = 5.0d0     ! default value of 5 particles per snowflake
+       Inst%NumP = 5.0d0     ! default value of 5 particles per snowflake
     ENDIF
 
     ! Final BrSalt flag
@@ -1032,7 +1032,7 @@ CONTAINS
           CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,*) ' - Antarctic Snow age(days): ', Inst%SAGE
           CALL HCO_MSG(HcoState%Config%Err,MSG)
-          WRITE(MSG,*) ' - Number of particle per snowflake: ', Inst%NP
+          WRITE(MSG,*) ' - Number of particle per snowflake: ', Inst%NumP
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
 
@@ -1335,7 +1335,7 @@ CONTAINS
          D_SNOW = 1.0d0
          DO ND = 1, NR_MAX
             D_DRY =  ( Inst%NSLNT_FYI * RHOICE / (1000.d0 &
-                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+                  * Inst%NumP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
 
             IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
 
@@ -1362,7 +1362,7 @@ CONTAINS
          D_SNOW = 1.0d0
          DO ND = 1, NR_MAX
             D_DRY =  ( Inst%NSLNT_MYI * RHOICE / (1000.d0 &
-                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+                  * Inst%NumP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
 
             IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
            ! Midpoint of IRth bin
@@ -1382,7 +1382,7 @@ CONTAINS
          D_SNOW = 1.0d0
          DO ND = 1, NR_MAX
             D_DRY =  ( Inst%SSLNT_FYI * RHOICE / (1000.d0 &
-                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+                  * Inst%NumP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
 
             IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
           ! Midpoint of IRth bin
@@ -1401,7 +1401,7 @@ CONTAINS
          D_SNOW = 1.0d0
          DO ND = 1, NR_MAX
             D_DRY =  ( Inst%SSLNT_MYI * RHOICE / (1000.d0 &
-                  * Inst%NP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
+                  * Inst%NumP * RHONACL ) )**( 1d0 / 3d0 ) * D_SNOW
 
             IF (D_DRY .ge. R0*2d0 .and. D_DRY .le. R1*2d0 ) THEN
           ! Midpoint of IRth bin
@@ -1693,7 +1693,7 @@ CONTAINS
     Inst%SSLNT_MYI     = 0.0
     Inst%NAGE          = 0.0
     Inst%SAGE          = 0.0
-    Inst%NP            = 1.0
+    Inst%NumP            = 1.0
 
     ! Attach to instance list
     Inst%NextInst => AllInst
@@ -1753,38 +1753,124 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%NR ) ) THEN
+          DEALLOCATE( Inst%NR )
+       ENDIF
+       Inst%NR => NULL()
+
+       IF ( ASSOCIATED( Inst%SS_DEN ) ) THEN
+          DEALLOCATE( Inst%SS_DEN )
+       ENDIF
+       Inst%SS_DEN => NULL()
+
+       IF ( ASSOCIATED( Inst%SRRC ) ) THEN
+          DEALLOCATE( Inst%SRRC )
+       ENDIF
+       Inst%SRRC => NULL()
+
+       IF ( ASSOCIATED( Inst%SRRC_N ) ) THEN
+          DEALLOCATE( Inst%SRRC_N )
+       ENDIF
+       Inst%SRRC_N => NULL()
+
+       IF ( ASSOCIATED( Inst%RREDGE ) ) THEN
+          DEALLOCATE( Inst%RREDGE )
+       ENDIF
+       Inst%RREDGE => NULL()
+
+       IF ( ASSOCIATED( Inst%RRMID  ) ) THEN
+          DEALLOCATE( Inst%RRMID )
+       ENDIF
+       Inst%RRMID => NULL()
+
+       IF ( ASSOCIATED( Inst%NDENS_SALA ) ) THEN
+          DEALLOCATE( Inst%NDENS_SALA )
+       ENDIF
+       Inst%NDENS_SALA => NULL()
+
+       IF ( ASSOCIATED( Inst%NDENS_SALC ) ) THEN
+          DEALLOCATE( Inst%NDENS_SALC )
+       ENDIF
+       Inst%NDENS_SALC => NULL()
+
+       IF ( ASSOCIATED( Inst%NDENS_MOPO ) ) THEN
+          DEALLOCATE( Inst%NDENS_MOPO )
+       ENDIF
+       Inst%NDENS_MOPO => NULL()
+
+       IF ( ASSOCIATED( Inst%NDENS_MOPI ) ) THEN
+          DEALLOCATE( Inst%NDENS_MOPI )
+       ENDIF
+       Inst%NDENS_MOPI => NULL()
+
+       IF ( ASSOCIATED( Inst%CHLR ) ) THEN
+          DEALLOCATE( Inst%CHLR )
+       ENDIF
+       Inst%CHLR => NULL()
+       
+       IF ( ASSOCIATED( Inst%F_DI_N_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_N_FYI )
+       ENDIF
+       Inst%F_DI_N_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DI_N_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_N_MYI )
+       ENDIF
+       Inst%F_DI_N_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DI_S_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_S_FYI )
+       ENDIF
+       Inst%F_DI_S_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DI_S_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_S_MYI )
+       ENDIF
+       Inst%F_DI_S_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_N_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_N_FYI )
+       ENDIF
+       Inst%F_DN_N_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_N_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_N_MYI )
+       ENDIF
+       Inst%F_DN_N_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_S_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_S_FYI )
+       ENDIF
+       Inst%F_DN_S_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_S_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_S_MYI )
+       ENDIF
+       Inst%F_DN_S_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%MULTIICE ) ) THEN
+          DEALLOCATE( Inst%MULTIICE )
+       ENDIF
+       Inst%MULTIICE => NULL()
+       
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
-
-          ! Cleanup module arrays
-          IF ( ASSOCIATED( Inst%NR         ) ) DEALLOCATE( Inst%NR         )
-          IF ( ASSOCIATED( Inst%SS_DEN     ) ) DEALLOCATE( Inst%SS_DEN     )
-          IF ( ASSOCIATED( Inst%SRRC       ) ) DEALLOCATE( Inst%SRRC       )
-          IF ( ASSOCIATED( Inst%SRRC_N     ) ) DEALLOCATE( Inst%SRRC_N     )
-          IF ( ASSOCIATED( Inst%RREDGE     ) ) DEALLOCATE( Inst%RREDGE     )
-          IF ( ASSOCIATED( Inst%RRMID      ) ) DEALLOCATE( Inst%RRMID      )
-          IF ( ASSOCIATED( Inst%NDENS_SALA ) ) DEALLOCATE( Inst%NDENS_SALA )
-          IF ( ASSOCIATED( Inst%NDENS_SALC ) ) DEALLOCATE( Inst%NDENS_SALC )
-          IF ( ASSOCIATED( Inst%NDENS_MOPO ) ) DEALLOCATE( Inst%NDENS_MOPO )
-          IF ( ASSOCIATED( Inst%NDENS_MOPI ) ) DEALLOCATE( Inst%NDENS_MOPI )
-          IF ( ASSOCIATED( Inst%CHLR       ) ) DEALLOCATE( Inst%CHLR       )
-          IF ( ASSOCIATED( Inst%F_DI_N_FYI ) ) DEALLOCATE( Inst%F_DI_N_FYI )
-          IF ( ASSOCIATED( Inst%F_DI_N_MYI ) ) DEALLOCATE( Inst%F_DI_N_MYI )
-          IF ( ASSOCIATED( Inst%F_DI_S_FYI ) ) DEALLOCATE( Inst%F_DI_S_FYI )
-          IF ( ASSOCIATED( Inst%F_DI_S_MYI ) ) DEALLOCATE( Inst%F_DI_S_MYI )
-          IF ( ASSOCIATED( Inst%F_DN_N_FYI ) ) DEALLOCATE( Inst%F_DN_N_FYI )
-          IF ( ASSOCIATED( Inst%F_DN_N_MYI ) ) DEALLOCATE( Inst%F_DN_N_MYI )
-          IF ( ASSOCIATED( Inst%F_DN_S_FYI ) ) DEALLOCATE( Inst%F_DN_S_FYI )
-          IF ( ASSOCIATED( Inst%F_DN_S_MYI ) ) DEALLOCATE( Inst%F_DN_S_MYI )
-          IF ( ASSOCIATED( Inst%MULTIICE   ) ) DEALLOCATE( Inst%MULTIICE   )
-
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC
