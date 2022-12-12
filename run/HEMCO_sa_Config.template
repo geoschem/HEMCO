@@ -57,7 +57,7 @@ DiagnPrefix:         OutputDir/HEMCO_sa_diagnostics
 DiagnFreq:           00000100 000000
 #-----------------------------------------------------
 # Debugging options
-# (set verbose and warnings to 3 for maximum output)
+# (set verbose to true to toggle debug printout)
 #-----------------------------------------------------
 Unit tolerance:      1
 Negative values:     0
