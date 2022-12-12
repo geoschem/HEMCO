@@ -39,7 +39,7 @@ GridFile:            {GRID_FILE}
 SpecFile:            HEMCO_sa_Spec.rc
 TimeFile:            HEMCO_sa_Time.rc
 DiagnFile:           HEMCO_Diagn.rc
-Logfile:             HEMCO.log
+Logfile:             *
 #-----------------------------------------------------
 # Settings for HEMCO grid
 #-----------------------------------------------------
