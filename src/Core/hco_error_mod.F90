@@ -66,7 +66,6 @@ MODULE HCO_Error_Mod
   PUBLIC           :: HCO_ERROR_SET
   PUBLIC           :: HCO_ERROR_FINAL
   PUBLIC           :: HCO_IsVerb
-  PUBLIC           :: HCO_VERBOSE_INQ
   PUBLIC           :: HCO_LOGFILE_OPEN
   PUBLIC           :: HCO_LOGFILE_CLOSE
 !
@@ -129,8 +128,6 @@ MODULE HCO_Error_Mod
      LOGICAL                     :: IsRoot    = .FALSE.
      LOGICAL                     :: LogIsOpen = .FALSE.
      LOGICAL                     :: doVerbose = .FALSE.
-     INTEGER                     :: Warnings  =  0
-     INTEGER                     :: Verbose   =  0
      INTEGER                     :: nWarnings =  0
      INTEGER                     :: CurrLoc   =  -1
      CHARACTER(LEN=255), POINTER :: Loc(:)    => NULL()
@@ -725,8 +722,6 @@ CONTAINS
     ! Set verbose to -1 if this is not the root CPU. This will disable any
     ! log-file messages
     IF ( .NOT. am_I_Root ) THEN
-       !Verbose      = -1
-       !WarningLevel =  0
        doVerbose = .FALSE.
     ENDIF
 
@@ -734,12 +729,10 @@ CONTAINS
     Err%IsRoot       = am_I_Root 
     Err%LogFile      = TRIM(LogFile)
     Err%doVerbose    = doVerbose
-    !Err%Warnings     = WarningLevel
 
     ! Init misc. values
     Err%FirstOpen = .TRUE.
     Err%LogIsOpen = .FALSE.
-    !Err%nWarnings = 0
     Err%CurrLoc   = 0
 
     ! If Logfile is set to '*', set lun to -1 (--> write into default file).
@@ -803,51 +796,9 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: HCO_Verbose_Inq
+! !IROUTINE: HCO_IsVerb
 !
-! !DESCRIPTION: Function HCO\_Verbose\_Inq returns the HEMCO verbose number.
-!\\
-!\\
-! !INTERFACE:
-!
-  FUNCTION HCO_VERBOSE_INQ ( ERR ) RESULT ( VerbNr )
-!
-! !INPUT/OUTPUT PARAMETERS:
-!
-    TYPE(HcoErr),     POINTER        :: Err            ! Error object
-!
-! !OUTPUT PARAMETERS:
-!
-    INTEGER :: VerbNr
-!
-! !REVISION HISTORY:
-!  15 Mar 2015 - C. Keller - Initialization
-!  See https://github.com/geoschem/hemco for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-
-    !======================================================================
-    ! HCO_VERBOSE_INQ begins here
-    !======================================================================
-
-    IF ( .NOT. ASSOCIATED(Err) ) THEN
-       VerbNr = -1
-    ELSE
-       VerbNr = Err%Verbose
-    ENDIF
-
-  END FUNCTION HCO_VERBOSE_INQ
-!EOC
-!------------------------------------------------------------------------------
-!                   Harmonized Emissions Component (HEMCO)                    !
-!------------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: HCO_IsVerb_NoVerb
-!
-! !DESCRIPTION: Returns true if the HEMCO verbose number is set to 3 or larger.
-!  Does not use an "Verb" argument
+! !DESCRIPTION: Returns true if the HEMCO verbose output is turned on.
 !\\
 !\\
 ! !INTERFACE:
@@ -861,9 +812,6 @@ CONTAINS
 ! !OUTPUT PARAMETERS:
 !
     LOGICAL                :: isVerb
-!
-! !REMARKS:
-!  TODO: Convert VERBOSE to a simple logical on/off switch.
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1001,7 +949,7 @@ CONTAINS
     ! Write header on first call
     IF ( Err%FirstOpen ) THEN
        LUN = Err%Lun                ! Log gets written to file
-       IF ( Err%LUN < 0 ) LUN = 6   ! ,,, or to stdout if file isn't open
+       IF ( Err%LUN < 0 ) LUN = 6   ! or to stdout if file isn't open
 
        ! Only write the version info if verbose output is requested
        IF ( HCO_IsVerb( Err ) ) THEN
@@ -1083,7 +1031,7 @@ CONTAINS
        CALL HCO_MSG ( Err, MSG, SEP1='-' )
 
        WRITE(MSG,'(A16,I1,A12,I6)') &
-          'Warnings (level ', Err%Warnings, ' or lower): ', Err%nWarnings
+          'Warnings: ', Err%nWarnings
        CALL HCO_MSG ( Err, MSG, SEP2='-' )
     ENDIF
 

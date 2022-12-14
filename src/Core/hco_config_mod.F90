@@ -2253,9 +2253,6 @@ CONTAINS
        IF ( TRIM(LogFile) == HCO_GetOpt(HcoConfig%ExtList,'Wildcard') )      &
             LogFile = '*'
 
-       !! We should now have everything to define the HEMCO error settings
-       !CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err, LogFile, &
-       !                    verb, warn, RC )
        ! We should now have everything to define the HEMCO error settings
        CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err, LogFile,        &
                            doVerbose,         RC                            )
