@@ -1991,14 +1991,14 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
-    LOGICAL               :: doVerbose
-    LOGICAL               :: FOUND
-    INTEGER               :: I, N, POS
-   !INTEGER               :: verb
-    INTEGER               :: warn
+    LOGICAL               :: doVerbose,   found
+    LOGICAL               :: foundVerb,   foundWarn
+    LOGICAL               :: verboseBool
+    INTEGER               :: I,           N,         POS
+    INTEGER               :: verb,        warn
 
     ! Strings
-    CHARACTER(LEN=255)    :: Line
+    CHARACTER(LEN=255)    :: line
     CHARACTER(LEN=255)    :: loc
     CHARACTER(LEN=255)    :: LogFile
     CHARACTER(LEN=255)    :: DiagnPrefix
@@ -2012,6 +2012,7 @@ CONTAINS
 
     ! Enter
     Loc = 'ReadSettings (hco_config_mod.F90)'
+
 
     !-----------------------------------------------------------------------
     ! Read settings and add them as options to core extensions
@@ -2030,6 +2031,16 @@ CONTAINS
 
        ! Return if EOF
        IF ( EOF ) EXIT
+
+       ! Test if the Verbose flag is logical.  We need to know this ahead
+       ! of time in order to avoid input errors (i.e. reading characters
+       ! when integers are expected) in the code that follows below.
+       !  -- Bob Yantosca (14 Dec 2022)
+       IF ( INDEX( line, 'Verbose' ) > 0 ) THEN
+          verboseBool = (                                                    &
+             ( INDEX( line, 't' ) > 0 ) .or. ( INDEX( line, 'f' ) > 0 ) .or. &
+             ( INDEX( line, 'T' ) > 0 ) .or. ( INDEX( line, 'F' ) > 0 )     )
+       ENDIF
 
        ! Exit here if end of section encountered
        IF ( INDEX ( LINE, 'END SECTION' ) > 0 ) EXIT
@@ -2103,35 +2114,116 @@ CONTAINS
     ! HEMCO variables. Only the first time the settings are read (settings
     ! can be read multiple times if nested HEMCO configuration files are
     ! used)
+    !
+    ! NOTE: In HEMCO 3.7.0, the Verbose and Warnings integers in the
+    ! HEMCO_Config.rc file have been replaced with "Verbose: true".
+    ! Update the logic to make the test for Verbose backwards compatible
+    ! with HEMCO_Config.files prior to HEMCO 3.7.0.
+    !   -- Bob Yantosca (14 Dec 2022)
     !-----------------------------------------------------------------------
     IF ( .NOT. ASSOCIATED(HcoConfig%Err) ) THEN
 
-       !--------------------------------------------------------------------
-       !! Verbose mode?
-       !CALL GetExtOpt( HcoConfig, CoreNr, 'Verbose', &
-       !                OptValInt=verb, FOUND=FOUND, RC=RC )
-       !IF ( RC /= HCO_SUCCESS ) THEN
-       !   msg = 'Error looking for "Verbose" HEMCO_Config.rc!'
-       !   CALL HCO_Error( msg, RC, thisLoc=loc )
-       !   RETURN
-       !ENDIF
-       !IF ( .NOT. FOUND ) THEN
-       !   verb = 3
-       !   WRITE(*,*) 'Setting `Verbose` not found in HEMCO logfile - use 3'
-       !ENDIF
-       !--------------------------------------------------------------------
+       ! Initialize
+       doVerbose = .FALSE.
+       verb      = 0
+       warn      = 0
 
-       ! Verbose mode?
-       CALL GetExtOpt( HcoConfig,            CoreNr,     'Verbose',          &
-                       OptValBool=doVerbose, found=found, RC=RC             )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          msg = 'Error looking for "Verbose" HEMCO_Config.rc!'
-          CALL HCO_Error( msg, RC, thisLoc=loc )
-          RETURN
-       ENDIF
-       IF ( .NOT. FOUND ) THEN
-          doVerbose=.FALSE.
-          WRITE(*,*) 'Setting `Verbose` not found in HEMCO logfile - use 3'
+       ! Check if Verbose is a logical entry in HEMCO_Config.rc
+       IF ( verboseBool ) THEN
+
+          !-----------------------------------------------------------------
+          ! "Verbose: true" or "Verbose: false" was found
+          !-----------------------------------------------------------------
+
+          ! First look for Verbose (logical).  This is now the default
+          ! inthe HEMCO_Config.rc file for HEMCO 3.7.0 and later.
+          CALL GetExtOpt( HcoConfig,            CoreNr,       'Verbose',     &
+                          OptValBool=doVerbose, found=found,  RC=RC         )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             msg = 'Error looking for "Verbose" (logical) in HEMCO_Config.rc!'
+             CALL HCO_Error( msg, RC, thisLoc=loc )
+             RETURN
+          ENDIF
+
+          ! Print status message
+          IF ( doVerbose ) THEN
+             msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is ON'
+          ELSE
+             msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is OFF'
+          ENDIF
+          CALL HCO_Msg( msg, verb=.TRUE. )
+
+       ELSE
+
+          !-----------------------------------------------------------------
+          ! "Verbose: true" or "Verbose: false" was not found
+          !-----------------------------------------------------------------
+
+          ! Check for Verbose (integer)
+          CALL GetExtOpt( HcoConfig,      CoreNr,          'Verbose',        &
+                          OptValInt=verb, found=foundVerb,  RC=RC           )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             msg = 'Error looking for "Verbose" (integer) in HEMCO_Config.rc!'
+             CALL HCO_Error( msg, RC, thisLoc=loc )
+             RETURN
+          ENDIF
+
+          IF ( foundVerb .and. verb > 0 ) THEN
+
+             ! Toggle HEMCO verbose output on for nonzero integer values
+             doVerbose = .TRUE.
+             msg = NEW_LINE( 'A' )                                        // &
+                  'HEMCO verbose output is ON.'                           // &
+                   NEW_LINE( 'A' )                                        // &
+                  'Numbered Verbose and Warning options are deprecated.'  // &
+                   NEW_LINE( 'A' )                                        // &
+                  'Please use "Verbose: true:" or "Verbose: false" for '  // &
+                  'controlling verbose output.'
+             CALL HCO_Msg( msg, verb=.TRUE. )
+
+          ELSE
+
+             ! Verbose (logical) and Verbose (integer) were not found,
+             ! now look for Warnings (integer)
+             CALL GetExtOpt( HcoConfig,      CoreNr,         'Warnings',     &
+                             OptValInt=warn, found=foundWarn, RC=RC         )
+             IF ( RC /= HCO_SUCCESS ) THEN
+                msg = &
+                 'Error looking for "Warnings" (integer) in HEMCO_Config.rc!'
+                CALL HCO_Error( msg, RC, thisLoc=loc )
+                RETURN
+             ENDIF
+             IF ( foundWarn .and. warn > 0 ) THEN
+
+                ! Toggle HEMCO verbose output on
+                ! (Verbose = 0; Warnings > 0)
+                doVerbose = .TRUE.
+                msg =                                                        &
+                   NEW_LINE( 'A' )                                        // &
+                  'HEMCO verbose output is ON.'                           // &
+                   NEW_LINE( 'A' )                                        // &
+                  'Numbered Verbose and Warning options are deprecated.'  // &
+                   NEW_LINE( 'A' )                                        // &
+                  'Please use "Verbose: true:" or "Verbose: false" for '  // &
+                  'controlling verbose output.'
+                CALL HCO_Msg( msg, verb=.TRUE. )
+
+             ELSE
+
+                ! Toggle HEMCO verbose off
+                ! (Verbose: false, Verbose = 0 and Warnings = 0)
+                doVerbose = .FALSE.
+                msg =                                                        &
+                   NEW_LINE( 'A' )                                        // &
+                  'HEMCO verbose output is OFF.'                          // &
+                   NEW_LINE( 'A' )                                        // &
+                  'Numbered Verbose and Warning options are deprecated.'  // &
+                   NEW_LINE( 'A' )                                        // &
+                  'Please use "Verbose: true:" or "Verbose: false" for '  // &
+                  'controlling verbose output.'
+                CALL HCO_Msg( msg, verb=.TRUE. )
+             ENDIF
+          ENDIF
        ENDIF
 
        ! Logfile to write into
@@ -2146,23 +2238,6 @@ CONTAINS
           LogFile = 'HEMCO.log'
           WRITE(*,*) 'Setting `Logfile` not found in HEMCO logfile - use `HEMCO.log`'
        ENDIF
-
-       !---------------------------------------------------------------------
-       ! REDUCE LOGFILE OUTPUT:
-       ! Combine verbose and warnings (bmy, 07 Dec 2022)
-       !! Prompt warnings to logfile?
-       !CALL GetExtOpt( HcoConfig, CoreNr, 'Warnings', &
-       !                OptValInt=warn, FOUND=FOUND, RC=RC  )
-       !IF ( RC /= HCO_SUCCESS ) THEN
-       !   msg = 'Error looking for "Warnings" in HEMCO_Config.rc!'
-       !   CALL HCO_Error( msg, RC, thisLoc=loc )
-       !   RETURN
-       !ENDIF
-       !IF ( .NOT. FOUND ) THEN
-       !   warn = 3
-       !   WRITE(*,*) 'Setting `Warnings` not found in HEMCO logfile - use 3'
-       !ENDIF
-       !---------------------------------------------------------------------
 
        ! Initialize (standard) HEMCO tokens
        CALL HCO_SetDefaultToken( HcoConfig, RC )
