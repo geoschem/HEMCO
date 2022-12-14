@@ -53,6 +53,10 @@ MODULE HCO_Error_Mod
 !
 ! !USES:
 !
+#if defined( MAPL_ESMF )
+    USE MAPL_Base, ONLY: MAPL_UNDEF
+#endif
+
   IMPLICIT NONE
   PRIVATE
 !
@@ -94,7 +98,11 @@ MODULE HCO_Error_Mod
   ! Missing value
   ! Note: define missing value as single precision because all data arrays
   ! are read/stored in single precision.
+#if defined( MAPL_ESMF )
+  REAL(sp), PARAMETER, PUBLIC :: HCO_MISSVAL = MAPL_UNDEF
+#else
   REAL(sp), PARAMETER, PUBLIC :: HCO_MISSVAL = -1.e31_sp
+#endif
 
   ! HEMCO version number.
   CHARACTER(LEN=12), PARAMETER, PUBLIC :: HCO_VERSION = '3.6.0'
