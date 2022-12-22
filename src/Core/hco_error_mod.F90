@@ -683,19 +683,22 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_ERROR_SET( am_I_Root, Err, LogFile, doVerbose, RC )
+  SUBROUTINE HCO_ERROR_SET( am_I_Root, Err,             LogFile,             &
+                            doVerbose, doVerboseOnRoot, RC                  )
 
 !
 !  !INPUT PARAMETERS:
 !
-    LOGICAL,          INTENT(IN)     :: am_I_Root      ! Root CPU?
-    TYPE(HcoErr),     POINTER        :: Err            ! Error object
-    CHARACTER(LEN=*), INTENT(IN)     :: LogFile        ! logfile path+name
+    LOGICAL,          INTENT(IN)     :: am_I_Root       ! Root CPU?
+    TYPE(HcoErr),     POINTER        :: Err             ! Error object
+    CHARACTER(LEN=*), INTENT(IN)     :: LogFile         ! logfile path+name
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    LOGICAL,          INTENT(INOUT)  :: doVerbose
-    INTEGER,          INTENT(INOUT)  :: RC
+    LOGICAL,          INTENT(INOUT)  :: doVerbose       ! Verbose output T/F?
+    LOGICAL,          INTENT(INOUT)  :: doVerboseOnRoot ! =T: Verbose on root
+                                                        ! =F: Verbose on all
+    INTEGER,          INTENT(INOUT)  :: RC              
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
@@ -719,16 +722,16 @@ CONTAINS
     ALLOCATE(Err%Loc(MAXNEST))
     Err%Loc(:) = ''
 
-    ! Set verbose to -1 if this is not the root CPU. This will disable any
-    ! log-file messages
-    IF ( .NOT. am_I_Root ) THEN
-       doVerbose = .FALSE.
-    ENDIF
-
     ! Pass values
-    Err%IsRoot       = am_I_Root 
-    Err%LogFile      = TRIM(LogFile)
-    Err%doVerbose    = doVerbose
+    Err%IsRoot  = am_I_Root 
+    Err%LogFile = TRIM(LogFile)
+
+    ! Specify if verbose will be printed on the root core, or all cores
+    IF ( doVerboseOnRoot ) THEN
+       Err%doVerbose = ( doVerbose .and. am_I_Root )
+    ELSEgctee
+       Err%doVerbose = doVerbose
+    ENDIF
 
     ! Init misc. values
     Err%FirstOpen = .TRUE.
