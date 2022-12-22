@@ -729,7 +729,7 @@ CONTAINS
     ! Specify if verbose will be printed on the root core, or all cores
     IF ( doVerboseOnRoot ) THEN
        Err%doVerbose = ( doVerbose .and. am_I_Root )
-    ELSEgctee
+    ELSE
        Err%doVerbose = doVerbose
     ENDIF
 
