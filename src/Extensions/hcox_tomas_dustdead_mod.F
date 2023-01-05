@@ -377,7 +377,7 @@
       ! CALL DUST MOBILIZATION SCHEME
       !=================================================================
 
-      ! Make OROGRAPHY array from GEOS-CHEM LWI
+      ! Make OROGRAPHY array (0=Ocean; 1=Land; 2=Ice)
       CALL GET_ORO( HcoState, ExtState, OROGRAPHY, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
@@ -977,8 +977,11 @@
       ExtState%SNOWHGT%DoUse = .TRUE.
       ExtState%USTAR%DoUse   = .TRUE.
       ExtState%Z0%DoUse      = .TRUE.
-      ExtState%FRLANDIC%DoUse    = .TRUE.
-      ExtState%WLI%DoUse     = .TRUE.
+      ExtState%FRLAND%DoUse  = .TRUE.
+      ExtState%FRLANDIC%DoUse= .TRUE.
+      ExtState%FROCEAN%DoUse = .TRUE.
+      ExtState%FRSEAICE%DoUse= .TRUE.
+      ExtState%FRLAKE%DoUse  = .TRUE.
 
       ! Leave w/ success
       Inst => NULL()
@@ -2158,7 +2161,8 @@
 !
 !******************************************************************************
 !  Subroutine GET_ORO creates a 2D orography array, OROGRAPHY, from the
-!  GMAO LWI fields.  Ocean= 0; Land=1; ice=2. (tdf, bmy, 3/30/04, 8/17/05)
+!  GMAO surface type fraction fields, based on definition of GMAO LWI, with
+!  modification to qualify land ice as ice. Ocean=0 (no ice); Land=1; Ice=2.
 !
 !  Arguments as Output:
 !  ============================================================================
@@ -2194,9 +2198,12 @@
       DO J = 1, HcoState%NY
       DO I = 1, HcoState%NX
 
-         ! Set orography to land type
-         OROGRAPHY (I,J) = HCO_LANDTYPE(ExtState%WLI%Arr%Val(I,J),
-     &                                  ExtState%FRLANDIC%Arr%Val(I,J))
+         ! Set orography from fraction land types
+         OROGRAPHY (I,J) = HCO_LANDTYPE(ExtState%FRLAND%Arr%Val(I,J),
+     &                                  ExtState%FRLANDIC%Arr%Val(I,J),
+     &                                  ExtState%FROCEAN%Arr%Val(I,J),
+     &                                  ExtState%FRSEAICE%Arr%Val(I,J),
+     &                                  ExtState%FRLAKE%Arr%Val(I,J))
 
       ENDDO
       ENDDO
