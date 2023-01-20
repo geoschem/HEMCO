@@ -186,9 +186,12 @@ CONTAINS
        ! Grid box surface area [m2]
        A_M2  = HcoState%Grid%AREA_M2%Val(I,J)
 
-       ! Get the fraction of the box that is over water
-       IF ( HCO_LandType( ExtState%WLI%Arr%Val(I,J),              &
-                          ExtState%FRLANDIC%Arr%Val(I,J) ) == 0 ) THEN
+       ! Get the fraction of the box over ocean
+       IF ( HCO_LandType( ExtState%FRLAND%Arr%Val(I,J),   &
+                          ExtState%FRLANDIC%Arr%Val(I,J), &
+                          ExtState%FROCEAN%Arr%Val(I,J),  &
+                          ExtState%FRSEAICE%Arr%Val(I,J), &
+                          ExtState%FRLAKE%Arr%Val(I,J) ) == 0 ) THEN
           FOCEAN = 1d0 - ExtState%FRCLND%Arr%Val(I,J)
        ELSE
           FOCEAN = 0.d0
@@ -558,8 +561,11 @@ CONTAINS
     !=======================================================================
 
     ! Activate met fields
-    ExtState%WLI%DoUse         = .TRUE.
+    ExtState%FRLAND%DoUse      = .TRUE.
     ExtState%FRLANDIC%DoUse    = .TRUE.
+    ExtState%FROCEAN%DoUse     = .TRUE.
+    ExtState%FRSEAICE%DoUse    = .TRUE.
+    ExtState%FRLAKE%DoUse      = .TRUE.
     ExtState%TSKIN%DoUse       = .TRUE.
     ExtState%U10M%DoUse        = .TRUE.
     ExtState%V10M%DoUse        = .TRUE.

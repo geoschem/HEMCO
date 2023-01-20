@@ -355,11 +355,15 @@ CONTAINS
        IF ( XMID >= 180.0d0 ) XMID = XMID - 360.0d0
 
        ! Get surface type. Note that these types are different than
-       ! the types used elsewhere: 0 = land, 1=water, 2=ice!
-       LNDTYPE = HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J),  &
-                               ExtState%FRLANDIC%Arr%Val(I,J) )
+       ! the types used elsewhere in this module. HCO_LANDTYPE returns
+       ! 0=ocean, 1=land, 2=ice; elsewhere we use 0=land, 1=ocean, 2=ice!
+       LNDTYPE = HCO_LANDTYPE( ExtState%FRLAND%Arr%Val(I,J),   &
+                               ExtState%FRLANDIC%Arr%Val(I,J), &
+                               ExtState%FROCEAN%Arr%Val(I,J),  &
+                               ExtState%FRSEAICE%Arr%Val(I,J), &
+                               ExtState%FRLAKE%Arr%Val(I,J))
 
-       ! Adjusted SFCTYPE variable for this module:
+       ! Set surface type (0=land, 1=ocean, 2=ice) based on land type
        IF ( LNDTYPE == 2 ) THEN
           SFCTYPE = 2    ! Ice
        ELSEIF ( LNDTYPE == 1 ) THEN
@@ -1114,11 +1118,14 @@ CONTAINS
     ExtState%TROPP%DoUse      = .TRUE.
     ExtState%CNV_MFC%DoUse    = .TRUE.
     ExtState%CNV_FRC%DoUse    = .TRUE.
-    ExtState%FRLANDIC%DoUse    = .TRUE.
-    ExtState%WLI%DoUse        = .TRUE.
     ExtState%LFR%DoUse        = .TRUE.
     ExtState%FLASH_DENS%DoUse = .TRUE.
     ExtState%CONV_DEPTH%DoUse = .TRUE.
+    ExtState%FRLAND%DoUse     = .TRUE.
+    ExtState%FRLANDIC%DoUse   = .TRUE.
+    ExtState%FROCEAN%DoUse    = .TRUE.
+    ExtState%FRSEAICE%DoUse   = .TRUE.
+    ExtState%FRLAKE%DoUse     = .TRUE.
 
     ! Only activate BYNCY and LFR if they are needed
     IF ( Inst%LCNVFRC .OR. Inst%LLFR ) ExtState%BYNCY%DoUse = .TRUE.

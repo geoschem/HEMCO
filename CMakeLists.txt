@@ -1,7 +1,7 @@
 # HEMCO/CMakeLists.txt
 
 cmake_minimum_required(VERSION 3.5)
-project(HEMCO VERSION 3.5.2 LANGUAGES Fortran)
+project(HEMCO VERSION 3.6.0 LANGUAGES Fortran)
 # Reminder: Make sure to also update version in src/Core/hco_error_mod.F90
 
 #-----------------------------------------------------------------------------
@@ -323,7 +323,7 @@ if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
         INTERFACE $<TARGET_PROPERTY:MAPL.generic,INTERFACE_INCLUDE_DIRECTORIES>
     )
     target_compile_definitions(HEMCOBuildProperties
-        INTERFACE ESMF_
+        INTERFACE ESMF_ MAPL_ESMF
     )
 
     # Specify the HEMCO interface being used
