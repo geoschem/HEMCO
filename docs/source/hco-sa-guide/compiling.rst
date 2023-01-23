@@ -107,7 +107,7 @@ You will see output similar to this:
    -- Checking whether /path/to/gfortran supports Fortran 90 - yes
    =================================================================
    HEMCO X.Y.Z
-   Current status: X.Y.Z-g54e2b03
+   Current status: X.Y.Z
    =================================================================
    -- Found OpenMP_Fortran: -fopenmp (found version "4.5")
    -- Found OpenMP: TRUE (found version "4.5")
