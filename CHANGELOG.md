@@ -8,13 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased 3.6.0]
 ### Added
   - Added MAPL_ESMF compiler option for use with GCHP and GEOS
+  - New "Parallelize GEOS-Chem and HEMCO source code" guide on ReadTheDocs
+  - Updated documentation describing a masking error that can happen when performing simulations with cropped horizontal grids
 
 ### Changed
   - Set HCO_MISSVAL to MAPL missing value (1e15) if using GCHP or GEOS
   - Use fraction surface type inputs instead of ExtState%WLI
+  - The version number in docs/source/conf.py is now 3.6.0
+  - Updated compilation output splash screen in compiling.rst ReadTheDocs file
 
 ### Fixed
-  - placeholder
+  - Bug fix for inserting hard breaks in hemco-config.rst ReadTheDocs file
 
 ### Removed
   - Removed old kludge for MAPL missing data if applying mask
