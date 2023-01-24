@@ -433,8 +433,11 @@ CONTAINS
        IF ( SeaConc(I,J) < 0.0_hp ) SeaConc(I,J) = 0.0_hp
 
        ! Do only over the ocean:
-       IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J), &
-                          ExtState%FRLANDIC%Arr%Val(I,J) ) == 0 ) THEN
+       IF ( HCO_LANDTYPE( ExtState%FRLAND%Arr%Val(I,J),   &
+                          ExtState%FRLANDIC%Arr%Val(I,J), &
+                          ExtState%FROCEAN%Arr%Val(I,J),  &
+                          ExtState%FRSEAICE%Arr%Val(I,J), &
+                          ExtState%FRLAKE%Arr%Val(I,J)) == 0 ) THEN
 
           !-----------------------------------------------------------
           ! Get grid box and species specific quantities
@@ -880,8 +883,11 @@ CONTAINS
     ExtState%U10M%DoUse        = .TRUE.
     ExtState%V10M%DoUse        = .TRUE.
     ExtState%TSKIN%DoUse       = .TRUE.
+    ExtState%FRLAND%DoUse      = .TRUE.
     ExtState%FRLANDIC%DoUse    = .TRUE.
-    ExtState%WLI%DoUse         = .TRUE.
+    ExtState%FROCEAN%DoUse     = .TRUE.
+    ExtState%FRSEAICE%DoUse    = .TRUE.
+    ExtState%FRLAKE%DoUse      = .TRUE.
     IF ( HcoState%Options%PBL_DRYDEP ) THEN
        ExtState%FRAC_OF_PBL%DoUse = .TRUE.
     ENDIF

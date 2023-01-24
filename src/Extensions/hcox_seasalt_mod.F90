@@ -139,7 +139,6 @@ CONTAINS
 !
     USE HCO_Calc_Mod,         ONLY : HCO_EvalFld
     USE HCO_FluxArr_Mod,      ONLY : HCO_EmisAdd
-    USE HCO_GeoTools_Mod,     ONLY : HCO_LANDTYPE
 !
 ! !INPUT PARAMETERS:
 !
@@ -1512,7 +1511,6 @@ CONTAINS
     !=======================================================================
 
     ! Activate met fields used by this module
-    ExtState%WLI%DoUse      = .TRUE.
     ExtState%TSKIN%DoUse    = .TRUE.
     ExtState%U10M%DoUse     = .TRUE.
     ExtState%V10M%DoUse     = .TRUE.

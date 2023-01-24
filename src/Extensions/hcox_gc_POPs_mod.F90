@@ -1519,6 +1519,10 @@ CONTAINS
 !
       FUNCTION IS_LAND( I, J, ExtState ) RESULT ( LAND )
 !
+! !USES:
+!
+    USE HCO_GeoTools_Mod, ONLY : HCO_LANDTYPE
+!
 ! !INPUT PARAMETERS:
 !
       INTEGER,         INTENT(IN) :: I           ! Longitude index of grid box
@@ -1535,10 +1539,11 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-
-      ! LWI=1 and FRLANDIC less than 50% is a LAND box
-      LAND = ( NINT( ExtState%WLI%Arr%Val(I,J) ) == 1   .and. &
-                     ExtState%FRLANDIC%Arr%Val(I,J)  <  0.5e+0_hp )
+      LAND = HCO_LANDTYPE( ExtState%FRLAND%Arr%Val(I,J),   &
+                           ExtState%FRLANDIC%Arr%Val(I,J), &
+                           ExtState%FROCEAN%Arr%Val(I,J),  &
+                           ExtState%FRSEAICE%Arr%Val(I,J), &
+                           ExtState%FRLAKE%Arr%Val(I,J) ) == 1
 
       END FUNCTION IS_LAND
 !EOC
@@ -1557,6 +1562,10 @@ CONTAINS
 !
       FUNCTION IS_ICE( I, J, ExtState ) RESULT ( ICE )
 !
+! !USES:
+!
+    USE HCO_GeoTools_Mod, ONLY : HCO_LANDTYPE
+!
 ! !INPUT PARAMETERS:
 !
       INTEGER,         INTENT(IN) :: I           ! Longitude index of grid box
@@ -1574,9 +1583,11 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-      ! LWI=2 or FRLANDIC > 50%
-      ICE = ( NINT( ExtState%WLI%Arr%Val(I,J) ) == 2       .or. &
-                    ExtState%FRLANDIC%Arr%Val(I,J)  >= 0.5+0_hp )
+      ICE = HCO_LANDTYPE( ExtState%FRLAND%Arr%Val(I,J),   &
+                          ExtState%FRLANDIC%Arr%Val(I,J), &
+                          ExtState%FROCEAN%Arr%Val(I,J),  &
+                          ExtState%FRSEAICE%Arr%Val(I,J), &
+                          ExtState%FRLAKE%Arr%Val(I,J) ) == 2
 
       END FUNCTION IS_ICE
 !EOC
@@ -1727,11 +1738,9 @@ CONTAINS
 
     ! Activate met fields required by this extension
     ExtState%POPG%DoUse        = .TRUE.
-    ExtState%FRLANDIC%DoUse    = .TRUE.
     ExtState%AIRVOL%DoUse      = .TRUE.
     ExtState%AIRDEN%DoUse      = .TRUE.
     ExtState%FRAC_OF_PBL%DoUse = .TRUE.
-    ExtState%FRLAKE%DoUse      = .TRUE.
     ExtState%LAI%DoUse         = .TRUE.
     ExtState%PSC2_WET%DoUse    = .TRUE.
     ExtState%SNOWHGT%DoUse     = .TRUE.
@@ -1739,7 +1748,11 @@ CONTAINS
     ExtState%TSKIN%DoUse       = .TRUE.
     ExtState%U10M%DoUse        = .TRUE.
     ExtState%V10M%DoUse        = .TRUE.
-    ExtState%WLI%DoUse         = .TRUE.
+    ExtState%FRLAND%DoUse      = .TRUE.
+    ExtState%FRLANDIC%DoUse    = .TRUE.
+    ExtState%FROCEAN%DoUse     = .TRUE.
+    ExtState%FRSEAICE%DoUse    = .TRUE.
+    ExtState%FRLAKE%DoUse      = .TRUE.
 
     !=======================================================================
     ! Initialize data arrays

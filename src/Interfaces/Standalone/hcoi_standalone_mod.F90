@@ -2205,20 +2205,6 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% Land-water-ice flags  %%%%%
-    IF ( ExtState%WLI%DoUse ) THEN
-       Name = 'LWI'
-       CALL ExtDat_Set( HcoState,     ExtState%WLI,                          &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
-                   '" for the HEMCO standalone simulation!'
-          CALL HCO_Error( ErrMsg, RC, ThisLoc )
-          CALL HCO_Leave( HcoState%Config%Err, RC )
-          RETURN
-       ENDIF
-    ENDIF
-
     !%%%%% Air and skin temperature %%%%%
     IF ( ExtState%T2M%DoUse ) THEN
        Name = 'T2M'

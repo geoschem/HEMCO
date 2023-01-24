@@ -154,8 +154,11 @@ CONTAINS
     DO I = 1, HcoState%NX
 
        ! Get the land type for grid box (I,J)
-       LANDTYPE = HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J),  &
-                                ExtState%FRLANDIC%Arr%Val(I,J) )
+       LANDTYPE = HCO_LANDTYPE( ExtState%FRLAND%Arr%Val(I,J),   &
+                                ExtState%FRLANDIC%Arr%Val(I,J), &
+                                ExtState%FROCEAN%Arr%Val(I,J),  &
+                                ExtState%FRSEAICE%Arr%Val(I,J), &
+                                ExtState%FRLAKE%Arr%Val(I,J)   )
 
        ! Check surface type
        ! Ocean:
@@ -169,7 +172,7 @@ CONTAINS
           ! Set flux to wind speed
           FLUXWIND(I,J) = W10M * SCALWIND
 
-         ! Ice:
+       ! Ice:
        ELSE IF ( LANDTYPE == 2 ) THEN
 
           ! Set uniform flux
@@ -332,8 +335,11 @@ CONTAINS
     ! Activate met fields required by this extension
     ExtState%U10M%DoUse = .TRUE.
     ExtState%V10M%DoUse = .TRUE.
-    ExtState%FRLANDIC%DoUse    = .TRUE.
-    ExtState%WLI%DoUse  = .TRUE.
+    ExtState%FRLAND%DoUse   = .TRUE.
+    ExtState%FRLANDIC%DoUse = .TRUE.
+    ExtState%FROCEAN%DoUse  = .TRUE.
+    ExtState%FRSEAICE%DoUse = .TRUE.
+    ExtState%FRLAKE%DoUse   = .TRUE.
 
     ! Activate this extension
     !ExtState%Custom = .TRUE.

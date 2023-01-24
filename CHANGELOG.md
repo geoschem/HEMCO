@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased 3.6.0]
+## [Unreleased 3.7.0]
 ### Added
   - HEMCO extensions now display a first-time message, whether `Verbose` is `true` or `false`.
 
@@ -16,6 +16,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
   - Warnings is now removed from `run/HEMCO_sa_Config.rc` and
     `run/HEMCO_Config.rc.sample` 
+
+## [Unreleased 3.6.0]
+### Added
+  - Added MAPL_ESMF compiler option for use with GCHP and GEOS
+  - New "Parallelize GEOS-Chem and HEMCO source code" guide on ReadTheDocs
+  - Updated documentation describing a masking error that can happen when performing simulations with cropped horizontal grids
+
+### Changed
+  - Set HCO_MISSVAL to MAPL missing value (1e15) if using GCHP or GEOS
+  - Use fraction surface type inputs instead of ExtState%WLI
+  - The version number in docs/source/conf.py is now 3.6.0
+  - Updated compilation output splash screen in compiling.rst ReadTheDocs file
+
+### Fixed
+  - Bug fix for inserting hard breaks in hemco-config.rst ReadTheDocs file
+
+### Removed
+  - Removed old kludge for MAPL missing data if applying mask
+  - Removed ExtState field for water-land-ice index (WLI)
 
 ## [3.5.2] - 2022-11-29
 ### Added
