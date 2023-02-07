@@ -401,7 +401,7 @@ CONTAINS
     ENDIF
 
     ! Set verbose flag
-    verbose = HCO_IsVerb ( HcoState%Config%Err, 3 )
+    verbose = HCO_IsVerb ( HcoState%Config%Err )
 
     ! Set # of data container in list
     HcoState%nnDataCont = ListCont_Length( List )

@@ -1,3 +1,4 @@
+
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -320,7 +321,7 @@ CONTAINS
     IF ( .NOT. ASSOCIATED(HcoState%Clock) ) THEN
        CALL HCO_WARNING( HcoState%Config%Err, &
         'CANNOT SET TIMEZONES - HEMCO CLOCK IS NOT DEFINED', &
-        RC, WARNLEV=1, THISLOC='HcoClock_InitTzPtr (hco_clock_mod.F90)' )
+        RC, THISLOC='HcoClock_InitTzPtr (hco_clock_mod.F90)' )
         RETURN
     ENDIF
 
@@ -607,7 +608,7 @@ CONTAINS
     ! ----------------------------------------------------------------
     ! Verbose mode
     ! ----------------------------------------------------------------
-    IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
        IF ( NewStep ) THEN
           WRITE(MSG,110) Clock%ThisYear, Clock%ThisMonth, &
                          Clock%ThisDay,  Clock%ThisHour,  &

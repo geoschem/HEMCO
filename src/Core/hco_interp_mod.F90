@@ -203,7 +203,7 @@ CONTAINS
     REGR_4D => NULL()
 
     ! Check for verbose mode
-    verb = HCO_IsVerb(HcoState%Config%Err,  3 )
+    verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! get longitude / latitude sizes
     nLonEdge = SIZE(LonE,1)
@@ -667,7 +667,7 @@ CONTAINS
     ENDIF
 
     ! Check for verbose mode
-    verb = HCO_IsVerb(HcoState%Config%Err,  3 )
+    verb = HCO_IsVerb( HcoState%Config%Err )
     IF ( verb ) THEN
        MSG = 'Vertically interpolate model levels: '//TRIM(Lct%Dct%cName)
        CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -721,7 +721,7 @@ CONTAINS
        ENDDO
 
        ! Verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           MSG = '# of input levels = # of output levels - passed as is.'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -791,7 +791,7 @@ CONTAINS
           ENDDO ! T
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto native GEOS-5 levels.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -864,7 +864,7 @@ CONTAINS
           ENDDO ! T
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GEOS-5 levels.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -935,7 +935,7 @@ CONTAINS
           ENDDO ! T
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GISS levels.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -962,7 +962,7 @@ CONTAINS
        ENDDO
 
        ! Verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Could not find vertical interpolation key - ', &
                        'kept the original ', nlev, ' levels.'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -976,7 +976,7 @@ CONTAINS
     ! Error check / verbose mode
     !===================================================================
     IF ( DONE ) THEN
-      IF ( HCO_IsVerb(HcoState%Config%Err, 2) ) THEN
+      IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Did vertical regridding for ',TRIM(Lct%Dct%cName),':'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,*) 'Number of original levels: ', nlev

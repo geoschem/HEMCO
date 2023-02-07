@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased 3.7.0]
+### Added
+  - HEMCO extensions now display a first-time message, whether `Verbose` is `true` or `false`.
+
+### Changed
+  - `Verbose` is now a `true/false` variable in `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
+  - HEMCO warnings are now only generated when `Verbose: true` is found in the HEMCO configuration file (no more numerical levels)
+
+### Removed
+  - Warnings is now removed from `run/HEMCO_sa_Config.rc` and
+    `run/HEMCO_Config.rc.sample`
+
 ## [3.6.0] - 2023-02-01
 ### Added
   - Added MAPL_ESMF compiler option for use with GCHP and GEOS

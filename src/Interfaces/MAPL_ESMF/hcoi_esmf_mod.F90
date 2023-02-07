@@ -549,7 +549,7 @@ CONTAINS
          Ptr2D => NULL()
 
          ! Verbose
-         IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND.HcoState%amIRoot ) THEN
+         IF ( HCO_IsVerb(HcoState%Config%Err) .AND.HcoState%amIRoot ) THEN
             CALL HCO_MSG('Passed from import to ExtState: '//TRIM(FldName))
          ENDIF
 
@@ -632,7 +632,7 @@ CONTAINS
          Ptr3D => NULL()
 
          ! Verbose
-         IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND. HcoState%amIRoot ) THEN
+         IF ( HCO_IsVerb(HcoState%Config%Err) .AND. HcoState%amIRoot ) THEN
             CALL HCO_MSG('Passed from import to ExtState: '//TRIM(FldName))
          ENDIF
 
@@ -727,7 +727,7 @@ CONTAINS
          ENDIF
 
          ! Verbose
-         IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND. HcoState%amIRoot ) THEN
+         IF ( HCO_IsVerb(HcoState%Config%Err) .AND. HcoState%amIRoot ) THEN
             CALL HCO_MSG(HcoState%Config%Err,'Passed from import to ExtState: '//TRIM(FldName))
          ENDIF
 
@@ -810,7 +810,7 @@ CONTAINS
          Ptr3D => NULL()
 
          ! Verbose
-         IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND. HcoState%amIRoot ) THEN
+         IF ( HCO_IsVerb(HcoState%Config%Err) .AND. HcoState%amIRoot ) THEN
             CALL HCO_MSG('Passed from import to ExtState: '//TRIM(FldName))
          ENDIF
 
@@ -887,7 +887,7 @@ CONTAINS
          Ptr2D => NULL()
 
          ! Verbose
-         IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND. HcoState%amIRoot ) THEN
+         IF ( HCO_IsVerb(HcoState%Config%Err) .AND. HcoState%amIRoot ) THEN
             CALL HCO_MSG('Passed from import to ExtState: '//TRIM(FldName))
          ENDIF
 

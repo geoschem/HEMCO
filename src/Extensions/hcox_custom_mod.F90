@@ -260,7 +260,6 @@ CONTAINS
 !
     INTEGER                        :: ExtNr, N, nSpc, AS
     INTEGER,           ALLOCATABLE :: HcoIDs(:)
-    LOGICAL                        :: verb
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
     CHARACTER(LEN=255)             :: MSG, LOC
     TYPE(MyInst), POINTER          :: Inst
@@ -280,7 +279,6 @@ CONTAINS
         CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
         RETURN
     ENDIF
-    verb = HCO_IsVerb(HcoState%Config%Err,1)
 
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%Custom, Inst, RC )
@@ -315,10 +313,17 @@ CONTAINS
     Inst%IceSrcIDs(:) = HcoIDs(N:nSpc)
 
     ! Verbose mode
-    IF ( verb ) THEN
-       MSG = 'Use custom emissions module (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+    IF ( Hcostate%amIRoot ) THEN
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: Custom (custom emissions module)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+       ENDIF
+
+       ! Write all other messages as debug printout only
        MSG = 'Use the following species (Name: HcoID):'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        DO N = 1, nSpc

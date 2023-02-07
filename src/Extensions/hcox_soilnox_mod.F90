@@ -825,9 +825,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use soil NOx emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: SoilNOx (soil NOx emissions)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
+       ENDIF
+
+       ! Write all other messages as debug printout only
        WRITE(MSG,*) '   - NOx species            : ', TRIM(SpcNames(1)), Inst%IDTNO
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) '   - NOx scale factor       : ', Inst%SpcScalVal(1)

@@ -450,9 +450,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use inorganic iodine emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='-')
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: Inorg_Iodine (HOI and I2 emissions)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+       ENDIF
+
+       ! Write all other messages as debug printout only
        IF ( Inst%CalcHOI ) THEN
           WRITE(MSG,*) 'HOI: ', TRIM(SpcNames(1)), Inst%IDTHOI
           CALL HCO_MSG(HcoState%Config%Err,MSG)

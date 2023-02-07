@@ -248,7 +248,7 @@ CONTAINS
     NY = HcoState%NY
 
     ! Verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Processing container: ', TRIM(Lct%Dct%cName)
        CALL HCO_MSG( HcoState%Config%Err, MSG, SEP1='-' )
     ENDIF
@@ -268,7 +268,7 @@ CONTAINS
           doPrintWarning = .FALSE.
           MSG = 'No further attempts will be made to read file: ' //         &
                 TRIM( Lct%Dct%Dta%NcFile )
-          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
        ENDIF
 
        ! Return without reading
@@ -317,7 +317,7 @@ CONTAINS
                 CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE. )
                 MSG = 'No valid file found for current simulation time - data '// &
                      'will be ignored for time being - ' // TRIM(Lct%Dct%cName)
-                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
                 CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
                 RETURN
              ENDIF
@@ -358,7 +358,7 @@ CONTAINS
                      TRIM(srcFile) // ' - Cannot get field '              // &
                      TRIM(Lct%Dct%cName) // '. Please check file name '   // &
                      'and time (incl. time range flag) in the config. file'
-                CALL HCO_Warning( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+                CALL HCO_Warning( HcoState%Config%Err, MSG, RC )
 
                 ! Write a msg to stdout (NOT FOUND)
                 WRITE( 6, 300 ) TRIM( srcFile )
@@ -371,7 +371,7 @@ CONTAINS
                 MSG = 'No valid file found for current simulation time - '// &
                      'data will be ignored for time being - '             // &
                      TRIM(Lct%Dct%cName)
-                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+                CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
 
                 ! Write a msg to stdout (OPTIONAL)
                 WRITE( 6, 310 ) TRIM( srcFile )
@@ -385,7 +385,7 @@ CONTAINS
                   TRIM(srcFile) // ' - Cannot get field '                 // &
                   TRIM(Lct%Dct%cName) // '. Please check file name '      // &
                   'and time (incl. time range flag) in the config. file'
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
 
              ! Write a msg to stdout (NOT FOUND)
              WRITE( 6, 300 ) TRIM(srcFile)
@@ -432,7 +432,7 @@ CONTAINS
     IF ( ncLun > 0 ) THEN
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Reading from existing stream: ', TRIM(srcFile)
           CALL HCO_MSG( HcoState%Config%Err, MSG )
        ENDIF
@@ -442,7 +442,7 @@ CONTAINS
        CALL NC_OPEN ( TRIM(srcFile), ncLun )
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Opening file: ', TRIM(srcFile)
           CALL HCO_MSG( HcoState%Config%Err, MSG )
        ENDIF
@@ -507,7 +507,7 @@ CONTAINS
              CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE.)
              MSG = 'Simulation time is outside of time range provided for '//&
                   TRIM(Lct%Dct%cName) // ' - field is ignored for the time being!'
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
              DoReturn = .TRUE.
              CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
           ENDIF
@@ -539,7 +539,7 @@ CONTAINS
           CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE. )
           MSG = 'Cannot find field ' // TRIM(Lct%Dct%cName) // &
                 '. Will be ignored for time being.'
-          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
           CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
           RETURN
        ENDIF
@@ -729,7 +729,7 @@ CONTAINS
        ENDIF
 
        ! Verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Will read vertical levels ', lev1, ' to ', lev2
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -758,7 +758,7 @@ CONTAINS
     ! ----------------------------------------------------------------
 
     ! Verbose mode
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Reading variable ', TRIM(Lct%Dct%Dta%ncPara)
        CALL HCO_MSG(HcoState%Config%Err,MSG)
     ENDIF
@@ -894,7 +894,7 @@ CONTAINS
           ncArr = (wgt1 * ncArr) + (wgt2 * ncArr2)
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              MSG = 'Interpolated data between two files:'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
              MSG = '- File 1: ' // TRIM(srcFile)
@@ -1037,7 +1037,7 @@ CONTAINS
           ncArr = ncArr / REAL(nYears,sp)
 
           ! Verbose
-          IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+          IF ( HcoState%amIRoot .AND. HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,110) TRIM(Lct%Dct%cName), Yr1, Yr2
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -1097,11 +1097,11 @@ CONTAINS
        IF ( Flag /= 0 ) THEN
           MSG = 'Data is treated as unitless, but file attribute suggests ' // &
                 'it is not: ' // TRIM(thisUnit) // '. File: ' // TRIM(srcFile)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
        ENDIF
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Based on srcUnit attribute (', TRIM(Lct%Dct%Dta%OrigUnit), &
                        '), no unit conversion is performed.'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -1122,7 +1122,7 @@ CONTAINS
              CALL HCO_ERROR( MSG, RC )
              RETURN
           ELSE
-             CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=3 )
+             CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
           ENDIF
        ENDIF
 
@@ -1155,7 +1155,7 @@ CONTAINS
        ENDIF
 
        ! Verbose mode
-       IF ( HcoState%amIRoot .and. HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       IF ( HcoState%amIRoot .and. HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Unit conversion settings: '
           CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,*) '- Year, month        : ', ncYr, ncMt
@@ -1181,14 +1181,14 @@ CONTAINS
 
        ! Verbose mode
        IF ( UnitFactor /= 1.0_hp ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Data was in units of ', TRIM(thisUnit), &
                           ' - converted to HEMCO units by applying ', &
                           'scale factor ', UnitFactor
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
        ELSE
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Data was in units of ', TRIM(thisUnit), &
                           ' - unit conversion factor is ', UnitFactor
              CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -1211,7 +1211,7 @@ CONTAINS
           ncArr = ncArr * HcoState%TS_EMIS
           MSG = 'Data converted from kg/m3/s to kg/m3: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(thisUnit)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
 
        ! Unitless data
        ELSEIF ( AreaFlag == -1 .AND. TimeFlag == -1 ) THEN
@@ -1226,7 +1226,7 @@ CONTAINS
           ncArr = ncArr / HcoState%TS_EMIS
           MSG = 'Data converted from kg/m2 to kg/m2/s: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(thisUnit)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
 
        ! Emission data that is not per area (i.e. kg/s) needs to be converted
        ! to per area manually.
@@ -1319,7 +1319,7 @@ CONTAINS
     IF ( nlev > 1 ) THEN
       UseMESSy = .TRUE.
 
-      IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+      IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
         WRITE(MSG,*) '  ==> WRF/CESM: Always forcing MESSy regridding for number of verticals', nlev, IsModelLevel
         CALL HCO_MSG(HcoState%Config%Err,MSG)
       ENDIF
@@ -1337,7 +1337,7 @@ CONTAINS
     ! Use MESSy regridding
     !-----------------------------------------------------------------
     IF ( UseMESSy ) THEN
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) '  ==> Use MESSy regridding (NCREGRID)'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -1378,7 +1378,7 @@ CONTAINS
        ! Ported from the original WRF-GC implementation (hplin, 5/27/20)
        !--------------------------------------------------------------
        IF ( nlev > 1 .AND. IsModelLevel ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
             WRITE(MSG,*) '  ==> WRF/CESM: Writing in fixed sigma coordinates for GEOS-Chem levels', nlon, nlat
             CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -1471,7 +1471,7 @@ CONTAINS
     ! Use map_a2a regridding
     !-----------------------------------------------------------------
     ELSE
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) '  ==> Use map_a2a regridding'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF

@@ -114,7 +114,7 @@ CONTAINS
     ENDIF
 
     ! Verbose mode
-    verb = HCO_IsVerb( HcoState%Config%Err, 2 )
+    verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! Add container to ReadList according to update freqency.
     ! Fields in list 'Hour' will be updated (i.e. re-read) every hour,
@@ -201,7 +201,7 @@ CONTAINS
     IF ( Verb ) THEN
        WRITE(MSG,*) 'New container set to ReadList:'
        CALL HCO_MSG(HcoState%Config%Err, MSG)
-       CALL HCO_PrintDataCont( HcoState, Dct, 3 )
+       CALL HCO_PrintDataCont( HcoState, Dct )
     ENDIF
 
     ! Leave w/ success
@@ -269,7 +269,7 @@ CONTAINS
     ENDIF
 
     ! Verbose mode
-    verb = HCO_IsVerb( HcoState%Config%Err, 1 )
+    verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! Read all fields?
     RdAll = .FALSE.
@@ -457,7 +457,7 @@ CONTAINS
     ENDIF
 
     ! Verbose mode?
-    verb = HCO_IsVerb ( HcoState%Config%Err, 2 )
+    verb = HCO_IsVerb ( HcoState%Config%Err )
 
     ! Loop over all containers
     Lct => ReadList
@@ -749,7 +749,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE ReadList_Print( HcoState, ReadLists, verb )
+  SUBROUTINE ReadList_Print( HcoState, ReadLists )
 !
 ! !USES:
 !
@@ -759,7 +759,6 @@ CONTAINS
 !
     TYPE(HCO_State), POINTER       :: HcoState
     TYPE(RdList),    POINTER       :: ReadLists
-    INTEGER,         INTENT(IN)    :: verb   ! verbose number
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -775,38 +774,38 @@ CONTAINS
     ! ================================================================
 
     ! Nothing to do if HEMCO verbose level is below passed verbose number
-    IF ( .NOT. HCO_IsVerb(HcoState%Config%Err,verb) ) RETURN
+    IF ( .NOT. HCO_IsVerb(HcoState%Config%Err ) ) RETURN
 
     ! Print content of all lists
     IF ( ASSOCIATED(ReadLists) .and. HcoState%amIRoot ) THEN
 
        WRITE(MSG,*) 'Contents of one-time list:'
        CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='=')
-       CALL HCO_PrintList ( HcoState, ReadLists%Once, verb )
+       CALL HCO_PrintList ( HcoState, ReadLists%Once )
 
        WRITE(MSG,*) 'Contents of year list:'
        CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='=')
-       CALL HCO_PrintList ( HcoState, ReadLists%Year, verb )
+       CALL HCO_PrintList ( HcoState, ReadLists%Year )
 
        WRITE(MSG,*) 'Contents of month list:'
        CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='=')
-       CALL HCO_PrintList ( HcoState, ReadLists%Month, verb )
+       CALL HCO_PrintList ( HcoState, ReadLists%Month )
 
        WRITE(MSG,*) 'Contents of day list:'
        CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='=')
-       CALL HCO_PrintList ( HcoState, ReadLists%Day, verb )
+       CALL HCO_PrintList ( HcoState, ReadLists%Day )
 
        WRITE(MSG,*) 'Contents of 3-hour list:'
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='=')
-       CALL HCO_PrintList ( HcoState, ReadLists%Hour3, verb )
+       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='=' )
+       CALL HCO_PrintList ( HcoState, ReadLists%Hour3 )
 
        WRITE(MSG,*) 'Contents of hour list:'
        CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='=')
-       CALL HCO_PrintList ( HcoState, ReadLists%Hour, verb )
+       CALL HCO_PrintList ( HcoState, ReadLists%Hour )
 
        WRITE(MSG,*) 'Contents of always-to-read list:'
        CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='=')
-       CALL HCO_PrintList ( HcoState, ReadLists%Always, verb )
+       CALL HCO_PrintList ( HcoState, ReadLists%Always )
 
     ELSE
        WRITE(MSG,*) 'ReadList not defined yet!!'
