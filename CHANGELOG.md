@@ -8,14 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased 3.7.0]
 ### Added
   - HEMCO extensions now display a first-time message, whether `Verbose` is `true` or `false`.
+  - Added 'src/Shared/NcdfUtil/README.md` file directing users to look for netCDF utility scripts at https://github.com/geoschem/netcdf-scripts
 
 ### Changed
   - `Verbose` is now a `true/false` variable in `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
   - HEMCO warnings are now only generated when `Verbose: true` is found in the HEMCO configuration file (no more numerical levels)
 
 ### Removed
-  - Warnings is now removed from `run/HEMCO_sa_Config.rc` and
-    `run/HEMCO_Config.rc.sample`
+  - Warnings is now removed from `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
+  - Removed the `src/Shared/NcdfUtil/perl` folder
 
 ## [3.6.0] - 2023-02-01
 ### Added
