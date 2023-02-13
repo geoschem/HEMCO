@@ -603,6 +603,11 @@
       REAL(dp)                       :: TmpScal
       LOGICAL                        :: FOUND
       TYPE(MyInst), POINTER          :: Inst
+#if defined ( MODEL_GEOS )
+      CHARACTER(LEN=2047)            :: TuningTable
+      CHARACTER(LEN=2047), PARAMETER :: TuningTable_Default = 
+     &                                   'DustDead_TuningTable.txt'
+#endif
 
       !=================================================================
       ! HCOX_DUST_DEAD_INIT begins here!
@@ -683,6 +688,22 @@
       ELSE
          Inst%FLX_MSS_FDG_FCT = -999.0e0
       ENDIF
+
+#if defined ( MODEL_GEOS ) 
+      ! Determine mass flux tuning factor based on grid resolution 
+      IF ( Inst%FLX_MSS_FDG_FCT == -999.0e0 ) THEN
+         CALL GetExtOpt( HcoState%Config, ExtNr, 
+     &                    'Mass tuning table',
+     &                    OptValChar=TuningTable, Found=FOUND, RC=RC )
+         IF ( .NOT. FOUND ) TuningTable = TuningTable_Default
+         CALL ReadTuningFactor(HcoState, TuningTable, 
+     &                         Inst%FLX_MSS_FDG_FCT, RC)
+         IF ( RC /= HCO_SUCCESS ) THEN
+            CALL HCO_ERROR( 'ERROR ReadTuningFactor', RC, THISLOC=LOC )
+            RETURN
+         ENDIF
+      ENDIF
+#endif
 
       ! Error
       IF ( Inst%FLX_MSS_FDG_FCT == -999.0e0 ) THEN
@@ -5754,5 +5775,115 @@ c Fix up for negative argument, erf, etc.
 
       END SUBROUTINE InstRemove
 !EOC
+#if defined ( MODEL_GEOS ) 
+!------------------------------------------------------------------------------
+      SUBROUTINE ReadTuningFactor(HcoState, TuningTable, FCT, RC ) 
+!
+      USE HCO_CharTools_Mod
+      USE HCO_inquireMod,   ONLY : findFreeLUN
+
+      ! Arguments
+      TYPE(HCO_State),  POINTER        :: HcoState    ! Hemco state
+      CHARACTER(LEN=*), INTENT(IN)     :: TuningTable 
+      REAL*8          , INTENT(INOUT)  :: FCT 
+      INTEGER         , INTENT(INOUT)  :: RC 
+
+      ! Return value 
+
+      ! Local variables
+      REAL(hp)           :: AM2, RES
+      INTEGER            :: IU, IDX
+      CHARACTER(LEN=7)   :: CSLABEL, FNDLABEL 
+      CHARACTER(LEN=255) :: MSG, LINE, ICSL
+      LOGICAL            :: EX, EOF
+
+      CHARACTER(LEN=255), PARAMETER :: LOC =  
+     &                           'ReadTuningFactor (hcox_dustdead_mod)'
+
+      !================================================================
+      ! ReadTuningFactor begins here!
+      !================================================================
+
+      ! Enter
+      CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+
+      ! Init
+      FCT = -999.0
+
+      ! Determine resolution based on grid cell area
+      CSLABEL  = 'UNKNOWN'
+      FNDLABEL = TRIM(CSLABEL) 
+      IF ( .NOT. HcoState%Grid%AREA_M2%Alloc ) THEN
+         MSG = 'Warning: AREA_M2 not found, will use default number'
+         CALL HCO_WARNING( MSG, RC, 1, LOC )
+      ELSE
+         AM2 = SUM(HcoState%Grid%AREA_M2%Val)/(HcoState%NX*HcoState%NY)
+         RES = SQRT(AM2)
+         IF ( RES > 280.0_hp ) THEN
+            CSLABEL = 'C24' 
+         ELSEIF ( RES > 140.0_hp .AND. RES <=  280.0_hp ) THEN
+            CSLABEL = 'C48' 
+         ELSEIF ( RES > 70.0_hp .AND. RES <=  140.0_hp ) THEN
+            CSLABEL = 'C90' 
+         ELSEIF ( RES > 35.0_hp .AND. RES <=  70.0_hp ) THEN
+            CSLABEL = 'C180' 
+         ELSEIF ( RES > 17.5_hp .AND. RES <=  35.0_hp ) THEN
+            CSLABEL = 'C360' 
+         ELSEIF ( RES > 8.75_hp .AND. RES <=  17.5_hp ) THEN
+            CSLABEL = 'C720' 
+         ELSEIF ( RES > 4.375_hp .AND. RES <= 8.75_hp ) THEN
+            CSLABEL = 'C1440' 
+         ELSEIF ( RES <= 4.375_hp ) THEN
+            CSLABEL = 'C2880' 
+         ENDIF
+      ENDIF
+
+      ! Open file 
+      INQUIRE( FILE=TRIM(TuningTable), EXIST=EX )
+      IF ( .NOT. EX ) THEN
+          MSG = 'FILE NOT FOUND: '//TRIM(TuningTable)
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+         RETURN
+      ENDIF
+      IU = findFreeLUN()
+      OPEN( IU, FILE=TRIM(TuningTable) )
+      
+      ! Search for resolution entry in file, assuming they are listed as follows:
+      ! C360: 1.0
+      ! C48: 2.0e2
+      ! C90: 1.0e-4
+      DO 
+         CALL HCO_ReadLine ( IU, LINE, EOF, RC )
+         IF ( EOF ) EXIT
+         IDX = INDEX( LINE, ':' )
+         IF ( IDX > 0 ) ICSL = ADJUSTL(LINE(1:(IDX-1)))
+         ! If cube-sphere label matches current resolution, read factor 
+         IF ( TRIM(ICSL)==TRIM(CSLABEL) ) THEN
+            READ(LINE(IDX+1:LEN(LINE)),*) FCT
+            FNDLABEL = TRIM(ICSL)
+            EXIT
+         ENDIF
+      ENDDO 
+
+      ! All done
+      CLOSE ( IU )
+
+      ! Verbose
+      IF ( HcoState%amIRoot ) THEN
+         MSG = 'Read dust tuning factor from '//TRIM(TuningTable)
+         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+         MSG = 'Model resolution: '//TRIM(CSLABEL)
+         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+         MSG = 'Resolution label in file: '//TRIM(FNDLABEL)
+         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+         WRITE(MSG,*) 'Scale factor: ',FCT
+         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+      ENDIF
+
+      ! Leave
+      CALL HCO_LEAVE( HcoState%Config%Err, RC )
+
+      END SUBROUTINE ReadTuningFactor 
+#endif
       END MODULE HCOX_DUSTDEAD_MOD
 !EOM
