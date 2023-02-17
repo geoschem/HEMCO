@@ -224,8 +224,11 @@ CONTAINS
     errMsg  = ''
     thisLoc = 'HCO_ArrInit_2D_Hp (HCO_ARR_MOD.F90)'
 
+    ! NOTE: This may cause a memory leak
+    Arr => NULL()
+
     ! Initialize the Arr object
-    IF ( .not. ASSOCIATED( Arr ) ) THEN
+    !IF ( .not. ASSOCIATED( Arr ) ) THEN
        ALLOCATE( Arr, STAT=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           errMsg = 'Could not allocate the "Arr" object!'
@@ -234,7 +237,7 @@ CONTAINS
        ENDIF
        Arr%Val   => NULL()
        Arr%Alloc = .FALSE.
-    ENDIF
+    !ENDIF
 
     ! Initialize the Arr%Val array
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
@@ -297,8 +300,11 @@ CONTAINS
     errMsg  = ''
     thisLoc = 'HCO_ArrInit_2D_Sp (HCO_ARR_MOD.F90)'
 
+    ! NOTE: This may cause a memory leak
+    Arr => NULL()
+
     ! Initialize the Arr object
-    IF ( .not. ASSOCIATED( Arr ) ) THEN
+    !IF ( .not. ASSOCIATED( Arr ) ) THEN
        ALLOCATE( Arr, STAT=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           errMsg = 'Could not allocate the "Arr" object!'
@@ -307,7 +313,7 @@ CONTAINS
        ENDIF
        Arr%Val   => NULL()
        Arr%Alloc = .FALSE.
-    ENDIF
+    !ENDIF
 
     ! Initialize the Arr%Val array
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
@@ -370,10 +376,11 @@ CONTAINS
     errMsg  = ''
     thisLoc = 'HCO_ArrInit_2D_I (hco_arr_mod.F90)'
 
+    ! NOTE: This may cause a memory leak
     Arr => NULL()
 
     ! Initialize the Arr object
-    IF ( .not. ASSOCIATED( Arr ) ) THEN
+    !IF ( .not. ASSOCIATED( Arr ) ) THEN
        ALLOCATE( Arr, STAT=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           errMsg = 'Could not allocate the "Arr" object!'
@@ -382,7 +389,7 @@ CONTAINS
        ENDIF
        Arr%Val   => NULL()
        Arr%Alloc = .FALSE.
-    ENDIF
+    !ENDIF
 
     ! Initialize the Arr%Val array
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
@@ -445,8 +452,11 @@ CONTAINS
     errMsg  = ''
     thisLoc = 'HCO_ArrInit_3D_Hp (hco_arr_mod.F90)'
 
+    ! NOTE: This may cause a memory leak
+    Arr => NULL()
+
     ! Initialize the Arr object
-    IF ( .not. ASSOCIATED( Arr ) ) THEN
+    !IF ( .not. ASSOCIATED( Arr ) ) THEN
        ALLOCATE( Arr, STAT=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           errMsg = 'Could not allocate the Arr object!'
@@ -455,7 +465,7 @@ CONTAINS
        ENDIF
        Arr%Val   => NULL()
        Arr%Alloc = .FALSE.
-    ENDIF
+    !ENDIF
 
     ! Initialize the Arr%Val array
     CALL HCO_ValInit( Arr%Val, nx, ny, nz, Arr%Alloc, RC )
@@ -522,6 +532,7 @@ CONTAINS
     errMsg  = ''
     thisLoc = 'HCO_ArrInit_3D_Sp (hco_arr_mod.F90)'
 
+    ! NOTE: This may cause a memory leak
     Arr => NULL()
 
     ! Initialize the Arr object
@@ -532,6 +543,8 @@ CONTAINS
           CALL HCO_Error( errMsg, RC, thisLoc )
           RETURN
        ENDIF
+       Arr%Val   => NULL()
+       Arr%Alloc = .FALSE.
     !ENDIF
 
     ! Initialize the Arr%Val array
@@ -931,22 +944,20 @@ CONTAINS
     thisLoc =  'HCO_ValInit_2D_Sp (hco_arr_mod.F90)'
 
     ! If dimensions are zero, just return a null pointer to Val
-    IF ( nx == 0 .and. ny == 0 ) THEN
+    IF ( nx == 0 .or. ny == 0 ) THEN
        Val   => NULL()
        Alloc = .FALSE.
        RETURN
     ENDIF
 
     ! Initialize Val if dimensions are nonzero
-    IF ( .not. ASSOCIATED( Val ) ) THEN
-       ALLOCATE( Val( nx, ny ), STAT=RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          errMsg = 'Could not allocate Val!'
-          CALL HCO_Error( errMsg, RC, thisLoc )
-          RETURN
-       ENDIF
+    ALLOCATE( Val( nx, ny ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate Val!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
-    Val   = 0.0_dp
+    Val   = 0.0_sp
     alloc = .TRUE.
 
   END SUBROUTINE HCO_ValInit_2D_Sp
@@ -995,7 +1006,7 @@ CONTAINS
     CHARACTER(LEN=255) :: errMsg, thisLoc
 
     ! ================================================================
-    ! HCO_ValInit_2D_Sp begins here
+    ! HCO_ValInit_2D_Dp begins here
     ! ================================================================
 
     ! Initialize
@@ -1004,22 +1015,20 @@ CONTAINS
     thisLoc =  'HCO_ValInit_2D_Dp (hco_arr_mod.F90)'
 
     ! If dimensions are zero, just return a null pointer to Val
-    IF ( nx == 0 .and. ny == 0 ) THEN
+    IF ( nx == 0 .or. ny == 0 ) THEN
        Val     => NULL()
        Alloc   = .FALSE.
        RETURN
     ENDIF
 
     ! Initialize Val if dimensions are nonzero
-    IF ( .not. ASSOCIATED( Val ) ) THEN
-       ALLOCATE( Val( nx, ny ), STAT=RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          errMsg = 'Could not allocate Val!'
-          CALL HCO_Error( errMsg, RC, thisLoc )
-          RETURN
-       ENDIF
+    ALLOCATE( Val( nx, ny ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate Val!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
-    Val   = 0.0_sp
+    Val   = 0.0_dp
     alloc = .TRUE.
 
   END SUBROUTINE HCO_ValInit_2D_Dp
@@ -1077,20 +1086,18 @@ CONTAINS
     thisLoc =  'HCO_ValInit_2D_I (hco_arr_mod.F90)'
 
     ! If dimensions are zero, just return a null pointer to Val
-    IF ( nx == 0 .and. ny == 0 ) THEN
+    IF ( nx == 0 .or. ny == 0 ) THEN
        Val     => NULL()
        Alloc   = .FALSE.
        RETURN
     ENDIF
 
     ! Initialize Val if dimensions are nonzero
-    IF ( .not. ASSOCIATED( Val ) ) THEN
-       ALLOCATE( Val( nx, ny ), STAT=RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          errMsg = 'Could not allocate Val!'
-          CALL HCO_Error( errMsg, RC, thisLoc )
-          RETURN
-       ENDIF
+    ALLOCATE( Val( nx, ny ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate Val!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
     Val   = 0
     alloc = .TRUE.
@@ -1151,20 +1158,18 @@ CONTAINS
     thisLoc =  'HCO_ValInit_3D_Dp (hco_arr_mod.F90)'
 
     ! If dimensions are zero, return a null pointer
-    IF ( nx == 0 .and. ny == 0 .and. nz == 0 ) THEN
+    IF ( nx == 0 .or. ny == 0 .or. nz == 0 ) THEN
        Val   => NULL()
        Alloc = .FALSE.
        RETURN
     ENDIF
 
     ! Initialize Val if dimensions are nonzero
-    IF ( .not. ASSOCIATED( Val ) ) THEN
-       ALLOCATE( Val( nx, ny, nz ), STAT=RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          errMsg = 'Could not allocate Val!'
-          CALL HCO_Error( errMsg, RC, thisLoc )
-          RETURN
-       ENDIF
+    ALLOCATE( Val( nx, ny, nz ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate Val!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
     Val   = 0.0_dp
     alloc = .TRUE.
@@ -1225,20 +1230,18 @@ CONTAINS
     thisLoc = 'HCO_ValInit_3D_Sp (hco_arr_mod.F90)'
 
     ! If dimensions are zero, return a null pointer
-    IF ( nx == 0 .and. ny == 0 .and. nz == 0 ) THEN
+    IF ( nx == 0 .or. ny == 0 .or. nz == 0 ) THEN
        Val     => NULL()
        Alloc   = .FALSE.
        RETURN
     ENDIF
 
     ! Initialize Val if dimensions are nonzero
-    IF ( .not. ASSOCIATED( Val ) ) THEN
-       ALLOCATE( Val( nx, ny, nz ), STAT=RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          errMsg = 'Could not allocate Val!'
-          CALL HCO_Error( errMsg, RC, thisLoc )
-          RETURN
-       ENDIF
+    ALLOCATE( Val( nx, ny, nz ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate Val!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
     Val   = 0.0_sp
     alloc = .TRUE.
