@@ -170,12 +170,10 @@ CONTAINS
     ! FileData_Init begins here!
     !======================================================================
 
-    FileDta => NULL()
-    ALLOCATE( FileDta )
+    ! Allocate memory to the FileData object
+    IF ( .not. ASSOCIATED( FileDta ) ) ALLOCATE( FileDta )
 
     ! Nullify all pointers and initialize variables
-    ! NOTE: Avoid memory leaks by working on the argument FileDta instead
-    ! of pointing to a local object NewFDta (Bob Yantosca, 22 Aug 2022)
     FileDta%V3          => NULL()
     FileDta%V2          => NULL()
     FileDta%tIDx        => NULL()
@@ -244,8 +242,6 @@ CONTAINS
     !======================================================================
     ! FileData_Cleanup begins here!
     !======================================================================
-
-    ! Only if associated
     IF ( ASSOCIATED( FileDta ) ) THEN
 
        ! Deallocate data arrays

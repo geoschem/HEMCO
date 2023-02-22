@@ -156,6 +156,10 @@ CONTAINS
 !
   SUBROUTINE DataCont_Init( Dct, cID )
 !
+! !USES:
+!
+    USE HCO_FileData_Mod, ONLY : FileData_Init
+!
 ! !INPUT PARAMETERS:
 !
     TYPE(DataCont),  POINTER       :: Dct
@@ -176,7 +180,6 @@ CONTAINS
     IF ( .NOT. ASSOCIATED( Dct) ) ALLOCATE( Dct )
 
     ! Nullify pointers
-    Dct%Dta         => NULL()
     Dct%Scal_cID    => NULL()
 
     ! Set default values
@@ -199,6 +202,9 @@ CONTAINS
     ! Set default target ID to cont. ID.
     Dct%cID          = cID
     Dct%targetID     = Dct%cID
+
+    ! Also initialize the FileData object within the DataCont object
+    CALL FileData_Init( Dct%Dta )
 
   END SUBROUTINE DataCont_Init
 !EOC
@@ -242,28 +248,19 @@ CONTAINS
     !======================================================================
     ! DataCont_Cleanup begins here!
     !======================================================================
-
-    IF ( PRESENT(ArrOnly) ) THEN
-       DeepClean = .NOT. ArrOnly
-    ELSE
-       DeepClean = .TRUE.
-    ENDIF
-
-    ! Only if associated...
     IF ( ASSOCIATED( Dct ) ) THEN
 
+       ! Optional argument handling
+       DeepClean = .TRUE.
+       IF ( PRESENT( ArrOnly ) DeepClean = ( .not. ArrOnly )
+
        ! Clean up FileData object. If DeepClean is true, this
-       ! will entirely erase the file data object. Otherwise, only the
-       ! data arrays will be removed.
-       ! Note: do only if this is the home container of the file data
-       ! object.
-       IF ( Dct%DtaHome == 1 ) THEN
-          CALL FileData_Cleanup( Dct%Dta, DeepClean )
-       ENDIF
+       ! will entirely erase the file data object. Otherwise,
+       ! only the data arrays will be removed.
+       CALL FileData_Cleanup( Dct%Dta, DeepClean )
 
        ! Clean up data container if DeepClean option is enabled.
        IF ( DeepClean ) THEN
-          Dct%Dta => NULL()
           IF( ASSOCIATED( Dct%Scal_cID ) ) DEALLOCATE( Dct%Scal_cID )
           Dct%Scal_cID => NULL()
           DEALLOCATE( Dct )

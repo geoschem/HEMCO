@@ -586,7 +586,6 @@ CONTAINS
     USE HCO_CHARPAK_MOD,  ONLY : StrSplit
     USE HCO_EXTLIST_MOD,  ONLY : ExtNrInUse, HCO_GetOpt
     USE HCO_TIDX_Mod,     ONLY : HCO_ExtractTime
-    USE HCO_FILEDATA_Mod, ONLY : FileData_Init
     USE HCO_DATACONT_Mod, ONLY : CatMax, ZeroScalID
 !
 ! !INPUT PARAMETERS:
@@ -657,7 +656,6 @@ CONTAINS
     ! Pointers
     TYPE(ListCont), POINTER   :: Lct
     TYPE(ListCont), POINTER   :: Tmp
-    TYPE(FileData), POINTER   :: Dta
 
     !=================================================================
     ! Config_ReadCont begins here!
@@ -671,7 +669,6 @@ CONTAINS
     nCat           = -1
     Lct            => NULL()
     Tmp            => NULL()
-    Dta            => NULL()
 
     ! Get tokens
     WildCard  = HCO_GetOpt( HcoConfig%ExtList, 'Wildcard'  )
@@ -863,7 +860,8 @@ CONTAINS
              ! -------------------------------------------------------------
 
              ! Add blank list container to ConfigList list. The container
-             ! is placed at the beginning of the list.
+             ! is placed at the beginning of the list.  This also initializes
+             ! the FileData container as Lct%Dct%Dta.
              CALL ConfigList_AddCont ( Lct, HcoConfig%ConfigList )
 
              ! Check if name exists already
@@ -947,9 +945,6 @@ CONTAINS
                 ENDIF
                 Lct%Dct%DtaHome = Lct%Dct%DtaHome - 1
              ELSE
-                ! NOTE: FileData_Init now nullifies the Dta object
-                ! befire allocation.  -- Bob Yantosca (22 Aug 2022)
-                CALL FileData_Init( Dta )
 
                 ! Set source file name. Check if the read file name starts
                 ! with the configuration file token '$CFDIR', in which case
@@ -960,11 +955,11 @@ CONTAINS
                       srcFile = TRIM(CFDIR) // TRIM(srcFile(7:STRLEN))
                    ENDIF
                 ENDIF
-                Dta%ncFile    = srcFile
+                Lct%Dct%Dta%ncFile = srcFile
 
                 ! Set source variable and original data unit.
-                Dta%ncPara    = ADJUSTL(srcVar)
-                Dta%OrigUnit  = ADJUStL(srcUnit)
+                Lct%Dct%Dta%ncPara    = ADJUSTL(srcVar)
+                Lct%Dct%Dta%OrigUnit  = ADJUStL(srcUnit)
 
                 ! If the parameter ncPara is not defined, attempt to read data
                 ! directly from configuration file instead of netCDF.
@@ -973,16 +968,16 @@ CONTAINS
                 ! data that is treated in local time. The corresponding
                 ! IsLocTime flag is updated when reading the data (see
                 ! hcoio_dataread_mod.F90).
-                IF ( TRIM(Dta%ncPara) == '-' ) THEN
-                   Dta%ncRead    = .FALSE.
-                   Dta%IsLocTime = .TRUE.
+                IF ( TRIM(Lct%Dct%Dta%ncPara) == '-' ) THEN
+                   Lct%Dct%Dta%ncRead    = .FALSE.
+                   Lct%Dct%Dta%IsLocTime = .TRUE.
                 ENDIF
 
                 ! Extract information from time stamp character and pass values
                 ! to the corresponding container variables. If no time string is
                 ! defined, keep default values (-1 for all of them)
                 IF ( TRIM(srcTime) /= '-' ) THEN
-                   CALL HCO_ExtractTime( HcoConfig, srcTime, Dta, RC )
+                   CALL HCO_ExtractTime( HcoConfig, srcTime, Lct%Dct%Dta, RC )
                    IF ( RC /= HCO_SUCCESS ) THEN
                       msg = 'Could not extract time cycle information!'
                       CALL HCO_Error( msg, RC, thisLoc=loc )
@@ -994,8 +989,8 @@ CONTAINS
                 ! through ExtData by name, hence need to set ncFile equal to
                 ! container name!
 #if defined(ESMF_)
-                IF ( Dta%ncRead ) THEN
-                   Dta%ncFile = ADJUSTL(tagcName)
+                IF ( Lct%Dct%Dta%ncRead ) THEN
+                   Lct%Dct%Dta%ncFile = ADJUSTL(tagcName)
                 ENDIF
 #endif
 
@@ -1014,7 +1009,7 @@ CONTAINS
                      wildCard  = TRIM( wildCard  ),                          &
                      HcoConfig = HcoConfig,                                  &
                      Lct       = Lct,                                        &
-                     Dta       = Dta,                                        &
+                     Dta       = Lct%Dct%Dta,                                &
                      RC        = RC                                         )
 
                 ! Trap potential errors
@@ -1025,9 +1020,6 @@ CONTAINS
                 ENDIF
 
              ENDIF
-
-             ! Connect file data object of this data container.
-             Lct%Dct%Dta => Dta
 
              ! Free list container for next cycle
              Lct => NULL()
@@ -1042,8 +1034,9 @@ CONTAINS
           ! -------------------------------------------------------------
 
           ! Add blank list container to ConfigList list. The container
-          ! is placed at the beginning of the list.
-          CALL ConfigList_AddCont ( Lct, HcoConfig%ConfigList )
+          ! is placed at the beginning of the list.  This also initializes
+          ! the FileData container as Lct%Dct%Dta.
+          CALL ConfigList_AddCont( Lct, HcoConfig%ConfigList )
 
           ! Check if name exists already
           CALL CheckForDuplicateName( HcoConfig, cName, RC )
@@ -1153,9 +1146,6 @@ CONTAINS
              ENDIF
              Lct%Dct%DtaHome = Lct%Dct%DtaHome - 1
           ELSE
-             ! NOTE: FileData_Init now nullifies the Dta object
-             ! before allocation. -- Bob Yantosca (22 Aug 2022)
-             CALL FileData_Init( Dta )
 
              ! Set source file name. Check if the read file name starts
              ! with the configuration file token '$CFDIR', in which case
@@ -1166,11 +1156,11 @@ CONTAINS
                    srcFile = TRIM(CFDIR) // TRIM(srcFile(7:STRLEN))
                 ENDIF
              ENDIF
-             Dta%ncFile    = srcFile
+             Lct%Dct%Dta%ncFile    = srcFile
 
              ! Set source variable and original data unit.
-             Dta%ncPara    = ADJUSTL(srcVar)
-             Dta%OrigUnit  = ADJUStL(srcUnit)
+             Lct%Dct%Dta%ncPara    = ADJUSTL(srcVar)
+             Lct%Dct%Dta%OrigUnit  = ADJUStL(srcUnit)
 
              ! If the parameter ncPara is not defined, attempt to read data
              ! directly from configuration file instead of netCDF.
@@ -1179,16 +1169,17 @@ CONTAINS
              ! data that is treated in local time. The corresponding
              ! IsLocTime flag is updated when reading the data (see
              ! hcoio_dataread_mod.F90).
-             IF ( TRIM(Dta%ncPara) == '-' ) THEN
-                Dta%ncRead    = .FALSE.
-                Dta%IsLocTime = .TRUE.
+!             IF ( TRIM(Dta%ncPara) == '-' ) THEN
+             IF ( TRIM(Lct%Dct%Dta%ncPara) == '-' ) THEN
+                Lct%Dct%Dta%ncRead    = .FALSE.
+                Lct%Dct%Dta%IsLocTime = .TRUE.
              ENDIF
 
              ! Extract information from time stamp character and pass values
              ! to the corresponding container variables. If no time string is
              ! defined, keep default values (-1 for all of them)
              IF ( TRIM(srcTime) /= '-' ) THEN
-                CALL HCO_ExtractTime( HcoConfig, srcTime, Dta, RC )
+                CALL HCO_ExtractTime( HcoConfig, srcTime, Lct%Dct%Dta, RC )
                 IF ( RC /= HCO_SUCCESS ) THEN
                    msg = 'Could not extract time information!'
                    CALL HCO_Error( msg, RC, thisLoc=loc )
@@ -1200,8 +1191,8 @@ CONTAINS
              ! through ExtData by name, hence need to set ncFile equal to
              ! container name!
 #if defined(ESMF_)
-             IF ( Dta%ncRead ) THEN
-                Dta%ncFile = ADJUSTL(cName)
+             IF ( Lct%Dct%Dta%ncRead ) THEN
+                Lct%Dct%Dta%ncFile = ADJUSTL(cName)
              ENDIF
 #endif
 
@@ -1220,7 +1211,7 @@ CONTAINS
                   wildCard  = TRIM( wildCard  ),                          &
                   HcoConfig = HcoConfig,                                  &
                   Lct       = Lct,                                        &
-                  Dta       = Dta,                                        &
+                  Dta       = Lct%Dct%Dta,                                &
                   RC        = RC                                         )
 
              ! Trap potential errors
@@ -1231,9 +1222,6 @@ CONTAINS
              ENDIF
 
           ENDIF
-
-          ! Connect file data object of this data container.
-          Lct%Dct%Dta => Dta
 
           ! If a base emission field covers multiple emission categories,
           ! create a 'shadow' container for each additional category.
@@ -1615,6 +1603,7 @@ CONTAINS
     DO I = 2, nCat
 
        ! Create new data container
+       ! This also initializes the FileData container as Shd%Dct%Dta.
        CALL ConfigList_AddCont ( Shd, HcoConfig%ConfigList )
 
        ! Character of category
@@ -1708,7 +1697,6 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     TYPE(ListCont), POINTER       :: Lct
-    TYPE(FileData), POINTER       :: Dta
     CHARACTER(LEN=255)            :: MSG
 
     LOGICAL                       :: FOUND
@@ -1720,7 +1708,6 @@ CONTAINS
 
     ! Initialize
     Lct => NULL()
-    Dta => NULL()
 
     ! Check if this container already exists
     CALL ListCont_Find ( HcoConfig%ConfigList, 'DUMMYSCALE_ZERO', FOUND )
@@ -1737,17 +1724,14 @@ CONTAINS
        Lct%Dct%Oper         = 1
 
        ! Create new file data container and fill it with values.
-       CALL FileData_Init ( Dta )
-       Dta%ncFile    = '0.0'
-       Dta%ncPara    = '-'
-       Dta%OrigUnit  = 'unitless'
-       Dta%CycleFlag = HCO_CFLAG_CYCLE
-       Dta%SpaceDim  = 2
-       Dta%ncRead    = .FALSE.
-       Dta%IsLocTime = .TRUE.
-
-       ! Connect data container
-       Lct%Dct%Dta => Dta
+       !CALL FileData_Init ( Dta )
+       Lct%Dct%Dta%ncFile    = '0.0'
+       Lct%Dct%Dta%ncPara    = '-'
+       Lct%Dct%Dta%OrigUnit  = 'unitless'
+       Lct%Dct%Dta%CycleFlag = HCO_CFLAG_CYCLE
+       Lct%Dct%Dta%SpaceDim  = 2
+       Lct%Dct%Dta%ncRead    = .FALSE.
+       Lct%Dct%Dta%IsLocTime = .TRUE.
 
        ! verbose mode
        IF ( HCO_IsVerb( HcoConfig%Err, 2 ) ) THEN
@@ -1760,7 +1744,6 @@ CONTAINS
 
        ! Cleanup
        Lct => NULL()
-       Dta => NULL()
     ENDIF
 
     ! Return w/ success
