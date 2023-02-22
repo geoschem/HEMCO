@@ -252,7 +252,7 @@ CONTAINS
 
        ! Optional argument handling
        DeepClean = .TRUE.
-       IF ( PRESENT( ArrOnly ) DeepClean = ( .not. ArrOnly )
+       IF ( PRESENT( ArrOnly ) ) DeepClean = ( .not. ArrOnly )
 
        ! Clean up FileData object. If DeepClean is true, this
        ! will entirely erase the file data object. Otherwise,
