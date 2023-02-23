@@ -181,6 +181,7 @@ CONTAINS
 
     ! Nullify pointers
     Dct%Scal_cID    => NULL()
+    Dct%Dta         => NULL()
 
     ! Set default values
     Dct%DtaHome      = -999
@@ -202,9 +203,6 @@ CONTAINS
     ! Set default target ID to cont. ID.
     Dct%cID          = cID
     Dct%targetID     = Dct%cID
-
-    ! Also initialize the FileData object within the DataCont object
-    CALL FileData_Init( Dct%Dta )
 
   END SUBROUTINE DataCont_Init
 !EOC
@@ -257,7 +255,12 @@ CONTAINS
        ! Clean up FileData object. If DeepClean is true, this
        ! will entirely erase the file data object. Otherwise,
        ! only the data arrays will be removed.
-       CALL FileData_Cleanup( Dct%Dta, DeepClean )
+       !
+       ! Note: do only if this is the home container of 
+       ! the file data object.
+       IF ( Dct%DtaHome == 1 ) THEN
+          CALL FileData_Cleanup( Dct%Dta, DeepClean )
+       ENDIF
 
        ! Clean up data container if DeepClean option is enabled.
        IF ( DeepClean ) THEN

@@ -171,7 +171,7 @@ CONTAINS
     !======================================================================
 
     ! Allocate memory to the FileData object
-    IF ( .not. ASSOCIATED( FileDta ) ) ALLOCATE( FileDta )
+    ALLOCATE( FileDta )
 
     ! Nullify all pointers and initialize variables
     FileDta%V3          => NULL()
