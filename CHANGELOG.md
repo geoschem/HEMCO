@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased 3.6.1]
 ### Added
   - GEOS-only updates
+  - Throw an error if HEMCO reads netCDF data on a climatological calendar (`360_day`, `365_day`, `noleap`). These are not supported in ESMF/MAPL, so for consistency's sake, we also need to not support these when running HEMCO outside of the ESMF environment.
 
 ## [3.6.0] - 2023-02-01
 ### Added
