@@ -416,10 +416,14 @@ CONTAINS
 
        ! Throw an error for climatological calendars without leap years
        SELECT CASE( TRIM( v_name ) )
-          CASE( '360_day', '365_day', 'noleap' )
+          CASE( '360_day', '365_day', '366_day', 'all_leap',              &
+                'allleap', 'no_leap', 'noleap'                           )
              WRITE( 6, '(/,a)' ) REPEAT( '=', 79 )
-             WRITE( 6, '(a)' )                                               &
-             'HEMCO does not support 360_day, 365_day, and noleap calendars!'
+             WRITE( 6, '(a,a)' ) 'HEMCO does not support calendar type ',
+                                 TRIM( v_name )
+             WRITE( 6, '(/,a)' )  'HEMCO supports the following calendars:'
+             WRITE( 6, '(a)'   )  ' - standard (i.e. mixed gregorian/julian)'
+             WRITE( 6, '(a)'   )  ' - gregorian'
              WRITE( 6, '(a,/)' ) REPEAT( '=', 79 )
              RC = -1
           CASE DEFAULT
