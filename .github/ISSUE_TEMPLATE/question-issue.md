@@ -10,8 +10,8 @@ Institution:
 ### Confirm you have reviewed the following documentation
 
 - [ ] [Support guidelines](https://hemco.readthedocs.io/en/stable/reference/SUPPORT.html)
-- [ ] [User manuals](https://geos-chem.readthedocs.io/en/stable/geos-chem-shared-docs/supplemental-guides/related-docs.html)
-- [ ] [Debugging GEOS-Chem and HEMCO errors](https://geos-chem.readthedocs.io/en/stable/geos-chem-shared-docs/supplemental-guides/debug-guide.html)
+- [ ] [User manuals](https://hemco.readthedocs.io/en/stable/geos-chem-shared-docs/supplemental-guides/related-docs.html)
+- [ ] [Debugging GEOS-Chem and HEMCO errors](https://hemco.readthedocs.io/en/stable/geos-chem-shared-docs/supplemental-guides/debug-guide.html)
 - [ ] [Current and past Github issues](https://github.com/geoschem/HEMCO/issues)
 
 ### Description of your issue or question
