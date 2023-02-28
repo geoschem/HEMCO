@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
   - Simplified Github issue and pull request templates
+  - Throw an error if input calendar is not supported
 
 ## [3.6.0] - 2023-02-01
 ### Added
