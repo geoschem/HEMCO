@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - GEOS-only updates
   - Removed several memory leaks in HEMCO Core and Standalone routines
 
+### Changed
+  - Simplified Github issue and pull request templates
+
 ## [3.6.0] - 2023-02-01
 ### Added
   - Added MAPL_ESMF compiler option for use with GCHP and GEOS

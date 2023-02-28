@@ -23,7 +23,7 @@ We accept feature requests through issues on GitHub. To request a new feature, [
 the feature request template. Please include all the information that might be relevant, including the motivation for the feature.
 
 ## How to report a bug
-Please see "Support Guidelines".
+Please see **[Support Guidelines](https://hemco.readthedocs.io/en/stable/reference/SUPPORT.html)**.
 
 ## Where can I ask for help?
-Please see "Support Guidelines".
+Please see **[Support Guidelines](https://hemco.readthedocs.io/en/stable/reference/SUPPORT.html)**.

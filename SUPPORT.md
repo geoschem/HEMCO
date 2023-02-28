@@ -17,7 +17,7 @@ We will be happy to assist you in resolving bugs and technical issues that arise
 Even though we can assist in several ways, we cannot possibly do everything.  We rely on HEMCO users being resourceful and willing to try to resolve problems on their own to the greatest extent possible.
 
 ## How to submit changes
-Please see "Contributing Guidelines".
+Please see **[Contributing Guidelines](https://hemco.readthedocs.io/en/stable/reference/CONTRIBUTING.html)**.
 
 ## How to request an enhancement
-Please see "Contributing Guidelines".
+Please see **[Contributing Guidelines](https://hemco.readthedocs.io/en/stable/reference/CONTRIBUTING.html)**.
