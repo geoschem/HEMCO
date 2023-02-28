@@ -412,10 +412,15 @@ CONTAINS
 
     ! Read calendar attribute
     IF ( PRESENT( timeCalendar ) ) THEN
-       CALL NcGet_Var_Attributes( fId, v_name, 'calendar', timeCalendar )
 
-       ! Throw an error for climatological calendars without leap years
-       SELECT CASE( TRIM( v_name ) )
+       ! We now get the status variable RC.  This will allow program
+       ! flow to continue if the "time:calendar" attribute is not found.
+       CALL NcGet_Var_Attributes( fId, v_name, 'calendar', timeCalendar, RC )
+
+       ! If "time:calendar" is found, then throw an error for
+       ! climatological calendars without leap years.
+       IF ( RC == 0 ) THEN
+        SELECT CASE( TRIM( v_name ) )
           CASE( '360_day', '365_day', '366_day', 'all_leap',                 &
                 'allleap', 'no_leap', 'noleap'                              )
              WRITE( 6, '(/,a)' ) REPEAT( '=', 79 )
@@ -428,9 +433,13 @@ CONTAINS
              RC = -1
           CASE DEFAULT
              ! Do nothing
-       END SELECT
+        END SELECT
+       ENDIF
+       
+       ! Reset RC so that we won't halt execution elsewhere
+       RC = 0
     ENDIF
-
+    
   END SUBROUTINE NC_READ_TIME
 !EOC
 !------------------------------------------------------------------------------
