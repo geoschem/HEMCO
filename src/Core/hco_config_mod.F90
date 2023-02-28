@@ -1,3 +1,6 @@
+!------------------------------------------------------------------------------
+!                   Harmonized Emissions Component (HEMCO)                    !
+!------------------------------------------------------------------------------
 !BOP
 !
 ! !MODULE: hco_config_mod.F90
@@ -862,8 +865,8 @@ CONTAINS
              ! Fill data container
              ! -------------------------------------------------------------
 
-             ! Add blank list container to ConfigList list. The container
-             ! is placed at the beginning of the list.
+             ! Add blank list container (ListCont object) to ConfigList.
+             ! The container is placed at the beginning of the list.
              CALL ConfigList_AddCont ( Lct, HcoConfig%ConfigList )
 
              ! Check if name exists already
@@ -876,14 +879,14 @@ CONTAINS
 
              ! Attributes used by all data types: data type number and
              ! container name.
-             Lct%Dct%DctType      = DctType
-             Lct%Dct%cName        = ADJUSTL(tagcName)
+             Lct%Dct%DctType = DctType
+             Lct%Dct%cName   = ADJUSTL( tagcName )
 
              ! Set species name, extension number, emission category,
              ! hierarchy
-             Lct%Dct%SpcName       = ADJUSTL(SpcName)
-             Lct%Dct%Hier          = Int2
-             Lct%Dct%ExtNr         = Int3
+             Lct%Dct%SpcName = ADJUSTL( SpcName )
+             Lct%Dct%Hier    = Int2
+             Lct%Dct%ExtNr   = Int3
 
              ! Extract category from character 2. This can be up to
              ! CatMax integers, or empty.
@@ -939,32 +942,46 @@ CONTAINS
              ! default value of -999 to be able to identify data objects
              ! used by multiple containers.
              ! -------------------------------------------------------------
-             IF ( TRIM(srcFile) == '-' ) THEN
-                IF ( .NOT. ASSOCIATED(Dta) ) THEN
+             IF ( TRIM( srcFile ) == '-' ) THEN
+
+                ! The current entry of the configuration file specifies that
+                ! we will get data from the file listed immediately above it.
+                ! Thus we have to reuse a previously-defined FileData object
+                ! (aka Dta).  Stop if Dta is not initialized.
+                IF ( .not. ASSOCIATED( Dta ) ) THEN
                    MSG = 'Cannot use previous data container: '//TRIM(tagcName)
                    CALL HCO_Error( msg, RC, thisLoc=loc )
                    RETURN
                 ENDIF
+
+                ! Reuse the file metadata specified in PrevDta for
+                ! this entry of the HEMCO configuration file.
                 Lct%Dct%DtaHome = Lct%Dct%DtaHome - 1
+
              ELSE
-                ! NOTE: FileData_Init now nullifies the Dta object
-                ! befire allocation.  -- Bob Yantosca (22 Aug 2022)
+
+                ! The current entry of the configuration file specifies that
+                ! we will read data from a file.  We thus need to initialize
+                ! a new FileData object to keep track of the file metadata.
+                !
+                ! >>> NOTE: This seems to cause a memory leak! <<<
+                ! >>> We will look into this at a later date.  <<<
                 CALL FileData_Init( Dta )
 
                 ! Set source file name. Check if the read file name starts
                 ! with the configuration file token '$CFDIR', in which case
                 ! we replace this value with the passed CFDIR value.
-                STRLEN = LEN(srcFile)
+                STRLEN = LEN( srcFile )
                 IF ( STRLEN > 6 ) THEN
                    IF ( srcFile(1:6) == '$CFDIR' ) THEN
-                      srcFile = TRIM(CFDIR) // TRIM(srcFile(7:STRLEN))
+                      srcFile = TRIM( CFDIR ) // TRIM( srcFile(7:STRLEN) )
                    ENDIF
                 ENDIF
-                Dta%ncFile    = srcFile
+                Dta%ncFile   = srcFile
 
                 ! Set source variable and original data unit.
-                Dta%ncPara    = ADJUSTL(srcVar)
-                Dta%OrigUnit  = ADJUStL(srcUnit)
+                Dta%ncPara   = ADJUSTL( srcVar )
+                Dta%OrigUnit = ADJUSTL( srcUnit )
 
                 ! If the parameter ncPara is not defined, attempt to read data
                 ! directly from configuration file instead of netCDF.
@@ -973,7 +990,7 @@ CONTAINS
                 ! data that is treated in local time. The corresponding
                 ! IsLocTime flag is updated when reading the data (see
                 ! hcoio_dataread_mod.F90).
-                IF ( TRIM(Dta%ncPara) == '-' ) THEN
+                IF ( TRIM( Dta%ncPara ) == '-' ) THEN
                    Dta%ncRead    = .FALSE.
                    Dta%IsLocTime = .TRUE.
                 ENDIF
@@ -990,12 +1007,12 @@ CONTAINS
                    ENDIF
                 ENDIF
 
+#if defined(ESMF_)
                 ! In an ESMF environment, the source data will be imported
                 ! through ExtData by name, hence need to set ncFile equal to
                 ! container name!
-#if defined(ESMF_)
                 IF ( Dta%ncRead ) THEN
-                   Dta%ncFile = ADJUSTL(tagcName)
+                   Dta%ncFile = ADJUSTL( tagcName )
                 ENDIF
 #endif
 
@@ -1026,7 +1043,7 @@ CONTAINS
 
              ENDIF
 
-             ! Connect file data object of this data container.
+             ! Connect this FileData object to the HcoState%HcoConfigList.
              Lct%Dct%Dta => Dta
 
              ! Free list container for next cycle
@@ -1041,8 +1058,8 @@ CONTAINS
           ! Fill data container
           ! -------------------------------------------------------------
 
-          ! Add blank list container to ConfigList list. The container
-          ! is placed at the beginning of the list.
+          ! Add blank list container (ListCont object) to ConfigList.
+          ! The container is placed at the beginning of the list.
           CALL ConfigList_AddCont ( Lct, HcoConfig%ConfigList )
 
           ! Check if name exists already
@@ -1063,9 +1080,9 @@ CONTAINS
 
              ! Set species name, extension number, emission category,
              ! hierarchy
-             Lct%Dct%SpcName       = ADJUSTL(SpcName)
-             Lct%Dct%Hier          = Int2
-             Lct%Dct%ExtNr         = Int3
+             Lct%Dct%SpcName = ADJUSTL( SpcName )
+             Lct%Dct%Hier    = Int2
+             Lct%Dct%ExtNr   = Int3
 
              ! Extract category from character 2. This can be up to
              ! CatMax integers, or empty.
@@ -1145,32 +1162,46 @@ CONTAINS
           ! default value of -999 to be able to identify data objects
           ! used by multiple containers.
           ! -------------------------------------------------------------
-          IF ( TRIM(srcFile) == '-' ) THEN
+          IF ( TRIM( srcFile ) == '-' ) THEN
+
+             ! The current entry of the configuration file specifies that
+             ! we will get data from the file listed immediately above it.
+             ! Thus we have to reuse a previously-defined FileData object
+             ! (aka Dta).  Stop if Dta is not initialized.
              IF ( .NOT. ASSOCIATED(Dta) ) THEN
                 MSG = 'Cannot use previous data container: '//TRIM(cName)
                 CALL HCO_Error( msg, RC, thisLoc=loc)
                 RETURN
              ENDIF
+
+             ! Reuse the file metadata specified in Dta for
+             ! this entry of the HEMCO configuration file.
              Lct%Dct%DtaHome = Lct%Dct%DtaHome - 1
+
           ELSE
-             ! NOTE: FileData_Init now nullifies the Dta object
-             ! before allocation. -- Bob Yantosca (22 Aug 2022)
+
+             ! The current entry of the configuration file specifies that
+             ! we will read data from a file.  We thus need to initialize
+             ! a new FileData object to keep track of the file metadata.
+             !
+             ! >>> NOTE: This seems to cause a memory leak; <<<
+             ! >>> We will look into this at a later date   <<<
              CALL FileData_Init( Dta )
 
              ! Set source file name. Check if the read file name starts
              ! with the configuration file token '$CFDIR', in which case
              ! we replace this value with the passed CFDIR value.
-             STRLEN = LEN(srcFile)
+             STRLEN = LEN( srcFile )
              IF ( STRLEN > 6 ) THEN
                 IF ( srcFile(1:6) == '$CFDIR' ) THEN
-                   srcFile = TRIM(CFDIR) // TRIM(srcFile(7:STRLEN))
+                   srcFile = TRIM( CFDIR ) // TRIM( srcFile(7:STRLEN) )
                 ENDIF
              ENDIF
-             Dta%ncFile    = srcFile
+             Dta%ncFile   = srcFile
 
              ! Set source variable and original data unit.
-             Dta%ncPara    = ADJUSTL(srcVar)
-             Dta%OrigUnit  = ADJUStL(srcUnit)
+             Dta%ncPara   = ADJUSTL( srcVar  )
+             Dta%OrigUnit = ADJUSTL( srcUnit )
 
              ! If the parameter ncPara is not defined, attempt to read data
              ! directly from configuration file instead of netCDF.
@@ -1179,7 +1210,7 @@ CONTAINS
              ! data that is treated in local time. The corresponding
              ! IsLocTime flag is updated when reading the data (see
              ! hcoio_dataread_mod.F90).
-             IF ( TRIM(Dta%ncPara) == '-' ) THEN
+             IF ( TRIM( Dta%ncPara ) == '-' ) THEN
                 Dta%ncRead    = .FALSE.
                 Dta%IsLocTime = .TRUE.
              ENDIF
@@ -1196,12 +1227,12 @@ CONTAINS
                 ENDIF
              ENDIF
 
+#if defined(ESMF_)
              ! In an ESMF environment, the source data will be imported
              ! through ExtData by name, hence need to set ncFile equal to
              ! container name!
-#if defined(ESMF_)
              IF ( Dta%ncRead ) THEN
-                Dta%ncFile = ADJUSTL(cName)
+                Dta%ncFile = ADJUSTL( cName )
              ENDIF
 #endif
 
@@ -1232,7 +1263,7 @@ CONTAINS
 
           ENDIF
 
-          ! Connect file data object of this data container.
+          ! Connect FileData object to the HcoState%HcoConfigList
           Lct%Dct%Dta => Dta
 
           ! If a base emission field covers multiple emission categories,
@@ -1614,7 +1645,7 @@ CONTAINS
     ! Add scale factor zero to it, so that emissions will all be zero.
     DO I = 2, nCat
 
-       ! Create new data container
+       ! Create new data container (ListCont object)
        CALL ConfigList_AddCont ( Shd, HcoConfig%ConfigList )
 
        ! Character of category

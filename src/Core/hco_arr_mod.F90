@@ -192,13 +192,16 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr2D_Hp), POINTER       :: Arr       ! Array
-    INTEGER,        INTENT(IN)    :: nx        ! x-dim
-    INTEGER,        INTENT(IN)    :: ny        ! y-dim
+    INTEGER,        INTENT(IN)  :: nx        ! x-dim
+    INTEGER,        INTENT(IN)  :: ny        ! y-dim
 !
-! !INPUT/OUTPUT PARAMETERS:
+! INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,        INTENT(INOUT) :: RC        ! Return code
+    TYPE(Arr2D_Hp), POINTER     :: Arr       ! Array
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,        INTENT(OUT) :: RC        ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -209,23 +212,40 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255)  :: LOC
+    ! Strings
+    CHARACTER(LEN=255)  :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ArrInit_2D_Hp begins here
     ! ================================================================
-    LOC = 'HCO_ArrInit_2D_Hp (HCO_ARR_MOD.F90)'
 
-    NULLIFY (Arr)
-    ALLOCATE(Arr)
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrInit_2D_Hp (HCO_ARR_MOD.F90)'
+
+    ! NOTE: This may cause a memory leak
+    Arr => NULL()
+
+    ! Initialize the Arr object
+    !IF ( .not. ASSOCIATED( Arr ) ) THEN
+       ALLOCATE( Arr, STAT=RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Could not allocate the "Arr" object!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+       Arr%Val   => NULL()
+       Arr%Alloc = .FALSE.
+    !ENDIF
+
+    ! Initialize the Arr%Val array
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Could not allocate the "Arr%Val" array!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
-
-    ! Leave
-    RC = HCO_SUCCESS
 
   END SUBROUTINE HCO_ArrInit_2D_Hp
 !EOC
@@ -248,13 +268,16 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr2D_Sp), POINTER       :: Arr       ! Array
-    INTEGER,        INTENT(IN)    :: nx        ! x-dim
-    INTEGER,        INTENT(IN)    :: ny        ! y-dim
+    INTEGER,        INTENT(IN)  :: nx        ! x-dim
+    INTEGER,        INTENT(IN)  :: ny        ! y-dim
 !
-! !INPUT/OUTPUT PARAMETERS:
+! INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,        INTENT(INOUT) :: RC        ! Return code
+    TYPE(Arr2D_Sp), POINTER     :: Arr       ! Array
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,        INTENT(OUT) :: RC        ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -265,23 +288,40 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255)  :: LOC
+    ! Strings
+    CHARACTER(LEN=255)  :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ArrInit_2D_Sp begins here
     ! ================================================================
-    LOC = 'HCO_ArrInit_2D_Sp (HCO_ARR_MOD.F90)'
 
-    NULLIFY (Arr)
-    ALLOCATE(Arr)
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrInit_2D_Sp (HCO_ARR_MOD.F90)'
+
+    ! NOTE: This may cause a memory leak
+    Arr => NULL()
+
+    ! Initialize the Arr object
+    !IF ( .not. ASSOCIATED( Arr ) ) THEN
+       ALLOCATE( Arr, STAT=RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Could not allocate the "Arr" object!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+       Arr%Val   => NULL()
+       Arr%Alloc = .FALSE.
+    !ENDIF
+
+    ! Initialize the Arr%Val array
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Could not allocate the "Arr%Val" array!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
-
-    ! Leave
-    RC = HCO_SUCCESS
 
   END SUBROUTINE HCO_ArrInit_2D_Sp
 !EOC
@@ -304,13 +344,16 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr2D_I),  POINTER       :: Arr   ! Array
-    INTEGER,        INTENT(IN)    :: nx        ! x-dim
-    INTEGER,        INTENT(IN)    :: ny        ! y-dim
+    INTEGER,        INTENT(IN)  :: nx        ! x-dim
+    INTEGER,        INTENT(IN)  :: ny        ! y-dim
 !
-! !INPUT/OUTPUT PARAMETERS:
+! INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,        INTENT(INOUT) :: RC        ! Return code
+    TYPE(Arr2D_I), POINTER      :: Arr       ! Array
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,        INTENT(OUT) :: RC        ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -321,23 +364,40 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255)  :: LOC
+    ! Strings
+    CHARACTER(LEN=255)  :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ArrInit_2D_I begins here
     ! ================================================================
-    LOC = 'HCO_ArrInit_2D_I (HCO_ARR_MOD.F90)'
 
-    NULLIFY (Arr)
-    ALLOCATE(Arr)
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrInit_2D_I (hco_arr_mod.F90)'
+
+    ! NOTE: This may cause a memory leak
+    Arr => NULL()
+
+    ! Initialize the Arr object
+    !IF ( .not. ASSOCIATED( Arr ) ) THEN
+       ALLOCATE( Arr, STAT=RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Could not allocate the "Arr" object!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+       Arr%Val   => NULL()
+       Arr%Alloc = .FALSE.
+    !ENDIF
+
+    ! Initialize the Arr%Val array
     CALL HCO_ValInit( Arr%Val, nx, ny, Arr%Alloc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Could not allocate the "Arr%Val" array!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
-
-    ! Leave
-    RC = HCO_SUCCESS
 
   END SUBROUTINE HCO_ArrInit_2D_I
 !EOC
@@ -360,14 +420,17 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr3D_Hp), POINTER       :: Arr   ! Array
-    INTEGER,        INTENT(IN)    :: nx        ! x-dim
-    INTEGER,        INTENT(IN)    :: ny        ! y-dim
-    INTEGER,        INTENT(IN)    :: nz        ! z-dim
+    INTEGER,        INTENT(IN)  :: nx        ! x-dim
+    INTEGER,        INTENT(IN)  :: ny        ! y-dim
+    INTEGER,        INTENT(IN)  :: nz        ! z-dim
 !
-! !INPUT/OUTPUT PARAMETERS:
+! INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,        INTENT(INOUT) :: RC        ! Return code
+    TYPE(Arr3D_Hp), POINTER     :: Arr       ! Array
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,        INTENT(OUT) :: RC        ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -378,22 +441,39 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255)  :: LOC
+    CHARACTER(LEN=255)  :: errMsg, thisLoc
+
     ! ================================================================
     ! HCO_ArrInit_3D_Hp begins here
     ! ================================================================
-    LOC = 'HCO_ArrInit_3D_Hp (HCO_ARR_MOD.F90)'
 
-    NULLIFY (Arr)
-    ALLOCATE(Arr)
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrInit_3D_Hp (hco_arr_mod.F90)'
+
+    ! NOTE: This may cause a memory leak
+    Arr => NULL()
+
+    ! Initialize the Arr object
+    !IF ( .not. ASSOCIATED( Arr ) ) THEN
+       ALLOCATE( Arr, STAT=RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Could not allocate the Arr object!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+       Arr%Val   => NULL()
+       Arr%Alloc = .FALSE.
+    !ENDIF
+
+    ! Initialize the Arr%Val array
     CALL HCO_ValInit( Arr%Val, nx, ny, nz, Arr%Alloc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Could not allocate the "Arr%Val" array!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
-
-    ! Leave
-    RC = HCO_SUCCESS
 
   END SUBROUTINE HCO_ArrInit_3D_Hp
 !EOC
@@ -416,14 +496,17 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr3D_Sp), POINTER       :: Arr   ! Array
-    INTEGER,        INTENT(IN)    :: nx        ! x-dim
-    INTEGER,        INTENT(IN)    :: ny        ! y-dim
-    INTEGER,        INTENT(IN)    :: nz        ! z-dim
+    INTEGER,        INTENT(IN)  :: nx        ! x-dim
+    INTEGER,        INTENT(IN)  :: ny        ! y-dim
+    INTEGER,        INTENT(IN)  :: nz        ! z-dim
 !
-! !INPUT/OUTPUT PARAMETERS:
+! INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,        INTENT(INOUT) :: RC        ! Return code
+    TYPE(Arr3D_Sp), POINTER     :: Arr       ! Array
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,        INTENT(OUT) :: RC        ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -434,22 +517,43 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255)  :: LOC
-    ! ================================================================
-    ! HCO_ArrInit_3D_Hp begins here
-    ! ================================================================
-    LOC = 'HCO_ArrInit_3D_Hp (HCO_ARR_MOD.F90)'
+    ! Scalars
+    INTEGER            :: I
 
-    NULLIFY (Arr)
-    ALLOCATE(Arr)
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
+
+    ! ================================================================
+    ! HCO_ArrInit_3D_Sp begins here
+    ! ================================================================
+
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrInit_3D_Sp (hco_arr_mod.F90)'
+
+    ! NOTE: This may cause a memory leak
+    Arr => NULL()
+
+    ! Initialize the Arr object
+    !IF ( .not. ASSOCIATED( Arr ) ) THEN
+       ALLOCATE( Arr, STAT=RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Could not allocate the Arr object!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+       Arr%Val   => NULL()
+       Arr%Alloc = .FALSE.
+    !ENDIF
+
+    ! Initialize the Arr%Val array
     CALL HCO_ValInit( Arr%Val, nx, ny, nz, Arr%Alloc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Could not allocate the "Arr%Val" array!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
-
-    ! Leave
-    RC = HCO_SUCCESS
 
   END SUBROUTINE HCO_ArrInit_3D_Sp
 !EOC
@@ -472,14 +576,17 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr2D_Hp),   POINTER       :: ArrVec(:) ! Array vector
-    INTEGER,          INTENT(IN)    :: nn        ! vector length
-    INTEGER,          INTENT(IN)    :: nx        ! x-dim
-    INTEGER,          INTENT(IN)    :: ny        ! y-dim
+    INTEGER,          INTENT(IN)  :: nn           ! vector length
+    INTEGER,          INTENT(IN)  :: nx           ! x-dim
+    INTEGER,          INTENT(IN)  :: ny           ! y-dim
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,          INTENT(INOUT) :: RC        ! Return code
+    TYPE(Arr2D_Hp),   POINTER     :: ArrVec(:)    ! Array vector
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    INTEGER,          INTENT(OUT) :: RC           ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -490,25 +597,46 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: I
+    ! Scalars
+    INTEGER            :: I
+
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ArrVecInit_2D_Hp begins here
     ! ================================================================
 
-    ! Init
-    NULLIFY(ArrVec)
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrVecInit_2D_Hp (hco_arr_mod.F90)'
 
-    IF ( nn > 0 ) THEN
-       IF ( .NOT. ASSOCIATED(ArrVec) ) ALLOCATE(ArrVec(nn))
-       DO I = 1, nn
-          CALL HCO_ValInit( ArrVec(I)%Val, nx, ny, ArrVec(I)%Alloc, RC )
-          IF ( RC/=HCO_SUCCESS ) RETURN
-       ENDDO
+    ! If dimension is zero, return a null pointer
+    IF ( nn < 1 ) THEN
+       ArrVec => NULL()
+       RETURN
     ENDIF
 
-    ! Leave
-    RC = HCO_SUCCESS
+    ! Allocate ArrVec if necessary
+    IF ( .not. ASSOCIATED( ArrVec ) ) THEN
+       ALLOCATE( ArrVec( nn ), STAT=RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Could not allocate "ArrVec"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+    ENDIF
+
+    ! Reset values in ArrVec
+    DO I = 1, nn
+       CALL HCO_ValInit( ArrVec(I)%Val, nx, ny, ArrVec(I)%Alloc, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ValInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+    ENDDO
 
   END SUBROUTINE HCO_ArrVecInit_2D_Hp
 !EOC
@@ -531,14 +659,17 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr2D_Sp),   POINTER       :: ArrVec(:) ! Array vector
-    INTEGER,          INTENT(IN)    :: nn        ! vector length
-    INTEGER,          INTENT(IN)    :: nx        ! x-dim
-    INTEGER,          INTENT(IN)    :: ny        ! y-dim
+    INTEGER,          INTENT(IN)  :: nn           ! vector length
+    INTEGER,          INTENT(IN)  :: nx           ! x-dim
+    INTEGER,          INTENT(IN)  :: ny           ! y-dim
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,          INTENT(INOUT) :: RC        ! Return code
+    TYPE(Arr2D_Sp),   POINTER     :: ArrVec(:)    ! Array vector
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    INTEGER,          INTENT(OUT) :: RC           ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -549,25 +680,46 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: I
+    ! Scalars
+    INTEGER            :: I
+
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ArrVecInit_2D_Sp begins here
     ! ================================================================
 
-    ! Init
-    NULLIFY(ArrVec)
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrVecInit_2D_Sp (hco_arr_mod.F90)'
 
-    IF ( nn > 0 ) THEN
-       IF ( .NOT. ASSOCIATED(ArrVec) ) ALLOCATE(ArrVec(nn))
-       DO I = 1, nn
-          CALL HCO_ValInit( ArrVec(I)%Val, nx, ny, ArrVec(I)%Alloc, RC )
-          IF ( RC/=HCO_SUCCESS ) RETURN
-       ENDDO
+    ! If dimension is zero, return a null pointer
+    IF ( nn < 1 ) THEN
+       ArrVec => NULL()
+       RETURN
     ENDIF
 
-    ! Leave
-    RC = HCO_SUCCESS
+    ! Allocate ArrVec if necessary
+    IF ( .not. ASSOCIATED( ArrVec ) ) THEN
+       ALLOCATE( ArrVec( nn ), STAT=RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Could not allocate "ArrVec"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+    ENDIF
+
+    ! Reset values in ArrVec
+    DO I = 1, nn
+       CALL HCO_ValInit( ArrVec(I)%Val, nx, ny, ArrVec(I)%Alloc, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ValInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+    ENDDO
 
   END SUBROUTINE HCO_ArrVecInit_2D_Sp
 !EOC
@@ -590,15 +742,18 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr3D_Hp),   POINTER       :: ArrVec(:) ! Array vector
-    INTEGER,          INTENT(IN)    :: nn        ! vector length
-    INTEGER,          INTENT(IN)    :: nx        ! x-dim
-    INTEGER,          INTENT(IN)    :: ny        ! y-dim
-    INTEGER,          INTENT(IN)    :: nz        ! z-dim
+    INTEGER,          INTENT(IN)  :: nn           ! vector length
+    INTEGER,          INTENT(IN)  :: nx           ! x-dim
+    INTEGER,          INTENT(IN)  :: ny           ! y-dim
+    INTEGER,          INTENT(IN)  :: nz           ! z-dim
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,          INTENT(INOUT) :: RC        ! Return code
+    TYPE(Arr3D_Hp),   POINTER     :: ArrVec(:)    ! Array vector
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    INTEGER,          INTENT(OUT) :: RC           ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -609,25 +764,46 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: I
+    ! Scalars
+    INTEGER            :: I
+
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ArrVecInit_3D_Hp begins here
     ! ================================================================
 
-    ! Init
-    NULLIFY( ArrVec )
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrVecInit_3D_Hp (hco_arr_mod.F90)'
 
-    IF ( nn > 0 ) THEN
-       IF ( .NOT. ASSOCIATED(ArrVec) ) ALLOCATE(ArrVec(nn))
-       DO I = 1, nn
-          CALL HCO_ValInit( ArrVec(I)%Val, nx, ny, nz, ArrVec(I)%Alloc, RC )
-          IF ( RC/=HCO_SUCCESS ) RETURN
-       ENDDO
+    ! If dimension is zero, return a null pointer
+    IF ( nn < 1 ) THEN
+       ArrVec => NULL()
+       RETURN
     ENDIF
 
-    ! Leave
-    RC = HCO_SUCCESS
+    ! Allocate ArrVec if necessary
+    IF ( .not. ASSOCIATED( ArrVec ) ) THEN
+       ALLOCATE( ArrVec( nn ), STAT=RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Could not allocate "ArrVec"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+    ENDIF
+
+    ! Reset values of ArrVec
+    DO I = 1, nn
+       CALL HCO_ValInit( ArrVec(I)%Val, nx, ny, nz, ArrVec(I)%Alloc, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ValInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+    ENDDO
 
   END SUBROUTINE HCO_ArrVecInit_3D_Hp
 !EOC
@@ -650,15 +826,18 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr3D_Sp),   POINTER       :: ArrVec(:) ! Array vector
-    INTEGER,          INTENT(IN)    :: nn        ! vector length
-    INTEGER,          INTENT(IN)    :: nx        ! x-dim
-    INTEGER,          INTENT(IN)    :: ny        ! y-dim
-    INTEGER,          INTENT(IN)    :: nz        ! z-dim
+    INTEGER,          INTENT(IN)  :: nn           ! vector length
+    INTEGER,          INTENT(IN)  :: nx           ! x-dim
+    INTEGER,          INTENT(IN)  :: ny           ! y-dim
+    INTEGER,          INTENT(IN)  :: nz           ! z-dim
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,          INTENT(INOUT) :: RC        ! Return code
+    TYPE(Arr3D_Sp),   POINTER     :: ArrVec(:)    ! Array vector
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    INTEGER,          INTENT(OUT) :: RC           ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -669,25 +848,46 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: I
+    ! Scalars
+    INTEGER            :: I
+
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ArrVecInit_3D_Sp begins here
     ! ================================================================
 
-    ! Init
-    NULLIFY( ArrVec )
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrVecInit_3D_Sp (hco_arr_mod.F90)'
 
-    IF ( nn > 0 ) THEN
-       IF ( .NOT. ASSOCIATED(ArrVec) ) ALLOCATE(ArrVec(nn))
-       DO I = 1, nn
-          CALL HCO_ValInit( ArrVec(I)%Val, nx, ny, nz, ArrVec(I)%Alloc, RC )
-          IF ( RC/=HCO_SUCCESS ) RETURN
-       ENDDO
+    ! If dimension is zero, return a null pointer
+    IF ( nn < 1 ) THEN
+       ArrVec => NULL()
+       RETURN
     ENDIF
 
-    ! Leave
-    RC = HCO_SUCCESS
+    ! Allocate ArrVec if necessary
+    IF ( .not. ASSOCIATED( ArrVec ) ) THEN
+       ALLOCATE( ArrVec( nn ), STAT=RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Could not allocate "ArrVec"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+    ENDIF
+
+    ! Reset values of ArrVec
+    DO I = 1, nn
+       CALL HCO_ValInit( ArrVec(I)%Val, nx, ny, nz, ArrVec(I)%Alloc, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ValInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+    ENDDO
 
   END SUBROUTINE HCO_ArrVecInit_3D_Sp
 !EOC
@@ -710,14 +910,17 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(sp),       POINTER       :: Val(:,:)  ! Array
-    INTEGER,        INTENT(IN)    :: nx        ! x-dim
-    INTEGER,        INTENT(IN)    :: ny        ! y-dim
+    INTEGER,  INTENT(IN)  :: nx             ! x-dim
+    INTEGER,  INTENT(IN)  :: ny             ! y-dim
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    LOGICAL,        INTENT(  OUT) :: Alloc     ! allocated?
-    INTEGER,        INTENT(INOUT) :: RC        ! Return code
+    REAL(sp), POINTER     :: Val(:,:)       ! Array
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    LOGICAL,  INTENT(OUT) :: Alloc          ! allocated?
+    INTEGER,  INTENT(OUT) :: RC             ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -728,28 +931,34 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: AS
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ValInit_2D_Sp begins here
     ! ================================================================
 
-    Val   => NULL()
-    ALLOC =  .FALSE.
+    ! Initialize
+    RC      =  HCO_SUCCESS
+    errMsg  =  ''
+    thisLoc =  'HCO_ValInit_2D_Sp (hco_arr_mod.F90)'
 
-    IF ( nx>0 ) THEN
-       ALLOCATE(Val(nx,ny),STAT=AS)
-       IF(AS/=0) THEN
-          WRITE(*,*) 'Arr2D value allocation error'
-          RC = HCO_FAIL
-          RETURN
-       ENDIF
-       Val(:,:) = 0.0_sp
-       ALLOC    = .TRUE.
+    ! If dimensions are zero, just return a null pointer to Val
+    IF ( nx == 0 .or. ny == 0 ) THEN
+       Val   => NULL()
+       Alloc = .FALSE.
+       RETURN
     ENDIF
 
-    ! Leave
-    RC = HCO_SUCCESS
+    ! Initialize Val if dimensions are nonzero
+    ALLOCATE( Val( nx, ny ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate Val!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
+    ENDIF
+    Val   = 0.0_sp
+    alloc = .TRUE.
 
   END SUBROUTINE HCO_ValInit_2D_Sp
 !EOC
@@ -772,14 +981,17 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(dp),       POINTER       :: Val(:,:)  ! Array
-    INTEGER,        INTENT(IN)    :: nx        ! x-dim
-    INTEGER,        INTENT(IN)    :: ny        ! y-dim
+    INTEGER,  INTENT(IN)  :: nx             ! x-dim
+    INTEGER,  INTENT(IN)  :: ny             ! y-dim
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    LOGICAL,        INTENT(  OUT) :: Alloc     ! allocated?
-    INTEGER,        INTENT(INOUT) :: RC        ! Return code
+    REAL(dp), POINTER     :: Val(:,:)       ! Array
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    LOGICAL,  INTENT(OUT) :: Alloc          ! allocated?
+    INTEGER,  INTENT(OUT) :: RC             ! Success or failure?!
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -790,27 +1002,34 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: AS
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ValInit_2D_Dp begins here
     ! ================================================================
 
-    Val => NULL()
-    Alloc = .FALSE.
-    IF ( nx>0 ) THEN
-       ALLOCATE(Val(nx,ny),STAT=AS)
-       IF(AS/=0) THEN
-          WRITE(*,*) 'Arr2D value allocation error'
-          RC = HCO_FAIL
-          RETURN
-       ENDIF
-       Val(:,:) = 0.0_dp
-       Alloc = .TRUE.
+    ! Initialize
+    RC      =  HCO_SUCCESS
+    errMsg  =  ''
+    thisLoc =  'HCO_ValInit_2D_Dp (hco_arr_mod.F90)'
+
+    ! If dimensions are zero, just return a null pointer to Val
+    IF ( nx == 0 .or. ny == 0 ) THEN
+       Val     => NULL()
+       Alloc   = .FALSE.
+       RETURN
     ENDIF
 
-    ! Leave
-    RC = HCO_SUCCESS
+    ! Initialize Val if dimensions are nonzero
+    ALLOCATE( Val( nx, ny ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate Val!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
+    ENDIF
+    Val   = 0.0_dp
+    alloc = .TRUE.
 
   END SUBROUTINE HCO_ValInit_2D_Dp
 !EOC
@@ -829,18 +1048,21 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_ValInit_2D_I( Val, nx, ny, Alloc, RC )
+  SUBROUTINE HCO_ValInit_2D_I( Val, nx, ny, alloc, RC )
 !
 ! !INPUT PARAMETERS:
 !
-    INTEGER,        POINTER       :: Val(:,:)  ! Array
-    INTEGER,        INTENT(IN)    :: nx        ! x-dim
-    INTEGER,        INTENT(IN)    :: ny        ! y-dim
+    INTEGER,  INTENT(IN)  :: nx             ! x-dim
+    INTEGER,  INTENT(IN)  :: ny             ! y-dim
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    LOGICAL,        INTENT(  OUT) :: Alloc     ! allocated?
-    INTEGER,        INTENT(INOUT) :: RC        ! Return code
+    INTEGER,  POINTER     :: Val(:,:)       ! Array
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    LOGICAL,  INTENT(OUT) :: Alloc          ! allocated?
+    INTEGER,  INTENT(OUT) :: RC             ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -851,27 +1073,34 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: AS
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ValInit_2D_I begins here
     ! ================================================================
 
-    Val => NULL()
-    Alloc = .FALSE.
-    IF ( nx > 0 ) THEN
-       ALLOCATE(Val(nx,ny),STAT=AS)
-       IF(AS/=0) THEN
-          WRITE(*,*) 'Arr2D value allocation error'
-          RC = HCO_FAIL
-          RETURN
-       ENDIF
-       Val(:,:) = 0
-       Alloc = .TRUE.
+    ! Initialize
+    RC      =  HCO_SUCCESS
+    errMsg  =  ''
+    thisLoc =  'HCO_ValInit_2D_I (hco_arr_mod.F90)'
+
+    ! If dimensions are zero, just return a null pointer to Val
+    IF ( nx == 0 .or. ny == 0 ) THEN
+       Val     => NULL()
+       Alloc   = .FALSE.
+       RETURN
     ENDIF
 
-    ! Leave
-    RC = HCO_SUCCESS
+    ! Initialize Val if dimensions are nonzero
+    ALLOCATE( Val( nx, ny ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate Val!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
+    ENDIF
+    Val   = 0
+    alloc = .TRUE.
 
   END SUBROUTINE HCO_ValInit_2D_I
 !EOC
@@ -894,15 +1123,18 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(dp),       POINTER       :: Val(:,:,:)! Array
-    INTEGER,        INTENT(IN)    :: nx        ! x-dim
-    INTEGER,        INTENT(IN)    :: ny        ! y-dim
-    INTEGER,        INTENT(IN)    :: nz        ! z-dim
+    INTEGER,  INTENT(IN)  :: nx             ! x-dim
+    INTEGER,  INTENT(IN)  :: ny             ! y-dim
+    INTEGER,  INTENT(IN)  :: nz             ! z-dim
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    LOGICAL,        INTENT(  OUT) :: Alloc     ! allocated?
-    INTEGER,        INTENT(INOUT) :: RC        ! Return code
+    REAL(dp), POINTER     :: Val(:,:,:)     ! Array
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    LOGICAL,  INTENT(OUT) :: Alloc          ! allocated?
+    INTEGER,  INTENT(OUT) :: RC             ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -913,27 +1145,34 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: AS
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ValInit_3D_Dp begins here
     ! ================================================================
 
-    Val => NULL()
-    Alloc = .FALSE.
-    IF ( nx>0 ) THEN
-       ALLOCATE(Val(nx,ny,nz),STAT=AS)
-       IF(AS/=0) THEN
-          WRITE(*,*) 'Arr3D value allocation error'
-          RC = HCO_FAIL
-          RETURN
-       ENDIF
-       Val(:,:,:) = 0.0_dp
-       Alloc = .TRUE.
+    ! Initialize
+    RC      =  HCO_SUCCESS
+    errMsg  =  ''
+    thisLoc =  'HCO_ValInit_3D_Dp (hco_arr_mod.F90)'
+
+    ! If dimensions are zero, return a null pointer
+    IF ( nx == 0 .or. ny == 0 .or. nz == 0 ) THEN
+       Val   => NULL()
+       Alloc = .FALSE.
+       RETURN
     ENDIF
 
-    ! Leave
-    RC = HCO_SUCCESS
+    ! Initialize Val if dimensions are nonzero
+    ALLOCATE( Val( nx, ny, nz ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate Val!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
+    ENDIF
+    Val   = 0.0_dp
+    alloc = .TRUE.
 
   END SUBROUTINE HCO_ValInit_3D_Dp
 !EOC
@@ -956,15 +1195,18 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(sp),       POINTER       :: Val(:,:,:)! Array
-    INTEGER,        INTENT(IN)    :: nx        ! x-dim
-    INTEGER,        INTENT(IN)    :: ny        ! y-dim
-    INTEGER,        INTENT(IN)    :: nz        ! z-dim
+    INTEGER,  INTENT(IN)  :: nx             ! x-dim
+    INTEGER,  INTENT(IN)  :: ny             ! y-dim
+    INTEGER,  INTENT(IN)  :: nz             ! z-dim
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    LOGICAL,        INTENT(  OUT) :: Alloc     ! allocated?
-    INTEGER,        INTENT(INOUT) :: RC        ! Return code
+    REAL(sp), POINTER     :: Val(:,:,:)     ! Array
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    LOGICAL,  INTENT(OUT) :: Alloc          ! allocated?
+    INTEGER,  INTENT(OUT) :: RC             ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -975,27 +1217,34 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER :: AS
+     ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     ! ================================================================
     ! HCO_ValInit_3D_Sp begins here
     ! ================================================================
 
-    Val => NULL()
-    Alloc = .FALSE.
-    IF ( nx>0 ) THEN
-       ALLOCATE(Val(nx,ny,nz),STAT=AS)
-       IF(AS/=0) THEN
-          WRITE(*,*) 'Arr3D value allocation error'
-          RC = HCO_FAIL
-          RETURN
-       ENDIF
-       Val(:,:,:) = 0.0_sp
-       Alloc = .TRUE.
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ValInit_3D_Sp (hco_arr_mod.F90)'
+
+    ! If dimensions are zero, return a null pointer
+    IF ( nx == 0 .or. ny == 0 .or. nz == 0 ) THEN
+       Val     => NULL()
+       Alloc   = .FALSE.
+       RETURN
     ENDIF
 
-    ! Leave
-    RC = HCO_SUCCESS
+    ! Initialize Val if dimensions are nonzero
+    ALLOCATE( Val( nx, ny, nz ), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate Val!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
+    ENDIF
+    Val   = 0.0_sp
+    alloc = .TRUE.
 
   END SUBROUTINE HCO_ValInit_3D_Sp
 !EOC
@@ -1016,15 +1265,15 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr3D_Hp),  POINTER         :: ThisArr3D ! 3D array
-    INTEGER,         INTENT(IN   )   :: I, J, L   ! Array dims
+    INTEGER,         INTENT(IN)  :: I, J, L       ! Array dims
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-
-    INTEGER,         INTENT(INOUT)   :: RC        ! Return code
+    TYPE(Arr3D_Hp),  POINTER     :: ThisArr3D     ! 3D array
 !
-! !REMARKS:
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,         INTENT(OUT) :: RC            ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  01 May 2013 - C. Keller - Initial version
@@ -1032,22 +1281,39 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     !=====================================================================
     ! HCO_ArrAssert_3D_Hp begins here!
     !=====================================================================
 
-    ! Check flux array
-    IF ( .NOT. ASSOCIATED ( ThisArr3D ) ) THEN
-       CALL HCO_ArrInit( ThisArr3D, I, J, L, RC )
-       IF ( RC/= HCO_SUCCESS ) RETURN
-    ELSEIF ( .NOT. ASSOCIATED ( ThisArr3D%Val ) ) THEN
-       CALL HCO_ValInit ( ThisArr3D%Val, I, J, L, ThisArr3D%Alloc, RC )
-       IF ( RC/= HCO_SUCCESS ) RETURN
-    ENDIF
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrAssert_3D_Hp (hco_arr_mod.F90)'
 
-    ! Return w/ success
-    RC = HCO_SUCCESS
+    ! Check flux array
+    IF ( .not. ASSOCIATED ( ThisArr3D ) ) THEN
+       CALL HCO_ArrInit( ThisArr3D, I, J, L, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ArrInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+    ELSE IF ( .not. ASSOCIATED ( ThisArr3D%Val ) ) THEN
+       CALL HCO_ValInit( ThisArr3D%Val, I, J, L, ThisArr3D%Alloc, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ValInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+    ENDIF
 
   END SUBROUTINE HCO_ArrAssert_3D_Hp
 !EOC
@@ -1068,15 +1334,15 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr3D_Sp),  POINTER         :: ThisArr3D ! 3D array
-    INTEGER,         INTENT(IN   )   :: I, J, L   ! Array dims
+    INTEGER,         INTENT(IN)  :: I, J, L       ! Array dims
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-
-    INTEGER,         INTENT(INOUT)   :: RC        ! Return code
+    TYPE(Arr3D_Sp),  POINTER     :: ThisArr3D     ! 3D array
 !
-! !REMARKS:
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,         INTENT(OUT) :: RC            ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  01 May 2013 - C. Keller - Initial version
@@ -1084,22 +1350,39 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     !=====================================================================
     ! HCO_ArrAssert_3D_Sp begins here!
     !=====================================================================
 
-    ! Check flux array
-    IF ( .NOT. ASSOCIATED ( ThisArr3D ) ) THEN
-       CALL HCO_ArrInit( ThisArr3D, I, J, L, RC )
-       IF ( RC/= HCO_SUCCESS ) RETURN
-    ELSEIF ( .NOT. ASSOCIATED ( ThisArr3D%Val ) ) THEN
-       CALL HCO_ValInit ( ThisArr3D%Val, I, J, L, ThisArr3D%Alloc, RC )
-       IF ( RC/= HCO_SUCCESS ) RETURN
-    ENDIF
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrAssert_3D_Sp (hco_arr_mod.F90)'
 
-    ! Return w/ success
-    RC = HCO_SUCCESS
+    ! Check flux array
+    IF ( .not. ASSOCIATED ( ThisArr3D ) ) THEN
+       CALL HCO_ArrInit( ThisArr3D, I, J, L, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ArrInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+    ELSE IF ( .not. ASSOCIATED ( ThisArr3D%Val ) ) THEN
+       CALL HCO_ValInit ( ThisArr3D%Val, I, J, L, ThisArr3D%Alloc, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ValInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+    ENDIF
 
   END SUBROUTINE HCO_ArrAssert_3D_Sp
 !EOC
@@ -1120,14 +1403,15 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr2D_Hp),  POINTER         :: ThisArr2D ! 2D array
-    INTEGER,         INTENT(IN   )   :: I, J      ! Array dims
+    INTEGER,         INTENT(IN)  :: I, J          ! Array dims
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,         INTENT(INOUT)   :: RC        ! Return code
+    TYPE(Arr2D_Hp),  POINTER     :: ThisArr2D     ! 2D array
 !
-! !REMARKS:
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,         INTENT(OUT) :: RC            ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  01 May 2013 - C. Keller - Initial version
@@ -1135,22 +1419,39 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     !=====================================================================
     ! HCO_ArrAssert_2D_Hp begins here!
     !=====================================================================
 
-    ! Check flux array
-    IF ( .NOT. ASSOCIATED ( ThisArr2D ) ) THEN
-       CALL HCO_ArrInit( ThisArr2D, I, J, RC )
-       IF ( RC/= HCO_SUCCESS ) RETURN
-    ELSEIF ( .NOT. ASSOCIATED ( ThisArr2D%Val ) ) THEN
-       CALL HCO_ValInit ( ThisArr2D%Val, I, J, ThisArr2D%Alloc, RC )
-       IF ( RC/= HCO_SUCCESS ) RETURN
-    ENDIF
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrAssert_2D_Hp (hco_arr_mod.F90)'
 
-    ! Return w/ success
-    RC = HCO_SUCCESS
+    ! Check flux array
+    IF ( .not. ASSOCIATED ( ThisArr2D ) ) THEN
+       CALL HCO_ArrInit( ThisArr2D, I, J, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ArrInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+    ELSE IF ( .not. ASSOCIATED ( ThisArr2D%Val ) ) THEN
+       CALL HCO_ValInit( ThisArr2D%Val, I, J, ThisArr2D%Alloc, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ValInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+    ENDIF
 
   END SUBROUTINE HCO_ArrAssert_2D_Hp
 !EOC
@@ -1171,14 +1472,15 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr2D_Sp),  POINTER         :: ThisArr2D ! 2D array
-    INTEGER,         INTENT(IN   )   :: I, J      ! Array dims
+    INTEGER,         INTENT(IN)  :: I, J          ! Array dims
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,         INTENT(INOUT)   :: RC        ! Return code
+    TYPE(Arr2D_Sp),  POINTER     :: ThisArr2D     ! 2D array
 !
-! !REMARKS:
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,         INTENT(OUT) :: RC            ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  01 May 2013 - C. Keller - Initial version
@@ -1186,22 +1488,39 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     !=====================================================================
     ! HCO_ArrAssert_2D_Sp begins here!
     !=====================================================================
 
-    ! Check flux array
-    IF ( .NOT. ASSOCIATED ( ThisArr2D ) ) THEN
-       CALL HCO_ArrInit( ThisArr2D, I, J, RC )
-       IF ( RC/= HCO_SUCCESS ) RETURN
-    ELSEIF ( .NOT. ASSOCIATED ( ThisArr2D%Val ) ) THEN
-       CALL HCO_ValInit ( ThisArr2D%Val, I, J, ThisArr2D%Alloc, RC )
-       IF ( RC/= HCO_SUCCESS ) RETURN
-    ENDIF
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrAssert_2D_Sp (hco_arr_mod.F90)'
 
-    ! Return w/ success
-    RC = HCO_SUCCESS
+    ! Check flux array
+    IF ( .not. ASSOCIATED ( ThisArr2D ) ) THEN
+       CALL HCO_ArrInit( ThisArr2D, I, J, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ArrInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+    ELSE IF ( .not. ASSOCIATED ( ThisArr2D%Val ) ) THEN
+       CALL HCO_ValInit ( ThisArr2D%Val, I, J, ThisArr2D%Alloc, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ValInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+    ENDIF
 
   END SUBROUTINE HCO_ArrAssert_2D_Sp
 !EOC
@@ -1222,14 +1541,15 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(Arr2D_I),   POINTER         :: ThisArr2D ! 2D array
-    INTEGER,         INTENT(IN   )   :: I, J      ! Array dims
+    INTEGER,         INTENT(IN)  :: I, J          ! Array dims
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,         INTENT(INOUT)   :: RC        ! Return code
+    TYPE(Arr2D_I),   POINTER     :: ThisArr2D     ! 2D array
 !
-! !REMARKS:
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,         INTENT(OUT) :: RC            ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  01 May 2013 - C. Keller - Initial version
@@ -1237,22 +1557,39 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     !=====================================================================
     ! HCO_ArrAssert_2D_I begins here!
     !=====================================================================
 
-    ! Check flux array
-    IF ( .NOT. ASSOCIATED ( ThisArr2D ) ) THEN
-       CALL HCO_ArrInit( ThisArr2D, I, J, RC )
-       IF ( RC/= HCO_SUCCESS ) RETURN
-    ELSEIF ( .NOT. ASSOCIATED ( ThisArr2D%Val ) ) THEN
-       CALL HCO_ValInit ( ThisArr2D%Val, I, J, ThisArr2D%Alloc, RC )
-       IF ( RC/= HCO_SUCCESS ) RETURN
-    ENDIF
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCO_ArrAssert_2D_I (hco_arr_mod.F90)'
 
-    ! Return w/ success
-    RC = HCO_SUCCESS
+    ! Check flux array
+    IF ( .not. ASSOCIATED ( ThisArr2D ) ) THEN
+       CALL HCO_ArrInit( ThisArr2D, I, J, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ArrInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+    ELSE IF ( .not. ASSOCIATED ( ThisArr2D%Val ) ) THEN
+       CALL HCO_ValInit ( ThisArr2D%Val, I, J, ThisArr2D%Alloc, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "HCO_ValInit"!'
+          CALL HCO_Error( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+    ENDIF
 
   END SUBROUTINE HCO_ArrAssert_2D_I
 !EOC
@@ -1290,16 +1627,15 @@ CONTAINS
     ! ================================================================
     ! HCO_ArrCleanup_2D_Hp begins here
     ! ================================================================
+    IF ( ASSOCIATED( Arr ) ) THEN
 
-    IF ( PRESENT(DeepClean) ) THEN
-       DC = DeepClean
-    ELSE
+       ! Optional argument handling
        DC = .TRUE.
-    ENDIF
+       IF ( PRESENT( DeepClean ) ) DC = DeepClean
 
-    IF ( ASSOCIATED(Arr) ) THEN
-       CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DC )
-       DEALLOCATE ( Arr )
+       ! Finalize Arr%Val and Arr
+       CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DeepClean=DC )
+       DEALLOCATE( Arr )
     ENDIF
 
   END SUBROUTINE HCO_ArrCleanup_2D_Hp
@@ -1338,16 +1674,15 @@ CONTAINS
     ! ================================================================
     ! HCO_ArrCleanup_2D_Sp begins here
     ! ================================================================
+    IF ( ASSOCIATED( Arr ) ) THEN
 
-    IF ( PRESENT(DeepClean) ) THEN
-       DC = DeepClean
-    ELSE
+       ! Optional argument handling
        DC = .TRUE.
-    ENDIF
+       IF ( PRESENT( DeepClean ) ) DC = DeepClean
 
-    IF ( ASSOCIATED(Arr) ) THEN
-       CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DC )
-       DEALLOCATE ( Arr )
+       ! Finalize Arr%Val and Arr
+       CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DeepClean=DC )
+       DEALLOCATE( Arr )
     ENDIF
 
   END SUBROUTINE HCO_ArrCleanup_2D_Sp
@@ -1386,16 +1721,15 @@ CONTAINS
     ! ================================================================
     ! HCO_ArrCleanup_2D_I begins here
     ! ================================================================
+    IF ( ASSOCIATED( Arr ) ) THEN
 
-    IF ( PRESENT(DeepClean) ) THEN
-       DC = DeepClean
-    ELSE
+       ! Optional argument handling
        DC = .TRUE.
-    ENDIF
+       IF ( PRESENT( DeepClean ) ) DC = DeepClean
 
-    IF ( ASSOCIATED(Arr) ) THEN
-       CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DC )
-       DEALLOCATE ( Arr )
+       ! Finalize Arr%Val and Arr
+       CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DeepClean=DC )
+       DEALLOCATE( Arr )
     ENDIF
 
   END SUBROUTINE HCO_ArrCleanup_2D_I
@@ -1434,18 +1768,16 @@ CONTAINS
     ! ================================================================
     ! HCO_ArrCleanup_3D_Hp begins here
     ! ================================================================
+    IF ( ASSOCIATED( Arr ) ) THEN
 
-    IF ( PRESENT(DeepClean) ) THEN
-       DC = DeepClean
-    ELSE
+       ! Optional argument handling
        DC = .TRUE.
-    ENDIF
+       IF ( PRESENT( DeepClean ) ) DC = DeepClean
 
-    IF ( ASSOCIATED(Arr) ) THEN
-       CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DC )
-       DEALLOCATE ( Arr )
+       ! Finalize Arr%Val and Arr
+       CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DeepClean=DC )
+       DEALLOCATE( Arr )
     ENDIF
-
   END SUBROUTINE HCO_ArrCleanup_3D_Hp
 !EOC
 !------------------------------------------------------------------------------
@@ -1482,16 +1814,15 @@ CONTAINS
     ! ================================================================
     ! HCO_ArrCleanup_3D_Sp begins here
     ! ================================================================
+    IF ( ASSOCIATED( Arr ) ) THEN
 
-    IF ( PRESENT(DeepClean) ) THEN
-       DC = DeepClean
-    ELSE
+       ! Optional argument handling
        DC = .TRUE.
-    ENDIF
+       IF ( PRESENT( DeepClean ) ) DC = DeepClean
 
-    IF ( ASSOCIATED(Arr) ) THEN
-       CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DC )
-       DEALLOCATE ( Arr )
+       ! Finalize Arr%Val and Arr
+       CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DeepClean=DC )
+       DEALLOCATE( Arr )
     ENDIF
 
   END SUBROUTINE HCO_ArrCleanup_3D_Sp
@@ -1531,19 +1862,18 @@ CONTAINS
     ! ================================================================
     ! HCO_ArrVecCleanup_2D_Hp begins here
     ! ================================================================
+    IF ( ASSOCIATED( ArrVec ) ) THEN
 
-    IF ( PRESENT(DeepClean) ) THEN
-       DC = DeepClean
-    ELSE
+       ! Optional argument handling
        DC = .TRUE.
-    ENDIF
+       IF ( PRESENT(DeepClean) ) DC = DeepClean
 
-    IF ( ASSOCIATED(ArrVec) ) THEN
+       ! Finalize ArrVec
        DO I = 1, SIZE(ArrVec,1)
           CALL HCO_ValCleanup( ArrVec(I)%Val, ArrVec(I)%Alloc, DC )
        ENDDO
+       DEALLOCATE( ArrVec )
 
-       DEALLOCATE ( ArrVec )
     ENDIF
 
   END SUBROUTINE HCO_ArrVecCleanup_2D_Hp
@@ -1583,19 +1913,18 @@ CONTAINS
     ! ================================================================
     ! HCO_ArrVecCleanup_2D_Sp begins here
     ! ================================================================
-
-    IF ( PRESENT(DeepClean) ) THEN
-       DC = DeepClean
-    ELSE
-       DC = .TRUE.
-    ENDIF
-
     IF ( ASSOCIATED(ArrVec) ) THEN
+
+       ! Optional argument handling
+       DC = .TRUE.
+       IF ( PRESENT( DeepClean) ) DC = DeepClean
+
+       ! Finalize ArrVec
        DO I = 1, SIZE(ArrVec,1)
           CALL HCO_ValCleanup( ArrVec(I)%Val, ArrVec(I)%Alloc, DC )
        ENDDO
-
        DEALLOCATE ( ArrVec )
+
     ENDIF
 
   END SUBROUTINE HCO_ArrVecCleanup_2D_Sp
@@ -1635,19 +1964,18 @@ CONTAINS
     ! ================================================================
     ! HCO_ArrVecCleanup_3D_Hp begins here
     ! ================================================================
+    IF ( ASSOCIATED( ArrVec ) ) THEN
 
-    IF ( PRESENT(DeepClean) ) THEN
-       DC = DeepClean
-    ELSE
+       ! Optional argument handling
        DC = .TRUE.
-    ENDIF
+       IF ( PRESENT(DeepClean) ) DC = DeepClean
 
-    IF ( ASSOCIATED(ArrVec) ) THEN
+       ! Finalize ArrVec
        DO I = 1, SIZE(ArrVec,1)
           CALL HCO_ValCleanup( ArrVec(I)%Val, ArrVec(I)%Alloc, DC )
        ENDDO
-
        DEALLOCATE ( ArrVec )
+
     ENDIF
 
   END SUBROUTINE HCO_ArrVecCleanup_3D_Hp
@@ -1687,19 +2015,18 @@ CONTAINS
     ! ================================================================
     ! HCO_ArrVecCleanup_3D_Sp begins here
     ! ================================================================
+    IF ( ASSOCIATED( ArrVec ) ) THEN
 
-    IF ( PRESENT(DeepClean) ) THEN
-       DC = DeepClean
-    ELSE
+       ! Optional argument handling
        DC = .TRUE.
-    ENDIF
+       IF ( PRESENT(DeepClean) ) DC = DeepClean
 
-    IF ( ASSOCIATED(ArrVec) ) THEN
+       ! Finalize ArrVec
        DO I = 1, SIZE(ArrVec,1)
           CALL HCO_ValCleanup( ArrVec(I)%Val, ArrVec(I)%Alloc, DC )
        ENDDO
-
        DEALLOCATE ( ArrVec )
+
     ENDIF
 
   END SUBROUTINE HCO_ArrVecCleanup_3D_Sp
@@ -1723,9 +2050,12 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(dp),            POINTER  :: Val(:,:)  ! Array
-    LOGICAL, INTENT(IN)           :: Alloc     ! Allocated?
-    LOGICAL, INTENT(IN)           :: DeepClean ! Deallocate array?
+    LOGICAL, INTENT(IN) :: Alloc     ! Allocated?
+    LOGICAL, INTENT(IN) :: DeepClean ! Deallocate array?
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    REAL(dp), POINTER   :: Val(:,:)  ! Array
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -1759,9 +2089,12 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(sp), POINTER    :: Val(:,:)  ! Array
     LOGICAL,  INTENT(IN) :: Alloc     ! Allocated?
     LOGICAL,  INTENT(IN) :: DeepClean ! Deallocate array?
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    REAL(sp), POINTER    :: Val(:,:)  ! Array
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -1795,9 +2128,12 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    INTEGER, POINTER    :: Val(:,:)  ! Array
     LOGICAL, INTENT(IN) :: Alloc     ! Allocated?
     LOGICAL, INTENT(IN) :: DeepClean ! Deallocate array?
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    INTEGER, POINTER    :: Val(:,:)  ! Array
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -1805,9 +2141,6 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-!
-! !LOCAL VARIABLES:
-!
     IF ( DeepClean .AND. ASSOCIATED(Val) .AND. Alloc ) THEN
        DEALLOCATE( Val )
     ENDIF
@@ -1834,9 +2167,12 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(dp), POINTER    :: Val(:,:,:) ! Array
     LOGICAL,  INTENT(IN) :: Alloc      ! Allocated?
     LOGICAL,  INTENT(IN) :: DeepClean  ! Deallocate array?
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    REAL(dp), POINTER    :: Val(:,:,:) ! Array
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -1870,9 +2206,12 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(sp), POINTER    :: Val(:,:,:) ! Array
     LOGICAL,  INTENT(IN) :: Alloc      ! Allocated?
     LOGICAL,  INTENT(IN) :: DeepClean  ! Deallocate array?
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    REAL(sp), POINTER    :: Val(:,:,:) ! Array
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
