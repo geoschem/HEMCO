@@ -96,8 +96,7 @@
        REAL(hp), POINTER          :: MSS_FRC_CLY  (:,:) => NULL()
        REAL(hp), POINTER          :: MSS_FRC_SND  (:,:) => NULL()
        REAL(hp), POINTER          :: SFC_TYP      (:,:) => NULL()
-
-       REAL(hp), POINTER          :: VAI_DST(:,:) => NULL()
+       REAL(hp), POINTER          :: VAI_DST      (:,:) => NULL()
 
        ! Time-varying surface info from CTM
 !       REAL*8,  ALLOCATABLE :: FLX_LW_DWN_SFC(:,:)
@@ -737,27 +736,140 @@
       ! Init module arrays
       !-----------------------------------------------------------------
 
-      ALLOCATE ( Inst%ERD_FCT_GEO   ( HcoState%NX, HcoState%NY),
-     &           Inst%SRCE_FUNC     ( HcoState%NX, HcoState%NY),
-     &           Inst%LND_FRC_DRY   ( HcoState%NX, HcoState%NY),
-     &           Inst%MSS_FRC_CACO3 ( HcoState%NX, HcoState%NY),
-     &           Inst%MSS_FRC_CLY   ( HcoState%NX, HcoState%NY),
-     &           Inst%MSS_FRC_SND   ( HcoState%NX, HcoState%NY),
-     &           Inst%SFC_TYP       ( HcoState%NX, HcoState%NY),
-     &           Inst%VAI_DST       ( HcoState%NX, HcoState%NY),
-     &           STAT=AS )
+      !-----------------------------------------------------------------
+      ! Init module arrays
+      !-----------------------------------------------------------------
+
+      ALLOCATE( Inst%ERD_FCT_GEO( HcoState%NX, HcoState%NY), STAT=AS )
       IF ( AS /= 0 ) THEN
-        CALL HCO_ERROR ( 'Allocation error', RC )
-        RETURN
+         msg = 'Could not allocate Inst%ERD_FCT_GEO!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
       ENDIF
-      Inst%ERD_FCT_GEO    = 0.0_hp
-      Inst%SRCE_FUNC      = 0.0_hp
-      Inst%LND_FRC_DRY    = 0.0_hp
-      Inst%MSS_FRC_CACO3  = 0.0_hp
-      Inst%MSS_FRC_CLY    = 0.0_hp
-      Inst%MSS_FRC_SND    = 0.0_hp
-      Inst%SFC_TYP        = 0.0_hp
-      Inst%VAI_DST        = 0.0_hp
+      Inst%ERD_FCT_GEO = 0.0_hp
+
+      ALLOCATE( Inst%SRCE_FUNC( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%SRCE_FUNC!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%SRCE_FUNC = 0.0_hp
+
+      ALLOCATE( Inst%LND_FRC_DRY( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%LND_FRC_DRY!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%LND_FRC_DRY = 0.0_hp
+
+      ALLOCATE( Inst%MSS_FRC_CACO3( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%MSS_FRC_CACO3!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%MSS_FRC_CACO3 = 0.0_hp
+
+      ALLOCATE( Inst%MSS_FRC_CLY( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%MSS_FRC_CLY!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%MSS_FRC_CLY = 0.0_hp
+
+      ALLOCATE( Inst%MSS_FRC_SND( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%MSS_FRC_SND!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%MSS_FRC_SND = 0.0_hp
+
+      ALLOCATE( Inst%SFC_TYP( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%SFC_TYP!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%SFC_TYP = 0.0_hp
+
+      ALLOCATE( Inst%VAI_DST( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%VAI_DST!'
+      !-----------------------------------------------------------------
+      ! Init module arrays
+      !-----------------------------------------------------------------
+
+      ALLOCATE( Inst%ERD_FCT_GEO( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%ERD_FCT_GEO!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%ERD_FCT_GEO = 0.0_hp
+
+      ALLOCATE( Inst%SRCE_FUNC( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%SRCE_FUNC!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%SRCE_FUNC = 0.0_hp
+
+      ALLOCATE( Inst%LND_FRC_DRY( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%LND_FRC_DRY!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%LND_FRC_DRY = 0.0_hp
+
+      ALLOCATE( Inst%MSS_FRC_CACO3( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%MSS_FRC_CACO3!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%MSS_FRC_CACO3 = 0.0_hp
+
+      ALLOCATE( Inst%MSS_FRC_CLY( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%MSS_FRC_CLY!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%MSS_FRC_CLY = 0.0_hp
+
+      ALLOCATE( Inst%MSS_FRC_SND( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%MSS_FRC_SND!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%MSS_FRC_SND = 0.0_hp
+
+      ALLOCATE( Inst%SFC_TYP( HcoState%NX, HcoState%NY), STAT=AS ) 
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%SFC_TYP!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%SFC_TYP = 0.0_hp
+      
+      ALLOCATE( Inst%VAI_DST( HcoState%NX, HcoState%NY), STAT=AS )
+      IF ( AS /= 0 ) THEN
+         msg = 'Could not allocate Inst%VAI_DST!'
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%VAI_DST = 0.0_hp
+         CALL HCO_ERROR( msg, RC, thisLoc=loc )
+         RETURN
+      ENDIF
+      Inst%VAI_DST = 0.0_hp
 
 !      ! Allocate arrays
 !      ALLOCATE( Inst%FLX_LW_DWN_SFC( I, J ), STAT=AS )
@@ -5709,6 +5821,11 @@ c Fix up for negative argument, erf, etc.
             DEALLOCATE(Inst%MSS_FRC_CACO3)
          ENDIF
          Inst%MSS_FRC_CACO3 => NULL()
+
+         IF ( ASSOCIATED( Inst%MSS_FRC_CLY ) ) THEN
+            DEALLOCATE(Inst%MSS_FRC_CLY)
+         ENDIF
+         Inst%MSS_FRC_CLY => NULL()
 
          IF ( ASSOCIATED( Inst%MSS_FRC_SND ) ) THEN
             DEALLOCATE(Inst%MSS_FRC_SND )

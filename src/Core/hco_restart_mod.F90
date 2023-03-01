@@ -330,9 +330,13 @@ CONTAINS
         RETURN
     ENDIF
 
-    ! If field is all negatives or zero assume it to be not filled
+    ! Determine if fields has not been filled
     IF ( FLD ) THEN
+#if defined(MODEL_GEOS)
+       IF ( MAXVAL(Arr3D) <  0.0 ) FLD = .FALSE.
+#else
        IF ( MAXVAL(Arr3D) <= 0.0 ) FLD = .FALSE.
+#endif
     ENDIF
 
     ! Log output
@@ -491,9 +495,13 @@ CONTAINS
         RETURN
     ENDIF
 
-    ! If field is all negatives or zero assume it to be not filled
+    ! Determine if field has been filled
     IF ( FLD ) THEN
+#if defined(MODEL_GEOS)
+       IF ( MAXVAL(Arr2D) <  0.0 ) FLD = .FALSE.
+#else
        IF ( MAXVAL(Arr2D) <= 0.0 ) FLD = .FALSE.
+#endif
     ENDIF
 
     ! Log output

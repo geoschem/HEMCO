@@ -19,11 +19,11 @@ master_doc = 'index'
 # -- Project information -----------------------------------------------------
 
 project = 'HEMCO'
-copyright = '2022, GEOS-Chem Support Team'
+copyright = '2023, GEOS-Chem Support Team'
 author = 'GEOS-Chem Support Team'
 
 # The full version, including alpha/beta/rc tags
-release = '3.6.0'
+release = '3.7.0'
 
 
 # -- General configuration ---------------------------------------------------

@@ -18,6 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Warnings is now removed from `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
   - Removed the `src/Shared/NcdfUtil/perl` folder
 
+## [3.6.1] - 2023-03-01
+### Added
+  - GEOS-only updates
+  - Removed several memory leaks in HEMCO Core and Standalone routines
+
+### Changed
+  - Simplified Github issue and pull request templates
+  - Throw an error if input calendar is not supported
+
 ## [3.6.0] - 2023-02-01
 ### Added
   - Added MAPL_ESMF compiler option for use with GCHP and GEOS

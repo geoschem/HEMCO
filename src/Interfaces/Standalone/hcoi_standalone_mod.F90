@@ -538,13 +538,15 @@ CONTAINS
                               DYS(1),    HRS(1), MNS(1), SCS(1), &
                               IsEmisTime=.TRUE., RC=RC)
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR ( 'ERROR 0', RC, THISLOC=LOC )
-              RETURN
+             errMsg = 'Error encountered in "HcoClock_Set"!'
+             CALL HCO_ERROR ( errMsg, RC, THISLOC=LOC )
+             RETURN
           ENDIF
        ELSE
           CALL HcoClock_Increase ( HcoState, HcoState%TS_EMIS, .TRUE., RC=RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR ( 'ERROR 1', RC, THISLOC=LOC )
+             errMsg = 'Error encountered in "HcoClock_Increase"!'
+             CALL HCO_ERROR ( msg, RC, THISLOC=LOC )
           ENDIF
        ENDIF
 
@@ -1512,8 +1514,9 @@ CONTAINS
                                  HcoState%Grid%zGrid, NZ, RC=RC )
     ENDIF
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Error encountered in "HCO_VertGrid_Define"!'
+       CALL HCO_ERROR( errMsg, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Set pointers to grid variables
@@ -2150,8 +2153,9 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Error encountered in "HCO_Enter"!'
+       CALL HCO_ERROR( errMsg, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! First call?
@@ -2754,13 +2758,12 @@ CONTAINS
     ! quantities read from disk.
     !-----------------------------------------------------------------
 
-
-
     ! Attempt to calculate vertical grid quantities
     CALL HCO_CalcVertGrid( HcoState, PSFC, ZSFC, TK, BXHEIGHT, PEDGE, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Error encountered in "Hco_CalcVertGrid"!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
 
     ! Reset pointers
@@ -3029,8 +3032,9 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Error encountered in "HCO_Enter"!'
+       CALL HCO_ERROR( errMsg, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     !=======================================================================
@@ -3115,7 +3119,8 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
+       errMsg = 'Error encountered in "HCO_Enter"!'
+        CALL HCO_ERROR( errMsg, RC, THISLOC=LOC )
         RETURN
     ENDIF
 
