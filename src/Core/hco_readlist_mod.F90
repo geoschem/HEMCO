@@ -698,34 +698,31 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
+    CHARACTER(LEN=255) :: errMsg, thisLoc
+
     ! ================================================================
     ! ReadList_Init begins here
     ! ================================================================
 
-    ! Allocate ReadList and all internal lists. Make sure all internal
-    ! lists are defined (nullified).
-    ALLOCATE ( ReadLists )
+    ! Initialize
+    RC = HCO_SUCCESS
 
-    ALLOCATE ( ReadLists%Once )
-    NULLIFY ( ReadLists%Once  )
+    ! Allocate the ReadLists object (which is really HcoState%ReadLists).
+    ALLOCATE( ReadLists, STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate ReadLists (=> HcoState%ReadLists)!'
+       CALL HCO_Error( errMsg, RC, thisLoc )
+       RETURN
+    ENDIF
 
-    ALLOCATE ( ReadLists%Year )
-    NULLIFY ( ReadLists%Year  )
-
-    ALLOCATE ( ReadLists%Month )
-    NULLIFY ( ReadLists%Month )
-
-    ALLOCATE ( ReadLists%Day )
-    NULLIFY ( ReadLists%Day   )
-
-    ALLOCATE ( ReadLists%Hour )
-    NULLIFY ( ReadLists%Hour  )
-
-    ALLOCATE ( ReadLists%Hour3 )
-    NULLIFY ( ReadLists%Hour3  )
-
-    ALLOCATE ( ReadLists%Always )
-    NULLIFY ( ReadLists%Always  )
+    ! Nullify pointer fields
+    ReadLists%Once          => NULL()
+    ReadLists%Year          => NULL()
+    ReadLists%Month         => NULL()
+    ReadLists%Day           => NULL()
+    ReadLists%Hour          => NULL()
+    ReadLists%Hour3         => NULL()
+    ReadLists%Always        => NULL()
 
     ! No file in buffer yet
     ReadLists%FileInArchive = ''

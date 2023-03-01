@@ -767,7 +767,7 @@ CONTAINS
 !
 ! !USES
 !
-    USE HCO_Arr_Mod,      ONLY : HCO_ArrAssert
+    USE HCO_Arr_Mod,      ONLY : HCO_ArrAssert, HCO_ArrCleanup
     USE HCO_STATE_MOD,    ONLY : HCO_STATE
     USE HCO_CALC_MOD,     ONLY : HCO_EvalFld
 !
@@ -1123,9 +1123,10 @@ CONTAINS
        ENDIF
     ENDIF
 
-    ! If Box height not available make sure it is not associated
+    ! If Box height isn't available, free its memory
+    ! NOTE: Using NULL instead of deallocate here causes a memory leak! 
     IF ( .NOT. EVAL_BXHEIGHT .OR. .NOT. FoundBXHEIGHT ) THEN
-       HcoState%Grid%BXHEIGHT_M%Val => NULL()
+       CALL HCO_ArrCleanup( HcoState%Grid%BXHEIGHT_M, DeepClean=.TRUE. )
     ENDIF
 
     ! ------------------------------------------------------------------

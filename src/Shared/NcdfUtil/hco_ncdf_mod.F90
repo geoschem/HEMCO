@@ -412,9 +412,34 @@ CONTAINS
 
     ! Read calendar attribute
     IF ( PRESENT( timeCalendar ) ) THEN
-       CALL NcGet_Var_Attributes( fId, v_name, 'calendar', timeCalendar )
-    ENDIF
 
+       ! We now get the status variable RC.  This will allow program
+       ! flow to continue if the "time:calendar" attribute is not found.
+       CALL NcGet_Var_Attributes( fId, v_name, 'calendar', timeCalendar, RC )
+
+       ! If "time:calendar" is found, then throw an error for
+       ! climatological calendars without leap years.
+       IF ( RC == 0 ) THEN
+        SELECT CASE( TRIM( v_name ) )
+          CASE( '360_day', '365_day', '366_day', 'all_leap',                 &
+                'allleap', 'no_leap', 'noleap'                              )
+             WRITE( 6, '(/,a)' ) REPEAT( '=', 79 )
+             WRITE( 6, '(a  )' ) 'HEMCO does not support calendar type '  // &
+                                 TRIM( v_name )
+             WRITE( 6, '(/,a)' )  'HEMCO supports the following calendars:'
+             WRITE( 6, '(a)'   )  ' - standard (i.e. mixed gregorian/julian)'
+             WRITE( 6, '(a)'   )  ' - gregorian'
+             WRITE( 6, '(a,/)' ) REPEAT( '=', 79 )
+             RC = -1
+          CASE DEFAULT
+             ! Do nothing
+        END SELECT
+       ENDIF
+       
+       ! Reset RC so that we won't halt execution elsewhere
+       RC = 0
+    ENDIF
+    
   END SUBROUTINE NC_READ_TIME
 !EOC
 !------------------------------------------------------------------------------
@@ -1285,7 +1310,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
-    CHARACTER(LEN=255)  :: ncUnit
+    CHARACTER(LEN=255)  :: ncUnit, cal
     INTEGER             :: refYr, refMt, refDy, refHr, refMn, refSc
     INTEGER             :: T, YYYYMMDD, hhmmss
     REAL*8              :: realrefDy, refJulday, tJulday
@@ -1304,8 +1329,14 @@ CONTAINS
     IF ( PRESENT(refYear ) ) refYear  = 0
 
     ! Read time vector
-    CALL NC_READ_TIME ( fID, nTime, ncUnit, timeVec=tVec, RC=RC )
-    IF ( RC/=0 ) RETURN
+    CALL NC_READ_TIME ( fID,          nTime,            ncUnit,              &
+                        timeVec=tVec, timeCalendar=cal, RC=RC               )
+    IF ( RC/=0 ) THEN
+       WRITE( 6, '(/,a)' ) REPEAT( '=', 79 )
+       WRITE( 6, '(a)'   ) 'Error encountered in NC_READ_TIME (ncdf_mod.F90)'
+       WRITE( 6, '(a,/)' ) REPEAT( '=', 79 )
+       RETURN
+    ENDIF
 
     ! If nTime is zero, return here!
     IF ( nTime == 0 ) RETURN
