@@ -1354,7 +1354,7 @@ CONTAINS
 
        ! Note: This seems to be a soft restriction - removing this
        ! does not conflict with MESSy regridding. Need to check (hplin, 5/30/20)
-       ! This has to be used for WRF-GC and HEMCO_CESM so ifdefd out
+       ! This has to be used for WRF-GC and CESM so ifdefd out
 #endif
 
 #if defined( MODEL_WRF ) || defined( MODEL_CESM )
