@@ -1,9 +1,7 @@
 ---
 name: Submit updates to HEMCO with a pull request
-description: Submit updates to HEMCO with a pull request
+about: Use this form to submit updates to HEMCO with a pull request
 labels: 'never stale'
-body:
-  - type: markdown
 ---
 
 ### Name and Institution (Required)
