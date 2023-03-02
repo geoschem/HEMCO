@@ -1,8 +1,6 @@
 ---
 name: Request a new HEMCO feature or start a discussion
-description: Request a new HEMCO feature or start a discussion
-body:
-  - type: markdown
+about: Use this form to request a new HEMCO feature or start a discussion
 ---
 
 ### Name and Institution (Required)
