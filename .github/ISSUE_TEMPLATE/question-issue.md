@@ -1,5 +1,8 @@
 ---
 name: Ask a question about or report an issue with HEMCO
+description: Ask a question about or report an issue with HEMCO
+body:
+  - type: markdown
 ---
 
 ### Name and Institution (Required)
