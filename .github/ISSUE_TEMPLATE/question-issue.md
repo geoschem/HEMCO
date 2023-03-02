@@ -1,5 +1,6 @@
 ---
 name: Ask a question about or report an issue with HEMCO
+about: Use this form to ask a question about HEMCO or report a HEMCO issue
 ---
 
 ### Name and Institution (Required)

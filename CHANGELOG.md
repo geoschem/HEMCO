@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Warnings is now removed from `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
   - Removed the `src/Shared/NcdfUtil/perl` folder
 
+## [3.6.2] - 2023-03-02
+### Added
+- Added `.github/config.yml` with settings for the issue chooser page
+
+### Changed
+- Replace `description:` with `about:` in GitHub issue templates
+- The PR template is now `.github/PULL_REQUEST_TEMPLATE.md`
+
+### Fixed
+- Now point to proper commit of the `geos-chem-shaed-docs` submodule
+
 ## [3.6.1] - 2023-03-01
 ### Added
   - GEOS-only updates

@@ -25,7 +25,6 @@ author = 'GEOS-Chem Support Team'
 # The full version, including alpha/beta/rc tags
 release = '3.7.0'
 
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
