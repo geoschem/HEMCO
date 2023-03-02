@@ -1,5 +1,6 @@
 ---
 name: Submit updates to HEMCO with a pull request
+description: Use this form to submit updates to HEMCO with a pull request
 about: Use this form to submit updates to HEMCO with a pull request
 labels: 'never stale'
 ---
