@@ -59,7 +59,7 @@ files=(                                   \
 )
 
 # Replace version numbers in files
-for file in $files[@]; do
+for file in ${files[@]}; do
     replace "${pattern}" "${version}" "${file}"
     [[ $? -ne 0 ]] && exitWithError "${file}"
     echo "HEMCO version updated to ${version} in ${file}"
