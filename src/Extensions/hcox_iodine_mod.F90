@@ -184,11 +184,12 @@ CONTAINS
        SST      = 0.0d0
        W10M     = 0.0d0
 
-       ! Advance to next grid box if box is not over water
-       ! further check needed for ocean, but not available
-       ! ( as parameterisation of iodide based on ocean data)
-       IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J),                         &
-                          ExtState%FRLANDIC%Arr%Val(I,J) ) /= 0 ) CYCLE
+       ! Advance to next grid box if box is not over ocean
+       IF ( HCO_LANDTYPE( ExtState%FRLAND%Arr%Val(I,J),   &
+                          ExtState%FRLANDIC%Arr%Val(I,J), &
+                          ExtState%FROCEAN%Arr%Val(I,J),  &
+                          ExtState%FRSEAICE%Arr%Val(I,J), &
+                          ExtState%FRLAKE%Arr%Val(I,J) ) /= 0 ) CYCLE
 
        ! Grid box surface area on simulation grid [m2]
        A_M2 = HcoState%Grid%AREA_M2%Val( I, J )
@@ -449,9 +450,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use inorganic iodine emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='-')
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: Inorg_Iodine (HOI and I2 emissions)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+       ENDIF
+
+       ! Write all other messages as debug printout only
        IF ( Inst%CalcHOI ) THEN
           WRITE(MSG,*) 'HOI: ', TRIM(SpcNames(1)), Inst%IDTHOI
           CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -468,13 +476,16 @@ CONTAINS
     !=======================================================================
 
     ! Activate met fields used by this module
-    ExtState%WLI%DoUse   = .TRUE.
-    ExtState%FRLANDIC%DoUse    = .TRUE.
-    ExtState%TSKIN%DoUse = .TRUE.
-    ExtState%U10M%DoUse  = .TRUE.
-    ExtState%V10M%DoUse  = .TRUE.
-    ExtState%O3%DoUse    = .TRUE.
-    ExtState%AIR%DoUse   = .TRUE.
+    ExtState%FRLAND%DoUse   = .TRUE.
+    ExtState%FRLANDIC%DoUse = .TRUE.
+    ExtState%FROCEAN%DoUse  = .TRUE.
+    ExtState%FRSEAICE%DoUse = .TRUE.
+    ExtState%FRLAKE%DoUse   = .TRUE.
+    ExtState%TSKIN%DoUse    = .TRUE.
+    ExtState%U10M%DoUse     = .TRUE.
+    ExtState%V10M%DoUse     = .TRUE.
+    ExtState%O3%DoUse       = .TRUE.
+    ExtState%AIR%DoUse      = .TRUE.
 
     ! Enable module
     !ExtState%Inorg_Iodine = .TRUE.
@@ -705,8 +716,11 @@ CONTAINS
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

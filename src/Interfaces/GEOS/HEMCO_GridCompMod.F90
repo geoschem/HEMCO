@@ -1323,7 +1323,6 @@ CONTAINS
     CALL HCO_Imp2Ext ( HcoState, ExtState%U10M     , 'U10M'     , __RC__ )
     CALL HCO_Imp2Ext ( HcoState, ExtState%V10M     , 'V10M'     , __RC__ )
     CALL HCO_Imp2Ext ( HcoState, ExtState%ALBD     , 'ALBVF'    , __RC__ )
-    CALL HCO_Imp2Ext ( HcoState, ExtState%WLI      ,  'LWI'     , __RC__ )
     CALL HCO_Imp2Ext ( HcoState, ExtState%T2M      , 'T2M'      , __RC__ )
     CALL HCO_Imp2Ext ( HcoState, ExtState%TSKIN    , 'TS'       , __RC__ )
     CALL HCO_Imp2Ext ( HcoState, ExtState%GWETTOP  , 'WET1'     , __RC__ )

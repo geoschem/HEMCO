@@ -825,9 +825,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use soil NOx emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: SoilNOx (soil NOx emissions)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
+       ENDIF
+
+       ! Write all other messages as debug printout only
        WRITE(MSG,*) '   - NOx species            : ', TRIM(SpcNames(1)), Inst%IDTNO
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) '   - NOx scale factor       : ', Inst%SpcScalVal(1)
@@ -974,8 +981,11 @@ CONTAINS
     ExtState%U10M%DoUse      = .TRUE.
     ExtState%V10M%DoUse      = .TRUE.
     ExtState%LAI%DoUse       = .TRUE.
+    ExtState%FRLAND%DoUse    = .TRUE.
     ExtState%FRLANDIC%DoUse  = .TRUE.
-    ExtState%WLI%DoUse       = .TRUE.
+    ExtState%FROCEAN%DoUse   = .TRUE.
+    ExtState%FRSEAICE%DoUse  = .TRUE.
+    ExtState%FRLAKE%DoUse    = .TRUE.
     ExtState%SNODP%DoUse     = .TRUE.
     ExtState%RADSWG%DoUse    = .TRUE.
     ExtState%CLDFRC%DoUse    = .TRUE.
@@ -1340,8 +1350,12 @@ CONTAINS
           KK = K
 
           ! If the surface is snow or ice, then set K=3
-          IF ( (ExtState%SNODP%Arr%Val(I,J) > 0.2 .OR. &
-                (HCO_LANDTYPE(ExtState%WLI%Arr%Val(I,J), ExtState%FRLANDIC%Arr%Val(I,J)) == 2) ) ) KK = 3
+          IF ( ( ExtState%SNODP%Arr%Val(I,J) > 0.2 ) .OR.     &
+               ( HCO_LANDTYPE(ExtState%FRLAND%Arr%Val(I,J),   &
+                              ExtState%FRLANDIC%Arr%Val(I,J), &
+                              ExtState%FROCEAN%Arr%Val(I,J),  &
+                              ExtState%FRSEAICE%Arr%Val(I,J), &
+                              ExtState%FRLAKE%Arr%Val(I,J) ) == 2 ) ) KK = 3
 
           ! USE new MODIS/KOPPEN Biometypes to read data
 
@@ -2436,47 +2450,89 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
-       ! Deallocate arrays
-       IF ( ALLOCATED( Inst%PFACTOR       ) ) DEALLOCATE( Inst%PFACTOR       )
-       IF ( ALLOCATED( Inst%GWET_PREV     ) ) DEALLOCATE( Inst%GWET_PREV     )
-       IF ( ALLOCATED( Inst%CANOPYNOX     ) ) DEALLOCATE( Inst%CANOPYNOX     )
-       IF ( ALLOCATED( Inst%DEP_RESERVOIR ) ) DEALLOCATE( Inst%DEP_RESERVOIR )
-       IF ( ALLOCATED( Inst%SpcScalVal    ) ) DEALLOCATE( Inst%SpcScalVal    )
-       IF ( ALLOCATED( Inst%SpcScalFldNme ) ) DEALLOCATE( Inst%SpcScalFldNme )
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ALLOCATED( Inst%PFACTOR ) ) THEN
+          DEALLOCATE( Inst%PFACTOR  )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%GWET_PREV ) ) THEN
+          DEALLOCATE( Inst%GWET_PREV )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%CANOPYNOX ) ) THEN
+          DEALLOCATE( Inst%CANOPYNOX )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%DEP_RESERVOIR ) ) THEN
+          DEALLOCATE( Inst%DEP_RESERVOIR )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%SpcScalVal ) ) THEN
+          DEALLOCATE( Inst%SpcScalVal )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%SpcScalFldNme ) ) THEN
+          DEALLOCATE( Inst%SpcScalFldNme )
+       ENDIF
+
+       IF ( ASSOCIATED( Inst%FertNO_Diag ) ) THEN
+          DEALLOCATE( Inst%FertNO_Diag )
+       ENDIF
+       Inst%FertNO_Diag => NULL()
+
+       IF ( ASSOCIATED( Inst%CLIMARID ) ) THEN
+          DEALLOCATE( Inst%CLIMARID )
+       ENDIF
+       Inst%CLIMARID => NULL()
+
+       IF ( ASSOCIATED( Inst%CLIMNARID ) ) THEN
+          DEALLOCATE( Inst%CLIMNARID )
+       ENDIF
+       Inst%CLIMNARID => NULL()
+
+       IF ( ASSOCIATED( Inst%SOILFERT ) ) THEN
+          DEALLOCATE( Inst%SOILFERT )
+       ENDIF
+       Inst%SOILFERT => NULL()
 
        ! Deallocate LANDTYPE vector
        IF ( ASSOCIATED(Inst%LANDTYPE) ) THEN
           DO I = 1,NBIOM
-             IF ( ASSOCIATED(Inst%LANDTYPE(I)%VAL) ) &
-                DEALLOCATE(Inst%LANDTYPE(I)%Val)
+             IF ( ASSOCIATED( Inst%LANDTYPE(I)%VAL ) ) THEN
+                DEALLOCATE( Inst%LANDTYPE(I)%Val )
+             ENDIF
+             Inst%LANDTYPE(I)%Val => NULL()
           ENDDO
           DEALLOCATE ( Inst%LANDTYPE )
+          
        ENDIF
+       Inst%LANDTYPE => NULL()
 
-       ! Eventually deallocate DRYCOEFF. Make sure ExtState DRYCOEFF pointer is
-       ! not dangling!
+       ! Eventually deallocate DRYCOEFF. 
+       ! Make sure ExtState DRYCOEFF pointer is not dangling!
        IF ( ASSOCIATED ( Inst%DRYCOEFF ) ) THEN
           DEALLOCATE ( Inst%DRYCOEFF )
           ExtState%DRYCOEFF => NULL()
        ENDIF
+       Inst%DRYCOEFF => NULL()
 
-       ! Free pointers
-       IF ( ASSOCIATED( Inst%FertNO_Diag ) ) DEALLOCATE( Inst%FertNO_Diag )
-       IF ( ASSOCIATED( Inst%CLIMARID    ) ) DEALLOCATE( Inst%CLIMARID    )
-       IF ( ASSOCIATED( Inst%CLIMNARID   ) ) DEALLOCATE( Inst%CLIMNARID   )
-       IF ( ASSOCIATED( Inst%SOILFERT    ) ) DEALLOCATE( Inst%SOILFERT    )
-
-       ! ----------------------------------------------------------------
+       !---------------------------------------------------------------------
        ! Pop off instance from list
-       ! ----------------------------------------------------------------
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

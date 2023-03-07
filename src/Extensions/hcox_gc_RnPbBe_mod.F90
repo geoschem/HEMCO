@@ -601,9 +601,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use gc_RnPbBe emissions module (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: GC_RnPbBe (radionuclide emissions)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+       ENDIF
+
+       ! Write all other messages as debug printout only
        MSG = 'Use the following species (Name: HcoID):'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        DO N = 1, nSpc
@@ -1297,27 +1304,66 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping Inst off the list
+       ! in order to avoid memory leaks (Bob Yantosca, 17 Aug 2020)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%EmissRn222 ) ) THEN
+          DEALLOCATE( Inst%EmissRn222 )
+       ENDIF
+       Inst%EmissRn222 => NULL()
+
+       IF ( ASSOCIATED( Inst%EmissBe7 ) ) THEN
+          DEALLOCATE( Inst%EmissBe7 )
+       ENDIF
+       Inst%EmissBe7 => NULL()
+
+       IF ( ASSOCIATED( Inst%EmissBe7Strat  ) ) THEN
+          DEALLOCATE( Inst%EmissBe7Strat )
+       ENDIF
+       Inst%EmissBe7Strat  => NULL()
+
+       IF ( ASSOCIATED( Inst%EmissBe10 ) ) THEN
+          DEALLOCATE(Inst%EmissBe10 )
+       ENDIF
+       Inst%EmissBe10  => NULL()
+
+       IF ( ASSOCIATED( Inst%EmissBe10Strat ) ) THEN
+          DEALLOCATE( Inst%EmissBe10Strat )
+       ENDIF
+       Inst%EmissBe10Strat => NULL()
+
+       IF ( ASSOCIATED( Inst%LATSOU ) ) THEN
+          DEALLOCATE( Inst%LATSOU  )
+       ENDIF
+       Inst%LATSOU => NULL()
+
+       IF ( ASSOCIATED( Inst%PRESOU ) ) THEN
+          DEALLOCATE(Inst%PRESOU )
+       ENDIF
+       Inst%PRESOU => NULL()
+
+       IF ( ASSOCIATED( Inst%BESOU ) ) THEN
+          DEALLOCATE( Inst%BESOU )
+       ENDIF
+       Inst%BESOU => NULL()
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
-
-          ! Cleanup module arrays
-          IF ( ASSOCIATED(Inst%EmissRn222    ) ) DEALLOCATE(Inst%EmissRn222    )
-          IF ( ASSOCIATED(Inst%EmissBe7      ) ) DEALLOCATE(Inst%EmissBe7      )
-          IF ( ASSOCIATED(Inst%EmissBe7Strat ) ) DEALLOCATE(Inst%EmissBe7Strat )
-          IF ( ASSOCIATED(Inst%EmissBe10     ) ) DEALLOCATE(Inst%EmissBe10     )
-          IF ( ASSOCIATED(Inst%EmissBe10Strat) ) DEALLOCATE(Inst%EmissBe10Strat)
-          IF ( ASSOCIATED(Inst%LATSOU        ) ) DEALLOCATE(Inst%LATSOU        )
-          IF ( ASSOCIATED(Inst%PRESOU        ) ) DEALLOCATE(Inst%PRESOU        )
-          IF ( ASSOCIATED(Inst%BESOU         ) ) DEALLOCATE(Inst%BESOU         )
-
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
+
     ENDIF
 
-   END SUBROUTINE InstRemove
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
+
+  END SUBROUTINE InstRemove
 !EOC
 END MODULE HCOX_GC_RnPbBe_Mod

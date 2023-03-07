@@ -498,7 +498,7 @@ CONTAINS
     HcoState%AlltIDx   => NULL()
 
     ! Verbose mode
-    IF ( HCO_IsVerb(HcoConfig%Err,1) ) THEN
+    IF ( HCO_IsVerb( HcoConfig%Err ) ) THEN
        WRITE(MSG,'(A68)') 'Initialized HEMCO state. Will use the following settings:'
        CALL HCO_MSG(HcoConfig%Err,MSG)
        WRITE(MSG,'(A33,I2)') 'Unit tolerance                 : ', UnitTolerance

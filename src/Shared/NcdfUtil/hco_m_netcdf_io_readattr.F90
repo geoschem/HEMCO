@@ -24,6 +24,7 @@ MODULE HCO_m_netcdf_io_readattr
   PUBLIC :: NcGet_Var_Attributes
   INTERFACE NcGet_Var_Attributes
      MODULE PROCEDURE NcGet_Var_Attr_C
+     MODULE PROCEDURE NcGet_Var_Attr_C_nostop
      MODULE PROCEDURE NcGet_Var_Attr_I4
      MODULE PROCEDURE NcGet_Var_Attr_R4
      MODULE PROCEDURE NcGet_Var_Attr_R8
@@ -118,7 +119,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     CHARACTER(LEN=512) :: errMsg
-    INTEGER            :: status, vId
+    INTEGER            :: status, vId, EC
 
     ! Zero return value
     attValue = ''
@@ -130,7 +131,7 @@ CONTAINS
     IF ( status /= NF_NOERR ) THEN
        errMsg = 'In NcGet_Var_Attr_C: ' // TRIM( varName )        // &
                  ', '                   // Nf_Strerror( status )
-       CALL Do_Err_Out ( errMsg, .TRUE., 1, fId, 0, 0, 0.0d0, 0.0d0)
+       CALL Do_Err_Out( errMsg, .TRUE., 0, 0, 0, 0, 0.0d0, 0.0d0 )
     ENDIF
 
     !  Get the attribute
@@ -951,5 +952,74 @@ CONTAINS
     endif
 
   END SUBROUTINE NcGet_Glob_Attr_R8_arr
+!EOC
+!------------------------------------------------------------------------------
+!       NcdfUtilities: by Harvard Atmospheric Chemistry Modeling Group        !
+!                      and NASA/GSFC, SIVO, Code 610.3                        !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: NcGet_Var_Attr_C_nostop
+!
+! !DESCRIPTION: Returns a variable attribute of type CHARACTER.  Similar
+!  to NcGet_Var_Attr_C, but does not stop upon error,  Instead, a status
+!  flag is passed back to the calling routine.
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE NcGet_Var_Attr_C_nostop( fId, varName, attName, attValue, RC )
+!
+! !INPUT PARAMETERS:
+!
+    INTEGER,          INTENT(IN)  :: fId        ! netCDF file ID
+    CHARACTER(LEN=*), INTENT(IN)  :: varName    ! netCDF variable name
+    CHARACTER(LEN=*), INTENT(IN)  :: attName    ! Name of variable attribute
+!
+! !OUTPUT PARAMETERS:
+!
+    CHARACTER(LEN=*), INTENT(OUT) :: attValue   ! Attribute value
+    INTEGER,          INTENT(OUT) :: RC         ! Success or failure?
+!
+! !DESCRIPTION: Reads a variable attribute (CHARACTER type) from a netCDF file.
+!\\
+!\\
+! !AUTHOR:
+!  Bob Yantosca (based on code by Jules Kouatchou and Maharaj Bhat)
+!
+! !REVISION HISTORY:
+!  25 Jan 2012 - R. Yantosca - Initial version
+!  See https://github.com/geoschem/ncdfutil for complete history
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=512) :: errMsg
+    INTEGER            :: status, vId
+
+    ! Zero return value
+    attValue = ''
+
+    ! Check if VARNAME is a valid variable
+    status = Nf_Inq_Varid ( fId, varName, vId )
+
+    ! Exit w/ error message if VARNAME is not valid
+    IF ( status /= NF_NOERR ) THEN
+       RC = status
+       RETURN
+    ENDIF
+
+    !  Get the attribute
+    status = Nf_Get_Att_Text( fId, vId, attName, attValue )
+
+    ! Exit w/ error message if unsuccessful
+    IF ( status /= NF_NOERR ) THEN
+       RC = status
+       RETURN
+    ENDIF
+
+  END SUBROUTINE NcGet_Var_Attr_C_nostop
 !EOC
 END MODULE HCO_m_netcdf_io_readattr

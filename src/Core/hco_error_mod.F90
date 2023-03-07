@@ -53,6 +53,10 @@ MODULE HCO_Error_Mod
 !
 ! !USES:
 !
+#if defined( MAPL_ESMF )
+    USE MAPL_Base, ONLY: MAPL_UNDEF
+#endif
+
   IMPLICIT NONE
   PRIVATE
 !
@@ -66,7 +70,6 @@ MODULE HCO_Error_Mod
   PUBLIC           :: HCO_ERROR_SET
   PUBLIC           :: HCO_ERROR_FINAL
   PUBLIC           :: HCO_IsVerb
-  PUBLIC           :: HCO_VERBOSE_INQ
   PUBLIC           :: HCO_LOGFILE_OPEN
   PUBLIC           :: HCO_LOGFILE_CLOSE
 !
@@ -94,10 +97,14 @@ MODULE HCO_Error_Mod
   ! Missing value
   ! Note: define missing value as single precision because all data arrays
   ! are read/stored in single precision.
+#if defined( MAPL_ESMF )
+  REAL(sp), PARAMETER, PUBLIC :: HCO_MISSVAL = MAPL_UNDEF
+#else
   REAL(sp), PARAMETER, PUBLIC :: HCO_MISSVAL = -1.e31_sp
+#endif
 
   ! HEMCO version number.
-  CHARACTER(LEN=12), PARAMETER, PUBLIC :: HCO_VERSION = '3.0.0'
+  CHARACTER(LEN=12), PARAMETER, PUBLIC :: HCO_VERSION = '3.7.0'
 
   INTERFACE HCO_Error
      MODULE PROCEDURE HCO_ErrorNoErr
@@ -113,6 +120,7 @@ MODULE HCO_Error_Mod
      MODULE PROCEDURE HCO_MsgNoErr
      MODULE PROCEDURE HCO_MsgErr
   END INTERFACE HCO_MSG
+
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
@@ -125,10 +133,9 @@ MODULE HCO_Error_Mod
 !
   TYPE, PUBLIC :: HcoErr
      LOGICAL                     :: FirstOpen = .TRUE.
-     LOGICAL                     :: IsRoot    =  .FALSE.
-     LOGICAL                     :: LogIsOpen =  .FALSE.
-     INTEGER                     :: Warnings  =  0
-     INTEGER                     :: Verbose   =  0
+     LOGICAL                     :: IsRoot    = .FALSE.
+     LOGICAL                     :: LogIsOpen = .FALSE.
+     LOGICAL                     :: doVerbose = .FALSE.
      INTEGER                     :: nWarnings =  0
      INTEGER                     :: CurrLoc   =  -1
      CHARACTER(LEN=255), POINTER :: Loc(:)    => NULL()
@@ -296,13 +303,12 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_WarningErr( Err, ErrMsg, RC, WARNLEV, THISLOC )
+  SUBROUTINE HCO_WarningErr( Err, ErrMsg, RC, THISLOC )
 !
 ! !INPUT PARAMETERS"
 !
     TYPE(HcoErr),     POINTER                  :: Err
     CHARACTER(LEN=*), INTENT(IN   )            :: ErrMsg
-    INTEGER         , INTENT(IN   ), OPTIONAL  :: WARNLEV
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: THISLOC
 !
 ! !INPUT/OUTPUT PARAMETERS:
@@ -322,13 +328,8 @@ CONTAINS
     ! HCO_WARNING begins here
     !======================================================================
 
-    IF ( PRESENT(WARNLEV) ) THEN
-       WLEV = WARNLEV
-    ELSE
-       WLEV = 3
-    ENDIF
-
-    IF ( Err%Warnings >= WLEV ) THEN
+    ! Only print warnings when verbose output is requested
+    IF ( HCO_IsVerb( Err ) ) THEN
 
        ! Print warning
        MSG = 'HEMCO WARNING: ' // TRIM( ErrMsg )
@@ -365,12 +366,12 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_WarningNoErr( ErrMsg, RC, WARNLEV, THISLOC )
+  SUBROUTINE HCO_WarningNoErr( ErrMsg, RC, verb, THISLOC )
 !
 ! !INPUT PARAMETERS"
 !
     CHARACTER(LEN=*), INTENT(IN   )            :: ErrMsg
-    INTEGER         , INTENT(IN   ), OPTIONAL  :: WARNLEV
+    LOGICAL         , INTENT(IN   ), OPTIONAL  :: verb
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: THISLOC
 !
 ! !INPUT/OUTPUT PARAMETERS:
@@ -390,14 +391,17 @@ CONTAINS
     ! HCO_WARNING begins here
     !======================================================================
 
+    ! Exit if verbose output is not requested
+    IF ( .not. verb ) RETURN
+
     ! Print warning
     MSG = 'HEMCO WARNING: ' // TRIM( ErrMsg )
-    WRITE(*,*) TRIM(MSG)
+    WRITE( 6, '(a)' ) TRIM(MSG)
 
     ! Print location
     IF ( PRESENT(THISLOC) ) THEN
        MSG = '--> LOCATION: ' // TRIM(THISLOC)
-       WRITE(*,*) TRIM(MSG)
+       WRITE( 6, '(a)' ) TRIM(MSG)
     ENDIF
 
     ! Return w/ success
@@ -423,7 +427,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_MSGErr( Err, Msg, Sep1, Sep2, Verb )
+  SUBROUTINE HCO_MSGErr( Err, Msg, Sep1, Sep2 )
 !
 ! !INPUT PARAMETERS:
 !
@@ -431,7 +435,9 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: Msg
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep1
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep2
-    INTEGER,          INTENT(IN   ), OPTIONAL  :: Verb
+!
+! !REMARKS:
+!  Refactored to avoid ELSE statements, which are a computational bottleneck.
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
@@ -439,60 +445,39 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    LOGICAL  :: IsOpen
-    INTEGER  :: LUN
+    INTEGER :: LUN
 
-    !======================================================================
+    !=======================================================================
     ! HCO_MSG begins here
-    !======================================================================
+    !=======================================================================
 
-    ! Check if Err object is indeed defined
-    IF ( .NOT. ASSOCIATED(Err) ) THEN
-       IsOpen = .FALSE.
-    ELSE
-       IsOpen = Err%LogIsOpen
+    ! Exit if Err is NULL
+    IF ( .NOT. ASSOCIATED( Err) ) RETURN
 
-       ! Don't print if this is not the root CPU
-       IF ( .NOT. Err%IsRoot ) RETURN
+    ! Exit if we are not on the root core
+    IF ( .NOT. Err%IsRoot ) RETURN
 
-       ! Don't print if verbose level is smaller than verbose level of this
-       ! CPU.
-       IF ( PRESENT( Verb ) ) THEN
-          IF ( Verb < Err%Verbose ) RETURN
-       ENDIF
+    ! Exit if Verbose is turned off
+    IF ( .not. Err%doVerbose ) RETURN
+
+    !=======================================================================
+    ! Write message
+    !=======================================================================
+
+    ! Get the file unit, or if the file is not open, use stdout
+    LUN = Err%LUN
+    IF ( ( .not. Err%LogIsOpen ) .or. ( LUN <= 0 ) ) LUN = 6
+
+    ! If logfile is open then write to it
+    ! Otherwise write to stdout (unit #6)
+    IF ( PRESENT(SEP1) ) THEN
+       WRITE( LUN,'(a)' ) REPEAT( SEP1, 79 )
     ENDIF
-
-    ! Use standard output if file not open
-    IF ( .NOT. IsOpen ) THEN
-       IF ( PRESENT(MSG) ) PRINT *, TRIM(MSG)
-
-    ! Print message to error file
-    ELSE
-       LUN = Err%LUN
-
-       IF (LUN > 0 ) THEN
-          IF ( PRESENT(SEP1) ) THEN
-             WRITE(LUN,'(a)') REPEAT( SEP1, 79)
-          ENDIF
-          IF ( PRESENT(MSG) ) THEN
-!             WRITE(LUN,*) TRIM(MSG)
-             WRITE(LUN,'(a)') TRIM(MSG)
-          ENDIF
-          IF ( PRESENT(SEP2) ) THEN
-             WRITE(LUN,'(a)') REPEAT( SEP2, 79)
-          ENDIF
-       ELSE
-          IF ( PRESENT(SEP1) ) THEN
-             WRITE(*,'(a)') REPEAT( SEP1, 79)
-          ENDIF
-          IF ( PRESENT(MSG) ) THEN
-!             WRITE(*,*) TRIM(MSG)
-             WRITE(*,'(a)') TRIM(MSG)
-          ENDIF
-          IF ( PRESENT(SEP2) ) THEN
-             WRITE(*,'(a)') REPEAT( SEP2, 79)
-          ENDIF
-       ENDIF
+    IF ( PRESENT(MSG) ) THEN
+       WRITE( LUN,'(a)' ) TRIM( MSG )
+    ENDIF
+    IF ( PRESENT(SEP2) ) THEN
+       WRITE( LUN,'(a)' ) REPEAT( SEP2, 79 )
     ENDIF
 
   END SUBROUTINE HCO_MsgErr
@@ -522,7 +507,7 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: Msg
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep1
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep2
-    INTEGER,          INTENT(IN   ), OPTIONAL  :: Verb
+    LOGICAL,          INTENT(IN   ), OPTIONAL  :: Verb
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
@@ -535,12 +520,18 @@ CONTAINS
     ! HCO_MSG begins here
     !======================================================================
 
-    IF ( PRESENT(SEP1) ) THEN
-       WRITE(*,'(a)') REPEAT( SEP1, 79)
+    ! Exit if verbose is not requested
+    IF ( .not. Verb ) RETURN
+
+    ! Print message and optional separator lines
+    IF ( PRESENT( SEP1 ) ) THEN
+       WRITE( 6, '(a)' ) REPEAT( SEP1, 79 )
     ENDIF
-    IF ( PRESENT(MSG) ) PRINT *, TRIM(MSG)
-    IF ( PRESENT(SEP2) ) THEN
-       WRITE(*,'(a)') REPEAT( SEP2, 79)
+    IF ( PRESENT( msg ) ) THEN
+       WRITE( 6, '(a)' ) TRIM( msg )
+    ENDIF
+    IF ( PRESENT( SEP2 ) ) THEN
+       WRITE( 6, '(a)' ) REPEAT( SEP2, 79 )
     ENDIF
 
   END SUBROUTINE HCO_MsgNoErr
@@ -607,7 +598,7 @@ CONTAINS
     Err%Loc(Err%CurrLoc) = thisLoc
 
     ! Track location if enabled
-    IF ( Err%Verbose >= 3 ) THEN
+    IF ( HCO_IsVerb( Err ) ) THEN
        WRITE(MSG,100) TRIM(thisLoc), Err%CurrLoc
        CALL HCO_Msg( Err, MSG )
     ENDIF
@@ -659,7 +650,7 @@ CONTAINS
     IF ( .NOT. ASSOCIATED(Err) ) RETURN
 
     ! Track location if enabled
-    IF ( Err%Verbose >= 3 ) THEN
+    IF ( HCO_IsVerb( Err ) ) THEN
        WRITE(MSG,110) TRIM(Err%Loc(Err%CurrLoc)), Err%CurrLoc
        CALL HCO_MSG( Err, MSG )
     ENDIF
@@ -700,20 +691,22 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_ERROR_SET( am_I_Root, Err, LogFile, &
-                            Verbose, WarningLevel, RC )
+  SUBROUTINE HCO_ERROR_SET( am_I_Root, Err,             LogFile,             &
+                            doVerbose, doVerboseOnRoot, RC                  )
+
 !
 !  !INPUT PARAMETERS:
 !
-    LOGICAL,          INTENT(IN)     :: am_I_Root      ! Root CPU?
-    TYPE(HcoErr),     POINTER        :: Err            ! Error object
-    CHARACTER(LEN=*), INTENT(IN)     :: LogFile        ! logfile path+name
+    LOGICAL,          INTENT(IN)     :: am_I_Root       ! Root CPU?
+    TYPE(HcoErr),     POINTER        :: Err             ! Error object
+    CHARACTER(LEN=*), INTENT(IN)     :: LogFile         ! logfile path+name
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,          INTENT(INOUT)  :: Verbose        ! verbose level
-    INTEGER,          INTENT(INOUT)  :: WarningLevel   ! warning level
-    INTEGER,          INTENT(INOUT)  :: RC
+    LOGICAL,          INTENT(INOUT)  :: doVerbose       ! Verbose output T/F?
+    LOGICAL,          INTENT(INOUT)  :: doVerboseOnRoot ! =T: Verbose on root
+                                                        ! =F: Verbose on all
+    INTEGER,          INTENT(INOUT)  :: RC              
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
@@ -737,23 +730,20 @@ CONTAINS
     ALLOCATE(Err%Loc(MAXNEST))
     Err%Loc(:) = ''
 
-    ! Set verbose to -1 if this is not the root CPU. This will disable any
-    ! log-file messages
-    IF ( .NOT. am_I_Root ) THEN
-       Verbose      = -1
-       WarningLevel =  0
-    ENDIF
-
     ! Pass values
-    Err%IsRoot       = am_I_Root 
-    Err%LogFile      = TRIM(LogFile)
-    Err%Verbose      = Verbose
-    Err%Warnings     = WarningLevel
+    Err%IsRoot  = am_I_Root 
+    Err%LogFile = TRIM(LogFile)
+
+    ! Specify if verbose will be printed on the root core, or all cores
+    IF ( doVerboseOnRoot ) THEN
+       Err%doVerbose = ( doVerbose .and. am_I_Root )
+    ELSE
+       Err%doVerbose = doVerbose
+    ENDIF
 
     ! Init misc. values
     Err%FirstOpen = .TRUE.
     Err%LogIsOpen = .FALSE.
-    Err%nWarnings = 0
     Err%CurrLoc   = 0
 
     ! If Logfile is set to '*', set lun to -1 (--> write into default file).
@@ -817,69 +807,22 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: HCO_Verbose_Inq
-!
-! !DESCRIPTION: Function HCO\_Verbose\_Inq returns the HEMCO verbose number.
-!\\
-!\\
-! !INTERFACE:
-!
-  FUNCTION HCO_VERBOSE_INQ ( ERR ) RESULT ( VerbNr )
-!
-! !INPUT/OUTPUT PARAMETERS:
-!
-    TYPE(HcoErr),     POINTER        :: Err            ! Error object
-!
-! !OUTPUT PARAMETERS:
-!
-    INTEGER :: VerbNr
-!
-! !REVISION HISTORY:
-!  15 Mar 2015 - C. Keller - Initialization
-!  See https://github.com/geoschem/hemco for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-
-    !======================================================================
-    ! HCO_VERBOSE_INQ begins here
-    !======================================================================
-
-    IF ( .NOT. ASSOCIATED(Err) ) THEN
-       VerbNr = -1
-    ELSE
-       VerbNr = Err%Verbose
-    ENDIF
-
-  END FUNCTION HCO_VERBOSE_INQ
-!EOC
-!------------------------------------------------------------------------------
-!                   Harmonized Emissions Component (HEMCO)                    !
-!------------------------------------------------------------------------------
-!BOP
-!
 ! !IROUTINE: HCO_IsVerb
 !
-! !DESCRIPTION: Function HCO\_IsVerb returns true if the HEMCO verbose number
-!  is equal to or larger than the passed number.
+! !DESCRIPTION: Returns true if the HEMCO verbose output is turned on.
 !\\
 !\\
 ! !INTERFACE:
 !
-  FUNCTION HCO_IsVerb ( Err, VerbNr ) RESULT ( IsVerb )
+  FUNCTION HCO_IsVerb( Err ) RESULT ( IsVerb )
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(HcoErr),  POINTER    :: Err            ! Error object
-    INTEGER,       INTENT(IN) :: VerbNr
+    TYPE(HcoErr),  POINTER :: Err            ! Error object
 !
 ! !OUTPUT PARAMETERS:
 !
-    LOGICAL                   :: IsVerb
-!
-! !REVISION HISTORY:
-!  15 Mar 2015 - C. Keller - Initialization
-!  See https://github.com/geoschem/hemco for complete history
+    LOGICAL                :: isVerb
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -888,11 +831,14 @@ CONTAINS
     ! HCO_IsVerb begins here
     !======================================================================
 
-    IF ( .NOT. ASSOCIATED(Err) ) THEN
-       IsVerb = .FALSE.
-    ELSE
-       IsVerb = ( Err%Verbose >= VerbNr )
-    ENDIF
+    ! Initialize
+    isVerb = .FALSE.
+
+    ! Return if the Err object is null
+    IF ( .not. ASSOCIATED( Err ) ) RETURN
+
+    ! Check if "Verbose: 3" was set in the HEMCO_Config.rc file
+    isVerb = Err%doVerbose
 
   END FUNCTION HCO_IsVerb
 !EOC
@@ -1013,24 +959,25 @@ CONTAINS
 
     ! Write header on first call
     IF ( Err%FirstOpen ) THEN
-       IF ( Err%LUN < 0 ) THEN
-          LUN = 6                ! Log gets written to stdout
-       ELSE
-          LUN = Err%LUN          ! Log gets written to file
-       ENDIF
+       LUN = Err%Lun                ! Log gets written to file
+       IF ( Err%LUN < 0 ) LUN = 6   ! or to stdout if file isn't open
 
-       ! Write header
-       WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
-       WRITE( LUN, '(a12, a)' ) 'Using HEMCO ', HCO_VERSION
-       WRITE( LUN, '(a)'        )
+       ! Only write the version info if verbose output is requested
+       IF ( HCO_IsVerb( Err ) ) THEN
+
+          ! Write header
+          WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
+          WRITE( LUN, '(a12, a)' ) 'Using HEMCO ', HCO_VERSION
+          WRITE( LUN, '(a)'        )
 #ifdef USE_REAL8
-       WRITE( LUN,  100       )
- 100   FORMAT('HEMCO precision (hp) is set to is 8-byte real (aka REAL*8)')
+          WRITE( LUN,  100       )
+100       FORMAT('HEMCO precision (hp) is set to is 8-byte real (aka REAL*8)')
 #else
-       WRITE( LUN,  110       )
- 110   FORMAT('HEMCO precision (hp) is set to is 4-byte real (aka REAL*4)')
+          WRITE( LUN,  110       )
+110       FORMAT('HEMCO precision (hp) is set to is 4-byte real (aka REAL*4)')
 #endif
-       WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
+          WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
+       ENDIF
 
        Err%FirstOpen = .FALSE.
     ENDIF
@@ -1095,7 +1042,7 @@ CONTAINS
        CALL HCO_MSG ( Err, MSG, SEP1='-' )
 
        WRITE(MSG,'(A16,I1,A12,I6)') &
-          'Warnings (level ', Err%Warnings, ' or lower): ', Err%nWarnings
+          'Warnings: ', Err%nWarnings
        CALL HCO_MSG ( Err, MSG, SEP2='-' )
     ENDIF
 
