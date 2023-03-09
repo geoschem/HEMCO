@@ -600,7 +600,9 @@ are:
    the expression, e.g. :literal:`MATH:2.0+sin(HH/12*PI)`.
 
    **Country-specific data** can be provided through an ASCII file
-   (:literal:`.txt`). More details on this option are given in the
+   (:literal:`.txt`). In an ESMF environment you must specify the
+   absolute file path rather than use the $ROOT specifier. More
+   details on the country-specific data option are given in the
    Input File Format section.
 
    If this entry is **left empty** (:literal:`-`), the filename from
