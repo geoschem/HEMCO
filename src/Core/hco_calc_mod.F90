@@ -799,8 +799,8 @@ CONTAINS
     TYPE(HCO_State), POINTER       :: HcoState            ! HEMCO state object
     TYPE(DataCont),  POINTER       :: BaseDct             ! base emission
                                                           !  container
-    REAL(hp),        INTENT(INOUT) :: OUTARR_3D(nI,nJ,nL) ! output array
-    REAL(hp),        INTENT(INOUT) :: MASK     (nI,nJ,nL) ! mask array
+    REAL(hp),        INTENT(INOUT) :: outArr_3D(nI,nJ,nL) ! output array
+    REAL(hp),        INTENT(INOUT) :: mask     (nI,nJ,nL) ! mask array
     INTEGER,         INTENT(INOUT) :: RC
 !
 ! !OUTPUT PARAMETERS:
@@ -831,15 +831,15 @@ CONTAINS
     TYPE(DataCont), POINTER :: LevDct2
 
     ! Scalars
-    REAL(sp)                :: TMPVAL, MaskScale
-    REAL(hp)                :: DilFact
+    REAL(sp)                :: tmpVal, MaskScale
+    REAL(hp)                :: outData
     REAL(hp)                :: ScalFact
-    INTEGER                 :: tIDx, IDX
+    INTEGER                 :: tIDx,  IDX
     INTEGER                 :: totLL, nnLL
-    INTEGER                 :: I, J, L, N
+    INTEGER                 :: I,     J,     L,      N
     INTEGER                 :: LowLL, UppLL, ScalLL, TmpLL
-    INTEGER                 :: ERROR
-    CHARACTER(LEN=255)      :: MSG, LOC
+    INTEGER                 :: EC,    ERROR
+    CHARACTER(LEN=255)      :: MSG,   LOC
     LOGICAL                 :: NegScalExist
     LOGICAL                 :: MaskFractions
     LOGICAL                 :: isLevDct1
@@ -874,7 +874,7 @@ CONTAINS
     ENDIF
 
     ! Initialize mask. By default, assume that we use all grid boxes.
-    MASK(:,:,:)  = 1.0_hp
+    MASK          = 1.0_hp
     MaskFractions = HcoState%Options%MaskFractions
 
     ! Verbose
@@ -896,7 +896,7 @@ CONTAINS
     ! Set base emissions
     ! ----------------------------------------------------------------
 
-    ! Initialize ERROR. Will be set to 1 if error occurs below
+    ! Initialize ERROR. Will be set if error occurs below
     ERROR = 0
 
     ! Initialize variables to compute average vertical level index
@@ -906,24 +906,24 @@ CONTAINS
     !-----------------------------------------------------------------
     ! Check for level index containers
     ! Move error checks here, outside of the parallel DO loop
+    ! Remove ELSE blocks for efficiency
     !-----------------------------------------------------------------
+    LevDct1 => NULL()
     IF ( BaseDct%levScalID1 > 0 ) THEN
        CALL Pnt2DataCont( HcoState, BaseDct%levScalID1, LevDct1, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
            CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
            RETURN
        ENDIF
-    ELSE
-       LevDct1 => NULL()
     ENDIF
+
+    LevDct2 => NULL()
     IF ( BaseDct%levScalID2 > 0 ) THEN
        CALL Pnt2DataCont( HcoState, BaseDct%levScalID2, LevDct2, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
            CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
            RETURN
        ENDIF
-    ELSE
-       LevDct2 => NULL()
     ENDIF
 
     ! Test whether LevDct1 and LevDct2 are associated
@@ -931,6 +931,7 @@ CONTAINS
     isLevDct2 = ASSOCIATED( LevDct2 )
 
     ! Get the units of LevDct1 (if it exists)
+    LevDct1_Unit = -1
     IF ( isLevDct1 ) THEN
        LevDct1_Unit = GetEmisLUnit( HcoState, LevDct1 )
        IF ( LevDct1_Unit < 0 ) THEN
@@ -939,11 +940,10 @@ CONTAINS
           RC = HCO_FAIL
           RETURN
        ENDIF
-    ELSE
-       LevDct1_Unit = -1
     ENDIF
 
     ! Get the units of LevDct2 (if it exists)
+    LevDct2_Unit = -1
     IF ( isLevDct2 ) THEN
        LevDct2_Unit = GetEmisLUnit( HcoState, LevDct2 )
        IF ( LevDct2_Unit < 0 ) THEN
@@ -951,8 +951,6 @@ CONTAINS
           CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
-    ELSE
-       LevDct2_Unit = -1
     ENDIF
 
     ! Throw an error if boxheight is missing and the units are in meters
@@ -975,45 +973,53 @@ CONTAINS
        ENDIF
     ENDIF
 
+    ! Reset the error flag before the loop
+    ERROR = 0
+
     !------------------------------------------------------------------------
     ! Loop over all latitudes and longitudes
-    !
-    ! NOTE: It is OK to exit from the "I" loop, because only
-    !       the "J" loop is being parallelized (bmy, 3/8/21)
     !------------------------------------------------------------------------
     !$OMP PARALLEL DO                                                        &
-    !$OMP DEFAULT( SHARED )                                                  &
-    !$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL             )&
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J, L, tIdx, tmpVal, LowLL, UppLL, EC                  )&
     !$OMP REDUCTION( +:totLL                                                )&
-    !$OMP REDUCTION( +:nnLL                                                 )
+    !$OMP REDUCTION( +:nnLL                                                 )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( DYNAMIC, 8                                              )
     DO J = 1, nJ
     DO I = 1, nI
 
+       ! Continue to end of loop if an error has occurred
+       ! (we cannot exit from a parallel loop)
+       IF ( ERROR > 0 ) CYCLE
+
        ! Zero private variables for safety's sake
        tmpVal  = 0.0_hp
-       dilFact = 0.0_hp
        lowLL   = 0
        uppLL   = 0
-
+       EC      = HCO_SUCCESS
+       
        ! Get current time index for this container and at this location
        tIDx = tIDx_GetIndx( HcoState, BaseDct%Dta, I, J )
        IF ( tIDx < 1 ) THEN
           WRITE(MSG,*) 'Cannot get time slice index at location ',I,J,&
                        ': ', TRIM(BaseDct%cName), tIDx
           ERROR = 1
-          EXIT
+          CYCLE
        ENDIF
 
        ! Get lower and upper vertical index
        CALL GetVertIndx( HcoState,     BaseDct,   isLevDct1, LevDct1,        &
                          LevDct1_Unit, isLevDct2, LevDct2,   LevDct2_Unit,   &
                          I,            J,         LowLL,     UppLL,          &
-                         RC                                                 )
-       IF ( RC /= HCO_SUCCESS ) THEN
+                         RC=EC                                              )
+
+       ! trap error
+       IF ( EC /= HCO_SUCCESS ) THEN
           WRITE(MSG,*) 'Error getting vertical index at location ',I,J,&
                        ': ', TRIM(BaseDct%cName)
           ERROR = 1 ! Will cause error
-          EXIT
+          CYCLE
        ENDIF
 
        ! Update variables for computing the average level
@@ -1024,51 +1030,32 @@ CONTAINS
        DO L = LowLL, UppLL
 
           ! Get base value. Use uniform value if scalar field.
-          IF ( BaseDct%Dta%SpaceDim == 1 ) THEN
-             TMPVAL = BaseDct%Dta%V2(tIDx)%Val(1,1)
-          ELSEIF ( BaseDct%Dta%SpaceDim == 2 ) THEN
-             TMPVAL = BaseDct%Dta%V2(tIDx)%Val(I,J)
-          ELSE
-             TMPVAL = BaseDct%Dta%V3(tIDx)%Val(I,J,L)
+          tmpVal = Get_Data_From_DataCont( I, J, L, tIdx, BaseDct )
+
+          ! If it's a missing value, mask box as unused 
+          ! and set value to zero.
+          IF ( tmpVal == HCO_MISSVAL ) THEN
+             mask(I,J,:)      = 0.0_hp
+             outArr_3D(I,J,L) = 0.0_hp
+             CYCLE
+          ENDIF
+             
+          ! Otherwise, apply the vertical dilution factor (if necessary)
+          CALL Apply_Dilution_Factor( I        = I,                          &
+                                      J        = J,                          &
+                                      L        = L,                          &
+                                      LowLL    = LowLL,                      &
+                                      UppLL    = UppLL,                      &
+                                      HcoState = HcoState,                   &
+                                      BaseDct  = BaseDct,                    &
+                                      inData   = tmpVal,                     &
+                                      outData  = outArr_3D(I,J,L),           &
+                                      RC       = EC                         )
+
+          IF ( EC /= HCO_SUCCESS ) THEN
+             ERROR = 1
           ENDIF
 
-          ! If it's a missing value, mask box as unused and set value to zero
-          IF ( TMPVAL == HCO_MISSVAL ) THEN
-             MASK(I,J,:)      = 0.0_hp
-             OUTARR_3D(I,J,L) = 0.0_hp
-
-          ! Pass base value to output array
-          ELSE
-
-             ! Get dilution factor. Never dilute 3D emissions.
-             IF ( BaseDct%Dta%SpaceDim == 3 ) THEN
-                DilFact = 1.0_hp
-
-             ! If emission level mode is 2, copy emissions to all level
-             ! A separate scale factor should be used to distribute vertically
-             ELSE IF ( BaseDct%Dta%EmisLmode == 2 ) THEN
-                DilFact = 1.0_hp
-
-             ! 2D dilution factor
-             ELSE
-                CALL GetDilFact(                                             &
-                     HcoState,               BaseDct%Dta%EmisL1,             &
-                     BaseDct%Dta%EmisL1Unit, BaseDct%Dta%EmisL2,             &
-                     BaseDct%Dta%EmisL2Unit, I,                              &
-                     J,                      L,                              &
-                     LowLL,                  UppLL,                          &
-                     DilFact,                RC                             )
-                IF ( RC /= HCO_SUCCESS ) THEN
-                   WRITE(MSG,*) 'Error getting dilution factor at ',I,J,&
-                                ': ', TRIM(BaseDct%cName)
-                   ERROR = 1
-                   EXIT
-                ENDIF
-             ENDIF
-
-             ! Scale base emission by dilution factor
-             OUTARR_3D(I,J,L) = DilFact * TMPVAL
-          ENDIF
        ENDDO !L
 
     ENDDO !I
@@ -1164,15 +1151,19 @@ CONTAINS
 
        !--------------------------------------------------------------------
        ! Loop over all latitudes and longitudes
-       !
-       ! NOTE: It is OK to CYCLE or EXIT from the "I" loop, because
-       !       only the "J" loop is being parallelized (bmy, 3/8/21)
        !--------------------------------------------------------------------
        !$OMP PARALLEL DO                                                     &
        !$OMP DEFAULT( SHARED                                                )&
-       !$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale )
+       !$OMP PRIVATE( I,     J,     tIdx,  tmpVal,    L                     )& 
+       !$OMP PRIVATE( LowLL, UppLL, tmpLL, MaskScale, EC                    )&
+       !$OMP COLLAPSE( 2                                                    )&
+       !$OMP SCHEDULE( DYNAMIC, 8                                           )
        DO J = 1, nJ
        DO I = 1, nI
+
+          ! Continue to end of loop if an error has occurred
+          ! (we cannot exit from a parallel loop)
+          IF ( ERROR > 0 ) CYCLE
 
           ! ------------------------------------------------------------
           ! If there is a mask associated with this scale factors, check
@@ -1188,10 +1179,10 @@ CONTAINS
 
           ! If there is a mask applied to this scale factor ...
           IF ( isMaskDct ) THEN
-             CALL GetMaskVal ( MaskDct, I, J, MaskScale, MaskFractions, RC )
-             IF ( RC /= HCO_SUCCESS ) THEN
+             CALL GetMaskVal ( MaskDct, I, J, MaskScale, MaskFractions, EC )
+             IF ( EC /= HCO_SUCCESS ) THEN
                 ERROR = 4
-                EXIT
+                CYCLE
              ENDIF
           ENDIF
 
@@ -1204,7 +1195,7 @@ CONTAINS
              WRITE(*,*) 'Cannot get time slice index at location ',I,J,&
                           ': ', TRIM(ScalDct%cName), tIDx
              ERROR = 3
-             EXIT
+             CYCLE
           ENDIF
 
           ! Check if this is a mask. If so, add mask values to the MASK
@@ -1216,10 +1207,10 @@ CONTAINS
           IF ( ScalDct%DctType == HCO_DCTTYPE_MASK ) THEN
 
              ! Get mask value
-             CALL GetMaskVal( ScalDct, I, J, TMPVAL, MaskFractions, RC )
-             IF ( RC /= HCO_SUCCESS ) THEN
+             CALL GetMaskVal( ScalDct, I, J, TMPVAL, MaskFractions, EC )
+             IF ( EC /= HCO_SUCCESS ) THEN
                 ERROR = 4
-                EXIT
+                CYCLE
              ENDIF
 
              ! Pass to output mask
@@ -1248,32 +1239,25 @@ CONTAINS
           CALL GetVertIndx( HcoState, BaseDct,       isLevDct1,              &
                             LevDct1,  LevDct1_Unit,  isLevDct2,              &
                             LevDct2,  LevDct2_Unit,  I,                      &
-                            J,        LowLL,         UppLL,      RC         )
+                            J,        LowLL,         UppLL,                  &
+                            RC=EC                                           )
           IF ( RC /= HCO_SUCCESS ) THEN
              ERROR = 1 ! Will cause error
-             EXIT
+             CYCLE
           ENDIF
 
           ! Loop over all vertical levels of the base field
           DO L = LowLL,UppLL
+
              ! If the vertical level exceeds the number of available
              ! scale factor levels, use the highest available level.
-             IF ( L > ScalLL ) THEN
-                TmpLL = ScalLL
              ! Otherwise use the same vertical level index.
-             ELSE
-                TmpLL = L
-             ENDIF
+             TmpLL = L
+             IF ( L > ScalLL ) TmpLL = ScalLL
 
              ! Get scale factor for this grid box. Use same uniform
              ! value if it's a scalar field
-             IF ( ScalDct%Dta%SpaceDim == 1 ) THEN
-                TMPVAL = ScalDct%Dta%V2(tidx)%Val(1,1)
-             ELSEIF ( ScalDct%Dta%SpaceDim == 2 ) THEN
-                TMPVAL = ScalDct%Dta%V2(tidx)%Val(I,J)
-             ELSE
-                TMPVAL = ScalDct%Dta%V3(tidx)%Val(I,J,TmpLL)
-             ENDIF
+             tmpVal = Get_Data_From_DataCont( I, J, L, tIdX, ScalDct )
 
              ! Set missing value to one
              IF ( TMPVAL == HCO_MISSVAL ) TMPVAL = 1.0_sp
@@ -1298,37 +1282,27 @@ CONTAINS
                    WRITE(*,*) 'Negative scale factor at ',I,J,TmpLL,tidx,&
                               ': ', TRIM(ScalDct%cName), TMPVAL
                    ERROR = 1 ! Will cause error
-                   EXIT
+                   CYCLE
                 ENDIF
              ENDIF
 
              ! -------------------------------------------------------
              ! Apply scale factor in accordance to field operator
              ! -------------------------------------------------------
-
-             ! Oper 1: multiply
-             IF ( ScalDct%Oper == 1 ) THEN
-                OUTARR_3D(I,J,L) = OUTARR_3D(I,J,L) * TMPVAL
-
-             ! Oper -1: divide
-             ELSEIF ( ScalDct%Oper == -1 ) THEN
-                ! Ignore zeros to avoid NaN
-                IF ( TMPVAL /= 0.0_sp ) THEN
-                   OUTARR_3D(I,J,L) = OUTARR_3D(I,J,L) / TMPVAL
-                ENDIF
-
-             ! Oper 2: square
-             ELSEIF ( ScalDct%Oper == 2 ) THEN
-                OUTARR_3D(I,J,L) = OUTARR_3D(I,J,L) * TMPVAL * TMPVAL
-
-             ! Return w/ error otherwise (Oper 3 is only allowed for masks!)
-             ELSE
-                WRITE(*,*) 'Illegal operator for ', TRIM(ScalDct%cName), ScalDct%Oper
-                ERROR = 2 ! Will cause error
-                EXIT
+             CALL Apply_Scale_Factor( I       = I,                           &
+                                      J       = J,                           & 
+                                      L       = L,                           &
+                                      ScalDct = ScalDct,                     &
+                                      scalFac = tmpVal,                      &
+                                      dataVal = outArr_3D(I,J,L),            &
+                                      RC      = EC                          )
+             
+             IF ( EC /= HCO_SUCCESS ) THEN
+                ERROR = 2
+                CYCLE
              ENDIF
-
-          ENDDO !LL
+            
+          ENDDO 
 
           ! Verbose mode
           if ( HCO_IsVerb(HcoState%Config%Err) .and. i == ix .and. j == iy ) then
@@ -1393,6 +1367,219 @@ CONTAINS
     CALL HCO_LEAVE ( HcoState%Config%Err, RC )
 
   END SUBROUTINE Get_Current_Emissions
+
+
+  FUNCTION Get_Value_From_DataCont( I, J, L, tIdx, Dct ) RESULT( val )
+
+    INTEGER         INTENT(IN) :: I
+    INTEGER         INTENT(IN) :: J
+    INTEGER         INTENT(IN) :: L
+    INTEGER,        INTENT(IN) :: tIdx
+    TYPE(DataCont), POINTER    :: Dct
+
+    REAL(sp)                   :: val
+
+    ! Data is a 1-D scaler: Return a uniform value
+    IF ( Dct%Dta%SpaceDim == 1 ) THEN
+       val = BaseDct%Dta%V2(tIDx)%Val(1,1)
+       RETURN
+    ENDIF
+
+    ! Data is a 2-D array: Return value at (I,J)
+    IF ( Dct%Dta%SpaceDim == 2 ) THEN
+       val = BaseDct%Dta%V2(tIDx)%Val(I,J)
+       RETURN
+    ENDIF
+    
+    ! Data is a 3-D array: Return value at (I,J,L)
+    val = BaseDct%Dta%V3(tIDx)%Val(I,J,L)
+ 
+  END FUNCTION Get_Value_From_DataCont
+!EOC
+!------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: Apply_Dilution_Factor
+!
+! !DESCRIPTION: Applies the dilution factor to input data.  This algorithm
+!  has been abstracted out of Get_Current_Emissions for computational
+!  efficiency.
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE Apply_Dilution_Factor( I,       J,         L,      LowLL,       &
+                                    UppLL,   HcoState, BaseDct, inData,      &
+                                    outData, RC                             )
+!
+! !USES:
+!
+    USE HCO_Error_Mod
+    USE HCO_State_Mod, ONLY : HCO_State
+!
+! !INPUT PARAMETERS: 
+!
+    INTEGER,         INTENT(IN)    :: I         ! Longitude (or X-dim) index
+    INTEGER,         INTENT(IN)    :: J         ! Latitude  (or Y-dim) index
+    INTEGER,         INTENT(IN)    :: L         ! Vertical level index
+    INTEGER,         INTENT(IN)    :: LowLL     ! Lower level for emissions
+    INTEGER,         INTENT(IN)    :: UppLL     ! Upper level for emissions
+    TYPE(DataCont),  POINTER       :: BaseDct   ! Base data container
+    REAL(sp),        INTENT(IN)    :: inData    ! Input data
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    TYPE(HCO_State), POINTER       :: HcoState  ! HEMCO state object
+    REAL(hp),        INTENT(INOUT) :: outData   ! Data w/ dil. factor applied
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,         INTENT(OUT)   :: RC        ! Success or failure
+!
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Scalars
+    REAL(hp)           :: dilFact
+
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
+
+    !========================================================================
+    ! Apply_Dilution_Factor begins here!
+    !========================================================================
+
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'Apply_Dilution_Factor (in src/Core/hco_calc_mod.F90)'
+    dilFact = 0.0_hp
+
+    !========================================================================
+    ! Get dilution factor. Never dilute 3D emissions.
+    !========================================================================
+    IF ( BaseDct%Dta%SpaceDim == 3 ) THEN
+       outData = inData
+       RETURN
+    ENDIF
+
+    !========================================================================
+    ! If emission level mode is 2, copy emissions to all level
+    ! A separate scale factor should be used to distribute vertically
+    !========================================================================
+    IF ( BaseDct%Dta%EmisLmode == 2 ) THEN
+       outData = inData
+       RETURN
+    ENDIF
+
+    !========================================================================
+    ! Otherwise, compute the vertical dilution factor
+    ! and apply it to the input data.
+    !========================================================================
+    CALL GetDilFact( I          = I,                                         &
+                     J          = J,                                         &
+                     L          = L,                                         &
+                     LowLL      = LowLL,                                     &
+                     UppLL      = UppLL,                                     &
+                     HcoState   = HcoState,                                  &
+                     EmisL1     = BaseDct%Dta%EmisL1,                        &
+                     EmisL1Unit = BaseDct%Dta%EmisL1Unit,                    &
+                     EmisL2     = BaseDct%Dta%EmisL2,                        &
+                     EmisL2Unit = BaseDct%Dta%EmisL2Unit,                    &
+                     DilFact    = dilFact,                                   &
+                     RC         = RC                                        )
+
+    ! Trap error
+    IF ( RC /= HCO_SUCCESS ) THEN
+       WRITE(*,*) 'Error getting dilution factor at ',I,J,&
+            ': ', TRIM(BaseDct%cName)
+       RC = 1
+       RETURN
+    ENDIF
+
+    ! Scale base emission by dilution factor
+    outData = dilFact * inData
+
+  END SUBROUTINE Apply_Dilution_Factor
+!EOC
+!------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: Apply_Scale_Factor
+!
+! !DESCRIPTION: Applies scale factors to the input
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE Apply_Scale_Factor( I, J, L, ScalDct, scalFac, dataVal, RC )
+!
+! !USES:
+!
+    USE HCO_Error_Mod
+!
+! !INPUT PARAMETERS: 
+!
+    INTEGER,        INTENT(IN)    :: I        ! Longitude (or X-dim) index
+    INTEGER,        INTENT(IN)    :: J        ! Latitude  (or Y-dim) index
+    INTEGER,        INTENT(IN)    :: L        ! Vertical level index
+    TYPE(DataCont), POINTER       :: ScalDct  ! Scale Factor data container
+    REAL(sp),       INTENT(IN)    :: scalFac  ! Scale factor
+!
+! !INPUT/OUTPUT PARAMETERS: 
+!
+    REAL(hp),       INTENT(INOUT) :: dataVal  ! Data to be scaled
+!
+! !OUTPUT PARAMETERS: 
+!
+    INTEGER,        INTENT(OUT)   :: RC       ! Success or failure
+!
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    !=======================================================================
+    ! Apply_Scale_Factor begins here!
+    !=======================================================================
+
+    ! Initialize
+    RC = HCO_SUCCESS
+
+    ! Oper 1: multiply
+    IF ( ScalDct%Oper == 1 ) THEN
+       dataVal = dataVal * scalFac
+       RETURN
+    ENDIF
+       
+    ! Oper -1: divide
+    IF ( ScalDct%Oper == -1 ) THEN
+       IF ( scalFac /= 0.0_sp ) THEN
+           dataVal = dataVal / scalFac
+       ENDIF
+       RETURN
+    ENDIF
+
+    ! Oper 2: square
+    IF ( ScalDct%Oper == 2 ) THEN
+       dataVal = dataVal * scalFac * scalFac
+       RETURN
+    ENDIF
+    
+    ! Return w/ error otherwise (Oper 3 is only allowed for masks!)
+    WRITE(*,*) 'Illegal operator for ', &
+         TRIM(ScalDct%cName), ScalDct%Oper
+    RC = 2 ! Will cause error
+
+  END SUBROUTINE Apply_Scale_Factor    
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -1504,11 +1691,17 @@ CONTAINS
 
     ! Loop over all grid boxes
     !$OMP PARALLEL DO                                                        &
-    !$OMP DEFAULT( SHARED                                                  ) &
-    !$OMP PRIVATE( I, J, LowLL, UppLL, tIdx, IJFILLED, L                   ) &
-    !$OMP PRIVATE( TMPVAL, N, IDX, ScalDct, ScalLL, tmpLL, MaskScale       )
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J, LowLL, UppLL, tIdx, IJFILLED, L                    )&
+    !$OMP PRIVATE( TMPVAL, N, IDX, ScalDct, ScalLL, tmpLL, MaskScale        )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( DYNAMIC, 8                                              )
     DO J = 1, nJ
     DO I = 1, nI
+
+       ! Continue to end of loop if an error has occurred
+       ! (we cannot exit from a parallel loop)
+       IF ( ERROR > 0 ) CYCLE
 
        ! -------------------------------------------------------------
        ! Set base emissions
@@ -1519,14 +1712,10 @@ CONTAINS
        ! necessarily extent over the entire troposphere but only cover
        ! the effectively filled vertical levels. For most inventories,
        ! this is only the first model level.
-       IF ( BaseDct%Dta%SpaceDim==3 ) THEN
-          LowLL = 1
-          UppLL = SIZE(BaseDct%Dta%V3(1)%Val,3)
-       ELSE
-          !LowLL = BaseDct%Dta%Lev2D
-          !UppLL = BaseDct%Dta%Lev2D
-          LowLL = 1
-          UppLL = 1
+       LowLL = 1
+       UppLL = 1
+       IF ( BaseDct%Dta%SpaceDim == 3 ) THEN
+          UppLL = SIZE( BaseDct%Dta%V3(1)%Val, 3 )
        ENDIF
 
        ! Precalculate timeslice index. The data containers can
@@ -1540,7 +1729,7 @@ CONTAINS
           write(MSG,*) 'Cannot get time slice index at location ',I,J,&
                        ': ', TRIM(BaseDct%cName)
           ERROR = 3
-          EXIT
+          CYCLE
        ENDIF
 
        ! # of levels w/ defined emissions
@@ -1590,13 +1779,13 @@ CONTAINS
           CALL Pnt2DataCont( HcoState, IDX, ScalDct, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ERROR = 4
-             EXIT
+             CYCLE
           ENDIF
 
           ! Scale field cannot be a base field
           IF ( (ScalDct%DctType == HCO_DCTTYPE_BASE) ) THEN
              ERROR = 4
-             EXIT
+             CYCLE
           ENDIF
 
           ! Skip this scale factor if no data defined. This is possible
@@ -1625,23 +1814,22 @@ CONTAINS
                 MSG = TRIM(MSG) // '; mask: '//TRIM(MaskDct%cName)
                 CALL HCO_ERROR( MSG, RC )
                 ERROR = 5
-                EXIT
+                CYCLE
              ENDIF
 
              ! Get mask value
              CALL GetMaskVal( ScalDct, I, J, TMPVAL, MaskFractions, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
                 ERROR = 6
-                EXIT
+                CYCLE
              ENDIF
 
           ENDIF
 
           ! Get vertical extension of this scale factor array.
-          IF( (ScalDct%Dta%SpaceDim<=2) ) THEN
-             ScalLL = 1
-          ELSE
-             ScalLL = SIZE(ScalDct%Dta%V3(1)%Val,3)
+          ScalLL = 1
+          IF ( ScalDct%Dta%SpaceDim == 3 ) THEN
+             ScalLL = SIZE( ScalDct%Dta%V3(1)%Val, 3 )
           ENDIF
 
           ! Get current time index
@@ -1650,7 +1838,7 @@ CONTAINS
              write(MSG,*) 'Cannot get time slice index at location ',I,J,&
                           ': ', TRIM(ScalDct%cName)
              ERROR = 3
-             EXIT
+             CYCLE
           ENDIF
 
           ! ------------------------------------------------------------
@@ -1692,14 +1880,12 @@ CONTAINS
 
           ! Loop over all vertical levels of the base field
           DO L = LowLL,UppLL
+
              ! If the vertical level exceeds the number of available
              ! scale factor levels, use the highest available level.
-             IF ( L > ScalLL ) THEN
-                TmpLL = ScalLL
              ! Otherwise use the same vertical level index.
-             ELSE
-                TmpLL = L
-             ENDIF
+             TmpLL = L
+             IF ( L > ScalLL ) TmpLL = ScalLL
 
              ! Get scale factor for this grid box. Use same uniform
              ! value if it's a scalar field
@@ -1729,7 +1915,7 @@ CONTAINS
                    WRITE(*,*) 'Negative scale factor at ',I,J,TmpLL,tidx,&
                               ': ', TRIM(ScalDct%cName), TMPVAL
                    ERROR = 1 ! Will cause error
-                   EXIT
+                   CYCLE
                 ENDIF
              ENDIF
 
@@ -1757,7 +1943,7 @@ CONTAINS
                 MSG = 'Illegal data operator: ' // TRIM(ScalDct%cName)
                 CALL HCO_ERROR( MSG, RC )
                 ERROR = 2
-                EXIT
+                CYCLE
              ENDIF
           ENDDO !LL
        ENDDO ! N
@@ -1777,7 +1963,7 @@ CONTAINS
 
     ENDDO !I
     ENDDO !J
-!$OMP END PARALLEL DO
+    !$OMP END PARALLEL DO
 
     ! Error check
     IF ( ERROR > 0 ) THEN
@@ -2332,12 +2518,16 @@ CONTAINS
 !
     INTEGER             :: EmisLUnit
     REAL(hp)            :: EmisL
-    CHARACTER(LEN=255)  :: LOC
+    CHARACTER(LEN=255)  :: errMsg, thisLoc
 
     !=======================================================================
     ! GetVertIndx begins here
     !=======================================================================
-    LOC = 'GetVertIndx (HCO_CALC_MOD.F90)'
+
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'GetVertIndx (src/Core/hco_calc_mod.F90)'
 
     !-----------------------------------------------------------------------
     ! Get vertical extension of base emission array.
@@ -2347,9 +2537,9 @@ CONTAINS
     ! the effectively filled vertical levels. For most inventories,
     ! this is only the first model level.
     !-----------------------------------------------------------------------
-    IF ( Dct%Dta%SpaceDim==3 ) THEN
+    IF ( Dct%Dta%SpaceDim == 3 ) THEN
        LowLL = 1
-       UppLL = SIZE(Dct%Dta%V3(1)%Val,3)
+       UppLL = SIZE( Dct%Dta%V3(1)%Val, 3 )
        RC    = HCO_SUCCESS
        RETURN
     ENDIF
@@ -2362,6 +2552,11 @@ CONTAINS
     ! Lower level
     ! --> Check if scale factor is used to determine lower and/or
     !     upper level
+    !
+    ! NOTE: Get rid of ELSE block for efficiency (bmy, 09 Mar 2023)
+    EmisL     = Dct%Dta%EmisL1
+    EmisLUnit = Dct%Dta%EmisL1Unit
+
     IF ( isLevDct1 ) THEN
        EmisL = GetEmisL( HcoState, LevDct1, I, J )
        IF ( EmisL < 0.0_hp ) THEN
@@ -2369,17 +2564,20 @@ CONTAINS
           RETURN
        ENDIF
        EmisLUnit = LevDct1_Unit
-    ELSE
-       EmisL     = Dct%Dta%EmisL1
-       EmisLUnit = Dct%Dta%EmisL1Unit
     ENDIF
+
     CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, LowLL, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Error encountered in rouitine "GetIdx" (for LevDct1)!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
 
     ! Upper level
+    ! NOTE: Get rid of ELSE block for efficiency (bmy, 09 Mar 2023)
+    EmisL     = Dct%Dta%EmisL2
+    EmisLUnit = Dct%Dta%EmisL2Unit
+
     IF ( isLevDct2 ) THEN
        EmisL = GetEmisL( HcoState, LevDct2, I, J )
        IF ( EmisL < 0.0_hp ) THEN
@@ -2387,14 +2585,13 @@ CONTAINS
           RETURN
        ENDIF
        EmisLUnit = LevDct2_Unit
-    ELSE
-       EmisL     = Dct%Dta%EmisL2
-       EmisLUnit = Dct%Dta%EmisL2Unit
     ENDIF
+
     CALL GetIdx( HcoState, I, J, EmisL, EmisLUnit, UppLL, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Error encountered in rouitine "GetIdx" (for LevDct2)!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
 
     ! Upper level must not be lower than lower level
@@ -2560,6 +2757,10 @@ END FUNCTION GetEmisLUnit
     REAL(hp),        INTENT(INOUT)  :: alt            ! altitude
     INTEGER,         INTENT(INOUT)  :: RC
 !
+! !REMARKS:
+!  The code was refactored to avoid ELSE blocks (which are computationally
+!  expensive) following the "never-nesting" technique. (Bob Y., 10 Mar 2023)
+!
 ! !REVISION HISTORY:
 !  09 May 2016 - C. Keller - Initial version
 !  See https://github.com/geoschem/hemco for complete history
@@ -2575,20 +2776,29 @@ END FUNCTION GetEmisLUnit
     CHARACTER(LEN=255)      :: LOC = 'GetIdx (hco_calc_mod.F90)'
 
     !=================================================================
-    ! HCO_GetVertIndx begins here
+    ! HCO_GetIdx begins here
     !=================================================================
 
     ! Init
     RC = HCO_SUCCESS
 
-    ! Simple case: data is already on level unit
+    ! Input data is in level coordinates;
+    ! Return the corresponding level index
     IF ( altu == HCO_EMISL_LEV ) THEN
-       lidx = INT(alt)
+       lidx = INT( alt )
+       RETURN
+    ENDIF
 
-    ELSEIF ( altu == HCO_EMISL_TOP ) THEN
+    ! Input specifies the top-of-atmosphere;
+    ! Return the top-of-atmosphere level index
+    IF ( altu == HCO_EMISL_TOP ) THEN
        lidx = HCOState%NZ
+       RETURN
+    ENDIF
 
-    ELSEIF ( altu == HCO_EMISL_M .OR. altu == HCO_EMISL_PBL ) THEN
+    ! Input data is in meters or specifies the PBL top;
+    ! Find the corresponding level index
+    IF ( altu == HCO_EMISL_M .OR. altu == HCO_EMISL_PBL ) THEN
 
        ! Eventually get altitude from PBL height
        IF ( altu == HCO_EMISL_PBL ) THEN
@@ -2618,19 +2828,18 @@ END FUNCTION GetEmisLUnit
        ! If altitude is above maximum level
        IF ( lidx == -1 .AND. alt >= altt ) THEN
           lidx = HcoState%NZ
-          WRITE(MSG,*)  'Level is above max. grid box level - use top level ', alt
+          WRITE(MSG,*)                                                       &
+               'Level is above max. grid box level - use top level ', alt
           CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
 
-    ELSE
-       MSG = 'Illegal altitude unit'
-       CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
-    ! Return w/ success
-    RC = HCO_SUCCESS
+    ! Error if we drop down to here
+    MSG = 'Illegal altitude unit'
+    CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
 
   END SUBROUTINE GetIdx
 !EOC
