@@ -1030,7 +1030,7 @@ CONTAINS
        DO L = LowLL, UppLL
 
           ! Get base value. Use uniform value if scalar field.
-          tmpVal = Get_Data_From_DataCont( I, J, L, tIdx, BaseDct )
+          tmpVal = Get_Value_From_DataCont( I, J, L, tIdx, BaseDct )
 
           ! If it's a missing value, mask box as unused 
           ! and set value to zero.
@@ -1257,7 +1257,7 @@ CONTAINS
 
              ! Get scale factor for this grid box. Use same uniform
              ! value if it's a scalar field
-             tmpVal = Get_Data_From_DataCont( I, J, L, tIdX, ScalDct )
+             tmpVal = Get_Value_From_DataCont( I, J, L, tIdX, ScalDct )
 
              ! Set missing value to one
              IF ( TMPVAL == HCO_MISSVAL ) TMPVAL = 1.0_sp
@@ -1369,30 +1369,30 @@ CONTAINS
   END SUBROUTINE Get_Current_Emissions
 
 
-  FUNCTION Get_Value_From_DataCont( I, J, L, tIdx, Dct ) RESULT( val )
+  FUNCTION Get_Value_From_DataCont( I, J, L, tIdx, Dct ) RESULT( dataVal )
 
-    INTEGER         INTENT(IN) :: I
-    INTEGER         INTENT(IN) :: J
-    INTEGER         INTENT(IN) :: L
+    INTEGER,        INTENT(IN) :: I
+    INTEGER,        INTENT(IN) :: J
+    INTEGER,        INTENT(IN) :: L
     INTEGER,        INTENT(IN) :: tIdx
     TYPE(DataCont), POINTER    :: Dct
 
-    REAL(sp)                   :: val
+    REAL(sp)                   :: dataVal
 
     ! Data is a 1-D scaler: Return a uniform value
     IF ( Dct%Dta%SpaceDim == 1 ) THEN
-       val = BaseDct%Dta%V2(tIDx)%Val(1,1)
+       dataVal = Dct%Dta%V2(tIDx)%Val(1,1)
        RETURN
     ENDIF
 
     ! Data is a 2-D array: Return value at (I,J)
     IF ( Dct%Dta%SpaceDim == 2 ) THEN
-       val = BaseDct%Dta%V2(tIDx)%Val(I,J)
+       dataVal = Dct%Dta%V2(tIDx)%Val(I,J)
        RETURN
     ENDIF
     
     ! Data is a 3-D array: Return value at (I,J,L)
-    val = BaseDct%Dta%V3(tIDx)%Val(I,J,L)
+    dataVal = Dct%Dta%V3(tIDx)%Val(I,J,L)
  
   END FUNCTION Get_Value_From_DataCont
 !EOC
