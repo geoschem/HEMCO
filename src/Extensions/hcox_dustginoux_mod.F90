@@ -3,7 +3,7 @@
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: hemcox_dustginoux_mod.F90
+! !MODULE: hcox_dustginoux_mod.F90
 !
 ! !DESCRIPTION: Paul GINOUX dust source function.  This subroutine updates
 !  the surface mixing ratio of dust aerosols for NDSTBIN size bins.  The
@@ -560,9 +560,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use Ginoux dust emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: DustGinoux (dust mobilization)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+       ENDIF
+     
+       ! Write all other messages as debug printout only
        IF ( Inst%ExtNrAlk > 0 ) THEN
           MSG = 'Use dust alkalinity option'
           CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
@@ -1060,31 +1067,77 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping Inst off the list
+       ! in order to avoid memory leaks (Bob Yantosca, 17 Aug 2020)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%SRCE_SAND ) ) THEN
+          DEALLOCATE( Inst%SRCE_SAND )
+       ENDIF
+       Inst%SRCE_SAND => NULL()
+
+       IF ( ASSOCIATED( Inst%SRCE_SILT ) ) THEN
+          DEALLOCATE( Inst%SRCE_SILT )
+       ENDIF
+       Inst%SRCE_SILT => NULL()
+
+       IF ( ASSOCIATED( Inst%SRCE_CLAY ) ) THEN
+          DEALLOCATE( Inst%SRCE_CLAY )
+       ENDIF
+       Inst%SRCE_CLAY  => NULL()
+
+       IF ( ASSOCIATED( Inst%IPOINT ) ) THEN
+          DEALLOCATE( Inst%IPOINT )
+       ENDIF
+       Inst%IPOINT => NULL()
+
+       IF ( ASSOCIATED( Inst%FRAC_S ) ) THEN
+          DEALLOCATE( Inst%FRAC_S )
+       ENDIf
+       Inst%FRAC_S => NULL()
+
+       IF ( ASSOCIATED( Inst%DUSTDEN ) ) THEN
+          DEALLOCATE( Inst%DUSTDEN   )
+       ENDIF
+       Inst%DUSTDEN => NULL()
+
+       IF ( ASSOCIATED( Inst%DUSTREFF ) ) THEN
+          DEALLOCATE( Inst%DUSTREFF )
+       ENDIF
+       Inst%DUSTREFF => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUX ) ) THEN
+          DEALLOCATE( Inst%FLUX )
+       ENDIF
+       Inst%FLUX => NULL()
+
+       IF ( ASSOCIATED( Inst%FLUX_ALK  ) ) THEN
+          DEALLOCATE( Inst%FLUX_ALK )
+       ENDIF
+       Inst%FLUX_ALK   => NULL()
+
+       IF ( ALLOCATED ( Inst%HcoIDs ) ) THEN
+          DEALLOCATE( Inst%HcoIDs  )
+       ENDIF
+
+       IF ( ALLOCATED ( Inst%HcoIDsALK ) ) THEN
+          DEALLOCATE( Inst%HcoIDsALK )
+       ENDIF
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
-
-          ! Free pointer
-          IF ( ASSOCIATED( Inst%SRCE_SAND ) ) DEALLOCATE( Inst%SRCE_SAND )
-          IF ( ASSOCIATED( Inst%SRCE_SILT ) ) DEALLOCATE( Inst%SRCE_SILT )
-          IF ( ASSOCIATED( Inst%SRCE_CLAY ) ) DEALLOCATE( Inst%SRCE_CLAY )
-
-          ! Cleanup option object
-          IF ( ASSOCIATED( Inst%IPOINT    ) ) DEALLOCATE( Inst%IPOINT    )
-          IF ( ASSOCIATED( Inst%FRAC_S    ) ) DEALLOCATE( Inst%FRAC_S    )
-          IF ( ASSOCIATED( Inst%DUSTDEN   ) ) DEALLOCATE( Inst%DUSTDEN   )
-          IF ( ASSOCIATED( Inst%DUSTREFF  ) ) DEALLOCATE( Inst%DUSTREFF  )
-          IF ( ASSOCIATED( Inst%FLUX      ) ) DEALLOCATE( Inst%FLUX      )
-          IF ( ASSOCIATED( Inst%FLUX_ALK  ) ) DEALLOCATE( Inst%FLUX_ALK  )
-          IF ( ALLOCATED ( Inst%HcoIDs    ) ) DEALLOCATE( Inst%HcoIDs    )
-          IF ( ALLOCATED ( Inst%HcoIDsALK ) ) DEALLOCATE( Inst%HcoIDsALK )
-
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

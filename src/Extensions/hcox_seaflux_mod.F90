@@ -190,7 +190,7 @@ CONTAINS
     IF ( ExtState%SeaFlux <= 0 ) RETURN
 
     ! Verbose?
-    verbose = HCO_IsVerb(HcoState%Config%Err,1)
+    verbose = HCO_IsVerb( HcoState%Config%Err )
 
     ! Nullify
     Arr2D => NULL()
@@ -433,8 +433,11 @@ CONTAINS
        IF ( SeaConc(I,J) < 0.0_hp ) SeaConc(I,J) = 0.0_hp
 
        ! Do only over the ocean:
-       IF ( HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J), &
-                          ExtState%FRLANDIC%Arr%Val(I,J) ) == 0 ) THEN
+       IF ( HCO_LANDTYPE( ExtState%FRLAND%Arr%Val(I,J),   &
+                          ExtState%FRLANDIC%Arr%Val(I,J), &
+                          ExtState%FROCEAN%Arr%Val(I,J),  &
+                          ExtState%FRSEAICE%Arr%Val(I,J), &
+                          ExtState%FRLAKE%Arr%Val(I,J)) == 0 ) THEN
 
           !-----------------------------------------------------------
           ! Get grid box and species specific quantities
@@ -698,8 +701,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use air-sea flux emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='-' )
+
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: SeaFlux (air-sea flux emissions)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! With separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! W/o separator
+       ENDIF
+
+       ! Write all other messages as debug printout only
        MSG = '   - Use species:'
        CALL HCO_MSG(HcoState%Config%Err,MSG )
     ENDIF
@@ -872,8 +883,11 @@ CONTAINS
     ExtState%U10M%DoUse        = .TRUE.
     ExtState%V10M%DoUse        = .TRUE.
     ExtState%TSKIN%DoUse       = .TRUE.
+    ExtState%FRLAND%DoUse      = .TRUE.
     ExtState%FRLANDIC%DoUse    = .TRUE.
-    ExtState%WLI%DoUse         = .TRUE.
+    ExtState%FROCEAN%DoUse     = .TRUE.
+    ExtState%FRSEAICE%DoUse    = .TRUE.
+    ExtState%FRLAKE%DoUse      = .TRUE.
     IF ( HcoState%Options%PBL_DRYDEP ) THEN
        ExtState%FRAC_OF_PBL%DoUse = .TRUE.
     ENDIF
@@ -1098,16 +1112,29 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%OcSpecs ) ) THEN
+          DEALLOCATE( Inst%OcSpecs )
+       ENDIF
+       Inst%OcSpecs => NULL()
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
-          IF ( ASSOCIATED( Inst%OcSpecs )) DEALLOCATE( Inst%OcSpecs )
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

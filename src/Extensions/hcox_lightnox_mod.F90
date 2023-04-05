@@ -355,11 +355,15 @@ CONTAINS
        IF ( XMID >= 180.0d0 ) XMID = XMID - 360.0d0
 
        ! Get surface type. Note that these types are different than
-       ! the types used elsewhere: 0 = land, 1=water, 2=ice!
-       LNDTYPE = HCO_LANDTYPE( ExtState%WLI%Arr%Val(I,J),  &
-                               ExtState%FRLANDIC%Arr%Val(I,J) )
+       ! the types used elsewhere in this module. HCO_LANDTYPE returns
+       ! 0=ocean, 1=land, 2=ice; elsewhere we use 0=land, 1=ocean, 2=ice!
+       LNDTYPE = HCO_LANDTYPE( ExtState%FRLAND%Arr%Val(I,J),   &
+                               ExtState%FRLANDIC%Arr%Val(I,J), &
+                               ExtState%FROCEAN%Arr%Val(I,J),  &
+                               ExtState%FRSEAICE%Arr%Val(I,J), &
+                               ExtState%FRLAKE%Arr%Val(I,J))
 
-       ! Adjusted SFCTYPE variable for this module:
+       ! Set surface type (0=land, 1=ocean, 2=ice) based on land type
        IF ( LNDTYPE == 2 ) THEN
           SFCTYPE = 2    ! Ice
        ELSEIF ( LNDTYPE == 1 ) THEN
@@ -948,8 +952,16 @@ CONTAINS
 
     ! Echo info about this extension
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use lightning NOx emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+
+       ! Print the name of the module regardless of verbose
+       msg = 'Using HEMCO extension: LightNOx (lightning NOx emissions'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+       ENDIF
+
+       ! Other information will be printed only when verbose is true
        WRITE(MSG,*) ' - Use species ', TRIM(SpcNames(1)), '->', Inst%IDTNO
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) ' - Use GEOS-5 flash rates: ', Inst%LLFR
@@ -1114,11 +1126,14 @@ CONTAINS
     ExtState%TROPP%DoUse      = .TRUE.
     ExtState%CNV_MFC%DoUse    = .TRUE.
     ExtState%CNV_FRC%DoUse    = .TRUE.
-    ExtState%FRLANDIC%DoUse    = .TRUE.
-    ExtState%WLI%DoUse        = .TRUE.
     ExtState%LFR%DoUse        = .TRUE.
     ExtState%FLASH_DENS%DoUse = .TRUE.
     ExtState%CONV_DEPTH%DoUse = .TRUE.
+    ExtState%FRLAND%DoUse     = .TRUE.
+    ExtState%FRLANDIC%DoUse   = .TRUE.
+    ExtState%FROCEAN%DoUse    = .TRUE.
+    ExtState%FRSEAICE%DoUse   = .TRUE.
+    ExtState%FRLAKE%DoUse     = .TRUE.
 
     ! Only activate BYNCY and LFR if they are needed
     IF ( Inst%LCNVFRC .OR. Inst%LLFR ) ExtState%BYNCY%DoUse = .TRUE.
@@ -1329,32 +1344,72 @@ CONTAINS
     ! InstRemove begins here!
     !=================================================================
 
-    ! Get instance. Also archive previous instance.
+    ! Init
     PrevInst => NULL()
     Inst     => NULL()
+
+    ! Get instance. Also archive previous instance.
     CALL InstGet ( Instance, Inst, RC, PrevInst=PrevInst )
 
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
-       ! Free pointer
-       IF ( ASSOCIATED( Inst%PROFILE       ) ) DEALLOCATE ( Inst%PROFILE       )
-       IF ( ASSOCIATED( Inst%SLBASE        ) ) DEALLOCATE ( Inst%SLBASE        )
-       IF ( ASSOCIATED( Inst%FLASH_DENS_TOT) ) DEALLOCATE ( Inst%FLASH_DENS_TOT)
-       !IF ( ASSOCIATED( Inst%FLASH_DENS_IC ) ) DEALLOCATE ( Inst%FLASH_DENS_IC )
-       !IF ( ASSOCIATED( Inst%FLASH_DENS_CG ) ) DEALLOCATE ( Inst%FLASH_DENS_CG )
-       IF ( ASSOCIATED( Inst%CONV_DEPTH    ) ) DEALLOCATE ( Inst%CONV_DEPTH    )
-       IF ( ALLOCATED ( Inst%SpcScalVal    ) ) DEALLOCATE ( Inst%SpcScalVal    )
-       IF ( ALLOCATED ( Inst%SpcScalFldNme ) ) DEALLOCATE ( Inst%SpcScalFldNme )
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------   
+       IF ( ASSOCIATED( Inst%PROFILE ) ) THEN
+          DEALLOCATE( Inst%PROFILE )
+       ENDIF
+       Inst%PROFILE => NULL()
+
+       IF ( ASSOCIATED( Inst%SLBASE ) ) THEN
+          DEALLOCATE( Inst%SLBASE )
+       ENDIF
+       Inst%SLBASE => NULL()
+
+       IF ( ASSOCIATED( Inst%FLASH_DENS_TOT ) ) THEN
+          DEALLOCATE( Inst%FLASH_DENS_TOT )
+       ENDIF
+       Inst%FLASH_DENS_TOT => NULL()
+
+       !IF ( ASSOCIATED( Inst%FLASH_DENS_IC ) ) THEN
+       !   DEALLOCATE( Inst%FLASH_DENS_IC )
+       !ENDIF
+       Inst%FLASH_DENS_IC => NULL()
+
+       !IF ( ASSOCIATED( Inst%FLASH_DENS_CG ) ) THEN
+       !   DEALLOCATE ( Inst%FLASH_DENS_CG )
+       !ENDIF
+       Inst%FLASH_DENS_CG => NULL()
+
+       IF ( ASSOCIATED( Inst%CONV_DEPTH ) ) THEN
+          DEALLOCATE( Inst%CONV_DEPTH )
+       ENDIF
+       Inst%CONV_DEPTH => NULL()
+
+       IF ( ALLOCATED ( Inst%SpcScalVal ) ) THEN
+          DEALLOCATE( Inst%SpcScalVal )
+       ENDIF
+
+       IF ( ALLOCATED( Inst%SpcScalFldNme ) ) THEN
+          DEALLOCATE( Inst%SpcScalFldNme )
+       ENDIF
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

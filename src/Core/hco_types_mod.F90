@@ -94,6 +94,11 @@ MODULE HCO_TYPES_MOD
      INTEGER                 :: HcoID      ! HEMCO species ID
      INTEGER                 :: ModID      ! Model species ID
      CHARACTER(LEN= 31)      :: SpcName    ! species names
+#ifdef MODEL_CESM
+     INTEGER                 :: DimMax     ! Maximum dimensions supported: 2 (2-D), 3 (3-D)
+                                           ! CESM model only, as 3-D emissions must be listed
+                                           ! in extfrc_list to be supported by CESM/CAM.
+#endif
   END TYPE ModSpc
 
   !=========================================================================

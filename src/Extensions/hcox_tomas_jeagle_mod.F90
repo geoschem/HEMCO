@@ -294,8 +294,8 @@ CONTAINS
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
-          Inst%TC1(I,J,:,:) = 0d0
-          Inst%TC2(I,J,:,:) = 0d0
+       Inst%TC1(I,J,:,:) = 0d0
+       Inst%TC2(I,J,:,:) = 0d0
 
        ! Grid box surface area [m2]
        A_M2  = HcoState%Grid%AREA_M2%Val(I,J)
@@ -304,23 +304,20 @@ CONTAINS
        IF ( ExtState%FROCEAN%Arr%Val(I,J)<=0d0 .and. &
             ExtState%FRSEAICE%Arr%Val(I,J)<=0d0 ) CYCLE
 
+       ! Wind speed at 10 m altitude [m/s]
+       W10M = SQRT( ExtState%U10M%Arr%Val(I,J)**2  &
+            +       ExtState%V10M%Arr%Val(I,J)**2 )
 
-!       ! Skip boxes that are not at least 50% water  ! betty use IF above
+       ! Sea surface temperature in Celcius
+       SST = ExtState%TSKIN%Arr%Val(I,J) - 273.15d0
 
-          ! Wind speed at 10 m altitude [m/s]
-          W10M = SQRT( ExtState%U10M%Arr%Val(I,J)**2  &
-               +       ExtState%V10M%Arr%Val(I,J)**2 )
+       ! Limit SST to 0-30C range
+       SST = MAX( SST , 0d0 )  ! limit to  0C
+       SST = MIN( SST , 30d0 ) ! limit to 30C
 
-      ! Sea surface temperature in Celcius
-      SST = ExtState%TSKIN%Arr%Val(I,J) - 273.15d0
-
-      ! Limit SST to 0-30C range
-          SST = MAX( SST , 0d0 )  ! limit to  0C
-          SST = MIN( SST , 30d0 ) ! limit to 30C
-
-          ! Empirical SST scaling factor (jaegle 5/11/11)
-          SCALE = 0.329d0 + 0.0904d0*SST -  &
-                  0.00717d0*SST**2d0 + 0.000207d0*SST**3d0
+       ! Empirical SST scaling factor (jaegle 5/11/11)
+       SCALE = 0.329d0 + 0.0904d0*SST -  &
+               0.00717d0*SST**2d0 + 0.000207d0*SST**3d0
 
        ! Limit the SST scaling factor to 0.25 over cold SST (below 5C)
        IF ( Inst%ColdSST .and. SST<= 5.0d0 ) SCALE = 0.25d0
@@ -643,6 +640,19 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
         RETURN
+    ENDIF
+
+    ! Only print on the root core
+    IF ( HcoState%amIRoot ) THEN
+
+       ! Write the name of the extension regardless of the verbose setting
+       msg = &
+        'Using HEMCO extension: TOMAS_Jeagle (sea salt emissions for TOMAS)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+       ENDIF
     ENDIF
 
     ! Create Instance
@@ -1093,15 +1103,14 @@ CONTAINS
     !=======================================================================
 
     ! Activate met fields
-    ExtState%WLI%DoUse         = .TRUE.
-    ExtState%FRLANDIC%DoUse    = .TRUE.
+    ExtState%FRLAND%DoUse      = .TRUE.
+    ExtState%FROCEAN%DoUse     = .TRUE.
+    ExtState%FRSEAICE%DoUse    = .TRUE.
     ExtState%TSKIN%DoUse       = .TRUE.
     ExtState%U10M%DoUse        = .TRUE.
     ExtState%V10M%DoUse        = .TRUE.
     ExtState%FRAC_OF_PBL%DoUse = .TRUE.
     ExtState%FRCLND%DoUse      = .TRUE.
-    ExtState%FROCEAN%DoUse  = .TRUE.
-    ExtState%FRSEAICE%DoUse = .TRUE.
 
    ! for blowing snow
     IF ( Inst%EmitSnowSS ) THEN
@@ -1340,33 +1349,98 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%TOMAS_DBIN ) ) THEN
+          DEALLOCATE( Inst%TOMAS_DBIN )
+       ENDIF
+       Inst%TOMAS_DBIN => NULL()
+
+       IF ( ASSOCIATED( Inst%DRFAC ) ) THEN
+          DEALLOCATE( Inst%DRFAC )
+       ENDIF
+       Inst%DRFAC => NULL()
+
+       IF ( ASSOCIATED( Inst%TC1 ) ) THEN
+          DEALLOCATE( Inst%TC1 )
+       ENDIF
+       Inst%TC1 => NULL()
+
+       IF ( ASSOCIATED( Inst%TC2 ) ) THEN
+          DEALLOCATE( Inst%TC2 )
+       ENDIF
+       Inst%TC2 => NULL()
+
+       IF ( ALLOCATED ( Inst%HcoIDs ) ) THEN
+          DEALLOCATE( Inst%HcoIDs )
+       ENDIF
+
+       IF ( ASSOCIATED( Inst%SS_DEN ) ) THEN
+          DEALLOCATE( Inst%SS_DEN )
+       ENDIF
+       Inst%SS_DEN => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DI_N_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_N_FYI )
+       ENDIF
+       Inst%F_DI_N_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DI_N_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_N_MYI )
+       ENDIF
+       Inst%F_DI_N_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DI_S_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_S_FYI )
+       ENDIF
+       Inst%F_DI_S_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DI_S_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DI_S_MYI )
+       ENDIF
+       Inst%F_DI_S_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_N_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_N_FYI )
+       ENDIF
+       Inst%F_DN_N_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_N_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_N_MYI )
+       ENDIF
+       Inst%F_DN_N_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_S_FYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_S_FYI )
+       ENDIF
+       Inst%F_DN_S_FYI => NULL()
+
+       IF ( ASSOCIATED( Inst%F_DN_S_MYI ) ) THEN
+          DEALLOCATE( Inst%F_DN_S_MYI )
+       ENDIF
+       Inst%F_DN_S_MYI => NULL()
+
+       IF ( ASSOCIATED( Inst%MULTIICE ) ) THEN
+          DEALLOCATE( Inst%MULTIICE )
+       ENDIF
+       Inst%MULTIICE => NULL()
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
-
-          IF ( ASSOCIATED( Inst%TOMAS_DBIN ) ) DEALLOCATE( Inst%TOMAS_DBIN )
-          IF ( ASSOCIATED( Inst%DRFAC      ) ) DEALLOCATE( Inst%DRFAC      )
-          IF ( ASSOCIATED( Inst%TC1        ) ) DEALLOCATE( Inst%TC1        )
-          IF ( ASSOCIATED( Inst%TC2        ) ) DEALLOCATE( Inst%TC2        )
-          IF ( ALLOCATED ( Inst%HcoIDs     ) ) DEALLOCATE( Inst%HcoIDs     )
-
-          IF ( ASSOCIATED( Inst%SS_DEN     ) ) DEALLOCATE( Inst%SS_DEN     )
-          IF ( ASSOCIATED( Inst%F_DI_N_FYI ) ) DEALLOCATE( Inst%F_DI_N_FYI )
-          IF ( ASSOCIATED( Inst%F_DI_N_MYI ) ) DEALLOCATE( Inst%F_DI_N_MYI )
-          IF ( ASSOCIATED( Inst%F_DI_S_FYI ) ) DEALLOCATE( Inst%F_DI_S_FYI )
-          IF ( ASSOCIATED( Inst%F_DI_S_MYI ) ) DEALLOCATE( Inst%F_DI_S_MYI )
-          IF ( ASSOCIATED( Inst%F_DN_N_FYI ) ) DEALLOCATE( Inst%F_DN_N_FYI )
-          IF ( ASSOCIATED( Inst%F_DN_N_MYI ) ) DEALLOCATE( Inst%F_DN_N_MYI )
-          IF ( ASSOCIATED( Inst%F_DN_S_FYI ) ) DEALLOCATE( Inst%F_DN_S_FYI )
-          IF ( ASSOCIATED( Inst%F_DN_S_MYI ) ) DEALLOCATE( Inst%F_DN_S_MYI )
-          IF ( ASSOCIATED( Inst%MULTIICE   ) ) DEALLOCATE( Inst%MULTIICE   )
-
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

@@ -1,3 +1,6 @@
+!------------------------------------------------------------------------------
+!                   Harmonized Emissions Component (HEMCO)                    !
+!------------------------------------------------------------------------------
 !BOP
 !
 ! !MODULE: hco_config_mod.F90
@@ -59,7 +62,7 @@ MODULE HCO_Config_Mod
   PUBLIC  :: Config_GetSpecNames
   PUBLIC  :: ConfigInit
 !
-! !PRIVATE:
+! !PRIVATE MEMBER FUNCTIONS:
 !
   PRIVATE :: ReadSettings
   PRIVATE :: ExtSwitch2Buffer
@@ -157,7 +160,8 @@ CONTAINS
     INTEGER              :: IU_HCO, IOS
 
     ! Strings
-    CHARACTER(LEN=255)   :: MSG,    LOC,  FileMsg
+    CHARACTER(LEN=255)   :: loc,  fileMsg
+    CHARACTER(LEN=512)   :: msg
     CHARACTER(LEN=2047)  :: CFDIR
     CHARACTER(LEN=2047)  :: LINE
 
@@ -167,7 +171,8 @@ CONTAINS
 
     ! Enter
     RC  = HCO_SUCCESS
-    LOC = 'Config_ReadFile (hco_config_mod.F90)'
+    msg = ''
+    loc = 'Config_ReadFile (hco_config_mod.F90)'
 
     ! Initialize config object if not already initialized
     IF ( .NOT. ASSOCIATED(HcoConfig) ) THEN
@@ -243,13 +248,14 @@ CONTAINS
        ENDIF
     ENDIF
 
-    ! Extract configuration file directory. This is the directory containing the
-    ! configuration file. Any tokens $CFDIR in the given configuration file will
-    ! be replaced with the configuration file directory
+    ! Extract configuration file directory. This is the directory containing
+    ! the configuration file. Any tokens $CFDIR in the given configuration
+    ! file will be replaced with the configuration file directory
     CALL HCO_GetBase( ConfigFile, CFDIR, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
-        RETURN
+       msg = 'Could not replace $CFDIR token in: ' // TRIM( ConfigFile )
+       CALL HCO_Error( msg, RC, thisLoc=LOC )
+       RETURN
     ENDIF
 
     ! Find free LUN
@@ -282,7 +288,8 @@ CONTAINS
     IF ( .NOT. ExtNrInUse( HcoConfig%ExtList, CoreNr ) ) THEN
        CALL AddExt( HcoConfig, 'CORE', CoreNr, .TRUE., 'all', RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          WRITE(*,*) 'Error adding CORE extension'
+          msg = 'Error adding CORE extension'
+          CALL HCO_Error( msg, RC, thisLoc=loc )
           RC = HCO_FAIL
           RETURN
        ENDIF
@@ -297,8 +304,9 @@ CONTAINS
        ! Read a line from the file, exit if EOF
        CALL HCO_ReadLine ( IU_HCO, LINE, EOF, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
-           RETURN
+          msg = 'Error in HEMCO_Config.rc @ line: ' // TRIM( Line )
+          CALL HCO_Error( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
        IF ( EOF ) EXIT
 
@@ -313,8 +321,9 @@ CONTAINS
           IF ( PHASE < 2 ) THEN
              CALL ReadSettings( HcoConfig, IU_HCO, EOF, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Error in HEMCO_Config.rc @ section ' // TRIM( line )
+                CALL HCO_Error( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
              IF ( EOF ) EXIT
 
@@ -332,8 +341,9 @@ CONTAINS
           IF ( PHASE < 2 ) THEN
              CALL ExtSwitch2Buffer( HcoConfig, IU_HCO, EOF, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Error in HEMCO_Config,rc @ section: ' // TRIM( line )
+                CALL HCO_Error( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
              IF ( EOF ) EXIT
 
@@ -356,8 +366,9 @@ CONTAINS
                                    HCO_DCTTYPE_BASE, EOF,    RC,             &
                                    IsDryRun=IsDryRun                        )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Error in HEMCO_Config.rc @ section: ' // TRIM( Line )
+                CALL HCO_Error( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
              IF ( EOF ) EXIT
 
@@ -372,8 +383,9 @@ CONTAINS
           CALL Config_ReadCont( HcoConfig, IU_HCO, CFDIR, &
                                 HCO_DCTTYPE_SCAL, EOF, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
-              RETURN
+             msg= 'Error in HEMCO_Config.rc @ section: ' // TRIM( Line )
+             CALL HCO_Error( msg, RC, thisLoc=loc )
+             RETURN
           ENDIF
           IF ( EOF ) EXIT
 
@@ -384,8 +396,9 @@ CONTAINS
              CALL Config_ReadCont( HcoConfig, IU_HCO, CFDIR, &
                                    HCO_DCTTYPE_MASK, EOF, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Error in HEMCO_Config.rc @ line: ' // TRIM( Line )
+                CALL HCO_Error( msg, RC, thisLoc=LOC )
+                RETURN
              ENDIF
              IF ( EOF ) EXIT
 
@@ -408,7 +421,8 @@ CONTAINS
     ! Close file
     CLOSE( UNIT=IU_HCO, IOSTAT=IOS )
     IF ( IOS /= 0 ) THEN
-       WRITE(*,*) 'Error closing ' // TRIM(ConfigFile)
+       msg = 'Error closing ' // TRIM(ConfigFile)
+       CALL HCO_Error( msg, RC, thisLoc=loc )
        RC = HCO_FAIL
        RETURN
     ENDIF
@@ -461,27 +475,32 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-    CHARACTER(LEN=255)  :: MSG, LOC
+    CHARACTER(LEN=255) :: loc
+    CHARACTER(LEN=512) :: msg
 
     !======================================================================
     ! SetReadList begins here
     !======================================================================
-    LOC = 'SetReadList (HCO_CONFIG_MOD.F90)'
+    msg = ''
+    loc = 'SetReadList (HCO_CONFIG_MOD.F90)'
 
     ! Init
     CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       PRINT *,'Error in HCO_ENTER called from HEMCO SetReadList'
+       msg = 'Error encountered in routine "HCO_Enter"!'
+       CALL HCO_Error( msg, RC, thisLoc=loc )
        RETURN
     ENDIF
 
     ! Return w/ error if configuration file hasn't been read yet!
     IF ( .NOT. ASSOCIATED(HcoState%Config) ) THEN
-       PRINT *,'HEMCO configuration object in HEMCO state is empty! Error in HEMCO SetReadList.'
+       msg = 'HEMCO configuration object in HEMCO state is empty!'
+       CALL HCO_Error( msg, RC, thisLoc=loc )
        RETURN
     ENDIF
     IF ( .NOT. HcoState%Config%ConfigFileRead ) THEN
-       PRINT *,'HEMCO configuration file not read! Error in HEMCO SetReadList.'
+       msg = 'HEMCO configuration file not read!'
+       CALL HCO_Error( msg, RC, thisLoc=loc )
        RETURN
     ENDIF
 
@@ -539,8 +558,8 @@ CONTAINS
     HcoState%SetReadListCalled = .TRUE.
 
     ! Debug
-    IF ( HCO_IsVerb( HcoState%Config%Err, 1 ) ) THEN
-       CALL ReadList_Print( HcoState, HcoState%ReadLists, 1 )
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       CALL ReadList_Print( HcoState, HcoState%ReadLists )
     ENDIF
 
     ! Leave w/ success
@@ -626,13 +645,13 @@ CONTAINS
     CHARACTER(LEN= 31)        :: SpcName
     CHARACTER(LEN=255)        :: Char1
     CHARACTER(LEN=255)        :: Char2
-    CHARACTER(LEN=255)        :: LOC, MSG
+    CHARACTER(LEN=255)        :: loc
     CHARACTER(LEN=255)        :: LINE
     CHARACTER(LEN=255)        :: tagId
     CHARACTER(LEN=255)        :: tagName
     CHARACTER(LEN=255)        :: tagcName
     CHARACTER(LEN=255)        :: ItemPrefix
-    CHARACTER(LEN=255)        :: ErrMsg
+    CHARACTER(LEN=512)        :: msg
 
     ! Arrays
     INTEGER                   :: SplitInts(255)
@@ -648,7 +667,7 @@ CONTAINS
     !=================================================================
 
     ! Enter
-    LOC = 'Config_ReadCont (hco_config_mod.F90)'
+    loc = 'Config_ReadCont (hco_config_mod.F90)'
 
     ! Initialize
     SKIP           = .FALSE.
@@ -740,7 +759,8 @@ CONTAINS
 
        ! Error if not enough entries found
        IF ( STAT == 100 ) THEN
-          CALL HCO_ERROR ( 'STAT == 100', RC, THISLOC=LOC )
+          msg = 'STAT == 100; not enough entries found!'
+          CALL HCO_Error( msg, RC, thisLoc=loc )
           RETURN
        ENDIF
 
@@ -750,8 +770,9 @@ CONTAINS
        ! -------------------------------------------------------------
        CALL BracketCheck( HcoConfig, STAT, LINE, SKIP, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
-           RETURN
+          msg = 'Bracket error in HEMCO_Config.rc @ line ' // TRIM( line )
+          CALL HCO_ERROR( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
 
        ! Skip if needed
@@ -772,15 +793,17 @@ CONTAINS
           ! contain any data tokens ($YR, $MM, etc.).
           CALL HCO_CharParse ( HcoConfig, LINE, 0, 0, 0, 0, 0, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
-              RETURN
+             msg = 'Parse error in HEMCO_Config.rc @ line: ' // TRIM( line )
+             CALL HCO_Error( msg, RC, thisLoc=LOC )
+             RETURN
           ENDIF
 
           CALL Config_ReadFile( HcoConfig%amIRoot, HcoConfig, LINE, 0, RC,  &
                                 IsNest=.TRUE., IsDryRun=IsDryRun            )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
-              RETURN
+             msg = 'Error reading HEMCO_Config.rc @ line: ' // TRIM( line )
+             CALL HCO_Error( msg, RC, thisLoc=loc )
+             RETURN
           ENDIF
 
           ! All done with this line
@@ -789,7 +812,8 @@ CONTAINS
 
        ! Output status should be 0 if none of the statuses above applies
        IF ( STAT /= 0 ) THEN
-          CALL HCO_ERROR ( 'STAT /= 0', RC, THISLOC=LOC )
+          msg = 'STAT /= 0; indicates I/O error!'
+          CALL HCO_Error( msg, RC, thisLoc=loc )
           RETURN
        ENDIF
 
@@ -824,9 +848,9 @@ CONTAINS
              CALL Hco_GetTagInfo( tagId, HcoConfig, Found, RC, N=N, &
                                   tagName=tagName )
              IF ( RC /= HCO_SUCCESS ) THEN
-                ErrMsg = 'Error retrieving tag name for' //            &
-                         ' wildcard ' // TRIM(tagId)
-                CALL HCO_Error( ErrMsg, RC )
+                msg = 'Error retrieving tag name for' //            &
+                      ' wildcard ' // TRIM(tagId)
+                CALL HCO_Error( msg, RC, thisLoc=loc )
                 RETURN
              ENDIF
 
@@ -841,34 +865,36 @@ CONTAINS
              ! Fill data container
              ! -------------------------------------------------------------
 
-             ! Add blank list container to ConfigList list. The container
-             ! is placed at the beginning of the list.
+             ! Add blank list container (ListCont object) to ConfigList.
+             ! The container is placed at the beginning of the list.
              CALL ConfigList_AddCont ( Lct, HcoConfig%ConfigList )
 
              ! Check if name exists already
              CALL CheckForDuplicateName( HcoConfig, tagcName, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Duplicate container name: ' // TRIM( tagcName )
+                CALL HCO_ERROR( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
 
              ! Attributes used by all data types: data type number and
              ! container name.
-             Lct%Dct%DctType      = DctType
-             Lct%Dct%cName        = ADJUSTL(tagcName)
+             Lct%Dct%DctType = DctType
+             Lct%Dct%cName   = ADJUSTL( tagcName )
 
              ! Set species name, extension number, emission category,
              ! hierarchy
-             Lct%Dct%SpcName       = ADJUSTL(SpcName)
-             Lct%Dct%Hier          = Int2
-             Lct%Dct%ExtNr         = Int3
+             Lct%Dct%SpcName = ADJUSTL( SpcName )
+             Lct%Dct%Hier    = Int2
+             Lct%Dct%ExtNr   = Int3
 
              ! Extract category from character 2. This can be up to
              ! CatMax integers, or empty.
              CALL HCO_CharSplit( Char2, Separator, Wildcard, Cats, nCat, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Could not extract category at line: ' // TRIM( char2 )
+                CALL HCO_Error( msg, RC, thisLoc=LOC )
+                RETURN
              ENDIF
              IF ( nCat == 0 ) THEN
                 Lct%Dct%Cat = -999
@@ -881,8 +907,10 @@ CONTAINS
              CALL HCO_CharSplit( Char1, Separator, Wildcard, &
                                  SplitInts, nScl, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Could not get scale factor ID''s in line: '        // &
+                      TRIM( char1 )
+                CALL HCO_Error( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
              IF ( nScl > 0 ) THEN
                 ALLOCATE ( Lct%Dct%Scal_cID(nScl) )
@@ -895,8 +923,9 @@ CONTAINS
              ! with model species (see Config\_GetSpecNames).
              CALL SpecName_Register ( HcoConfig, ADJUSTL(SpcName), RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Could not register species name: ' // TRIM(SpcName)
+                CALL HCO_Error( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
 
              ! -------------------------------------------------------------
@@ -913,31 +942,46 @@ CONTAINS
              ! default value of -999 to be able to identify data objects
              ! used by multiple containers.
              ! -------------------------------------------------------------
-             IF ( TRIM(srcFile) == '-' ) THEN
-                IF ( .NOT. ASSOCIATED(Dta) ) THEN
+             IF ( TRIM( srcFile ) == '-' ) THEN
+
+                ! The current entry of the configuration file specifies that
+                ! we will get data from the file listed immediately above it.
+                ! Thus we have to reuse a previously-defined FileData object
+                ! (aka Dta).  Stop if Dta is not initialized.
+                IF ( .not. ASSOCIATED( Dta ) ) THEN
                    MSG = 'Cannot use previous data container: '//TRIM(tagcName)
-                   CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
+                   CALL HCO_Error( msg, RC, thisLoc=loc )
                    RETURN
                 ENDIF
+
+                ! Reuse the file metadata specified in PrevDta for
+                ! this entry of the HEMCO configuration file.
                 Lct%Dct%DtaHome = Lct%Dct%DtaHome - 1
+
              ELSE
-                Dta => NULL()
-                CALL FileData_Init ( Dta )
+
+                ! The current entry of the configuration file specifies that
+                ! we will read data from a file.  We thus need to initialize
+                ! a new FileData object to keep track of the file metadata.
+                !
+                ! >>> NOTE: This seems to cause a memory leak! <<<
+                ! >>> We will look into this at a later date.  <<<
+                CALL FileData_Init( Dta )
 
                 ! Set source file name. Check if the read file name starts
                 ! with the configuration file token '$CFDIR', in which case
                 ! we replace this value with the passed CFDIR value.
-                STRLEN = LEN(srcFile)
+                STRLEN = LEN( srcFile )
                 IF ( STRLEN > 6 ) THEN
                    IF ( srcFile(1:6) == '$CFDIR' ) THEN
-                      srcFile = TRIM(CFDIR) // TRIM(srcFile(7:STRLEN))
+                      srcFile = TRIM( CFDIR ) // TRIM( srcFile(7:STRLEN) )
                    ENDIF
                 ENDIF
-                Dta%ncFile    = srcFile
+                Dta%ncFile   = srcFile
 
                 ! Set source variable and original data unit.
-                Dta%ncPara    = ADJUSTL(srcVar)
-                Dta%OrigUnit  = ADJUStL(srcUnit)
+                Dta%ncPara   = ADJUSTL( srcVar )
+                Dta%OrigUnit = ADJUSTL( srcUnit )
 
                 ! If the parameter ncPara is not defined, attempt to read data
                 ! directly from configuration file instead of netCDF.
@@ -946,7 +990,7 @@ CONTAINS
                 ! data that is treated in local time. The corresponding
                 ! IsLocTime flag is updated when reading the data (see
                 ! hcoio_dataread_mod.F90).
-                IF ( TRIM(Dta%ncPara) == '-' ) THEN
+                IF ( TRIM( Dta%ncPara ) == '-' ) THEN
                    Dta%ncRead    = .FALSE.
                    Dta%IsLocTime = .TRUE.
                 ENDIF
@@ -957,17 +1001,18 @@ CONTAINS
                 IF ( TRIM(srcTime) /= '-' ) THEN
                    CALL HCO_ExtractTime( HcoConfig, srcTime, Dta, RC )
                    IF ( RC /= HCO_SUCCESS ) THEN
-                       CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
-                       RETURN
+                      msg = 'Could not extract time cycle information!'
+                      CALL HCO_Error( msg, RC, thisLoc=loc )
+                      RETURN
                    ENDIF
                 ENDIF
 
+#if defined(ESMF_)
                 ! In an ESMF environment, the source data will be imported
                 ! through ExtData by name, hence need to set ncFile equal to
                 ! container name!
-#if defined(ESMF_)
                 IF ( Dta%ncRead ) THEN
-                   Dta%ncFile = ADJUSTL(tagcName)
+                   Dta%ncFile = ADJUSTL( tagcName )
                 ENDIF
 #endif
 
@@ -998,7 +1043,7 @@ CONTAINS
 
              ENDIF
 
-             ! Connect file data object of this data container.
+             ! Connect this FileData object to the HcoState%HcoConfigList.
              Lct%Dct%Dta => Dta
 
              ! Free list container for next cycle
@@ -1013,15 +1058,16 @@ CONTAINS
           ! Fill data container
           ! -------------------------------------------------------------
 
-          ! Add blank list container to ConfigList list. The container
-          ! is placed at the beginning of the list.
+          ! Add blank list container (ListCont object) to ConfigList.
+          ! The container is placed at the beginning of the list.
           CALL ConfigList_AddCont ( Lct, HcoConfig%ConfigList )
 
           ! Check if name exists already
           CALL CheckForDuplicateName( HcoConfig, cName, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
-              RETURN
+             msg = 'Duplicate name: ' // TRIM( cName )
+             CALL HCO_Error( msg, RC, thisLoc=loc )
+             RETURN
           ENDIF
 
           ! Attributes used by all data types: data type number and
@@ -1034,15 +1080,16 @@ CONTAINS
 
              ! Set species name, extension number, emission category,
              ! hierarchy
-             Lct%Dct%SpcName       = ADJUSTL(SpcName)
-             Lct%Dct%Hier          = Int2
-             Lct%Dct%ExtNr         = Int3
+             Lct%Dct%SpcName = ADJUSTL( SpcName )
+             Lct%Dct%Hier    = Int2
+             Lct%Dct%ExtNr   = Int3
 
              ! Extract category from character 2. This can be up to
              ! CatMax integers, or empty.
              CALL HCO_CharSplit( Char2, Separator, Wildcard, Cats, nCat, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+                msg = 'Could not extract category from: ' // TRIM( char2 )
+                 CALL HCO_Error( msg, RC, thisLoc=loc )
                  RETURN
              ENDIF
              IF ( nCat == 0 ) THEN
@@ -1056,8 +1103,9 @@ CONTAINS
              CALL HCO_CharSplit( Char1, Separator, Wildcard, &
                                  SplitInts, nScl, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Could not get scale factor IDs from: ' // TRIM( char1 )
+                CALL HCO_Error( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
              IF ( nScl > 0 ) THEN
                 ALLOCATE ( Lct%Dct%Scal_cID(nScl) )
@@ -1070,8 +1118,9 @@ CONTAINS
              ! with model species (see Config\_GetSpecNames).
              CALL SpecName_Register ( HcoConfig, ADJUSTL(SpcName), RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 21', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Could not register species: ' // TRIM( SpcName )
+                CALL HCO_ERROR( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
 
           ! Scale factor & mask specific attributes
@@ -1086,14 +1135,16 @@ CONTAINS
              IF ( Lct%Dct%ScalID < 0 ) THEN
                 CALL ScalID2List( HcoConfig%ScalIDList, Lct%Dct%ScalID, RC )
                 IF ( RC /= HCO_SUCCESS ) THEN
-                    CALL HCO_ERROR( 'ERROR 22', RC, THISLOC=LOC )
-                    RETURN
+                   msg = 'Could not make sure that negative scale '       // &
+                         'are always read!'
+                   CALL HCO_Error( msg, RC, thisLoc=loc )
+                   RETURN
                 ENDIF
              ENDIF
 
           ELSE
-             CALL HCO_ERROR ( 'Invalid data type!', RC, &
-                              THISLOC=LOC )
+             msg = 'Invalid data type!'
+             CALL HCO_Error( msg, RC, thisLoc=loc )
              RETURN
           ENDIF
 
@@ -1111,31 +1162,46 @@ CONTAINS
           ! default value of -999 to be able to identify data objects
           ! used by multiple containers.
           ! -------------------------------------------------------------
-          IF ( TRIM(srcFile) == '-' ) THEN
+          IF ( TRIM( srcFile ) == '-' ) THEN
+
+             ! The current entry of the configuration file specifies that
+             ! we will get data from the file listed immediately above it.
+             ! Thus we have to reuse a previously-defined FileData object
+             ! (aka Dta).  Stop if Dta is not initialized.
              IF ( .NOT. ASSOCIATED(Dta) ) THEN
                 MSG = 'Cannot use previous data container: '//TRIM(cName)
-                CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
+                CALL HCO_Error( msg, RC, thisLoc=loc)
                 RETURN
              ENDIF
+
+             ! Reuse the file metadata specified in Dta for
+             ! this entry of the HEMCO configuration file.
              Lct%Dct%DtaHome = Lct%Dct%DtaHome - 1
+
           ELSE
-             Dta => NULL()
-             CALL FileData_Init ( Dta )
+
+             ! The current entry of the configuration file specifies that
+             ! we will read data from a file.  We thus need to initialize
+             ! a new FileData object to keep track of the file metadata.
+             !
+             ! >>> NOTE: This seems to cause a memory leak; <<<
+             ! >>> We will look into this at a later date   <<<
+             CALL FileData_Init( Dta )
 
              ! Set source file name. Check if the read file name starts
              ! with the configuration file token '$CFDIR', in which case
              ! we replace this value with the passed CFDIR value.
-             STRLEN = LEN(srcFile)
+             STRLEN = LEN( srcFile )
              IF ( STRLEN > 6 ) THEN
                 IF ( srcFile(1:6) == '$CFDIR' ) THEN
-                   srcFile = TRIM(CFDIR) // TRIM(srcFile(7:STRLEN))
+                   srcFile = TRIM( CFDIR ) // TRIM( srcFile(7:STRLEN) )
                 ENDIF
              ENDIF
-             Dta%ncFile    = srcFile
+             Dta%ncFile   = srcFile
 
              ! Set source variable and original data unit.
-             Dta%ncPara    = ADJUSTL(srcVar)
-             Dta%OrigUnit  = ADJUStL(srcUnit)
+             Dta%ncPara   = ADJUSTL( srcVar  )
+             Dta%OrigUnit = ADJUSTL( srcUnit )
 
              ! If the parameter ncPara is not defined, attempt to read data
              ! directly from configuration file instead of netCDF.
@@ -1144,7 +1210,7 @@ CONTAINS
              ! data that is treated in local time. The corresponding
              ! IsLocTime flag is updated when reading the data (see
              ! hcoio_dataread_mod.F90).
-             IF ( TRIM(Dta%ncPara) == '-' ) THEN
+             IF ( TRIM( Dta%ncPara ) == '-' ) THEN
                 Dta%ncRead    = .FALSE.
                 Dta%IsLocTime = .TRUE.
              ENDIF
@@ -1155,17 +1221,18 @@ CONTAINS
              IF ( TRIM(srcTime) /= '-' ) THEN
                 CALL HCO_ExtractTime( HcoConfig, srcTime, Dta, RC )
                 IF ( RC /= HCO_SUCCESS ) THEN
-                    CALL HCO_ERROR( 'ERROR 23', RC, THISLOC=LOC )
-                    RETURN
+                   msg = 'Could not extract time information!'
+                   CALL HCO_Error( msg, RC, thisLoc=loc )
+                   RETURN
                 ENDIF
              ENDIF
 
+#if defined(ESMF_)
              ! In an ESMF environment, the source data will be imported
              ! through ExtData by name, hence need to set ncFile equal to
              ! container name!
-#if defined(ESMF_)
              IF ( Dta%ncRead ) THEN
-                Dta%ncFile = ADJUSTL(cName)
+                Dta%ncFile = ADJUSTL( cName )
              ENDIF
 #endif
 
@@ -1196,7 +1263,7 @@ CONTAINS
 
           ENDIF
 
-          ! Connect file data object of this data container.
+          ! Connect FileData object to the HcoState%HcoConfigList
           Lct%Dct%Dta => Dta
 
           ! If a base emission field covers multiple emission categories,
@@ -1212,15 +1279,16 @@ CONTAINS
 
              ! nCat cannot exceed CatMax
              IF ( nCat > CatMax ) THEN
-                MSG = 'Category max exceeded'
-                CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
+                MSG = 'Exceeded maximum number of categories!'
+                CALL HCO_Error( msg, RC, thisLoc=loc )
                 RETURN
              ENDIF
 
              CALL AddShadowFields( HcoConfig, Lct, Cats, nCat, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 27', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Could not create shadow emission container!'
+                CALL HCO_ERROR( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
 
              ! Reset nCat
@@ -1308,7 +1376,7 @@ CONTAINS
     INTEGER, SAVE                 :: SKIPLEVEL = 0
     CHARACTER(LEN=255), SAVE      :: AllBrackets(MAXBRACKNEST) = ''
     CHARACTER(LEN=255)            :: TmpBracket, CheckBracket, ThisBracket
-    CHARACTER(LEN=255)            :: MSG
+    CHARACTER(LEN=512)            :: msg
 
     CHARACTER(LEN=255), PARAMETER :: LOC = 'BracketCheck (hco_config_mod.F90)'
 
@@ -1317,15 +1385,14 @@ CONTAINS
     !======================================================================
 
     ! Init
-    verb = HCO_IsVerb( HcoConfig%Err, 1 )
+    verb = HCO_IsVerb( HcoConfig%Err )
 
     ! Get name of this bracket
     IF ( STAT == 5 .OR. STAT == 6 ) THEN
        STRLEN     = LEN(LINE)
        IF ( STRLEN < 4 ) THEN
-          CALL HCO_ERROR ( &
-                          'Illegal bracket length: '//TRIM(LINE), &
-                           RC, THISLOC=LOC )
+          msg = 'Illegal bracket length: ' // TRIM(line)
+          CALL HCO_ERROR ( msg, RC, thisLoc=loc )
           RETURN
        ELSE
           TmpBracket = TRIM(LINE(4:STRLEN))
@@ -1342,7 +1409,7 @@ CONTAINS
        NEST = NEST + 1
        IF ( NEST > MAXBRACKNEST ) THEN
           MSG = 'Too many nested brackets'
-          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          CALL HCO_Error( msg, RC, thisLoc=LOC )
           RETURN
        ENDIF
        AllBrackets(NEST) = TmpBracket
@@ -1405,8 +1472,9 @@ CONTAINS
              CALL GetExtOpt( HcoConfig, -999, TRIM(ThisBracket), &
                 OptValBool=UseThis, FOUND=FOUND, RC=RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 28', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Error when checking '// TRIM( thisBracket ) // '!'
+                CALL HCO_Error( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
 
              ! If bracket name was found in options, update the UseBracket
@@ -1449,9 +1517,9 @@ CONTAINS
        ! Verbose mode
        IF ( verb ) THEN
           MSG = 'Opened shortcut bracket: '//TRIM(TmpBracket)
-          CALL HCO_MSG( HcoConfig%Err, MSG )
+          CALL HCO_MSG( HcoConfig%Err, msg )
           WRITE(MSG,*) ' - Skip content of this bracket: ', SKIP
-          CALL HCO_MSG( HcoConfig%Err, MSG )
+          CALL HCO_MSG( HcoConfig%Err, msg )
        ENDIF
     ENDIF
 
@@ -1462,7 +1530,7 @@ CONTAINS
        IF ( TRIM(TmpBracket) /= TRIM(AllBrackets(NEST)) ) THEN
           MSG = 'Closing bracket does not match opening bracket: '// &
              TRIM(TmpBracket)//', expected: '//TRIM(AllBrackets(NEST))
-          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          CALL HCO_Error( msg, RC, thisLoc=LOC )
           RETURN
        ENDIF
 
@@ -1478,9 +1546,9 @@ CONTAINS
        ! Verbose mode
        IF ( verb ) THEN
           MSG = 'Closed shortcut bracket: '//TRIM(TmpBracket)
-          CALL HCO_MSG( HcoConfig%Err, MSG )
+          CALL HCO_MSG( HcoConfig%Err, msg )
           WRITE(MSG,*) ' - Skip following lines: ', SKIP
-          CALL HCO_MSG( HcoConfig%Err, MSG )
+          CALL HCO_MSG( HcoConfig%Err, msg )
        ENDIF
     ENDIF
 
@@ -1534,7 +1602,7 @@ CONTAINS
     LOGICAL                       :: verb
     INTEGER                       :: I, N
     TYPE(ListCont), POINTER       :: Shd
-    CHARACTER(LEN=255)            :: MSG
+    CHARACTER(LEN=512)            :: msg
     CHARACTER(LEN=5)              :: C5
 
     CHARACTER(LEN=255), PARAMETER :: LOC   = 'AddShadowFields (hco_config_mod.F90)'
@@ -1550,7 +1618,7 @@ CONTAINS
     ENDIF
 
     ! Init
-    verb = HCO_IsVerb( HcoConfig%Err, 1 )
+    verb = HCO_IsVerb( HcoConfig%Err )
     Shd  => NULL()
 
 
@@ -1577,7 +1645,7 @@ CONTAINS
     ! Add scale factor zero to it, so that emissions will all be zero.
     DO I = 2, nCat
 
-       ! Create new data container
+       ! Create new data container (ListCont object)
        CALL ConfigList_AddCont ( Shd, HcoConfig%ConfigList )
 
        ! Character of category
@@ -1608,7 +1676,7 @@ CONTAINS
        ! verbose mode
        IF ( verb ) THEN
           MSG = 'Created shadow base emission field: ' // TRIM(Shd%Dct%cName)
-          CALL HCO_MSG(HcoConfig%Err,MSG)
+          CALL HCO_MSG( HcoConfig%Err, msg )
        ENDIF
 
        ! Cleanup
@@ -1618,8 +1686,9 @@ CONTAINS
     ! Add zero scale factor container
     CALL AddZeroScal( HcoConfig, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 29', RC, THISLOC=LOC )
-        RETURN
+       msg = 'Call to AddZeroScal could not add zero scale factor container!'
+       CALL HCO_Error( msg, RC, thisLoc=loc )
+       RETURN
     ENDIF
 
     ! Return w/ success
@@ -1712,7 +1781,7 @@ CONTAINS
        Lct%Dct%Dta => Dta
 
        ! verbose mode
-       IF ( HCO_IsVerb( HcoConfig%Err, 2 ) ) THEN
+       IF ( HCO_IsVerb( HcoConfig%Err ) ) THEN
           MSG = 'Created a fake scale factor with zeros'
           CALL HCO_MSG(HcoConfig%Err,MSG)
           MSG = 'This field will be used to artificially expand ' // &
@@ -1772,7 +1841,8 @@ CONTAINS
 !
     INTEGER               :: I, N, Idx, ExtNr
     LOGICAL               :: Enabled, NewExt
-    CHARACTER(LEN=255)    :: LOC
+    CHARACTER(LEN=255)    :: loc
+    CHARACTER(LEN=512)    :: msg
     CHARACTER(LEN=1023)   :: OPTS
     CHARACTER(LEN=2047)   :: LINE
     CHARACTER(LEN=2047)   :: SUBSTR(255), SPECS(255)
@@ -1782,8 +1852,9 @@ CONTAINS
     !======================================================================
 
     ! Enter
-    LOC   = 'ExtSwitch2Buffer (hco_config_mod.F90)'
     RC    = HCO_SUCCESS
+    msg   = ''
+    loc   = 'ExtSwitch2Buffer (hco_config_mod.F90)'
     ExtNr = -1
 
     ! Do until exit
@@ -1792,8 +1863,9 @@ CONTAINS
        ! Read line
        CALL HCO_ReadLine ( IU_HCO, LINE, EOF, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 30', RC, THISLOC=LOC )
-           RETURN
+          msg = 'Error in HEMCO_Config.rc @ line: ' // TRIM( line )
+          CALL HCO_Error( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
 
        ! Return if EOF
@@ -1813,8 +1885,9 @@ CONTAINS
              CALL AddExtOpt( HcoConfig, TRIM(LINE), &
                              ExtNr, RC, IgnoreIfExist=.TRUE. )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 31', RC, THISLOC=LOC )
-                 RETURN
+                msg = 'Error in HEMCO_Config.rc @ line: ' // TRIM( line )
+                CALL HCO_ERROR( msg, RC, thisLoc=loc )
+                RETURN
              ENDIF
           ENDIF
           CYCLE
@@ -1892,8 +1965,9 @@ CONTAINS
              DO I = 1, N
                 CALL SpecName_Register ( HcoConfig, SPECS(I), RC )
                 IF ( RC /= HCO_SUCCESS ) THEN
-                    CALL HCO_ERROR( 'ERROR 33', RC, THISLOC=LOC )
-                    RETURN
+                   msg = 'Error encountered in "SpecName_Register"!'
+                   CALL HCO_ERROR( msg, RC, thisLoc=LOC )
+                   RETURN
                 ENDIF
              ENDDO
           ENDIF
@@ -1948,19 +2022,19 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
-    LOGICAL               :: FOUND
-    INTEGER               :: I, N, POS
-    INTEGER               :: verb
-    INTEGER               :: warn
+    LOGICAL               :: doVerbose, doVerboseOnRoot, found
+    INTEGER               :: I,         N,               POS
 
     ! Strings
-    CHARACTER(LEN=255)    :: Line
-    CHARACTER(LEN=255)    :: Loc
-    CHARACTER(LEN=255)    :: Msg
+    CHARACTER(LEN=10)     :: onCores
+    CHARACTER(LEN=15)     :: verboseMsg
+    CHARACTER(LEN=255)    :: line
+    CHARACTER(LEN=255)    :: loc
     CHARACTER(LEN=255)    :: LogFile
     CHARACTER(LEN=255)    :: DiagnPrefix
     CHARACTER(LEN=255)    :: MetField
     CHARACTER(LEN=255)    :: GridRes
+    CHARACTER(LEN=512)    :: msg
 
     !======================================================================
     ! ReadSettings begins here
@@ -1968,6 +2042,7 @@ CONTAINS
 
     ! Enter
     Loc = 'ReadSettings (hco_config_mod.F90)'
+
 
     !-----------------------------------------------------------------------
     ! Read settings and add them as options to core extensions
@@ -1979,8 +2054,9 @@ CONTAINS
        ! Read line
        CALL HCO_ReadLine ( IU_HCO, LINE, EOF, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 34', RC, THISLOC=LOC )
-           RETURN
+          msg = 'Error in HEMCO_Config.rc @ line: ' // TRIM( Line )
+          CALL HCO_Error( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
 
        ! Return if EOF
@@ -1999,8 +2075,9 @@ CONTAINS
        CALL AddExtOpt ( HcoConfig, TRIM(LINE), &
                         CoreNr, RC, IgnoreIfExist=.TRUE. )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 35', RC, THISLOC=LOC )
-           RETURN
+          msg = 'Error in HEMCO_Config.rc @ line: ' // TRIM( Line )
+          CALL HCO_Error( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
 
     ENDDO
@@ -2060,60 +2137,82 @@ CONTAINS
     !-----------------------------------------------------------------------
     IF ( .NOT. ASSOCIATED(HcoConfig%Err) ) THEN
 
-       ! Verbose mode?
-       CALL GetExtOpt( HcoConfig, CoreNr, 'Verbose', &
-                       OptValInt=verb, FOUND=FOUND, RC=RC )
+       ! Initialize
+       doVerbose       = .FALSE.
+       doVerboseOnRoot = .FALSE.
+       onCores         = ''
+
+       ! First look for Verbose
+       CALL GetExtOpt( HcoConfig,            CoreNr,      'Verbose',         &
+                       OptValBool=doVerbose, found=found,  RC=RC            )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 36', RC, THISLOC=LOC )
-           RETURN
+          msg = 'Error looking for "Verbose" in HEMCO_Config.rc!'
+          CALL HCO_Error( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
-       IF ( .NOT. FOUND ) THEN
-          verb = 3
-          WRITE(*,*) 'Setting `Verbose` not found in HEMCO logfile - use 3'
+
+       ! First look for Verbose (logical).  This is now the default
+       ! inthe HEMCO_Config.rc file for HEMCO 3.7.0 and later.
+       CALL GetExtOpt( HcoConfig,          CoreNr,      'VerboseOnCores',    &
+                       OptValChar=onCores, found=found,  RC=RC              )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          msg = 'Error looking for "VerboseOnCores in HEMCO_Config.rc!'
+          CALL HCO_Error( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
+
+       ! Set a flag if Verbose output is to be done on the root core only
+       ! (if false, it will be done on all cores)
+       CALL TranLC( onCores )
+       doVerboseOnRoot = ( TRIM( onCores ) == "root" )
+
+       ! Print status message
+       IF ( doVerbose ) THEN
+          msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is ON '
+          IF ( doVerboseOnRoot ) THEN
+             msg = TRIM( msg ) // ' (root core only)'
+          ELSE
+             msg = TRIM( msg ) // ' (all cores)'
+          ENDIF
+       ELSE
+          msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is OFF'
+       ENDIF
+       CALL HCO_Msg( msg, verb=.TRUE. )
 
        ! Logfile to write into
        CALL GetExtOpt( HcoConfig, CoreNr, 'Logfile', &
                        OptValChar=Logfile, FOUND=FOUND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 37', RC, THISLOC=LOC )
-           RETURN
+          msg = 'Error looking for "Logfile" in HEMCO_Config.rc!'
+          CALL HCO_Error( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
        IF ( .NOT. FOUND ) THEN
           LogFile = 'HEMCO.log'
           WRITE(*,*) 'Setting `Logfile` not found in HEMCO logfile - use `HEMCO.log`'
        ENDIF
 
-       ! Prompt warnings to logfile?
-       CALL GetExtOpt( HcoConfig, CoreNr, 'Warnings', &
-                       OptValInt=warn, FOUND=FOUND, RC=RC  )
-       IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 38', RC, THISLOC=LOC )
-           RETURN
-       ENDIF
-       IF ( .NOT. FOUND ) THEN
-          warn = 3
-          WRITE(*,*) 'Setting `Warnings` not found in HEMCO logfile - use 3'
-       ENDIF
-
        ! Initialize (standard) HEMCO tokens
        CALL HCO_SetDefaultToken( HcoConfig, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 39', RC, THISLOC=LOC )
-           RETURN
+          msg = 'Error encountered in routine "HCO_SetDefaultToken"!'
+          CALL HCO_Error( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
 
        ! If LogFile is equal to wildcard character, set LogFile to asterik
        ! character. This will ensure that all output is written to standard
        ! output!
-       IF ( TRIM(LogFile) == HCO_GetOpt(HcoConfig%ExtList,'Wildcard') ) LogFile = '*'
+       IF ( TRIM(LogFile) == HCO_GetOpt(HcoConfig%ExtList,'Wildcard') )      &
+            LogFile = '*'
 
        ! We should now have everything to define the HEMCO error settings
-       CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err, LogFile, &
-                           verb, warn, RC )
+       CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err,   LogFile,      &
+                           doVerbose,         doVerboseOnRoot, RC           )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 40', RC, THISLOC=LOC )
-           RETURN
+          msg = 'Error encountered in routine "Hco_Error_Set"!'
+          CALL HCO_Error( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
 
     ENDIF
@@ -2175,18 +2274,20 @@ CONTAINS
     INTEGER                      :: ThisCover, ThisHcoID, FLAG
     INTEGER                      :: lon1, lon2, lat1, lat2
     INTEGER                      :: cpux1, cpux2, cpuy1, cpuy2
-    CHARACTER(LEN=255)           :: MSG, LOC
+    CHARACTER(LEN=255)           :: loc
+    CHARACTER(LEN=512)           :: msg
 
     !=================================================================
     ! RegisterPrepare begins here!
     !=================================================================
-    LOC = 'RegisterPrepare (HCO_CONFIG_MOD.F90)'
+    loc = 'RegisterPrepare (HCO_CONFIG_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 41', RC, THISLOC=LOC )
-        RETURN
+       msg = 'Error encountered in routine "HCO_Enter"!'
+       CALL HCO_Error( msg, RC, thisLoc=loc )
+       RETURN
     ENDIF
 
     ! Initialize
@@ -2207,7 +2308,7 @@ CONTAINS
     IF ( cpux2 >= 180 ) cpux2 = cpux2 - 360
 
     ! verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Start to prepare fields for registering!'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) 'This CPU x-range: ', cpux1, cpux2
@@ -2229,7 +2330,7 @@ CONTAINS
        ENDIF
 
        ! verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Prepare ', TRIM(Lct%Dct%cName)
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -2247,7 +2348,7 @@ CONTAINS
              Lct%Dct%HcoID = ThisHcoID
 
              ! verbose
-             IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+             IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
                 WRITE(MSG,*) 'Assigned HEMCO species ID: ', Lct%Dct%HcoID
                 CALL HCO_MSG(HcoState%Config%Err,MSG)
              ENDIF
@@ -2295,17 +2396,18 @@ CONTAINS
           ! IF ( (mskLct%Dct%DctType  == HCO_DCTTYPE_MASK ) .AND. &
           ! (mskLct%Dct%Dta%Cover == 0 )        ) THEN
           !
-          ! Because the code only distinguishes between full/partial and zero coverage,
-          ! and skips reading the base field if coverage is zero, this may cause
-          ! issues with MPI environments in WRF and CESM where the mask lon1/lat1/lon2/lat2
-          ! boundaries are set too small compared to the mask, and result in the
-          ! base field being skipped over small CPU decompositions where it should not have
-          ! been. The above fix does not fix the issue where ThisCover == 0,
-          ! which is the root cause in WRF and CESM. Thus, always set to partial coverage
+          ! Because the code only distinguishes between full/partial and zero
+          ! coverage, and skips reading the base field if coverage is zero,
+          ! this may cause issues with MPI environments in WRF and CESM where
+          ! the mask lon1/lat1/lon2/lat2 boundaries are set too small compared
+          ! to the mask, and result in the base field being skipped over small
+          ! CPU decompositions where it should not have been. The above fix
+          ! does not fix the issue where ThisCover == 0, which is the root
+          ! cause in WRF and CESM. Thus, always set to partial coverage
           ! (hplin, 8/19/22)
           !
-          ! Thus, the following fix needs to be applied for ESMF environments, skipping
-          ! a lot of the calculations below.
+          ! Thus, the following fix needs to be applied for ESMF environments,
+          ! skipping a lot of the calculations below.
 #if defined ( ESMF_ ) || defined( MODEL_WRF ) || defined( MODEL_CESM )
           ThisCover = -1
 #else
@@ -2326,9 +2428,9 @@ CONTAINS
           Lct%Dct%Dta%ncYrs(:) = -999
           Lct%Dct%Dta%ncMts(:) = -999
 
-          IF ( HCO_IsVerb(HcoSTate%Config%Err,3) ) THEN
+          IF ( HCO_IsVerb(HcoSTate%Config%Err ) ) THEN
              WRITE(MSG,*) 'Coverage: ', Lct%Dct%Dta%Cover
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG( HcoState%Config%Err, msg )
           ENDIF
        ENDIF
 
@@ -2389,17 +2491,19 @@ CONTAINS
     INTEGER               :: N, cID, HcoID
     INTEGER               :: targetID, FLAG
     LOGICAL               :: Ignore, Add
-    CHARACTER(LEN=255)    :: MSG, LOC
+    CHARACTER(LEN=255)    :: LOC
+    CHARACTER(LEN=512)    :: msg
 
     !======================================================================
     ! Register_Base begins here
     !======================================================================
-    LOC = 'Register_Base (HCO_CONFIG_MOD.F90)'
+    loc = 'Register_Base (HCO_CONFIG_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, loc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       PRINT *,'Error in HCO_ENTER called from Register_Base'
+       msg = 'Error encountered in routine "HCO_Enter"!'
+       CALL HCO_Error( msg, RC, thisLoc=loc )
        RETURN
     ENDIF
 
@@ -2444,7 +2548,7 @@ CONTAINS
        ENDIF
 
        IF ( Ignore ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) &
                   'Register_Base: Ignore (and remove) base field ', &
                   TRIM(Lct%Dct%cName)
@@ -2459,7 +2563,7 @@ CONTAINS
        ENDIF
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Register_Base: Checking ', TRIM(Lct%Dct%cName)
           CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='-')
        ENDIF
@@ -2494,11 +2598,11 @@ CONTAINS
        ENDIF
 
        ! verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Container ID     : ', Lct%Dct%cID
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG( HcoState%Config%Err, msg )
           WRITE(MSG,*) 'Assigned targetID: ', targetID
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG( HcoState%Config%Err, msg )
        ENDIF
 
        ! Negative targetID is assigned to base data that doesn't need
@@ -2521,14 +2625,15 @@ CONTAINS
        ! in the reading lists sorted by cID.
        CALL ReadList_Set( HcoState, Lct%Dct, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          PRINT *,'Error in ReadList_Set called from Register_Base'
+          msg = 'Error encountered in routine "ReadList_Set"!'
+          CALL HCO_Error( msg, RC, thisLoc=loc )
           RETURN
        ENDIF
 
        ! Print some information if verbose mode is on
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Base field registered: ', TRIM(Lct%Dct%cName)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG( HcoState%Config%Err, msg )
        ENDIF
 
        ! Advance to next line
@@ -2586,20 +2691,22 @@ CONTAINS
 
     ! Scalars
     INTEGER                   :: cID, FLAG
-    CHARACTER(LEN=255)        :: MSG, LOC
+    CHARACTER(LEN=255)        :: LOC
+    CHARACTER(LEN=512)        :: msg
     CHARACTER(LEN=  5)        :: strID
     INTEGER                   :: ThisScalID
 
     !======================================================================
     ! Register_Scal begins here
     !======================================================================
-    LOC = 'Register_Scal (HCO_CONFIG_MOD.F90)'
+    loc = 'Register_Scal (HCO_CONFIG_MOD.F90)'
 
     ! Enter
-    CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
+    CALL HCO_ENTER ( HcoState%Config%Err, loc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 42', RC, THISLOC=LOC )
-        RETURN
+       msg = 'Error encountered in routine "HCO_Enter"!'
+       CALL HCO_Error( msg, RC, thisLoc=loc )
+       RETURN
     ENDIF
 
     ! Loop over all scale factor ids
@@ -2630,8 +2737,8 @@ CONTAINS
        ! Return error if scale factor ID not found
        IF ( .NOT. ASSOCIATED(Lct) ) THEN
           WRITE ( strID, * ) ThisScalID
-          MSG = 'Container ID not found: ' // strID
-          CALL HCO_ERROR ( MSG, RC)
+          msg = 'Container ID not found: ' // strID
+          CALL HCO_Error( msg, RC, thisLoc=loc )
           RETURN
        ENDIF
 
@@ -2639,7 +2746,7 @@ CONTAINS
        IF ( Lct%Dct%DctType == HCO_DCTTYPE_BASE ) THEN
           WRITE ( strID, * ) ThisScalID
           MSG = 'Container ID belongs to base field: ' // strID
-          CALL HCO_ERROR ( MSG, RC)
+          CALL HCO_Error( msg, RC, thisLoc=loc )
           RETURN
        ENDIF
 
@@ -2652,8 +2759,9 @@ CONTAINS
        IF ( Lct%Dct%nScalID > 0 ) THEN
           CALL ScalID_Register ( Lct%Dct, HcoState%Config, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 43', RC, THISLOC=LOC )
-              RETURN
+             msg = 'Error encountered in routine "ScalID_Register"!'
+             CALL HCO_Error( msg, RC, thisLoc=loc )
+             RETURN
           ENDIF
        ENDIF
 
@@ -2661,14 +2769,15 @@ CONTAINS
        ! in the reading lists sorted by cID.
        CALL ReadList_Set( HcoState, Lct%Dct, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 44', RC, THISLOC=LOC )
-           RETURN
+          msg = 'Error encountered in "ReadList_Set"!'
+          CALL HCO_Error( msg, RC, thisLoc=loc )
+          RETURN
        ENDIF
 
        ! Print some information if verbose mode is on
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Scale field registered: ', TRIM(Lct%Dct%cName)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG( HcoState%Config%Err, msg )
        ENDIF
 
        ! Advance
@@ -2752,19 +2861,21 @@ CONTAINS
     INTEGER                   :: tmpID
     INTEGER                   :: I, J, FLAG1, tmpCov
     LOGICAL                   :: found, sameCont
-    CHARACTER(LEN=255)        :: MSG, LOC
+    CHARACTER(LEN=255)        :: loc
+    CHARACTER(LEN=512)        :: msg
     CHARACTER(LEN=  7)        :: strID
 
     !======================================================================
     ! Get_targetID begins here
     !======================================================================
-    LOC = 'Get_targetID (HCO_CONFIG_MOD.F90)'
+    loc = 'Get_targetID (HCO_CONFIG_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER ( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 45', RC, THISLOC=LOC )
-        RETURN
+       msg = 'Error encountered in routine "HCO_Enter"!'
+       CALL HCO_ERROR( msg, RC, thisLoc=LOC )
+       RETURN
     ENDIF
 
     ! Initialize
@@ -2823,8 +2934,8 @@ CONTAINS
           ! Error if scale factor not found
           IF ( .NOT. FOUND ) THEN
              WRITE ( strID, * ) Lct%Dct%Scal_cID(I)
-             MSG = 'No scale factor with cID: ' // TRIM(strID)
-             CALL HCO_ERROR ( MSG, RC)
+             msg = 'No scale factor with cID: ' // TRIM(strID)
+             CALL HCO_Error( msg, RC, thisLoc=loc )
              RETURN
           ENDIF
 
@@ -2833,10 +2944,10 @@ CONTAINS
           IF ( (mskLct%Dct%DctType  == HCO_DCTTYPE_MASK ) .AND. &
                (mskLct%Dct%Dta%Cover == 0 )        ) THEN
              targetID = -999
-             IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+             IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
                 WRITE(MSG,*) 'Data not defined over this CPU, skip ' // &
                      TRIM(Lct%Dct%cName)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG( HcoState%Config%Err, msg )
              ENDIF
 
              ! Return
@@ -2937,7 +3048,7 @@ CONTAINS
              ! Error if container not found
              IF ( .NOT. FOUND ) THEN
                 WRITE(MSG,*) 'No scale factor with ID: ', tmpID
-                CALL HCO_ERROR ( MSG, RC)
+                CALL HCO_Error( msg, RC, thisLoc=loc )
                 RETURN
              ENDIF
 
@@ -2972,10 +3083,10 @@ CONTAINS
          ! replace all values of Lct. Hence, set targetID to -999
          ! (= ignore container) and return here.
        IF ( (tmpLct%Dct%Hier > Hier) .AND. (tmpCov==1) ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Skip container ', TRIM(Lct%Dct%cName), &
                           ' because of ', TRIM(tmpLct%Dct%cName)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG( HcoState%Config%Err, msg )
           ENDIF
 
           ! Return
@@ -3591,8 +3702,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    TYPE(ListCont), POINTER :: NewLct
-    INTEGER                 :: cID
+    INTEGER :: cID
 
     !======================================================================
     ! ConfigList_AddCont begins here
@@ -3602,22 +3712,20 @@ CONTAINS
     ! The DataCont_Init call creates a new data container (type DataCont)
     ! All HEMCO lists (ConfigList, ReadList, EmisList) point to this
     ! container!
-    ALLOCATE ( NewLct )
-    NewLct%Dct      => NULL()
-    NewLct%NextCont => NULL()
+    ALLOCATE ( Lct )
+    Lct%Dct      => NULL()
+    Lct%NextCont => NULL()
 
     ! Get # of containers in list. Set new container ID (cID) to # of
     ! containers + 1.
     cID = ListCont_Length( List )
     cID = cID + 1
-    CALL DataCont_Init ( NewLct%Dct, cID )
+    CALL DataCont_Init ( Lct%Dct, cID )
 
     ! Connect blank container with ConfigList list.
-    NewLct%NextCont => List
-    List            => NewLct
+    Lct%NextCont => List
+    List         => Lct
 
-    ! Output pointer points to the new container
-    Lct => NewLct
 
   END SUBROUTINE ConfigList_AddCont
 !EOC
@@ -4134,6 +4242,7 @@ CONTAINS
     INTEGER                       :: AS
     CHARACTER(LEN=255), PARAMETER :: &
          LOC = 'Config_GetSpecAttr (hco_config_mod.F90)'
+    CHARACTER(LEN=512)            :: errMsg
 
     !======================================================================
     ! Config_GetSpecAttr begins here
@@ -4146,20 +4255,20 @@ CONTAINS
     IF ( PRESENT(SpecNames) ) THEN
        IF ( .NOT. ASSOCIATED(SpecNames) ) THEN
           IF ( N <= 0 ) THEN
-             CALL HCO_ERROR ( &
-                'Cannot allocate SpecNames - N is size 0 or smaller', RC, THISLOC=LOC )
+             errMsg = 'Cannot allocate SpecNames - N is size 0 or smaller'
+             CALL HCO_Error( errMsg, RC, thisLoc=LOC )
              RETURN
           ENDIF
           ALLOCATE(SpecNames(N), STAT=AS )
           IF ( AS/= 0 ) THEN
-             CALL HCO_ERROR ( &
-                'SpecNames allocation error', RC, THISLOC=LOC )
+             errMsg = 'Could not allocate the SpcNames array!'
+             CALL HCO_Error( errMsg, RC, thisLoc=LOC )
              RETURN
           ENDIF
           SpecNames(:) = ''
        ELSEIF ( SIZE(SpecNames) /= N ) THEN
-          CALL HCO_ERROR ( &
-             'SpecNames size error', RC, THISLOC=LOC )
+          errMsg = 'Size(SpecNames) does not match the passed N argument!'
+          CALL HCO_Error( errMsg, RC, thisLoc=LOC )
           RETURN
        ENDIF
     ENDIF
@@ -4312,7 +4421,7 @@ CONTAINS
     ! ExtractSrcDim begins here
     !======================================================================
 
-    MSG = 'Illegal source dimension ' // TRIM(srcDim) // &
+    msg = 'Illegal source dimension ' // TRIM(srcDim) // &
           ' for file ' // TRIM(Dta%ncFile) // &
           '. Valid entries are e.g. xy or xyz.'
 
@@ -4342,13 +4451,13 @@ CONTAINS
 
        ! There must be at least 3 characters (e.g. xyz)
        IF ( strLen < 3 ) THEN
-          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
+          CALL HCO_Error( msg, RC, thisLoc=LOC )
           RETURN
        ENDIF
 
        ! First two entries must be xy
        IF ( str1(1:2) /= 'xy' ) THEN
-          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
+          CALL HCO_Error( msg, RC, thisLoc=LOC )
           RETURN
        ENDIF
 
@@ -4357,7 +4466,7 @@ CONTAINS
        ! emitted into level 4.
        IF ( str1(3:3) == 'L' .OR. str1(3:3) == 'l' ) THEN
           IF ( strLen < 4 ) THEN
-             CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
+             CALL HCO_Error( msg, RC, thisLoc=LOC )
              RETURN
           ENDIF
           Dta%SpaceDim = 2
@@ -4440,7 +4549,7 @@ CONTAINS
            // 'and contain the name/value pair, e.g. xyz+"ens"=3'
        idx = INDEX( TRIM(str2), '=' )
        IF ( idx <= 0 ) THEN
-          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          CALL HCO_Error( msg, RC, thisLoc=LOC )
           RETURN
        ENDIF
 
@@ -4465,11 +4574,11 @@ CONTAINS
        ENDIF
 
        ! Verbose
-       IF ( HcoConfig%amIRoot .AND. HCO_IsVerb(HcoConfig%Err,2) ) THEN
+       IF ( HcoConfig%amIRoot .AND. HCO_IsVerb(HcoConfig%Err ) ) THEN
           WRITE(MSG,*) 'Will use additional dimension on file ', &
              TRIM(Dta%ncFile), ': ', TRIM(Dta%ArbDimName), ' = ', &
              TRIM(Dta%ArbDimVal)
-          CALL HCO_MSG(HcoConfig%Err,MSG)
+          CALL HCO_Msg( HcoConfig%Err, msg )
        ENDIF
     ENDIF
 
@@ -4512,6 +4621,8 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER            :: I, AS
+    CHARACTER(LEN=255) :: thisLoc
+    CHARACTER(LEN=512) :: errMsg
 
     !=====================================================================
     ! ConfigInit begins here!
@@ -4529,12 +4640,17 @@ CONTAINS
 
     IF ( PRESENT( nModelSpecies ) ) THEN
 
+       ! Initialize strings
+       errMsg  = ''
+       thisLoc = 'ConfigInit (in module hco_config_mod.F90)'
+
        ! Initialize vector w/ species information
        HcoConfig%nModelSpc = nModelSpecies
        IF ( nModelSpecies > 0 ) THEN
           ALLOCATE ( HcoConfig%ModelSpc( nModelSpecies ), STAT=AS )
           IF ( AS /= 0 ) THEN
-             CALL HCO_ERROR( 'ModelSpecies', RC )
+             errMsg = 'Could not allocate "ModelSpecies" array!'
+             CALL HCO_Error( errMsg, RC, thisLoc )
              RETURN
           ENDIF
 
@@ -4659,14 +4775,17 @@ CONTAINS
 !
     TYPE(ListCont), POINTER :: ThisLct => NULL()
     LOGICAL                 :: Duplicate
-    CHARACTER(LEN=255)      :: tmpName, MSG
+    CHARACTER(LEN=255)      :: tmpName, thisLoc
+    CHARACTER(LEN=512)      :: errMsg
 
     !======================================================================
     ! CheckForDuplicateName begins here!
     !======================================================================
 
     ! Init
-    RC = HCO_SUCCESS
+    RC        = HCO_SUCCESS
+    errMsg    = ''
+    thisLoc   = 'CheckForDuplicateName (in module hco_config_mod.F90)'
     Duplicate = .FALSE.
 
     ! Pass name to clear spaces
@@ -4693,8 +4812,8 @@ CONTAINS
     ENDDO
 
     IF ( Duplicate ) THEN
-       MSG = 'Error: HEMCO field already exists:'//TRIM(cName)
-       CALL HCO_ERROR ( MSG, RC )
+       errMsg = 'Error: HEMCO field already exists:'//TRIM(cName)
+       CALL HCO_Error( errMsg, RC, thisLoc )
        RETURN
     ENDIF
 
@@ -4749,14 +4868,16 @@ CONTAINS
     LOGICAL            :: isNumTags, isTagName, isN
 
     ! Strings
-    CHARACTER(LEN=255) :: ErrMsg,    ThisLoc,   Nstr
+    CHARACTER(LEN=255) :: thisLoc,   Nstr
+    CHARACTER(LEN=512) :: errMsg
 
     !=======================================================================
     ! Hco_GetTagInfo begins here
     !=======================================================================
 
     ! Initialize
-    ErrMsg     = ''
+    errMsg     = ''
+    thisLoc    = 'Hco_Get_TagInfo (in module hco_config_mod.F90)'
     Found      = .TRUE.
     numTags    = 0
 
@@ -4768,7 +4889,7 @@ CONTAINS
     ! Exit with error if getting tag name but index not specified
     IF ( isTagName .AND. .NOT. isN ) THEN
        ErrMsg = 'Index must be specified if retrieving an individual tag name'
-       CALL HCO_ERROR( ErrMsg, RC )
+       CALL HCO_Error( errMsg, RC, thisLoc )
        RETURN
     ENDIF
 
@@ -4784,7 +4905,7 @@ CONTAINS
           FOUND = .FALSE.
           ErrMsg = 'Handling of tagId ' // TRIM(tagId) // &
                    ' is not implemented for getting number of tags'
-          CALL HCO_Error( ErrMsg, RC )
+          CALL HCO_Error( errMsg, RC, thisLoc )
           RETURN
     END SELECT
 
@@ -4800,9 +4921,10 @@ CONTAINS
 
     ! Exit with error if index exceeds number of tags for this wildcard
     IF ( isTagName .AND. .NOT. isN ) THEN
-       ErrMsg = 'Index must be greater than total number of tags for wildcard' &
-                // TRIM(tagId)
-       CALL HCO_Error( ErrMsg, RC )
+       errMsg =                                                              &
+            'Index must be greater than total number of tags for wildcard'   &
+             // TRIM(tagId)
+       CALL HCO_Error( errMsg, RC, thisLoc )
        RETURN
     ENDIF
 
@@ -4814,9 +4936,9 @@ CONTAINS
           D = N
        CASE DEFAULT
           FOUND = .FALSE.
-          ErrMsg = 'Handling of tagId ' // TRIM( tagId ) // &
+          errMsg = 'Handling of tagId ' // TRIM( tagId ) // &
                    ' is not implemented for getting tag name'
-          CALL HCO_Error( ErrMsg, RC )
+          CALL HCO_Error( errMsg, RC, thisLoc )
           RETURN
     END SELECT
 
@@ -5078,7 +5200,7 @@ CONTAINS
           CALL ScalID2List( HcoConfig%ScalIDList, Lct%Dct%ScalID, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              errMsg = 'Error encountered in routine "ScalID2List"!'
-             CALL HCO_ERROR( errMsg, RC, thisLoc )
+             CALL HCO_Error( errMsg, RC, thisLoc )
              RETURN
           ENDIF
        ENDIF

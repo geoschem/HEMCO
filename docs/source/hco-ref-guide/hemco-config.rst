@@ -1,4 +1,4 @@
-.. |br| raw:: html:
+.. |br| raw:: html
 
    <br />
 
@@ -139,7 +139,7 @@ These settings control HEMCO simulation options.
 
 .. option:: Separator
 
-   Separator symbol. On Unix/Linux systems, this should be set to
+   Separator symbol. On Unix/4Linux systems, this should be set to
    :literal:`/`.
 
 .. option:: Mask fractions
@@ -871,9 +871,9 @@ are:
 
    .. option:: EF
 
-       **Exact, Forced:** Same as :option:`E`, but HEMCO stops with an
-       error if no data field can be found for the current simulation
-       date and time.
+      **Exact, Forced:** Same as :option:`E`, but HEMCO stops with an
+      error if no data field can be found for the current simulation
+      date and time.
 
    .. option:: EC
 
@@ -883,10 +883,32 @@ are:
 
       **Exact, Read/Query Continuously, Forced.**
 
+   .. option:: EFYO
+
+      **Exact, Forced, Simulation Year, Once**: Same as :option:`EF`,
+      with the following additions:
+
+      - :envvar:`Y`: HEMCO will stop thie simulation if the simulation
+	year does not match the year in the file timestamp.
+      - :envvar:`O`: HEMCO will only read the file once.
+
+      This setting is typically only used for model restart files
+      (such as `GEOS-Chem Classic restart files
+      <https://geos-chem.readthedocs.io/en/stable/gcc-guide/04-data/restart-files-gc.html>`_).
+      This ensures that the simulation will stop unless the restart
+      file timestamp matches the simulation start date and time.
+
+      .. attention::
+
+	 Consider changing the time cycle flag from :option:`EFYO` to
+	 :option:`CYS` if you would like your simulation to read a
+	 data file (such as a simulation restart file) whose file
+	 timestamp differs from the simulaton start date and time.
+
    .. option:: EY
 
       **Exact, Use Smulation Year:** Same as :option:`E`, except don't
-      allow :envvar:`Emission year`  setting to override year value.
+      allow :envvar:`Emission year` setting to override year value.
 
    .. option:: A
 
@@ -1206,6 +1228,84 @@ coordinates: :literal:`Lon1/Lat1/Lon2/Lat2` . Longitudes must be in
 degrees east, latitudes in degrees north. Only grid boxes whose mid
 points are within the specified mask boundaries.  You may also specify
 a single grid point (:literal:`Lon1/Lat1/Lon1/Lat1/`).
+
+.. _hco-cfg-masks-caveat:
+
+Caveat for simulations using cropped horizontal grids
+-----------------------------------------------------
+
+Consider the following combination of global and regional
+emissions inventories:
+
+In the :ref:`Base Emissions <hco-cfg-base>` section:
+
+.. code-block:: kconfig
+
+   0 GLOBAL_INV_SPC1   ...  SPC1 -     1 5
+   0 INVENTORY_1_SPC1  ...  SPC1 1001  1 56
+   0 INVENTORY_2_SPC1  ...  SPC1 1002  1 55
+
+In the :ref:`Masks <hco-cfg-masks>` section:
+
+.. code-block:: kconfig
+
+   1001 REGION_1_MASK ... 1 1 70/10/140/60
+   1002 REGION_2_MASK ... 1 1 46/-12/180/82
+
+For clarity, we have omitted the various elements in these entries of
+:file:`HEMCO_Config.rc` that are irrelevant to this issue.
+
+With this setup, we should expect the following behavior:
+
+   #. Species :literal:`SPC1` should be emitted globally from inventory
+      :literal:`GLOBAL_INV` (hierarchy = 5). |br|
+      |br|
+
+   #. Regional emissions of :literal:`SPC1` from
+      :literal:`INVENTORY_1` (hierarchy = 56) should overwrite global
+      emissions in the region specified by :literal:`REGION_1_MASK`. |br|
+      |br|
+
+   #. Likewise, regional emissions of :literal:`SPC1` from
+      :literal:`INVENTORY_2` (hierarchy = 55) should overwrite global
+      emissions in the region specified by :literal:`REGION_2_MASK`. |br|
+      |br|
+
+   #. In the locations where :literal:`REGION_2_MASK` intersects
+      :literal:`REGION_1_MASK`, emissions from
+      :literal:`INVENTORY_1` will be applied. This is because
+      :literal:`INVENTORY_1` has a higher hierarchy (56) than
+      :literal:`INVENTORY_2` (55).
+
+When running simulations that use cropped grids, one or both of the
+boundaries specified for the masks (:literal:`70/10/140/60` and
+:literal:`46/-12/180/82`) in :file:`HEMCO_Config.rc` can potentially
+extend beyond the bounds of the simulation domain.  If this should
+happen, HEMCO would treat the regional inventories as if they were
+global, the emissions for the highest hierarchy (i.e.,
+:literal:`INVENTORY_1`) would be applied globally. Inventories with
+lower hierarchies would be ignored.
+
+.. tip::
+
+   Check the HEMCO log output for messages to make sure that none of
+   your desired emissions have been skipped.
+
+The solution is to make the boundaries of each defined mask region at least
+a little bit smaller than the boundaries of the nested domain. This
+involves inspecting the mask itself to make sure that no relevant
+gridboxes will be excluded.
+
+For example, assuming the simulation domain extends from 70E to 140E
+in longitude, using this mask definition:
+
+.. code-block:: kconfig
+
+   1001 REGION_1_MASK ... 1 1 70/10/136/60
+
+would prevent :literal:`INVENTORY_1` from being mistakely treated as a
+global inventory. We hope to add improved error checking for this
+condition into a future HEMCO version.
 
 .. _hco-cfg-data-coll:
 

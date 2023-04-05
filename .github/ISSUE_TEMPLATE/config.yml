@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: HEMCO user manual
+    url: https://hemco.readthedocs.io/en/stable
+    about: Click this link to read the HEMCO user manual.

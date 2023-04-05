@@ -874,8 +874,16 @@ CONTAINS
 
     ! Write to log file
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use FINN extension'
-       CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: FINN (biomass burning)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
+       ENDIF
+
+       ! Other print statements will only be written as debug output
        WRITE(MSG,*) '   - Use daily data          : ', Inst%UseDay
        CALL HCO_MSG(HcoState%Config%Err,MSG )
     ENDIF
@@ -1383,33 +1391,89 @@ CONTAINS
     ! Instance-specific deallocation
     IF ( ASSOCIATED(Inst) ) THEN
 
+       !---------------------------------------------------------------------
+       ! Deallocate fields of Inst before popping off from the list
+       ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
+       !---------------------------------------------------------------------
+       IF ( ASSOCIATED( Inst%VEGTYP1 ) ) THEN
+          DEALLOCATE( Inst%VEGTYP1 )
+       ENDIF
+       Inst%VEGTYP1 => NULL()
+
+       IF ( ASSOCIATED( Inst%VEGTYP2 ) ) THEN
+          DEALLOCATE( Inst%VEGTYP2 )
+       ENDIF
+       Inst%VEGTYP2 => NULL()
+
+       IF ( ASSOCIATED( Inst%VEGTYP3 ) ) THEN
+          DEALLOCATE( Inst%VEGTYP3 )
+       ENDIF
+       Inst%VEGTYP3 => NULL()
+
+       IF ( ASSOCIATED( Inst%VEGTYP4 ) ) THEN
+          DEALLOCATE(Inst%VEGTYP4 )
+       ENDIF
+       Inst%VEGTYP4 => NULL()
+
+       IF ( ASSOCIATED( Inst%VEGTYP5 ) ) THEN
+          DEALLOCATE( Inst%VEGTYP5 )
+       ENDIF
+       Inst%VEGTYP5 => NULL()
+
+       IF ( ASSOCIATED( Inst%VEGTYP9 ) ) THEN
+          DEALLOCATE( Inst%VEGTYP9 )
+       ENDIF
+       Inst%VEGTYP9 => NULL()
+
+       IF ( ASSOCIATED( Inst%FINN_EMFAC ) ) THEN
+          DEALLOCATE( Inst%FINN_EMFAC )
+       ENDIF
+       Inst%FINN_EMFAC => NULL()
+
+       IF ( ASSOCIATED( Inst%FinnIDs ) ) THEN
+          DEALLOCATE( Inst%FinnIDs )
+       ENDIF
+       Inst%FinnIDs => NULL()
+
+       IF ( ASSOCIATED( Inst%HcoIDs ) ) THEN 
+          DEALLOCATE( Inst%HcoIDs )
+       ENDIF
+       Inst%HcoIDs => NULL()
+
+       IF ( ASSOCIATED( Inst%SpcNames ) ) THEN
+          DEALLOCATE( Inst%SpcNames )
+       ENDIF
+       Inst%SpcNames => NULL()
+
+       IF ( ASSOCIATED( Inst%SpcScalFldNme ) ) THEN
+          DEALLOCATE( Inst%SpcScalFldNme )
+       ENDIF
+       Inst%SpcScalFldNme  => NULL()
+
+       IF ( ASSOCIATED( Inst%SpcScal ) ) THEN
+          DEALLOCATE( Inst%SpcScal )
+       ENDIF
+       Inst%SpcScal => NULL()
+
+       IF ( ASSOCIATED( Inst%FINN_SPEC_NAME ) ) THEN
+          DEALLOCATE( Inst%FINN_SPEC_NAME )
+       ENDIF
+       Inst%FINN_SPEC_NAME => NULL()
+
+       !---------------------------------------------------------------------
        ! Pop off instance from list
+       !---------------------------------------------------------------------
        IF ( ASSOCIATED(PrevInst) ) THEN
-
-          ! Free pointers
-          IF ( ASSOCIATED( Inst%VEGTYP1 ) ) DEALLOCATE( Inst%VEGTYP1 )
-          IF ( ASSOCIATED( Inst%VEGTYP2 ) ) DEALLOCATE( Inst%VEGTYP2 )
-          IF ( ASSOCIATED( Inst%VEGTYP3 ) ) DEALLOCATE( Inst%VEGTYP3 )
-          IF ( ASSOCIATED( Inst%VEGTYP4 ) ) DEALLOCATE( Inst%VEGTYP4 )
-          IF ( ASSOCIATED( Inst%VEGTYP5 ) ) DEALLOCATE( Inst%VEGTYP5 )
-          IF ( ASSOCIATED( Inst%VEGTYP9 ) ) DEALLOCATE( Inst%VEGTYP9 )
-
-          ! Cleanup module arrays
-          IF ( ASSOCIATED( Inst%FINN_EMFAC     )) DEALLOCATE( Inst%FINN_EMFAC     )
-          IF ( ASSOCIATED( Inst%FinnIDs        )) DEALLOCATE( Inst%FinnIDs        )
-          IF ( ASSOCIATED( Inst%HcoIDs         )) DEALLOCATE( Inst%HcoIDs         )
-          IF ( ASSOCIATED( Inst%SpcNames       )) DEALLOCATE( Inst%SpcNames       )
-          IF ( ASSOCIATED( Inst%SpcScalFldNme  )) DEALLOCATE( Inst%SpcScalFldNme  )
-          IF ( ASSOCIATED( Inst%SpcScal        )) DEALLOCATE( Inst%SpcScal        )
-          IF ( ASSOCIATED( Inst%FINN_SPEC_NAME )) DEALLOCATE( Inst%FINN_SPEC_NAME )
-
           PrevInst%NextInst => Inst%NextInst
        ELSE
           AllInst => Inst%NextInst
        ENDIF
        DEALLOCATE(Inst)
-       Inst => NULL()
     ENDIF
+
+    ! Free pointers before exiting
+    PrevInst => NULL()
+    Inst     => NULL()
 
    END SUBROUTINE InstRemove
 !EOC

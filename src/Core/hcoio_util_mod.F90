@@ -157,7 +157,7 @@ CONTAINS
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
     ENDIF
-    verb = HCO_IsVerb(HcoState%Config%Err,3)
+    verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! Initialize local variables for safety's sake
     nTime      =  0
@@ -197,7 +197,7 @@ CONTAINS
     IF ( (refYear <= 1900) .AND. (nTime > 0) ) THEN
        MSG = 'ncdf reference year is prior to 1901 - ' // &
             'time stamps may be wrong!'
-       CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1 )
+       CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
     ENDIF
 
     ! verbose mode
@@ -1118,7 +1118,7 @@ CONTAINS
     !=================================================================
 
     ! Verbose mode?
-    verb = HCO_IsVerb(HcoState%Config%Err,3)
+    verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! If the originally wanted datetime was below the available data
     ! range, set all weights to the first index.
@@ -1235,7 +1235,7 @@ CONTAINS
                 'slice. Interpolation will be performed from ',           &
                 availYMDhm(tidx1), ' to ', availYMDhm(tidx2), '. Data ',    &
                 'container: ', TRIM(Lct%Dct%cName)
-          CALL HCO_WARNING(HcoState%Config%Err, MSG, RC, WARNLEV=1, THISLOC=LOC)
+          CALL HCO_WARNING(HcoState%Config%Err, MSG, RC, THISLOC=LOC)
        ENDIF
 
        ! Calculate weights wgt1 and wgt2 to be given to slice 1 and
@@ -1483,7 +1483,7 @@ CONTAINS
 
     ! Prompt a warning
     WRITE(MSG,*) 'No area unit found in ' // TRIM(FN) // ' - convert to m-2!'
-    CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1, THISLOC=LOC )
+    CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
 
     ! Leave w/ success
     RC = HCO_SUCCESS
@@ -1573,7 +1573,7 @@ CONTAINS
     srcFile = Lct%Dct%Dta%ncFile
 
     ! verbose mode
-    IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Parsing source file and replacing tokens'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
     ENDIF
@@ -2105,7 +2105,7 @@ CONTAINS
     ENDIF
 
     ! Verbose
-    IF ( HcoState%amIRoot .AND. HCO_IsVerb( HcoState%Config%Err, 2 ) ) THEN
+    IF ( HcoState%amIRoot .AND. HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Additional dimension ', TRIM(Lct%Dct%Dta%ArbDimName), &
                     ' in ', TRIM(Lct%Dct%Dta%ncFile), ': use index ',      &
                     ArbIdx, ' (set: ', Lct%Dct%Dta%ArbDimVal, ')'
@@ -2255,7 +2255,7 @@ CONTAINS
     Vals => NULL()
 
     ! verbose mode?
-    Verb = HCO_IsVerb(HcoState%Config%Err,2)
+    Verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! Verbose
     IF ( Verb ) THEN
@@ -2313,7 +2313,7 @@ CONTAINS
           CIDS = NINT(CNTR)
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              MSG = '- Use ID mask ' // TRIM(LINE)
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -2379,7 +2379,7 @@ CONTAINS
        ENDDO
 
        ! Verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) '- Obtained values for ',TRIM(CNT),' ==> ID:', CID
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -2403,7 +2403,7 @@ CONTAINS
        Lct%Dct%Dta%IsLocTime = .TRUE.
        MSG = 'Data assigned to mask regions will be treated in local time: '//&
               TRIM(Lct%Dct%cName)
-       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=2, THISLOC=LOC )
+       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Cleanup
@@ -2478,7 +2478,7 @@ CONTAINS
     Vals => NULL()
 
     ! Verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG, *) 'Read from config file: ', TRIM(Lct%Dct%cName)
        CALL HCO_MSG(HcoState%Config%Err,MSG)
     ENDIF
@@ -2563,8 +2563,7 @@ CONTAINS
           Lct%Dct%Dta%IsLocTime = .TRUE.
           MSG = 'Scale factors read from file are treated as local time: '// &
                  TRIM(Lct%Dct%cName)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, WARNLEV=2, &
-                            THISLOC=LOC )
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
        ENDIF
 
     ENDIF
@@ -2970,22 +2969,19 @@ CONTAINS
              FileArr(1,1,1,:) = 0.0_hp
              MSG = 'Base field outside of range - set to zero: ' // &
                    TRIM(Lct%Dct%cName)
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1, &
-                                THISLOC=LOC )
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
 #if defined( MODEL_GEOS )
           ELSEIF ( Lct%Dct%DctType == HCO_DCTTYPE_MASK ) THEN
              FileArr(1,1,1,:) = 0.0_hp
              MSG = 'Mask outside of range - set to zero: ' // &
                    TRIM(Lct%Dct%cName)
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1, &
-                                THISLOC=LOC )
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
 #endif
           ELSE
              FileArr(1,1,1,:) = 1.0_hp
              MSG = 'Scale factor outside of range - set to one: ' // &
                    TRIM(Lct%Dct%cName)
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1, &
-                                THISLOC=LOC )
+             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
           ENDIF
        ELSE
           FileArr(1,1,1,:) = FileVals(IDX1:IDX2)
@@ -3011,14 +3007,14 @@ CONTAINS
 
        ! Verbose mode
        IF ( UnitFactor /= 1.0_hp ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Data was in units of ', TRIM(Lct%Dct%Dta%OrigUnit), &
                           ' - converted to HEMCO units by applying ', &
                           'scale factor ', UnitFactor
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
        ELSE
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Data was in units of ', TRIM(Lct%Dct%Dta%OrigUnit), &
                           ' - unit conversion factor is ', UnitFactor
              CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -3035,8 +3031,7 @@ CONTAINS
           FileArr = FileArr * HcoState%TS_EMIS
           MSG = 'Data converted from kg/m3/s to kg/m3: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(Lct%Dct%Dta%OrigUnit)
-          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, WARNLEV=1, &
-                             THISLOC=LOC )
+          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
 
        ! ... emissions or unitless ...
        ELSEIF ( (AreaFlag == -1 .AND. TimeFlag == -1) .OR. &
@@ -3454,7 +3449,7 @@ CONTAINS
           Vals(I) = Val
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Evaluated function: ',TRIM(func),' --> ', Val
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF

@@ -166,50 +166,45 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    TYPE(FileData), POINTER  :: NewFDta
-
     !======================================================================
     ! FileData_Init begins here!
     !======================================================================
 
-    ! Allocate the new file data object
-    ALLOCATE( NewFDta )
+    ! Allocate memory to the FileData object
+    ALLOCATE( FileDta )
 
     ! Nullify all pointers and initialize variables
-    NewFDta%V3          => NULL()
-    NewFDta%V2          => NULL()
-    NewFDta%tIDx        => NULL()
-    NewFDta%ncFile       = ''
-    NewFDta%ncPara       = ''
-    NewFDta%ncYrs(:)     = -999
-    NewFDta%ncMts(:)     = -999
-    NewFDta%ncDys(:)     = -999
-    NewFDta%ncHrs(:)     = -999
-    NewFDta%tShift(:)    = 0
-    NewFDta%CycleFlag    = HCO_CFLAG_CYCLE
-    NewFDta%UpdtFlag     = HCO_UFLAG_FROMFILE
-    NewFDta%MustFind     = .FALSE.
-    NewFDta%ncRead       = .TRUE.
-    NewFDta%Cover        = -999
-    NewFDta%DeltaT       = 0
-    NewFDta%nt           = 0
-    NewFDta%SpaceDim     = -1
-    NewFDta%Levels       = 0
-    NewFDta%EmisL1       = 1.0_hp
-    NewFDta%EmisL2       = 1.0_hp
-    NewFDta%EmisL1Unit   = HCO_EMISL_LEV
-    NewFDta%EmisL2Unit   = HCO_EMISL_LEV
-    NewFDta%OrigUnit     = ''
-    NewFDta%ArbDimName   = 'none'
-    NewFDta%ArbDimVal    = ''
-    NewFDta%IsLocTime    = .FALSE.
-    NewFDta%IsConc       = .FALSE.
-    NewFDta%DoShare      = .FALSE.
-    NewFDta%IsInList     = .FALSE.
-    NewFDta%IsTouched    = .FALSE.
-
-    ! Return
-    FileDta => NewFDta
+    FileDta%V3          => NULL()
+    FileDta%V2          => NULL()
+    FileDta%tIDx        => NULL()
+    FileDta%ncFile       = ''
+    FileDta%ncPara       = ''
+    FileDta%ncYrs(:)     = -999
+    FileDta%ncMts(:)     = -999
+    FileDta%ncDys(:)     = -999
+    FileDta%ncHrs(:)     = -999
+    FileDta%tShift(:)    = 0
+    FileDta%CycleFlag    = HCO_CFLAG_CYCLE
+    FileDta%UpdtFlag     = HCO_UFLAG_FROMFILE
+    FileDta%MustFind     = .FALSE.
+    FileDta%ncRead       = .TRUE.
+    FileDta%Cover        = -999
+    FileDta%DeltaT       = 0
+    FileDta%nt           = 0
+    FileDta%SpaceDim     = -1
+    FileDta%Levels       = 0
+    FileDta%EmisL1       = 1.0_hp
+    FileDta%EmisL2       = 1.0_hp
+    FileDta%EmisL1Unit   = HCO_EMISL_LEV
+    FileDta%EmisL2Unit   = HCO_EMISL_LEV
+    FileDta%OrigUnit     = ''
+    FileDta%ArbDimName   = 'none'
+    FileDta%ArbDimVal    = ''
+    FileDta%IsLocTime    = .FALSE.
+    FileDta%IsConc       = .FALSE.
+    FileDta%DoShare      = .FALSE.
+    FileDta%IsInList     = .FALSE.
+    FileDta%IsTouched    = .FALSE.
 
   END SUBROUTINE FileData_Init
 !EOC
@@ -247,18 +242,17 @@ CONTAINS
     !======================================================================
     ! FileData_Cleanup begins here!
     !======================================================================
-
-    ! Only if associated
     IF ( ASSOCIATED( FileDta ) ) THEN
 
        ! Deallocate data arrays
        CALL HCO_ArrCleanup( FileDta%V3, DeepClean )
        CALL HCO_ArrCleanup( FileDta%V2, DeepClean )
        FileDta%nt = 0
-
+       
        IF ( DeepClean ) THEN
           FileDta%tIDx => NULL()
           DEALLOCATE ( FileDta )
+          FileDta => NULL()
        ENDIF
     ENDIF
 

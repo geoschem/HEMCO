@@ -1,3 +1,4 @@
+
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -320,7 +321,7 @@ CONTAINS
     IF ( .NOT. ASSOCIATED(HcoState%Clock) ) THEN
        CALL HCO_WARNING( HcoState%Config%Err, &
         'CANNOT SET TIMEZONES - HEMCO CLOCK IS NOT DEFINED', &
-        RC, WARNLEV=1, THISLOC='HcoClock_InitTzPtr (hco_clock_mod.F90)' )
+        RC, THISLOC='HcoClock_InitTzPtr (hco_clock_mod.F90)' )
         RETURN
     ENDIF
 
@@ -607,7 +608,7 @@ CONTAINS
     ! ----------------------------------------------------------------
     ! Verbose mode
     ! ----------------------------------------------------------------
-    IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
        IF ( NewStep ) THEN
           WRITE(MSG,110) Clock%ThisYear, Clock%ThisMonth, &
                          Clock%ThisDay,  Clock%ThisHour,  &
@@ -1297,10 +1298,36 @@ CONTAINS
     !======================================================================
     ! HcoClock_Cleanup begins here!
     !======================================================================
-
     IF ( ASSOCIATED( Clock ) ) THEN
-       ! Make sure TIMEZONES array does not point to any content any more.
-       CALL HCO_ArrCleanup( Clock%TIMEZONES, DeepClean=.FALSE.)
+
+       ! Make sure TimeZones does not point to any content any more.
+       CALL HCO_ArrCleanup( Clock%TimeZones, DeepClean=.FALSE. )
+
+       ! We also need to free the pointer fields in the Clock object
+       IF ( ASSOCIATED( Clock%ThisLocYear ) ) THEN
+          DEALLOCATE( Clock%ThisLocYear )
+       ENDIF
+       Clock%ThisLocYear => NULL()
+
+       IF ( ASSOCIATED( Clock%ThisLocMonth ) ) THEN
+          DEALLOCATE( Clock%ThisLocMonth )
+       ENDIF
+       Clock%ThisLocMonth => NULL()
+
+       IF ( ASSOCIATED( Clock%ThisLocDay ) ) THEN
+          DEALLOCATE( Clock%ThisLocDay )
+       ENDIF
+       Clock%ThisLocDay => NULL()
+
+       IF ( ASSOCIATED( Clock%ThisLocWD ) ) THEN
+          DEALLOCATE( Clock%ThisLocWD )
+       ENDIF
+       Clock%ThisLocWD => NULL()
+
+       IF ( ASSOCIATED( Clock%ThisLocHour ) ) THEN
+          DEALLOCATE( Clock%ThisLocHour )
+       ENDIF
+       Clock%ThisLocHour => NULL()
 
        DEALLOCATE ( Clock )
     ENDIF

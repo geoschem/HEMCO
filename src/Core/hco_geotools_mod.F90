@@ -70,25 +70,30 @@ CONTAINS
 ! !IROUTINE: HCO_LandType_Sp
 !
 ! !DESCRIPTION: Function HCO\_LANDTYPE returns the land type based upon
-!  the land water index (0=water,1=land,2=ice) and the fraction of land ice.
-!  Inputs are in single precision.
+! GMAO land type fractions. Result is 0=water, 1=land, 2=ice, where ice includes
+! over both ocean and land, and land includes lakes. Inputs are in single precision.
 !\\
 !\\
 ! !INTERFACE:
 !
-  FUNCTION HCO_LandType_Sp( WLI, FRLANDIC ) Result ( LandType )
+  FUNCTION HCO_LandType_Sp( FRLAND, FRLANDIC, FROCEAN, FRSEAICE, FRLAKE ) &
+                          Result ( LandType )
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(sp), INTENT(IN) :: WLI       ! Land type: 0=water,1=land,2=ice
+    REAL(sp), INTENT(IN) :: FRLAND    ! Fraction of grid-box covered in land
     REAL(sp), INTENT(IN) :: FRLANDIC  ! Fraction of grid-box covered in land ice
+    REAL(sp), INTENT(IN) :: FROCEAN   ! Fraction of grid-box covered in ocean
+    REAL(sp), INTENT(IN) :: FRSEAICE  ! Fraction of grid-box covered in sea ice
+    REAL(sp), INTENT(IN) :: FRLAKE    ! Fraction of grid-box covered in lake
 !
 ! !RETURN VALUE
 !
-    INTEGER              :: LandType  ! Land type: 0=water,1=land,2=ice
+    INTEGER              :: LandType  ! Land type: 0=ocean, 1=land, 2=ice (ocn,land)
 !
 ! !REMARKS:
-!  This function is largely based on the GEOS-Chem functions in dao_mod.F.
+! Land type index is based on GMAO field LWI, with modification
+! to classify land ice as ice.
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller - Initialization!
@@ -106,16 +111,17 @@ CONTAINS
     ! HCO_LANDTYPE begins here
     !--------------------------
 
-    ! Water:
-    IF ( NINT(WLI) == 0 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
-       LandType = 0
+    ! Start with the surface type category definitions based on the GMAO
+    ! definition for land-water-ice index (LWI), which is 0=ocean (non-ice),
+    ! 1=land (includes lakes and ice), 2=ice (over ocean only). Qualify
+    ! land type as location of maximum fraction.
+    LandType = MAXLOC( (/ FRLAND + FRLANDIC + FRLAKE, &
+                          FRSEAICE,                   &
+                          FROCEAN - FRSEAICE /), 1 )
+    IF ( LandType == 3 ) LandType = 0
 
-    ! Land:
-    ELSEIF ( NINT(WLI) == 1 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
-       LandType = 1
-
-    ! Ice:
-    ELSEIF ( NINT(WLI) == 2 .OR. FRLANDIC >= frac_classify_land_ice_as_ice ) THEN
+    ! Change land type to ice if sufficient ice over land
+    IF ( FRLANDIC >= frac_classify_land_ice_as_ice ) THEN
        LandType = 2
     ENDIF
 
@@ -128,26 +134,31 @@ CONTAINS
 !
 ! !IROUTINE: HCO_LandType_Dp
 !
-! !DESCRIPTION: Function HCO\_LandType\_Dp returns the land type based upon
-! the land water index (0=water,1=land,2=ice) and the fraction of land ice.
-! Inputs are in double precision.
+! !DESCRIPTION: Function HCO\_LANDTYPE returns the land type based upon
+! GMAO land type fractions. Result is 0=water, 1=land, 2=ice, where ice includes
+! over both ocean and land, and land includes lakes. Inputs are in double precision.
 !\\
 !\\
 ! !INTERFACE:
 !
-  FUNCTION HCO_LandType_Dp( WLI, FRLANDIC ) Result ( LandType )
+  FUNCTION HCO_LandType_Dp( FRLAND, FRLANDIC, FROCEAN, FRSEAICE, FRLAKE ) &
+                          Result ( LandType )
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(dp), INTENT(IN) :: WLI       ! Land type: 0=water,1=land,2=ice
-    REAL(dp), INTENT(IN) :: FRLANDIC    ! Surface albedo
+    REAL(dp), INTENT(IN) :: FRLANDIC  ! Fraction of grid-box covered in land ice
+    REAL(dp), INTENT(IN) :: FRLAND    ! Fraction of grid-box covered in land
+    REAL(dp), INTENT(IN) :: FROCEAN   ! Fraction of grid-box covered in ocean
+    REAL(dp), INTENT(IN) :: FRSEAICE  ! Fraction of grid-box covered in sea ice
+    REAL(dp), INTENT(IN) :: FRLAKE    ! Fraction of grid-box covered in lake
 !
 ! !RETURN VALUE:
 !
-    INTEGER              :: LandType  ! Land type: 0=water,1=land,2=ice
+    INTEGER              :: LandType  ! Land type: 0=ocean, 1=land, 2=ice (ocn,land)
 !
 ! !REMARKS:
-!  This function is largely based on the GEOS-Chem functions in dao_mod.F.
+! Land type index is based on GMAO field LWI, with modification
+! to classify land ice as ice.
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller - Initialization
@@ -158,35 +169,24 @@ CONTAINS
 !
 ! !DEFINED PARAMETERS::
 !
-    ! Threshold at which a grid-box is considered ice
+    ! Threshold at which a grid-box with land ice is considered ice
     REAL(dp), PARAMETER :: frac_classify_land_ice_as_ice = 0.5_dp
 
     !--------------------------
     ! HCO_LANDTYPE begins here
     !--------------------------
 
-    ! Kludge: Override albedo over boxes at night as otherwise ALBD is forcefully set to 1 by CESM
-    ! (hplin with feedback from tmmf, 1/29/21)
+    ! Start with the surface type category definitions based on the GMAO
+    ! definition for land-water-ice index (LWI), which is 0=ocean (non-ice),
+    ! 1=land (includes lakes and ice), 2=ice (over ocean only). Qualify
+    ! land type as location of maximum fraction.
+    LandType = MAXLOC( (/ FRLAND + FRLANDIC + FRLAKE, &
+                          FRSEAICE,                   &
+                          FROCEAN - FRSEAICE /), 1 )
+    IF ( LandType == 3 ) LandType = 0
 
-    ! Water:
-#if !defined( HEMCO_CESM )
-    IF ( NINT(WLI) == 0 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
-#else
-    IF ( NINT(WLI) == 0 ) THEN
-#endif
-       LandType = 0
-
-    ! Land:
-
-#if !defined( HEMCO_CESM )
-    ELSEIF ( NINT(WLI) == 1 .AND. FRLANDIC < frac_classify_land_ice_as_ice ) THEN
-#else
-    ELSEIF ( NINT(WLI) == 1 ) THEN
-#endif
-       LandType = 1
-
-    ! Ice:
-    ELSEIF ( NINT(WLI) == 2 .OR. FRLANDIC >= frac_classify_land_ice_as_ice ) THEN
+    ! Change land type to ice if sufficient ice over land
+    IF ( FRLANDIC >= frac_classify_land_ice_as_ice ) THEN
        LandType = 2
     ENDIF
 
@@ -767,7 +767,7 @@ CONTAINS
 !
 ! !USES
 !
-    USE HCO_Arr_Mod,      ONLY : HCO_ArrAssert
+    USE HCO_Arr_Mod,      ONLY : HCO_ArrAssert, HCO_ArrCleanup
     USE HCO_STATE_MOD,    ONLY : HCO_STATE
     USE HCO_CALC_MOD,     ONLY : HCO_EvalFld
 !
@@ -830,7 +830,7 @@ CONTAINS
 
     ! Verbose statements
     IF ( HcoState%amIRoot .AND. FIRST .AND. &
-         HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+         HCO_IsVerb(HcoState%Config%Err) ) THEN
        Verb = .TRUE.
     ENDIF
     IF ( Verb ) THEN
@@ -1123,9 +1123,10 @@ CONTAINS
        ENDIF
     ENDIF
 
-    ! If Box height not available make sure it is not associated
+    ! If Box height isn't available, free its memory
+    ! NOTE: Using NULL instead of deallocate here causes a memory leak! 
     IF ( .NOT. EVAL_BXHEIGHT .OR. .NOT. FoundBXHEIGHT ) THEN
-       HcoState%Grid%BXHEIGHT_M%Val => NULL()
+       CALL HCO_ArrCleanup( HcoState%Grid%BXHEIGHT_M, DeepClean=.TRUE. )
     ENDIF
 
     ! ------------------------------------------------------------------
@@ -1165,7 +1166,7 @@ CONTAINS
                    'This may affect the accuracy of vertical grid '     // &
                    'quantities. It is recommended you provide PSFC via '// &
                    'the model-HEMCO interface or the HEMCO configuration file!'
-             CALL HCO_WARNING( HcoState%Config%Err,MSG, RC, THISLOC=LOC, WARNLEV=1 )
+             CALL HCO_WARNING( HcoState%Config%Err,MSG, RC, THISLOC=LOC )
           ENDIF
 
           ! Verbose
@@ -1299,14 +1300,14 @@ CONTAINS
                    'some extensions to fail. HEMCO tries to calculate '   // &
                    'ZSFC from surface pressure and air temperature, but ' // &
                    'at least one of these variables seem to be missing.'
-             CALL HCO_WARNING( HcoState%Config%Err,MSG, RC, THISLOC=LOC, WARNLEV=1 )
+             CALL HCO_WARNING( HcoState%Config%Err,MSG, RC, THISLOC=LOC )
           ENDIF
           IF ( .NOT. FoundBXHEIGHT .AND. FIRST .AND. HcoState%amIRoot ) THEN
              MSG = 'Cannot set boxheights BXHEIGHT_M. This may cause '      // &
                    'some extensions to fail. HEMCO tries to calculate '     // &
                    'BXHEIGHT from pressure edges and air temperature, but ' // &
                    'at least one of these variables seem to be missing.'
-             CALL HCO_WARNING( HcoState%Config%Err,MSG, RC, THISLOC=LOC, WARNLEV=1 )
+             CALL HCO_WARNING( HcoState%Config%Err,MSG, RC, THISLOC=LOC )
           ENDIF
        ENDIF
     ENDIF
@@ -1406,7 +1407,7 @@ CONTAINS
        ENDIF
 
        ! Verbose
-       IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err ) ) THEN
           IF ( FOUND ) THEN
              WRITE(MSG,*) 'HEMCO PBL heights obtained from field ',TRIM(FldName)
              CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
@@ -1432,7 +1433,7 @@ CONTAINS
              FOUND                       = .TRUE.
 
              ! Verbose
-             IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+             IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err ) ) THEN
                 WRITE(MSG,*) 'HEMCO PBL heights obtained from provided 2D field.'
                 CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
              ENDIF
@@ -1457,7 +1458,7 @@ CONTAINS
           FOUND                       = .TRUE.
 
           ! Verbose
-          IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+          IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'HEMCO PBL heights uniformly set to ', DefVal
              CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
           ENDIF
