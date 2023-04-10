@@ -2417,10 +2417,19 @@ CONTAINS
           lon2 = Lct%Dct%Dta%ncMts(1)
           lat2 = Lct%Dct%Dta%ncMts(2)
 
-          ThisCover = CALC_COVERAGE( lon1,  lon2,  &
-                                     lat1,  lat2,  &
-                                     cpux1, cpux2, &
-                                     cpuy1, cpuy2   )
+          ! If ncFile is passed as the lon1/lat1/lon2/lat2 instead
+          ! of netCDF file name, then set ncRead to false, so that
+          ! HEMCO won't try to read a file from disk.  Also set the
+          ! IsLocTime flag to TRUE.  This should fix Github issue
+          ! https://github.com/geoschem/HEMCO/issues/153.
+          !  -- Bob Yantosca (12 Jul 2022)
+          IF ( INDEX( Lct%Dct%Dta%ncFile, ".nc" ) == 0 ) THEN
+             Lct%Dct%Dta%ncRead    = .FALSE.
+             Lct%Dct%Dta%IsLocTime = .TRUE.
+          ENDIF
+
+          ThisCover = CALC_COVERAGE( lon1,  lon2,  lat1,  lat2,              &
+                                     cpux1, cpux2, cpuy1, cpuy2             )
 #endif
 
           ! Update container information
