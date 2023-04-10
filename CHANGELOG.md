@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Verbose` is now a `true/false` variable in `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
 - HEMCO warnings are now only generated when `Verbose: true` is found in the HEMCO configuration file (no more numerical levels)
 - Updated GFED4 emission factors for VOCs to Andreae et al. (2019)
+- Refactored `hco_calc_mod.F90` to avoid computational bottlenecks (PR #201)
 
 ### Fixed
 - Do not read masks if the filename is `-` (non-ESMF environments only)
