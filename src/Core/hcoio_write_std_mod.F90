@@ -82,9 +82,9 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOIO_Write    ( HcoState, ForceWrite,  &
-                              RC,          PREFIX,   UsePrevTime, &
-                              OnlyIfFirst, COL                     )
+  SUBROUTINE HCOIO_Write( HcoState,    ForceWrite,                           &
+                          RC,          PREFIX,      UsePrevTime,             &
+                          OnlyIfFirst, COL                                  )
 !
 ! !USES:
 !
@@ -320,6 +320,11 @@ CONTAINS
        ENDIF
     ENDIF
     ncFile = TRIM(Pfx)//'.'//Yrs//Mts//Dys//hrs//mns//'.nc'
+
+    ! Place HEMCO restart files in the Restarts folder of the run directory
+    IF ( PS == HcoState%Diagn%HcoDiagnIDRestart ) THEN
+       ncFile = 'Restarts/' // TRIM( ncFile )
+    ENDIF
 
     ! Multiple time slice update. Comment out for now since it causes
     ! timestamping the filename twice (ewl, 10/19/18)

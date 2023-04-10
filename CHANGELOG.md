@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - HEMCO warnings are now only generated when `Verbose: true` is found in the HEMCO configuration file (no more numerical levels)
 - Updated GFED4 emission factors for VOCs to Andreae et al. (2019)
 - Refactored `hco_calc_mod.F90` to avoid computational bottlenecks (PR #201)
+- Restart files are now written to the rundir `Restarts/` subdirectory
+- Create a `Restarts/` subdirectory in HEMCO standalone run directories
 
 ### Fixed
 - Do not read masks if the filename is `-` (non-ESMF environments only)
