@@ -2423,9 +2423,15 @@ CONTAINS
           ! IsLocTime flag to TRUE.  This should fix Github issue
           ! https://github.com/geoschem/HEMCO/issues/153.
           !  -- Bob Yantosca (12 Jul 2022)
-          IF ( INDEX( Lct%Dct%Dta%ncFile, ".nc" ) == 0 ) THEN
-             Lct%Dct%Dta%ncRead    = .FALSE.
-             Lct%Dct%Dta%IsLocTime = .TRUE.
+          !
+          ! Also allow for the .$NC replaceable token, see:
+          ! https://github.com/geoschem/HEMCO/issues/204
+          !  -- Melissa Sulprizio & Bob Yantosca (11 Apr 2023)
+          IF ( INDEX( Lct%Dct%Dta%ncFile,   ".nc" ) == 0 ) THEN
+             IF ( INDEX( Lct%Dct%Dta%ncFile, ".$NC" ) == 0 ) THEN
+                Lct%Dct%Dta%ncRead    = .FALSE.
+                Lct%Dct%Dta%IsLocTime = .TRUE.
+             ENDIF
           ENDIF
 
           ThisCover = CALC_COVERAGE( lon1,  lon2,  lat1,  lat2,              &
