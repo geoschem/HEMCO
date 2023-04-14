@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Do not read masks if the filename is `-` (non-ESMF environments only)
 - Always assume partial coverage when reading masks in an ESMF environment (#163)
+- Increased the string length for reading lines from HEMCO grid file to fix error in global 0.25x0.3125 standalone simulations
 
 ### Removed
 - Warnings is now removed from `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
