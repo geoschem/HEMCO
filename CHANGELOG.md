@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 - Updated ReadTheDocs documentation about time cycle options `RFY`, `RFY3`
 - Updated ReadTheDocs documentation about the `HEMCO_Diagn.rc` file
+- Updated `AUTHORS.txt` for GEOS-Chem 14.2.0 and HEMCO 3.7.0
+- Updated formatting in `README.md`
 
 ## [3.6.2] - 2023-03-02
 ### Added
