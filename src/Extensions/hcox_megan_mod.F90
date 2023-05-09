@@ -3315,25 +3315,26 @@ CONTAINS
 
     ENDDO
 
-    ! Convert AEF arrays from [ug/m2/hr] to [kg/m2/s]
+    ! Convert AEF arrays from [ug/m2/hr] to [kgC/m2/s]
+    ! Hard-coded in conversion to kgC/m2/2 (05/2023)
     FACTOR = 1.0e-9_hp / 3600.0_hp
-    Inst%AEF_APIN = Inst%AEF_APIN * FACTOR
-    Inst%AEF_MYRC = Inst%AEF_MYRC * FACTOR
-    Inst%AEF_OMON = Inst%AEF_OMON * FACTOR
-    Inst%AEF_FARN = Inst%AEF_FARN * FACTOR
-    Inst%AEF_BCAR = Inst%AEF_BCAR * FACTOR
-    Inst%AEF_OSQT = Inst%AEF_OSQT * FACTOR
-    Inst%AEF_ACET = Inst%AEF_ACET * FACTOR
-    Inst%AEF_EOH  = Inst%AEF_EOH  * FACTOR
-    Inst%AEF_ALD2 = Inst%AEF_ALD2 * FACTOR
-    Inst%AEF_C2H4 = Inst%AEF_C2H4 * FACTOR
-    Inst%AEF_TOLU = Inst%AEF_TOLU * FACTOR
-    Inst%AEF_PRPE = Inst%AEF_PRPE * FACTOR
-    Inst%AEF_MOH  = Inst%AEF_MOH  * FACTOR
-    Inst%AEF_CH2O = Inst%AEF_CH2O * FACTOR
-    Inst%AEF_FAXX = Inst%AEF_FAXX * FACTOR
-    Inst%AEF_AAXX = Inst%AEF_AAXX * FACTOR
-    Inst%AEF_HCNX = Inst%AEF_HCNX * FACTOR
+    Inst%AEF_APIN = Inst%AEF_APIN * FACTOR * (10.0_hp * 12.01_hp) / 136.26_hp
+    Inst%AEF_MYRC = Inst%AEF_MYRC * FACTOR * (10.0_hp * 12.01_hp) / 136.26_hp
+    Inst%AEF_OMON = Inst%AEF_OMON * FACTOR * (10.0_hp * 12.01_hp) / 136.26_hp
+    Inst%AEF_FARN = Inst%AEF_FARN * FACTOR * (15.0_hp * 12.01_hp) / 204.36_hp
+    Inst%AEF_BCAR = Inst%AEF_BCAR * FACTOR * (15.0_hp * 12.01_hp) / 204.36_hp
+    Inst%AEF_OSQT = Inst%AEF_OSQT * FACTOR * (15.0_hp * 12.01_hp) / 204.36_hp
+    Inst%AEF_ACET = Inst%AEF_ACET * FACTOR * (3.0_hp * 12.01_hp) / 58.09_hp
+    Inst%AEF_EOH  = Inst%AEF_EOH  * FACTOR * (2.0_hp * 12.01_hp) / 46.07_hp
+    Inst%AEF_ALD2 = Inst%AEF_ALD2 * FACTOR * (2.0_hp * 12.01_hp) / 44.06_hp
+    Inst%AEF_C2H4 = Inst%AEF_C2H4 * FACTOR * (2.0_hp * 12.01_hp) / 28.05_hp
+    Inst%AEF_TOLU = Inst%AEF_TOLU * FACTOR * (7.0_hp * 12.01_hp) / 92.15_hp
+    Inst%AEF_PRPE = Inst%AEF_PRPE * FACTOR * (3.0_hp * 12.01_hp) / 42.09_hp
+    Inst%AEF_MOH  = Inst%AEF_MOH  * FACTOR * (1.0_hp * 12.01_hp) / 32.05_hp
+    Inst%AEF_CH2O = Inst%AEF_CH2O * FACTOR * (1.0_hp * 12.01_hp) / 30.03_hp
+    Inst%AEF_FAXX = Inst%AEF_FAXX * FACTOR * (1.0_hp * 12.01_hp) / 46.03_hp
+    Inst%AEF_AAXX = Inst%AEF_AAXX * FACTOR * (2.0_hp * 12.01_hp) / 60.06_hp
+    Inst%AEF_HCNX = Inst%AEF_HCNX * FACTOR * (1.0_hp * 12.01_hp) / 27.03_hp
 
     ! Return w/ success
     RC = HCO_SUCCESS
