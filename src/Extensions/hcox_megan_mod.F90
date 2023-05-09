@@ -3316,7 +3316,7 @@ CONTAINS
     ENDDO
 
     ! Convert AEF arrays from [ug/m2/hr] to [kgC/m2/s]
-    ! Hard-coded in conversion to kgC/m2/2 (05/2023)
+    ! Hard-coded in conversion to kgC/m2/s (05/2023)
     FACTOR = 1.0e-9_hp / 3600.0_hp
     Inst%AEF_APIN = Inst%AEF_APIN * FACTOR * (10.0_hp * 12.01_hp) / 136.26_hp
     Inst%AEF_MYRC = Inst%AEF_MYRC * FACTOR * (10.0_hp * 12.01_hp) / 136.26_hp
