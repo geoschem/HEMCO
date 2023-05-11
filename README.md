@@ -1,8 +1,19 @@
-# README for the HEMCO source code repository
+# HEMCO: The Harmonized Emissions Component
 
-[![Latest Pre-Release](https://img.shields.io/github/v/release/geoschem/HEMCO?include_prereleases&label=Latest%20Pre-Release)](https://github.com/geoschem/HEMCO/releases) [![Latest Stable Release](https://img.shields.io/github/v/release/geoschem/HEMCO?label=Latest%20Stable%20Release)](https://github.com/geoschem/HEMCO/releases) [![Release Date](https://img.shields.io/github/release-date/geoschem/HEMCO)](https://github.com/geoschem/HEMCO/releases) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/geoschem/HEMCO/blob/main/LICENSE.txt) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4618253.svg)](https://doi.org/10.5281/zenodo.4618253) [![RTD](https://img.shields.io/readthedocs/hemco?label=ReadTheDocs)](https://hemco.readthedocs.io/en/latest/) [![Azure](https://dev.azure.com/geoschem/hemco/_apis/build/status/Quick%20Build?branchName=dev)](https://dev.azure.com/geoschem/hemco/_apis/build/status/Quick%20Build?branchName=dev)
+<p>
+  <a href="https://github.com/geoschem/hemco/releases"><img src="https://img.shields.io/github/v/release/geoschem/hemco?include_prereleases&label=Latest%20Pre-Release"></a>
+  <a href="https://github.com/geoschem/hemco/releases"><img src="https://img.shields.io/github/v/release/geoschem/hemco?label=Latest%20Stable%20Release"></a>
+  <a href="https://github.com/geoschem/hemco/releases/"><img src="https://img.shields.io/github/release-date/geoschem/hemco"></a>
+  <br />
+  <a href="https://doi.org/10.5281/zenodo.4618253"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4618253.svg" alt="DOI"></a>
+  <a href="https://github.com/geoschem/hemco/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
+  <a href="https://hemco.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/geos-chem?label=ReadTheDocs"></a>
+</p>
 
-This repository (https://github.com/geoschem/HEMCO) contains the Harmonized Emissions Component (HEMCO) source code. HEMCO is a software component for computing (atmospheric) emissions from different sources, regions, and species on a user-defined grid. It can combine, overlay, and update a set of data inventories ('base emissions') and scale factors, as specified by the user through the HEMCO configuration file. Emissions that depend on environmental variables and non-linear parameterizations are calculated in separate HEMCO extensions. HEMCO can be run in standalone mode or coupled to an atmospheric model. A more detailed descriptio n of HEMCO is given in Keller et al. (2014) and Lin et al (2021).
+## Description
+
+This repository (https://github.com/geoschem/HEMCO) contains the Harmonized Emissions Component (HEMCO) source code. HEMCO is a software component for computing (atmospheric) emissions from different sources, regions, and species on a user-defined grid. It can combine, overlay, and update a set of data inventories ('base emissions') and scale factors, as specified by the user through the HEMCO configuration file. Emissions that depend on environmental variables and non-linear parameterizations are calculated in separate HEMCO extensions. HEMCO can be run
+in standalone mode or coupled to an atmospheric model. A more detailed description of HEMCO is given in Keller et al. (2014) and Lin et al (2021).
 
 HEMCO has been coupled to several atmospheric and Earth System Models, and can be coupled with or without using the Earth System Modeling Framework (ESMF). A detailed description of HEMCO coupled with other models is given in Lin et al. (2021).
 
