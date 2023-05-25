@@ -26,7 +26,7 @@ MODULE HCO_NCDF_MOD
   USE HCO_m_netcdf_io_define
   USE HCO_m_netcdf_io_write
   USE HCO_m_netcdf_io_checks
-  USE HCO_ERROR_MOD,  ONLY : SP, DP, I4, I8
+  USE HCO_PRECISION_MOD, ONLY : SP => f4, DP => f8
 
   IMPLICIT NONE
   PRIVATE

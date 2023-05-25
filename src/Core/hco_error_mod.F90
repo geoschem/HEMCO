@@ -992,8 +992,7 @@ CONTAINS
           ! Reopen otherwise
           ELSE
              OPEN ( UNIT=FREELUN,   FILE=TRIM(Err%LogFile), STATUS='OLD',     &
-!!$                    ACTION='WRITE', ACCESS='APPEND',        FORM='FORMATTED', &
-                    ACTION='WRITE',   FORM='FORMATTED', &  ! NAG did not like ACCESS='APPEND' -- don't know what to do here ??
+                    ACTION='WRITE', POSITION='APPEND', FORM='FORMATTED',    &  ! NAG did not like ACCESS='APPEND' -- use standard-compliant position='append'
                     IOSTAT=IOS   )
              IF ( IOS /= 0 ) THEN
                 PRINT *, 'Cannot reopen logfile: ' // TRIM(Err%LogFile)
