@@ -29,12 +29,12 @@ MODULE HCO_PRECISION_MOD
 #ifdef USE_REAL8
 
   ! Use 8-byte floating point precision when asked.
-  INTEGER, PARAMETER, PUBLIC :: fp = KIND( REAL( 0.0, 8 ) )
+  INTEGER, PARAMETER, PUBLIC :: fp = selected_real_kind(12)
 
 #else
 
   ! Use 4-byte floating point by default.
-  INTEGER, PARAMETER, PUBLIC :: fp = KIND( REAL( 0.0, 4 ) )
+  INTEGER, PARAMETER, PUBLIC :: fp = selected_real_kind( 6)
 
 #endif
 
@@ -47,10 +47,10 @@ MODULE HCO_PRECISION_MOD
   !=================================================================
 
   ! KIND parameter for 4-byte precision
-  INTEGER, PARAMETER, PUBLIC :: f4 = KIND( REAL( 0.0, 4 ) )
+  INTEGER, PARAMETER, PUBLIC :: f4 = selected_real_kind( 6)
 
   ! KIND parameter for 8-byte precision
-  INTEGER, PARAMETER, PUBLIC :: f8 = KIND( REAL( 0.0, 8 ) )
+  INTEGER, PARAMETER, PUBLIC :: f8 = selected_real_kind(12)
 !
 ! !REMARKS:
 !  This module is designed to help avoid hard-coding precision.

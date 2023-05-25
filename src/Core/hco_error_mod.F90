@@ -77,15 +77,15 @@ MODULE HCO_Error_Mod
 ! !MODULE VARIABLES:
 !
   ! Double and single precision definitions
-  INTEGER, PARAMETER, PUBLIC  :: dp = KIND( 0.0_8 )  ! Double (r8)
-  INTEGER, PARAMETER, PUBLIC  :: sp = KIND( 0.0_4 )  ! Single (r4)
+  INTEGER, PARAMETER, PUBLIC  :: dp = selected_real_kind(12) ! Double (r8)
+  INTEGER, PARAMETER, PUBLIC  :: sp = selected_real_kind( 6) ! Single (r4)
 #ifdef USE_REAL8
   INTEGER, PARAMETER, PUBLIC  :: hp = dp             ! HEMCO precision = r8
 #else
   INTEGER, PARAMETER, PUBLIC  :: hp = sp             ! HEMCO precision = r4
 #endif
-  INTEGER, PARAMETER, PUBLIC  :: i4 = 4              ! FourByteInt
-  INTEGER, PARAMETER, PUBLIC  :: i8 = 8              ! EightByteInt
+  INTEGER, PARAMETER, PUBLIC  :: i4 = selected_int_kind ( 6) ! FourByteInt
+  INTEGER, PARAMETER, PUBLIC  :: i8 = selected_int_kind (13) ! EightByteInt
 
   ! Error success/failure definitions
   INTEGER, PARAMETER, PUBLIC  :: HCO_SUCCESS = 0
@@ -992,7 +992,8 @@ CONTAINS
           ! Reopen otherwise
           ELSE
              OPEN ( UNIT=FREELUN,   FILE=TRIM(Err%LogFile), STATUS='OLD',     &
-                    ACTION='WRITE', ACCESS='APPEND',        FORM='FORMATTED', &
+!!$                    ACTION='WRITE', ACCESS='APPEND',        FORM='FORMATTED', &
+                    ACTION='WRITE',   FORM='FORMATTED', &  ! NAG did not like ACCESS='APPEND' -- don't know what to do here ??
                     IOSTAT=IOS   )
              IF ( IOS /= 0 ) THEN
                 PRINT *, 'Cannot reopen logfile: ' // TRIM(Err%LogFile)

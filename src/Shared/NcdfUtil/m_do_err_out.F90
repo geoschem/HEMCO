@@ -101,7 +101,7 @@ CONTAINS
     WRITE( 6, '(/,a,/)' ) REPEAT( '!', 79 )
 
     ! Flush the buffer
-    CALL Flush( 6 )
+    !CALL Flush( 6 )
 
     ! Stop with error (if requested)
     ! NOTE: We should pass back the error code to the main routine
@@ -117,11 +117,11 @@ CONTAINS
         WRITE( 6, '(/,a,/)' ) REPEAT( '!', 79 )
 
         ! Flush stdout buffer
-        CALL Flush( 6 )
+        !CALL Flush( 6 )
 
         ! NOTE: Should not exit but pass error code up
         ! work on this for a future version
-        CALL Exit( 999 )
+        stop 999 
     ENDIF
 
     RETURN
