@@ -16,7 +16,6 @@ MODULE HCO_Regrid_A2A_Mod
 ! !USES:
 !
   USE HCO_PRECISION_MOD    ! For GEOS-Chem Precision (fp)
-  USE HCO_ERROR_MOD,  ONLY : SP, DP, I4, I8
 
   IMPLICIT NONE
   PRIVATE
@@ -428,8 +427,8 @@ CONTAINS
 
     ! Init
     IF ( PRESENT(missval) ) THEN
-       qtmp = real(missval,kind=dp)
-       q2   = real(missval,kind=dp)
+       qtmp = real(missval,kind=f8)
+       q2   = real(missval,kind=f8)
     ELSE
        qtmp = miss_r8
        q2   = miss_r8
@@ -561,8 +560,8 @@ CONTAINS
 
     ! Init
     IF ( PRESENT(missval) ) THEN
-       qtmp = real(missval,kind=sp)
-       q2   = real(missval,kind=sp)
+       qtmp = real(missval,kind=f4)
+       q2   = real(missval,kind=f4)
     ELSE
        qtmp = miss_r4
        q2   = miss_r4
@@ -618,7 +617,7 @@ CONTAINS
 
        ! Otherwise, call YMAP to regrid in the N-S direction
        CALL ymap_r4r4(in, jm, sin1, qtmp(1,1+ig), jn, sin2, q2(1,1+ig), ig, iv, &
-                      missval=real(missval,kind=sp))
+                      missval=real(missval,kind=f4))
 
     ENDIF
 
