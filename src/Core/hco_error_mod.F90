@@ -56,6 +56,7 @@ MODULE HCO_Error_Mod
 #if defined( MAPL_ESMF )
     USE MAPL_Base, ONLY: MAPL_UNDEF
 #endif
+  USE ISO_Fortran_Env, ONLY : INT32, INT64, REAL32, REAL64
 
   IMPLICIT NONE
   PRIVATE
@@ -77,15 +78,15 @@ MODULE HCO_Error_Mod
 ! !MODULE VARIABLES:
 !
   ! Double and single precision definitions
-  INTEGER, PARAMETER, PUBLIC  :: dp = selected_real_kind(12) ! Double (r8)
-  INTEGER, PARAMETER, PUBLIC  :: sp = selected_real_kind( 6) ! Single (r4)
+  INTEGER, PARAMETER, PUBLIC  :: dp = REAL64         ! Double (r8)
+  INTEGER, PARAMETER, PUBLIC  :: sp = REAL32         ! Single (r4)
 #ifdef USE_REAL8
   INTEGER, PARAMETER, PUBLIC  :: hp = dp             ! HEMCO precision = r8
 #else
   INTEGER, PARAMETER, PUBLIC  :: hp = sp             ! HEMCO precision = r4
 #endif
-  INTEGER, PARAMETER, PUBLIC  :: i4 = selected_int_kind ( 6) ! FourByteInt
-  INTEGER, PARAMETER, PUBLIC  :: i8 = selected_int_kind (13) ! EightByteInt
+  INTEGER, PARAMETER, PUBLIC  :: i4 = INT32          ! FourByteInt
+  INTEGER, PARAMETER, PUBLIC  :: i8 = INT64          ! EightByteInt
 
   ! Error success/failure definitions
   INTEGER, PARAMETER, PUBLIC  :: HCO_SUCCESS = 0
