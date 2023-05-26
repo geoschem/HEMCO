@@ -101,7 +101,8 @@ CONTAINS
     WRITE( 6, '(/,a,/)' ) REPEAT( '!', 79 )
 
     ! Flush the buffer
-#ifndef MODEL_CESM
+    ! Flush is unavailable on the NAG compiler (for CESM) and CPRNAG is defined if using it.
+#ifndef CPRNAG
     CALL Flush( 6 )
 #endif
 
@@ -119,7 +120,8 @@ CONTAINS
         WRITE( 6, '(/,a,/)' ) REPEAT( '!', 79 )
 
         ! Flush stdout buffer
-#ifndef MODEL_CESM
+        ! Flush is unavailable on the NAG compiler (for CESM) and CPRNAG is defined if using it.
+#ifndef CPRNAG
         CALL Flush( 6 )
 #endif
 
