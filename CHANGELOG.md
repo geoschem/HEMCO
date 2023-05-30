@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `AUTHORS.txt` for GEOS-Chem 14.2.0 and HEMCO 3.7.0
 - Updated formatting in `README.md`
 - Updated title and links to badges in `README.md`
+- Updated version number to 3.7.0
 
 ## [3.6.2] - 2023-03-02
 ### Added
