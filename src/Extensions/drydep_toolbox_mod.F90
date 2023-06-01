@@ -60,11 +60,11 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
+    INTEGER, INTENT(IN) :: NPOLY           ! # of drydep coefficients
     REAL*4,  INTENT(IN) :: COEFF1(NPOLY)   ! Baldocchi drydep coefficients
     REAL*4,  INTENT(IN) :: XLAI1           ! Leaf area index [cm2/cm2]
     REAL*4,  INTENT(IN) :: SUNCOS1         ! Cosine( Solar Zenith Angle )
     REAL*4,  INTENT(IN) :: CFRAC1          ! Cloud fraction [unitless]
-    INTEGER, INTENT(IN) :: NPOLY           ! # of drydep coefficients
 !
 ! !RETURN VALUE:
 !
@@ -145,11 +145,11 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
+    INTEGER, INTENT(IN) :: NPOLY           ! # of drydep coefficients
     REAL*8,  INTENT(IN) :: COEFF1(NPOLY)   ! Baldocchi drydep coefficients
     REAL*8,  INTENT(IN) :: XLAI1           ! Leaf area index [cm2/cm2]
     REAL*8,  INTENT(IN) :: SUNCOS1         ! Cosine( Solar Zenith Angle )
     REAL*8,  INTENT(IN) :: CFRAC1          ! Cloud fraction [unitless]
-    INTEGER, INTENT(IN) :: NPOLY           ! # of drydep coefficients
 !
 ! !RETURN VALUE:
 !

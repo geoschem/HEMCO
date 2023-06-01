@@ -56,6 +56,7 @@ MODULE HCO_Error_Mod
 #if defined( MAPL_ESMF )
     USE MAPL_Base, ONLY: MAPL_UNDEF
 #endif
+  USE ISO_Fortran_Env, ONLY : INT32, INT64, REAL32, REAL64
 
   IMPLICIT NONE
   PRIVATE
@@ -76,15 +77,15 @@ MODULE HCO_Error_Mod
 ! !MODULE VARIABLES:
 !
   ! Double and single precision definitions
-  INTEGER, PARAMETER, PUBLIC  :: dp = KIND( 0.0_8 )  ! Double (r8)
-  INTEGER, PARAMETER, PUBLIC  :: sp = KIND( 0.0_4 )  ! Single (r4)
+  INTEGER, PARAMETER, PUBLIC  :: dp = REAL64         ! Double (r8)
+  INTEGER, PARAMETER, PUBLIC  :: sp = REAL32         ! Single (r4)
 #ifdef USE_REAL8
   INTEGER, PARAMETER, PUBLIC  :: hp = dp             ! HEMCO precision = r8
 #else
   INTEGER, PARAMETER, PUBLIC  :: hp = sp             ! HEMCO precision = r4
 #endif
-  INTEGER, PARAMETER, PUBLIC  :: i4 = 4              ! FourByteInt
-  INTEGER, PARAMETER, PUBLIC  :: i8 = 8              ! EightByteInt
+  INTEGER, PARAMETER, PUBLIC  :: i4 = INT32          ! FourByteInt
+  INTEGER, PARAMETER, PUBLIC  :: i8 = INT64          ! EightByteInt
 
   ! Error success/failure definitions
   INTEGER, PARAMETER, PUBLIC  :: HCO_SUCCESS = 0
@@ -930,7 +931,7 @@ CONTAINS
           ! Reopen otherwise
           ELSE
              OPEN ( UNIT=FREELUN,   FILE=TRIM(Err%LogFile), STATUS='OLD',     &
-                    ACTION='WRITE', ACCESS='APPEND',        FORM='FORMATTED', &
+                    ACTION='WRITE', POSITION='APPEND', FORM='FORMATTED',    &  ! NAG did not like ACCESS='APPEND' -- use standard-compliant position='append'
                     IOSTAT=IOS   )
              IF ( IOS /= 0 ) THEN
                 PRINT *, 'Cannot reopen logfile: ' // TRIM(Err%LogFile)

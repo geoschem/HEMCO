@@ -1404,7 +1404,7 @@ CONTAINS
     !========================================================================
     IF ( PRESENT( UseLL) ) THEN
        UseLL = 1
-       IF ( nnLL > 0 ) UseLL = NINT(REAL(TotLL,4)/REAL(nnLL,4))
+       IF ( nnLL > 0 ) UseLL = NINT(REAL(TotLL,kind=sp)/REAL(nnLL,kind=sp))
     ENDIF
 
     ! Weight output emissions by mask
@@ -3302,7 +3302,7 @@ END FUNCTION GetEmisLUnit
     ! Update optional variables
     IF ( PRESENT(UseLL) ) THEN
        UseLL = 1
-       IF ( nnLL > 0 ) UseLL = NINT(REAL(TotLL,4)/REAL(nnLL,4))
+       IF ( nnLL > 0 ) UseLL = NINT(REAL(TotLL,kind=sp)/REAL(nnLL,kind=sp))
     ENDIF
 
     ! Weight output emissions by mask

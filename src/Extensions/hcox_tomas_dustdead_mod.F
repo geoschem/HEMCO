@@ -1,4 +1,3 @@
-#if defined( TOMAS )
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -42,6 +41,7 @@
 ! !INTERFACE:
 !
       MODULE HCOX_TOMAS_DustDead_Mod
+#if defined( TOMAS )
 !
 ! !USES:
 !
@@ -5942,6 +5942,6 @@ c Fix up for negative argument, erf, etc.
 
       END SUBROUTINE InstRemove
 !EOC
+#endif
       END MODULE HCOX_TOMAS_DustDead_Mod
 !EOM
-#endif

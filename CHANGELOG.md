@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored `hco_calc_mod.F90` to avoid computational bottlenecks (PR #201)
 - Restart files are now written to the rundir `Restarts/` subdirectory
 - Create a `Restarts/` subdirectory in HEMCO standalone run directories
+- Added changes needed to build with NAG compiler
 
 ### Fixed
 - Do not read masks if the filename is `-` (non-ESMF environments only)
