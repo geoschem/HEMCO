@@ -9,11 +9,10 @@ The Harmonized Emissions Component (HEMCO)
    <p>
    <a href="https://github.com/geoschem/HEMCO/releases"><img src="https://img.shields.io/github/v/release/geoschem/HEMCO?include_prereleases&label=Latest%20Pre-Release"></a>
    <a href="https://github.com/geoschem/HEMCO/releases"><img src="https://img.shields.io/github/v/release/geoschem/HEMCO?label=Latest%20Stable%20Release"></a>
-   <a href="https://github.com/geoschem/HEMCO/releases/"><img src="https://img.shields.io/github/release-date/geoschem/HEMCO"></a>
-   <a href="https://github.com/geoschem/HEMCO/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
+   <a href="https://github.com/geoschem/HEMCO/releases/"><img src="https://img.shields.io/github/release-date/geoschem/HEMCO"></a><br/>
    <a href="https://doi.org/10.5281/zenodo.4618253"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4618253.svg"></a>
+   <a href="https://github.com/geoschem/HEMCO/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
    <a href="https://hemco.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/hemco?label=ReadTheDocs"></a>
-   <a href="https://dev.azure.com/geoschem/HEMCO/_build?definitionId=11"><img src="https://dev.azure.com/geoschem/hemco/_apis/build/status/Quick%20Build?branchName=dev"></a>
    </p>
 
 The **Harmonized Emissions Component (HEMCO)** is a software component
