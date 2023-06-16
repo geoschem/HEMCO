@@ -17,8 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated GFED4 emission factors for VOCs to Andreae et al. (2019)
 - Refactored `hco_calc_mod.F90` to avoid computational bottlenecks (PR #201)
 - Restart files are now written to the rundir `Restarts/` subdirectory
-- Create a `Restarts/` subdirectory in HEMCO standalone run directories
+- Created a `Restarts/` subdirectory in HEMCO standalone run directories
 - Added changes needed to build with NAG compiler
+- Renamed Be7Strat and Be10Strat to Be7s and Be10s for consistency with GMAO's TR_GridComp
 
 ### Fixed
 - Do not read masks if the filename is `-` (non-ESMF environments only)
