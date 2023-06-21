@@ -654,7 +654,10 @@ CONTAINS
 ! !INPUT/OUTPUT PARAMETERS:
 !
     REAL(sp), ALLOCATABLE, INTENT(INOUT) :: spcScal(:)     ! Species scalefacs
-    INTEGER,               INTENT(INOUT) :: RC             ! Success or failure?
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,               INTENT(OUT)   :: RC             ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  10 Jun 2015 - C. Keller - Initial version
@@ -725,7 +728,7 @@ CONTAINS
        IF ( found ) spcScal(I) = scaleFac
     ENDDO
 
-    END SUBROUTINE GetExtSpcVal_sp
+  END SUBROUTINE GetExtSpcVal_sp
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -833,7 +836,7 @@ CONTAINS
        IF ( found ) spcScal(I) = scaleFac
     ENDDO
 
-    END SUBROUTINE GetExtSpcVal_int
+  END SUBROUTINE GetExtSpcVal_int
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -942,7 +945,7 @@ CONTAINS
        IF ( found ) spcScal(I) = scaleFac
     ENDDO
 
-    END SUBROUTINE GetExtSpcVal_char
+  END SUBROUTINE GetExtSpcVal_char
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
