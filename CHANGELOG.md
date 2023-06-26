@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - HEMCO extensions now display a first-time message, whether `Verbose` is `true` or `false`.
 - Added 'src/Shared/NcdfUtil/README.md` file directing users to look for netCDF utility scripts at https://github.com/geoschem/netcdf-scripts
 - Added GFED4 biomass burning emissions for furans, PHEN, MVK, ISOP, ACTA, MGLY, MYLX, RCHO
+- Add GEOSIT as an allowable meteorology directory name in HEMCO_Config.rc
 
 # Changed
 - `Verbose` is now a `true/false` variable in `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`

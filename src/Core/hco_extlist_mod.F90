@@ -1500,6 +1500,11 @@ CONTAINS
        DEF_MET_LC = 'merra2'
        DEF_CN_YR  = '2015'  ! Constant met fld year
        DEF_NC_VER = 'nc4'   ! NetCDF extension
+    ELSE IF ( TRIM(CF%MetField) == 'GEOSIT' ) THEN
+       DEF_MET_UC = 'GEOSIT'
+       DEF_MET_LC = 'geosit'
+       DEF_CN_YR  = '2011'  ! Constant met fld year
+       DEF_NC_VER = 'nc'   ! NetCDF extension
     ENDIF
 
     IF ( TRIM(CF%GridRes) == '4.0x5.0' ) THEN
