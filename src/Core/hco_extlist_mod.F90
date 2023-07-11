@@ -639,22 +639,25 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE GetExtSpcVal_Sp( HcoConfig, ExtNr,  NSPC,    SpcNames, &
-                              Prefix,  DefValue, SpcScal, RC         )
+  SUBROUTINE GetExtSpcVal_sp( HcoConfig, extNr,    NSPC,    spcNames,        &
+                              prefix,    defValue, spcScal, RC              )
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(ConfigObj),       POINTER       :: HcoConfig
-    INTEGER,               INTENT(IN   ) :: ExtNr          ! Extension Nr.
-    INTEGER,               INTENT(IN   ) :: NSPC           ! # of species
-    CHARACTER(LEN=*),      INTENT(IN   ) :: SpcNames(NSPC) ! Species string
-    CHARACTER(LEN=*),      INTENT(IN   ) :: Prefix         ! search prefix
-    REAL(sp),              INTENT(IN   ) :: DefValue       ! default value
+    TYPE(ConfigObj),       POINTER       :: HcoConfig      ! HEMCO config obj
+    INTEGER,               INTENT(IN)    :: extNr          ! Extension Nr.
+    INTEGER,               INTENT(IN)    :: NSPC           ! # of species
+    CHARACTER(LEN=*),      INTENT(IN)    :: spcNames(NSPC) ! Species string
+    CHARACTER(LEN=*),      INTENT(IN)    :: prefix         ! Search prefix
+    REAL(sp),              INTENT(IN)    :: defValue       ! Default value
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    REAL(sp), ALLOCATABLE, INTENT(INOUT) :: SpcScal(:)     ! Species scale factors
-    INTEGER,               INTENT(INOUT) :: RC             ! Success or failure?
+    REAL(sp), ALLOCATABLE, INTENT(INOUT) :: spcScal(:)     ! Species scalefacs
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,               INTENT(OUT)   :: RC             ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  10 Jun 2015 - C. Keller - Initial version
@@ -663,19 +666,69 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-    !======================================================================
-    ! GetExtSpcVal_Sp begins here
-    !======================================================================
+    ! Scalars
+    LOGICAL            :: found
+    INTEGER            :: I
+    REAL(sp)           :: scaleFac
 
-    ! Make sure output is properly allocated
-    IF ( ALLOCATED(SpcScal) ) DEALLOCATE(SpcScal)
-    ALLOCATE(SpcScal(NSPC))
-    SpcScal=DefValue
+    ! Strings
+    CHARACTER(LEN= 61) :: name
+    CHARACTER(LEN=255) :: errMsg
+    CHARACTER(LEN=255) :: thisLoc
 
-    CALL GetExtSpcVal_Dr ( HcoConfig, ExtNr, NSPC, SpcNames, Prefix, RC, &
-                           DefVal_SP=DefValue, SpcScal_SP=SpcScal )
+    !========================================================================
+    ! GetExtSpcVal_sp begins here
+    !========================================================================
 
-    END SUBROUTINE GetExtSpcVal_sp
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = &
+     ' -> at GetExtSpcVal_sp (in module src/Core/hco_extlist_mod.F90)'
+
+    !========================================================================
+    ! Make sure output array SpcScal is properly allocated
+    !========================================================================
+    IF ( ALLOCATED( spcScal ) ) DEALLOCATE( spcScal )
+    ALLOCATE( SpcScal(NSPC), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate SpcScal array!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
+    ENDIF
+
+    ! Initialize to default values
+    spcScal = defValue
+
+    !========================================================================
+    ! Look for species scale factors; save to spcScal array
+    !========================================================================
+    DO I = 1, NSPC
+
+       ! Species name
+       name = TRIM( prefix ) // '_' // TRIM( spcNames(I) )
+
+       ! Look for the scale factor
+       CALL GetExtOpt(                                                       &
+            HcoConfig = HcoConfig,                                           &
+            extNr     = extNr,                                               &
+            optName   = name,                                                &
+            optValSp  = scaleFac,                                            &
+            found     = found,                                               &
+            RC        = RC                                                  )
+
+       ! Trap errors
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "GetExtOpt" routine!'
+          CALL HCO_ERROR( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+       ! If scale factor was found, assign it to SpcScal
+       IF ( found ) spcScal(I) = scaleFac
+    ENDDO
+
+  END SUBROUTINE GetExtSpcVal_sp
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -694,22 +747,25 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE GetExtSpcVal_Int( HcoConfig, ExtNr,    NSPC,    SpcNames, &
-                               Prefix,    DefValue, SpcScal, RC         )
+  SUBROUTINE GetExtSpcVal_int( HcoConfig, extNr,    NSPC,    spcNames,       &
+                               prefix,    defValue, spcScal, RC             )
 !
 ! !INPUT PARAMETERS:
 !
     TYPE(ConfigObj),       POINTER       :: HcoConfig
-    INTEGER,               INTENT(IN   ) :: ExtNr          ! Extension Nr.
-    INTEGER,               INTENT(IN   ) :: NSPC           ! # of species
-    CHARACTER(LEN=*),      INTENT(IN   ) :: SpcNames(NSPC) ! Species string
-    CHARACTER(LEN=*),      INTENT(IN   ) :: Prefix         ! search prefix
-    INTEGER,               INTENT(IN   ) :: DefValue       ! default value
+    INTEGER,               INTENT(IN)    :: extNr          ! Extension Nr.
+    INTEGER,               INTENT(IN)    :: NSPC           ! # of species
+    CHARACTER(LEN=*),      INTENT(IN)    :: spcNames(NSPC) ! Species string
+    CHARACTER(LEN=*),      INTENT(IN)    :: prefix         ! search prefix
+    INTEGER,               INTENT(IN)    :: defValue       ! default value
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    INTEGER,  ALLOCATABLE, INTENT(INOUT) :: SpcScal(:)     ! Species scale factors
-    INTEGER,               INTENT(INOUT) :: RC             ! Success or failure?
+    INTEGER,  ALLOCATABLE, INTENT(INOUT) :: spcScal(:)     ! Species scalefacs
+!
+! !OUTPUT PARAMETERS::
+!
+    INTEGER,               INTENT(OUT)   :: RC             ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  10 Jun 2015 - C. Keller - Initial version
@@ -718,28 +774,78 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-    !======================================================================
-    ! GetExtSpcVal_Int begins here
-    !======================================================================
+    ! Scalars
+    LOGICAL            :: found
+    INTEGER            :: I
+    INTEGER            :: scaleFac
 
-    ! Make sure output is properly allocated
-    IF ( ALLOCATED(SpcScal) ) DEALLOCATE(SpcScal)
-    ALLOCATE(SpcScal(NSPC))
-    SpcScal=DefValue
+    ! Strings
+    CHARACTER(LEN= 61) :: name
+    CHARACTER(LEN=255) :: errMsg
+    CHARACTER(LEN=255) :: thisLoc
 
-    CALL GetExtSpcVal_Dr ( HcoConfig, ExtNr, NSPC, SpcNames, Prefix, RC, &
-                           DefVal_IN=DefValue, SpcScal_IN=SpcScal )
+    !========================================================================
+    ! GetExtSpcVal_int begins here
+    !========================================================================
 
-    END SUBROUTINE GetExtSpcVal_Int
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = &
+     ' -> at GetExtSpcVal_Int (in module src/Core/hco_extlist_mod.F90)'
+
+    !========================================================================
+    ! Make sure output array SpcScal is properly allocated
+    !========================================================================
+    IF ( ALLOCATED( spcScal ) ) DEALLOCATE( spcScal )
+    ALLOCATE( SpcScal(NSPC), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate SpcScal array!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
+    ENDIF
+
+    ! Initialize to default values
+    spcScal = defValue
+
+    !========================================================================
+    ! Look for species scale factors; save to spcScal array
+    !========================================================================
+    DO I = 1, NSPC
+
+       ! Species name
+       name = TRIM( prefix ) // '_' // TRIM( spcNames(I) )
+
+       ! Look for the scale factor
+       CALL GetExtOpt(                                                       &
+            HcoConfig = HcoConfig,                                           &
+            extNr     = extNr,                                               &
+            optName   = name,                                                &
+            optValInt = scaleFac,                                            &
+            found     = found,                                               &
+            RC        = RC                                                  )
+
+       ! Trap errors
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "GetExtOpt" routine!'
+          CALL HCO_ERROR( errMsg, RC, thisLoc )
+          RETURN
+       ENDIF
+
+       ! If scale factor was found, assign it to SpcScal
+       IF ( found ) spcScal(I) = scaleFac
+    ENDDO
+
+  END SUBROUTINE GetExtSpcVal_int
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
-! !ROUTINE: GetExtSpcVal_Char
+! !ROUTINE: GetExtSpcVal_char
 !
-! !DESCRIPTION: Subroutine GetExtSpcVal\_Char returns character values
+! !DESCRIPTION: Subroutine GetExtSpcVal\_char returns character values
 ! associated with the species for a given extension. Specifically, this routine
 ! searches for extension setting '<Prefix>\_SpecName' for every species passed
 ! through input argument SpcNames and writes those into output argument SpcScal.
@@ -749,22 +855,26 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE GetExtSpcVal_Char( HcoConfig, ExtNr,    NSPC,    SpcNames, &
-                                Prefix,    DefValue, SpcScal, RC )
+  SUBROUTINE GetExtSpcVal_char( HcoConfig, extNr,    NSPC,    spcNames,      &
+                                prefix,    defValue, spcScal, RC            )
 !
 ! !INPUT PARAMETERS:
 !
-    TYPE(ConfigObj),               POINTER       :: HcoConfig
-    INTEGER,                       INTENT(IN   ) :: ExtNr          ! Extension Nr.
-    INTEGER,                       INTENT(IN   ) :: NSPC           ! # of species
-    CHARACTER(LEN=*),              INTENT(IN   ) :: SpcNames(NSPC) ! Species string
-    CHARACTER(LEN=*),              INTENT(IN   ) :: Prefix         ! search prefix
-    CHARACTER(LEN=*),              INTENT(IN   ) :: DefValue       ! default value
+    TYPE(ConfigObj),   POINTER       :: HcoConfig      ! HEMCO config object
+    INTEGER,           INTENT(IN)    :: extNr          ! Extension Nr.
+    INTEGER,           INTENT(IN)    :: NSPC           ! # of species
+    CHARACTER(LEN=*),  INTENT(IN)    :: spcNames(NSPC) ! Species string
+    CHARACTER(LEN=*),  INTENT(IN)    :: prefix         ! search prefix
+    CHARACTER(LEN=*),  INTENT(IN)    :: defValue       ! default value
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    CHARACTER(LEN=*), ALLOCATABLE, INTENT(INOUT) :: SpcScal(:)     ! Species scale factors
-    INTEGER,                       INTENT(INOUT) :: RC             ! Success or failure?
+    CHARACTER(LEN=*), &
+          ALLOCATABLE, INTENT(INOUT) :: SpcScal(:)     ! Species scale factors
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,           INTENT(OUT)   :: RC             ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  10 Jun 2015 - C. Keller - Initial version
@@ -773,115 +883,69 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-    !======================================================================
+    ! Scalars
+    LOGICAL            :: found
+    INTEGER            :: I
+
+    ! Strings
+    CHARACTER(LEN= 61) :: name
+    CHARACTER(LEN=255) :: scaleFac
+    CHARACTER(LEN=255) :: errMsg
+    CHARACTER(LEN=255) :: thisLoc
+
+    !========================================================================
     ! GetExtSpcVal_Char begins here
-    !======================================================================
+    !========================================================================
 
-    ! Make sure output is properly allocated
-    IF ( ALLOCATED(SpcScal) ) DEALLOCATE(SpcScal)
-    ALLOCATE(SpcScal(NSPC))
-    SpcScal=DefValue
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = &
+     ' -> at GetExtSpcVal_Char (in module src/Core/hco_extlist_mod.F90)'
 
-    CALL GetExtSpcVal_Dr ( HcoConfig, ExtNr, NSPC, SpcNames, Prefix, RC, &
-                           DefVal_Char=DefValue, SpcScal_Char=SpcScal )
+    !========================================================================
+    ! Make sure output array SpcScal is properly allocated
+    !========================================================================
+    IF ( ALLOCATED( spcScal ) ) DEALLOCATE( spcScal )
+    ALLOCATE( SpcScal(NSPC), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       errMsg = 'Could not allocate SpcScal array!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
+    ENDIF
 
-    END SUBROUTINE GetExtSpcVal_char
-!EOC
-!------------------------------------------------------------------------------
-!                   Harmonized Emissions Component (HEMCO)                    !
-!------------------------------------------------------------------------------
-!BOP
-!
-! !ROUTINE: GetExtSpcVal_Dr
-!
-! !DESCRIPTION: Subroutine GetExtSpcVal\_Dr is the GetExtSpcVal driver routine.
-!\\
-!\\
-! !INTERFACE:
-!
-  SUBROUTINE GetExtSpcVal_Dr( HcoConfig, ExtNr, NSPC,    &
-                              SpcNames,  Prefix, RC,     &
-                              DefVal_SP, SpcScal_SP,     &
-                              DefVal_Char, SpcScal_Char, &
-                              DefVal_IN, SpcScal_IN       )
-!
-! !INPUT PARAMETERS:
-!
-    TYPE(ConfigObj),               POINTER                 :: HcoConfig
-    INTEGER,                       INTENT(IN   )           :: ExtNr          ! Extension Nr.
-    INTEGER,                       INTENT(IN   )           :: NSPC           ! # of species
-    CHARACTER(LEN=*),              INTENT(IN   )           :: SpcNames(NSPC) ! Species string
-    CHARACTER(LEN=*),              INTENT(IN   )           :: Prefix         ! search prefix
-    REAL(sp),                      INTENT(IN   ), OPTIONAL :: DefVal_SP      ! default value
-    INTEGER,                       INTENT(IN   ), OPTIONAL :: DefVal_IN      ! default value
-    CHARACTER(LEN=*),              INTENT(IN   ), OPTIONAL :: DefVal_Char    ! default value
-!
-! !OUTPUT PARAMETERS:
-!
-    REAL(sp),                      INTENT(  OUT), OPTIONAL :: SpcScal_SP(NSPC)   ! Species values
-    INTEGER,                       INTENT(  OUT), OPTIONAL :: SpcScal_IN(NSPC)   ! Species values
-    CHARACTER(LEN=*),              INTENT(  OUT), OPTIONAL :: SpcScal_Char(NSPC) ! Species values
-!
-! !INPUT/OUTPUT PARAMETERS:
-!
-    INTEGER,               INTENT(INOUT)           :: RC       ! Success or failure?
-!
-! !REVISION HISTORY:
-!  10 Jun 2015 - C. Keller   - Initial version
-!  See https://github.com/geoschem/hemco for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-!
-! !LOCAL ARGUMENTS:
-!
-    INTEGER              :: I
-    LOGICAL              :: FND
-    REAL(sp)             :: iScal_sp
-    INTEGER              :: iScal_in
-    CHARACTER(LEN=255)   :: iScal_char
-    CHARACTER(LEN= 61)   :: IOptName
-    CHARACTER(LEN=255)   :: MSG
-    CHARACTER(LEN=255)   :: LOC = 'GetExtSpcVal_Dr (hco_extlist_mod.F90)'
+    ! Initialize to default values
+    spcScal = defValue
 
-    !======================================================================
-    ! GetExtSpcVal_Dr begins here
-    !======================================================================
-
-    ! Do for every species
+    !========================================================================
+    ! Look for species scale factors; save to spcScal array
+    !========================================================================
     DO I = 1, NSPC
-       IOptName = TRIM(Prefix)//'_'//TRIM(SpcNames(I))
 
-       IF ( PRESENT(SpcScal_sp) ) THEN
-          CALL GetExtOpt ( HcoConfig, ExtNr, IOptName, OptValSp=iScal_sp, FOUND=FND, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
-              RETURN
-          ENDIF
-          IF ( FND ) SpcScal_sp(I) = iScal_sp
+       ! Species name
+       name = TRIM( prefix ) // '_' // TRIM( spcNames(I) )
+
+       ! Look for the scale factor
+       CALL GetExtOpt(                                                       &
+            HcoConfig  = HcoConfig,                                          &
+            extNr      = extNr,                                              &
+            optName    = name,                                               &
+            optValChar = scaleFac,                                           &
+            found      = found,                                              &
+            RC         = RC                                                 )
+
+       ! Trap errors
+       IF ( RC /= HCO_SUCCESS ) THEN
+          errMsg = 'Error encountered in "GetExtOpt" routine!'
+          CALL HCO_ERROR( errMsg, RC, thisLoc )
+          RETURN
        ENDIF
-       IF ( PRESENT(SpcScal_in) ) THEN
-          CALL GetExtOpt ( HcoConfig, ExtNr, IOptName, OptValInt=iScal_in, FOUND=FND, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
-              RETURN
-          ENDIF
-          IF ( FND ) SpcScal_in(I) = iScal_in
-       ENDIF
-       IF ( PRESENT(SpcScal_char) ) THEN
-          CALL GetExtOpt ( HcoConfig, ExtNr, IOptName, OptValChar=iScal_char, FOUND=FND, RC=RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-              RETURN
-          ENDIF
-          IF ( FND ) SpcScal_char(I) = iScal_char
-       ENDIF
+
+       ! If scale factor was found, assign it to SpcScal
+       IF ( found ) spcScal(I) = scaleFac
     ENDDO
 
-    ! Return w/ success
-    RC = HCO_SUCCESS
-
-    END SUBROUTINE GetExtSpcVal_Dr
+  END SUBROUTINE GetExtSpcVal_char
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !

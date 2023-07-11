@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased 3.7.1] - TBD
 ### Changed
 - Updated version numbers to 3.7.1
-- Make Hg0 emission factors in `hcox_gfed_include_gfed4.H` multipliers  of the CO emission factors
+- Make Hg0 emission factors in `hcox_gfed_include_gfed4.H` multipliers  of the CO emission factor
+- Removed superfluous routine `GetExtSpcVal_Dr` in `src/Core/hco_extlist_mod.F90`
 
 ## [Unreleased 3.7.0] - TBD
 ### Added
