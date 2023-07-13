@@ -355,18 +355,21 @@ CONTAINS
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
 
-    IF ( ExtNr > 0 ) THEN
-       ! Write the name of the extension regardless of the verbose setting
-       msg = 'Using HEMCO extension: Volcano (volcanic SO2 emissions)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+    ! Print to log
+    IF ( HcoState%amIRoot ) THEN
+       IF ( ExtNr > 0 ) THEN
+          ! Write the name of the extension regardless of the verbose setting
+          msg = 'Using HEMCO extension: Volcano (volcanic SO2 emissions)'
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+             CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+          ELSE
+             CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
+          ENDIF
        ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
+          MSG = 'The Volcano extension is turned off.'
+          CALL HCO_MSG( HcoState%Config%Err,  MSG )
+          RETURN
        ENDIF
-    ELSE
-       MSG = 'The Volcano extension is turned off.'
-       CALL HCO_MSG( HcoState%Config%Err,  MSG )
-       RETURN
     ENDIF
 
     ! Enter
