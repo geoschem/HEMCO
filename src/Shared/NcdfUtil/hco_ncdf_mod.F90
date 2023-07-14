@@ -17,6 +17,7 @@ MODULE HCO_NCDF_MOD
 ! !USES:
 !
   ! Modules for netCDF read
+  USE netCDF
   USE HCO_m_netcdf_io_open
   USE HCO_m_netcdf_io_get_dimlen
   USE HCO_m_netcdf_io_read
@@ -30,7 +31,6 @@ MODULE HCO_NCDF_MOD
 
   IMPLICIT NONE
   PRIVATE
-# include "netcdf.inc"
 !
 ! !PUBLIC MEMBER FUNCTIONS:
 !
@@ -217,11 +217,7 @@ CONTAINS
     ! Also return the number of time slices so that we can
     ! append to an existing file w/o clobbering any data
     IF ( PRESENT( nTime ) ) THEN
-       nTime = -1
-       RC = Nf_Inq_DimId( fId, 'time', vId )
-       IF ( RC == NF_NOERR ) THEN
-          RC = Nf_Inq_DimLen( fId, vId, nTime )
-       ENDIF
+       CALL Ncget_Unlim_Dimlen( fId, nTime )
     ENDIF
 
   END SUBROUTINE NC_APPEND
@@ -1194,12 +1190,12 @@ CONTAINS
     a_name  = "missing_value"
     ReadAtt = Ncdoes_Attr_Exist ( fId, TRIM(v_name), TRIM(a_name), a_type )
     IF ( ReadAtt ) THEN
-       IF ( a_type == NF_REAL ) THEN
+       IF ( a_type == NF90_REAL ) THEN
           CALL NcGet_Var_Attributes( fId, TRIM(v_name), TRIM(a_name), miss4 )
           WHERE ( ncArr == miss4 )
              ncArr = MissValue
           END WHERE
-       ELSE IF ( a_type == NF_DOUBLE ) THEN
+       ELSE IF ( a_type == NF90_DOUBLE ) THEN
           CALL NcGet_Var_Attributes( fId, TRIM(v_name), TRIM(a_name), miss8 )
           miss4 = REAL( miss8 )
           WHERE ( ncArr == miss4 )
@@ -1212,12 +1208,12 @@ CONTAINS
     a_name  = "_FillValue"
     ReadAtt = Ncdoes_Attr_Exist ( fId, TRIM(v_name), TRIM(a_name), a_type )
     IF ( ReadAtt ) THEN
-       IF ( a_type == NF_REAL ) THEN
+       IF ( a_type == NF90_REAL ) THEN
           CALL NcGet_Var_Attributes( fId, TRIM(v_name), TRIM(a_name), miss4 )
           WHERE ( ncArr == miss4 )
              ncArr = MissValue
           END WHERE
-       ELSE IF ( a_type == NF_DOUBLE ) THEN
+       ELSE IF ( a_type == NF90_DOUBLE ) THEN
           CALL NcGet_Var_Attributes( fId, TRIM(v_name), TRIM(a_name), miss8 )
           miss4 = REAL( miss8 )
           WHERE ( ncArr == miss4 )
@@ -3115,7 +3111,7 @@ CONTAINS
     CALL NcCr_Wr( fId, TRIM(ncFile) )
 
     ! Turn filling off
-    CALL NcSetFill( fId, NF_NOFILL, omode )
+    CALL NcSetFill( fId, NF90_NOFILL, omode )
 
     !--------------------------------
     ! GLOBAL ATTRIBUTES
@@ -3170,7 +3166,7 @@ CONTAINS
     ! Define the "lon" variable
     v_name = "lon"
     var1d = (/ id_lon /)
-    CALL NcDef_Variable( fId, TRIM(v_name), NF_FLOAT, 1, var1d, vId )
+    CALL NcDef_Variable( fId, TRIM(v_name), NF90_FLOAT, 1, var1d, vId )
 
     ! Define the "lon:long_name" attribute
     a_name = "long_name"
@@ -3189,7 +3185,7 @@ CONTAINS
     ! Define the "lat" variable
     v_name = "lat"
     var1d = (/ id_lat /)
-    CALL NcDef_Variable( fId, TRIM(v_name), NF_FLOAT, 1, var1d, vId )
+    CALL NcDef_Variable( fId, TRIM(v_name), NF90_FLOAT, 1, var1d, vId )
 
     ! Define the "lat:long_name" attribute
     a_name = "long_name"
@@ -3210,7 +3206,7 @@ CONTAINS
        ! Define the "levels" variable
        v_name = "lev"
        var1d = (/ id_lev /)
-       CALL NcDef_Variable( fId, TRIM(v_name), NF_INT, 1, var1d, vId )
+       CALL NcDef_Variable( fId, TRIM(v_name), NF90_INT, 1, var1d, vId )
 
        ! Define the "time:long_name" attribute
        a_name = "long_name"
@@ -3230,7 +3226,7 @@ CONTAINS
     ! Define the "time" variable
     v_name = "time"
     var1d = (/ id_time /)
-    CALL NcDef_Variable( fId, TRIM(v_name), NF_INT, 1, var1d, vId )
+    CALL NcDef_Variable( fId, TRIM(v_name), NF90_INT, 1, var1d, vId )
 
     ! Define the "time:long_name" attribute
     a_name = "long_name"
@@ -3251,10 +3247,10 @@ CONTAINS
        v_name = TRIM(ncVars(I))
        IF ( PRESENT(nlev) ) THEN
           var4d = (/ id_lon, id_lat, id_lev, id_time /)
-          CALL NcDef_Variable(fId,TRIM(v_name),NF_DOUBLE,4,var4d,vId)
+          CALL NcDef_Variable(fId,TRIM(v_name),NF90_DOUBLE,4,var4d,vId)
        ELSE
           var3d = (/ id_lon, id_lat, id_time /)
-          CALL NcDef_Variable(fId,TRIM(v_name),NF_DOUBLE,3,var3d,vId)
+          CALL NcDef_Variable(fId,TRIM(v_name),NF90_DOUBLE,3,var3d,vId)
        ENDIF
 
        ! Define the long_name attribute
@@ -3648,7 +3644,7 @@ CONTAINS
     CALL NcCr_Wr( fId, TRIM( ncFile ), Save_As_Nc4 )
 
     ! Turn filling off
-    CALL NcSetFill( fId, NF_NOFILL, omode )
+    CALL NcSetFill( fId, NF90_NOFILL, omode )
 
     !=======================================================================
     ! Set global attributes
@@ -3792,7 +3788,7 @@ CONTAINS
 
     ! Scalars
     INTEGER              :: nDim,     Pos
-    INTEGER              :: NF_TYPE,  tmpIlevId
+    INTEGER              :: NF90_TYPE,  tmpIlevId
     LOGICAL              :: isDefMode
 
     ! Strings
@@ -3859,20 +3855,20 @@ CONTAINS
 
     ! Set data type
     IF ( DataType == 1 ) THEN
-       NF_TYPE = NF_INT
+       NF90_TYPE = NF90_INT
     ELSEIF ( DataType == 4 ) THEN
-       NF_TYPE = NF_FLOAT
+       NF90_TYPE = NF90_FLOAT
     ELSEIF ( DataType == 8 ) THEN
-       NF_TYPE = NF_DOUBLE
+       NF90_TYPE = NF90_DOUBLE
     ELSE
-       NF_TYPE = NF_FLOAT
+       NF90_TYPE = NF90_FLOAT
     ENDIF
 
     !-----------------------------------------------------------------------
     ! Define variable
     !-----------------------------------------------------------------------
-    CALL NcDef_Variable( fId,  TRIM(VarName), NF_TYPE,              &
-                         nDim, VarDims,       VarCt,     Compress  )
+    CALL NcDef_Variable( fId,  TRIM(VarName), NF90_TYPE,                     &
+                         nDim, VarDims,       VarCt,      Compress          )
     DEALLOCATE( VarDims )
 
     !-----------------------------------------------------------------------
@@ -3881,11 +3877,11 @@ CONTAINS
 
     ! long_name (reuired)
     Att = 'long_name'
-    CALL NcDef_Var_Attributes(  fId, VarCt, TRIM(Att), TRIM(VarLongName) )
+    CALL NcDef_Var_Attributes( fId, VarCt, TRIM(Att), TRIM(VarLongName) )
 
     ! units (requited)
     Att = 'units'
-    CALL NcDef_Var_Attributes(  fId, VarCt, TRIM(Att),  TRIM(VarUnit) )
+    CALL NcDef_Var_Attributes( fId, VarCt, TRIM(Att),  TRIM(VarUnit) )
 
     ! add_offset (optional)
     IF ( PRESENT( AddOffset ) ) THEN
@@ -4009,7 +4005,7 @@ CONTAINS
 
     ! Turn on chunking for this variable
     ! But only if the netCDF library supports it
-    RC = NF_Def_Var_Chunking( fId, vId, NF_CHUNKED, ChunkSizes )
+    RC = NF90_Def_Var_Chunking( fId, vId, NF90_CHUNKED, ChunkSizes )
 
 #else
 

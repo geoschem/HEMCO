@@ -127,7 +127,7 @@ CONTAINS
 
         ! NOTE: Should not exit but pass error code up
         ! work on this for a future version
-        stop 999 
+        stop 999
     ENDIF
 
     RETURN
