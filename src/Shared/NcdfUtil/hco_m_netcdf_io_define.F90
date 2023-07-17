@@ -162,7 +162,8 @@ CONTAINS
 !!  ncid   : netCDF file id
 !!  name   : name of the variable
 !!  type   : type of the variable
-!!           (NF90_FLOAT, NF90_CHAR, NF90_INT, NF90_DOUBLE, NF90_BYTE, NF90_SHORT)
+!!           (NF90_FLOAT,  NF90_CHAR, NF90_INT,
+!!            NF90_DOUBLE, NF90_BYTE, NF90_SHORT)
 !!  ndims  : number of dimensions of the variable
 !!  dims   : netCDF dimension id of the variable
     CHARACTER (LEN=*), INTENT(IN)  :: name
@@ -195,32 +196,32 @@ CONTAINS
 
 #ifdef NC_HAS_COMPRESSION
     !=====================================================================
-    ! If the optional "compress" variable is used and set to TRUE,
-    ! then enable variable compression (cdh, 0/17/17)
+    ! Create a compressed (deflated) netCDF variable
     !
     ! NOTE: We need to block this out with an #ifdef because some
-    ! netCDF installations might lack the NF90_def_var_deflate function
+    ! netCDF installations might lack the deflation capability,
     ! which would cause a compile-time error. (bmy, 3/1/17)
-    !
-    ! ALSO NOTE: Newer versions of netCDF balk when you try to compress
-    ! a scalar variable.  This generates an annoying warning message.
-    ! To avoid this, only compress array variables. (bmy, 11/30/20)
-    !=====================================================================
-    if ( PRESENT( Compress ) ) then
+    !========================================================================
+    IF ( PRESENT( Compress ) ) then
 
-       ! Skip compression for zero-dimension variables
+       !------------------------------------------------------------------
+       ! If COMPRESS is passed as an optional argument, and is TRUE,
+       ! then define the variable with deflate_level=1.  Higher values
+       ! of deflate_level yield minimal additiional benefit.
+       !
+       ! ALSO NOTE: Newer versions of netCDF balk when you try to compress
+       ! a scalar variable.  This generates an annoying warning message.
+       ! To avoid this, only compress array variables. (bmy, 11/30/20)
+       !-------------------------------------------------------------------
        IF ( Compress .and. ndims > 0 ) THEN
 
-          ! Define variable with deflation (aka compression).
-          ! Choose deflate_level=1 for fast, minimal deflation.
-          ! Testing shows minimal benefit from higher deflation levels.
+          ! Create deflated variable
           ierr = NF90_Def_Var( ncid, name, xtype, dims, var_id,              &
                                shuffle=.TRUE., deflate_level=1 )
 
           ! Check for errors.
           ! No message will be generated if the error is simply that the
-          ! file is not netCDF-4
-          ! (i.e. netCDF-3 don't support compression)
+          ! file is not netCDF-4 (as netCDF-3 doesn't support compression)
           IF ( (ierr.ne.NF90_NOERR) .and. (ierr.ne.NF90_ENOTNC4)) THEN
 
              ! Errors enabling compression will not halt the program
@@ -232,33 +233,24 @@ CONTAINS
              CALL Do_Err_Out (err_msg, doStop, 0, 0, 0, 0, 0.0d0, 0.0d0)
           END IF
 
-       ELSE
-                  
-          ! Create uncompressed variable if COMPRESS = .FALSE.
-          ! or if the number of dimensions is zero
-          ierr = NF90_Def_Var( ncid, name, xtype, dims, var_id )
-          IF ( ierr /= NF90_NOERR ) THEN
-             err_msg = 'NF90_Def_Var_Deflate: can not create variable : '// &
-                  Trim (name)
-             CALL Do_Err_Out (err_msg, doStop, 0, 0, 0, 0, 0.0d0, 0.0d0)
-          ENDIF
-
+          ! Return successfully
+          RETURN
        ENDIF
     ENDIF
+#endif
 
-#else
-    !=====================================================================
-    ! Define variable without compression if HEMCO was compiled
-    ! with netCDF deflation turned off.
-    !=====================================================================
+    !========================================================================
+    ! Create an uncompressed netCDF variable if:
+    ! (1) COMPRESS is not passed as an optional argument
+    ! (2) COMPRESS is passed as an optional argument but is FALSE
+    ! (3) The variable is a scalar (ndims == 0)
+    !========================================================================
     ierr = NF90_Def_Var( ncid, name, xtype, dims, var_id )
     IF ( ierr /= NF90_NOERR ) THEN
        err_msg = 'NF90_Def_Var_Deflate: can not create variable : '// &
-            Trim(name)
+            Trim (name)
        CALL Do_Err_Out (err_msg, doStop, 0, 0, 0, 0, 0.0d0, 0.0d0)
     ENDIF
-      
-#endif
 
   END SUBROUTINE NcDef_variable
 !EOC
