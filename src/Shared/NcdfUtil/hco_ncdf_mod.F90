@@ -85,8 +85,7 @@ MODULE HCO_NCDF_MOD
   PRIVATE :: NC_READ_VAR_CORE
 !
 ! !REVISION HISTORY:
-!  27 Jul 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -157,8 +156,7 @@ CONTAINS
     INTEGER,          INTENT(OUT) :: fID
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -197,8 +195,7 @@ CONTAINS
     INTEGER,          OPTIONAL    :: nTime
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -242,8 +239,7 @@ CONTAINS
     INTEGER, INTENT(IN   ) :: fID
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -281,8 +277,7 @@ CONTAINS
 !  NcdfUtil module m_netcdf_define_mod.F90.
 !
 ! !REVISION HISTORY:
-!  06 Jan 2015 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -345,8 +340,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)            :: RC
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -432,11 +426,11 @@ CONTAINS
              ! Do nothing
         END SELECT
        ENDIF
-       
+
        ! Reset RC so that we won't halt execution elsewhere
        RC = 0
     ENDIF
-    
+
   END SUBROUTINE NC_READ_TIME
 !EOC
 !------------------------------------------------------------------------------
@@ -471,8 +465,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)            :: RC
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -513,8 +506,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)            :: RC
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -556,8 +548,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)            :: RC
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -708,8 +699,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)         :: RC
 !
 ! !REVISION HISTORY:
-!  27 Jul 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1298,8 +1288,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)           :: RC
 !
 ! !REVISION HISTORY:
-!  27 Jul 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1434,8 +1423,7 @@ CONTAINS
 ! !REMARKS:
 !
 ! !REVISION HISTORY:
-!  18 Jan 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1652,8 +1640,7 @@ CONTAINS
 ! !REMARKS:
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1816,8 +1803,7 @@ CONTAINS
 ! !REMARKS:
 !
 ! !REVISION HISTORY:
-!  18 Jan 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2003,8 +1989,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  16 Jul 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2054,8 +2039,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  16 Jul 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2104,8 +2088,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  16 Jul 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2308,8 +2291,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  03 Oct 2014 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2356,8 +2338,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  03 Oct 2014 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2415,8 +2396,7 @@ CONTAINS
     REAL*8, OPTIONAL, POINTER       :: SigLev8(:,:,:)  ! specified boundaries
 !
 ! !REVISION HISTORY:
-!  03 Oct 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2597,8 +2577,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  03 Oct 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2838,8 +2817,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  03 Oct 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2919,8 +2897,7 @@ CONTAINS
 !  with subsequent hand-editing.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2993,8 +2970,7 @@ CONTAINS
 !  with subsequent hand-editing.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3068,8 +3044,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3311,8 +3286,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  30 Jan 2012 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3395,8 +3369,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  30 Jan 2012 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3449,8 +3422,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  30 Jan 2012 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3537,8 +3509,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3775,8 +3746,7 @@ CONTAINS
 !  (2) The NcdfUtilities package (from Bob Yantosca) source code
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3993,8 +3963,7 @@ CONTAINS
 !  an error code of -111.
 !
 ! !REVISION HISTORY:
-!  28 Aug 2017 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4046,8 +4015,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  25 Aug 2017 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4093,8 +4061,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4147,8 +4114,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4207,8 +4173,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4267,8 +4232,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4327,8 +4291,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  25 Aug 2017 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4374,8 +4337,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4428,8 +4390,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4488,8 +4449,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4548,8 +4508,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4607,8 +4566,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  25 Aug 2017 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4654,8 +4612,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4708,8 +4665,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4768,8 +4724,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4828,8 +4783,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4904,7 +4858,7 @@ CONTAINS
 !  TAU0 is hours elapsed since 00:00 GMT on 01 Jan 1985.
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4993,8 +4947,7 @@ CONTAINS
     LOGICAL                      :: IsModelLevel
 !
 ! !REVISION HISTORY:
-!  12 Dec 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -5060,8 +5013,7 @@ CONTAINS
     LOGICAL                      :: IsSigmaLevel
 !
 ! !REVISION HISTORY:
-!  12 Dec 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
