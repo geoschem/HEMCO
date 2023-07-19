@@ -69,7 +69,7 @@ MODULE HCO_m_netcdf_io_define
 !  Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -113,7 +113,7 @@ CONTAINS
 !  Jules Kouatchou and Maharaj Bhat
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -184,7 +184,7 @@ CONTAINS
 !  Jules Kouatchou and Maharaj Bhat
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -286,7 +286,7 @@ CONTAINS
 !  Bob Yantosca (based on code by Jules Kouatchou and Maharaj Bhat)
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -342,7 +342,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -395,7 +395,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -448,7 +448,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -501,7 +501,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -554,7 +554,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -607,7 +607,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -660,7 +660,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -713,7 +713,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -766,7 +766,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -819,7 +819,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -872,7 +872,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -925,7 +925,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -978,7 +978,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  26 Sep 2013 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1026,7 +1026,7 @@ CONTAINS
 !  Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1072,7 +1072,7 @@ CONTAINS
 !  Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1120,7 +1120,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  14 May 2014 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC

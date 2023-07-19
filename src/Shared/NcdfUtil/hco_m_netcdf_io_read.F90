@@ -1,4 +1,3 @@
-! $Id: m_netcdf_io_read.F90,v 1.1 2009/08/04 14:52:05 bmy Exp $
 !-------------------------------------------------------------------------
 !  NASA/GFSC, SIVO, Code 610.3
 !-------------------------------------------------------------------------
@@ -54,7 +53,7 @@ MODULE HCO_m_netcdf_io_read
 !  Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -91,7 +90,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -154,7 +153,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -221,7 +220,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -234,11 +233,8 @@ CONTAINS
     logical             :: dostop
 
     ! set dostop flag
-    if ( present ( err_stop ) ) then
-       dostop = err_stop
-    else
-       dostop = .true.
-    endif
+    dostop = .true.
+    if ( present ( err_stop ) ) dostop = err_stop
 
     ierr = NF90_Inq_VarId(ncid, varname, varid)
 
@@ -310,7 +306,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -323,11 +319,8 @@ CONTAINS
     logical             :: dostop
 
     ! set dostop flag
-    if ( present ( err_stop ) ) then
-       dostop = err_stop
-    else
-       dostop = .true.
-    endif
+    dostop = .true.
+    if ( present ( err_stop ) ) dostop = err_stop
 
     ierr = NF90_Inq_VarId(ncid, varname, varid)
 
@@ -403,7 +396,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -416,11 +409,8 @@ CONTAINS
     logical             :: dostop
 
     ! set dostop flag
-    if ( present ( err_stop ) ) then
-       dostop = err_stop
-    else
-       dostop = .true.
-    endif
+    dostop = .true.
+    if ( present ( err_stop ) ) dostop = err_stop
 
     ierr = NF90_Inq_VarId(ncid, varname, varid)
 
@@ -491,7 +481,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -554,7 +544,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -618,7 +608,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -682,7 +672,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -746,7 +736,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -811,7 +801,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -877,7 +867,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -941,7 +931,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1006,7 +996,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1040,7 +1030,7 @@ CONTAINS
 !
 ! !INTERFACE:
 !
-  subroutine Ncrd_5d_R8(varrd_5d, ncid, varname, strt5d, cnt5d)
+      subroutine Ncrd_5d_R8 (varrd_5d, ncid, varname, strt5d, cnt5d)
 !
 ! !USES:
 !
@@ -1071,7 +1061,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1136,7 +1126,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1202,7 +1192,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Dec 2011 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1267,7 +1257,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1321,10 +1311,10 @@ CONTAINS
 !
 ! !OUTPUT PARAMETERS:
 !!  varrd_5d : array to fill
-    real*8         , intent(out)  :: varrd_7d(cnt7d(1), cnt7d(2), &
-                                              cnt7d(3), cnt7d(4), &
-                                              cnt7d(5), cnt7d(6), &
-                                              cnt7d(7))
+    real*8           , intent(out)  :: varrd_7d(cnt7d(1), cnt7d(2), &
+                                                cnt7d(3), cnt7d(4), &
+                                                cnt7d(5), cnt7d(6), &
+                                                cnt7d(7))
 !
 ! !DESCRIPTION: Reads in a 7D netCDF real array and does some error checking.
 !\\
@@ -1334,7 +1324,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Dec 2011 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1401,7 +1391,7 @@ CONTAINS
 !
 ! !REVISION HISTORY:
 !  20 Dec 2011 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1465,7 +1455,7 @@ CONTAINS
 !  Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -1529,7 +1519,7 @@ CONTAINS
 !  Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
