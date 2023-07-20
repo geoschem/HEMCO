@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed superfluous routine `GetExtSpcVal_Dr` in `src/Core/hco_extlist_mod.F90`
 - NetCDF routines in `src/Shared/NcdfUtil` now use the Fortran-90 API
 
+### Fixed
+- Fixed incorrect `XMIN`, `XMAX` values in  `HEMCO_sa_Grid.025x03125.rc` and `HEMCO_sa_Grid.05x0625.rc`
+
 ## [Unreleased 3.7.0] - TBD
 ### Added
 - HEMCO extensions now display a first-time message, whether `Verbose` is `true` or `false`.
