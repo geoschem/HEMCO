@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed incorrect `XMIN`, `XMAX` values in  `HEMCO_sa_Grid.025x03125.rc` and `HEMCO_sa_Grid.05x0625.rc`
+- Fixed line length too long for the `GC_72_EDGE_SIGMA` variable in `src/Core/hcoio_read_std_mod.F90`
 
 ## [Unreleased 3.7.0] - TBD
 ### Added
