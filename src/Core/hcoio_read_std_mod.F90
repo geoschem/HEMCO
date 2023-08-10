@@ -192,7 +192,7 @@ CONTAINS
     REAL(hp)                      :: UnitFactor
     LOGICAL                       :: KeepSpec
     LOGICAL                       :: FOUND
-    LOGICAL                       :: IsModelLevel = .FALSE.
+    LOGICAL                       :: IsModelLevel
     LOGICAL                       :: DoReturn
     INTEGER                       :: UnitTolerance
     INTEGER                       :: AreaFlag, TimeFlag
@@ -732,6 +732,9 @@ CONTAINS
              lev1 = nlev
              lev2 = nlev + Lct%Dct%Dta%Levels + 1
           ENDIF
+
+          ! Use MESSy regridding
+          IsModelLevel = .FALSE.
 
        ENDIF
 

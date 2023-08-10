@@ -499,11 +499,9 @@ CONTAINS
     ! levels or levels + 1 (edges)
     IF ( nlev == nz .OR. nlev == nz + 1 ) THEN
        IsModelLev = .TRUE.
-       RETURN
-    ENDIF
 
    ! If input is 72 layer and output is 47 layer
-    IF ( nz == 47 ) THEN
+    ELSE IF ( nz == 47 ) THEN
        IF ( nlev == 72 .OR. &
             nlev == 73       ) THEN
          IsModelLev = .TRUE.
@@ -515,6 +513,9 @@ CONTAINS
             nlev == 103       ) THEN
          IsModelLev = .TRUE.
        ENDIF
+
+    ELSE
+      IsModelLev = .FALSE.
     ENDIF
 
   END SUBROUTINE ModelLev_Check
