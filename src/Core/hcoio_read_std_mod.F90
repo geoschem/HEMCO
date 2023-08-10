@@ -125,8 +125,6 @@ CONTAINS
     USE HCO_Ncdf_Mod,       ONLY : NC_Read_Arr
     USE HCO_Ncdf_Mod,       ONLY : NC_Get_Grid_Edges
     USE HCO_Ncdf_Mod,       ONLY : NC_Get_Sigma_Levels
-    USE HCO_Ncdf_Mod,       ONLY : NC_IsModelLevel
-    USE HCO_Ncdf_Mod,       ONLY : NC_IsSigmaLevel
     USE HCO_CHARPAK_MOD,    ONLY : TRANLC
     USE HCO_Unit_Mod,       ONLY : HCO_Unit_Change
     USE HCO_Unit_Mod,       ONLY : HCO_Unit_ScalCheck
