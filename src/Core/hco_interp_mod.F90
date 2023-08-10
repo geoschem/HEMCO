@@ -731,6 +731,7 @@ CONTAINS
                Lct%Dct%Dta%V3(T)%Val(:,:,46) = REGR_4D(:,:,65,T)
                Lct%Dct%Dta%V3(T)%Val(:,:,47) = REGR_4D(:,:,69,T)
                Lct%Dct%Dta%V3(T)%Val(:,:,48) = REGR_4D(:,:,73,T)
+             ENDIF
 
           ENDDO ! T
 
