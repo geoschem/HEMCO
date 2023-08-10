@@ -741,7 +741,7 @@ CONTAINS
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
 
-       IF ( HCO_IsVerb( HcoState%Config%Err ) .AND. IsModelLev == .TRUE. ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) .AND. IsModelLev ) THEN
           WRITE(MSG,*) 'Data is assumed to already be on the model level grid'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
