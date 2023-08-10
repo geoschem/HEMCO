@@ -39,7 +39,6 @@ MODULE HCO_Interp_Mod
 ! !PRIVATE MEMBER FUNCTIONS:
 !
   PRIVATE :: COLLAPSE
-  PRIVATE :: INFLATE
 !
 ! !REVISION HISTORY:
 !  30 Dec 2014 - C. Keller - Initialization
@@ -361,7 +360,7 @@ CONTAINS
        ENDDO !L
        ENDDO !T
 
-       ! Eventually inflate/collapse levels onto simulation levels.
+       ! Eventually collapse levels onto simulation levels.
        IF ( Lct%Dct%Dta%SpaceDim == 3 ) THEN
           CALL ModelLev_Interpolate( HcoState, REGR_4D, Lct, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
@@ -530,7 +529,7 @@ CONTAINS
 ! !DESCRIPTION: Subroutine ModelLev\_Interpolate puts 3D data from an
 ! arbitrary number of model levels onto the vertical levels of the simulation
 ! grid. Since the input data is already on model levels, this is only to
-! inflate/collapse fields between native/reduced vertical levels, e.g. from
+! collapse fields between native/reduced vertical levels, e.g. from
 ! 72 native GEOS-5 levels onto the reduced 47 levels.
 !
 !
