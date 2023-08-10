@@ -192,7 +192,7 @@ CONTAINS
     REAL(hp)                      :: UnitFactor
     LOGICAL                       :: KeepSpec
     LOGICAL                       :: FOUND
-    LOGICAL                       :: IsModelLevel
+    LOGICAL                       :: IsModelLevel = .FALSE.
     LOGICAL                       :: DoReturn
     INTEGER                       :: UnitTolerance
     INTEGER                       :: AreaFlag, TimeFlag
