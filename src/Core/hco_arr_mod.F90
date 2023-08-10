@@ -1240,7 +1240,7 @@ CONTAINS
     ALLOCATE( Val( nx, ny, nz ), STAT=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        !errMsg = 'Could not allocate Val!'
-       WRITE(errMsg,*) 'could not allocate Val!',nx,ny,nz
+       WRITE(errMsg, "('Could not allocate Val for dimensions (',I0,'x',I0,'x',I0,')!')") nx, ny, nz
        CALL HCO_Error( errMsg, RC, thisLoc )
        RETURN
     ENDIF
