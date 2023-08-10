@@ -683,8 +683,10 @@ CONTAINS
           ! Determine if the variable is on model levels or edges
           IF ( nlev == 72 ) THEN
              NL   = 36
+             nout = 47
           ELSEIF ( nlev == 73 ) THEN
              NL   = 37
+             nout = 48
           ELSE
              MSG = 'Can only remap from native onto reduced GEOS-5 if '// &
                    'input data has exactly 72 or 73 levels: '//TRIM(Lct%Dct%cName)
@@ -693,7 +695,7 @@ CONTAINS
           ENDIF
 
           ! Make sure output array is allocated
-          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nz, nt, RC )
+          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
 
           ! Do for every time slice
           DO T = 1, nt
@@ -752,8 +754,10 @@ CONTAINS
           ! Determine if the variable is on model levels or edges
           IF ( nlev == 102 ) THEN
              NL   = 60
+             nout = 74
           ELSEIF ( nlev == 103 ) THEN
              NL   = 61
+             nout = 75
           ELSE
              MSG = 'Can only remap from native onto reduced GISS if '// &
                    'input data has exactly 102 or 103 levels: '//TRIM(Lct%Dct%cName)
@@ -762,7 +766,7 @@ CONTAINS
           ENDIF
 
           ! Make sure output array is allocated
-          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nz, nt, RC )
+          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
 
           ! Do for every time slice
           DO T = 1, nt
