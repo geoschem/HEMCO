@@ -629,6 +629,17 @@ CONTAINS
     nlev = SIZE(REGR_4D,3)
     nt   = SIZE(REGR_4D,4)
 
+    ! Check to make sure ModelLev_Interpolate should have been called
+    IF ( ( ( nlev == nz ) .OR. ( nlev == nz+1 ) ) .OR. & 
+         ( ( nz == 47 ) .AND. ( ( nlev == 72 ) .OR. ( nlev == 73 ) ) ) .OR. &
+         ( ( nz == 74 ) .AND. ( ( nlev == 102 ) .OR. ( nlev == 103 ) ) ) ) THEN
+         ! do nothing
+    ELSE
+      WRITE(MSG,*) 'ModelLev_Interpolate was called but MESSy should have been used: ',TRIM(Lct%Dct%cName)
+      CALL HCO_ERROR( MSG, RC )
+      RETURN
+    ENDIF
+
     ! Vertical interpolation done?
     DONE = .FALSE.
 
