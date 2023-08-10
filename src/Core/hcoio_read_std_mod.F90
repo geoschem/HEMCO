@@ -701,9 +701,11 @@ CONTAINS
           IsModelLevel = NC_IsModelLevel( ncLun, LevName )
 
           ! Further check if the given number of vertical levels should be
-          ! treated as model levels. This is the case if e.g. the nuber of
+          ! treated as model levels. This is the case if e.g. the number of
           ! levels found on the file exactly matches the number of vertical
-          ! levels of the grid. Some of these assumptions are rather arbitrary.
+          ! levels of the grid. Alternatively, if the number of levels on
+          ! the file represents a native grid (72/73 GMAO, 102/103 GISS) and 
+          ! the output is a reduced grid (47 GMA, 74 GISS). (nbalasus, 8/10/23)
           ! IsModelLev will stay True if is was set so in NC_ISMODELLEVEL
           ! above. (ckeller, 9/29/15)
           CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
@@ -752,6 +754,11 @@ CONTAINS
        ! Verbose
        IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Will read vertical levels ', lev1, ' to ', lev2
+          CALL HCO_MSG(HcoState%Config%Err,MSG)
+       ENDIF
+
+       IF ( HCO_IsVerb( HcoState%Config%Err ) .AND. IsModelLev == .TRUE. ) THEN
+          WRITE(MSG,*) 'Data is assumed to already be on the model level grid'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
 
