@@ -693,7 +693,7 @@ CONTAINS
           ENDIF
 
           ! Make sure output array is allocated
-          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
+          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nz, nt, RC )
 
           ! Do for every time slice
           DO T = 1, nt
@@ -762,7 +762,7 @@ CONTAINS
           ENDIF
 
           ! Make sure output array is allocated
-          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
+          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nz, nt, RC )
 
           ! Do for every time slice
           DO T = 1, nt

@@ -1239,8 +1239,7 @@ CONTAINS
     ! Initialize Val if dimensions are nonzero
     ALLOCATE( Val( nx, ny, nz ), STAT=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       !errMsg = 'Could not allocate Val!'
-       WRITE(errMsg, "('Could not allocate Val for dimensions (',I0,'x',I0,'x',I0,')!')") nx, ny, nz
+       errMsg = 'Could not allocate Val!'
        CALL HCO_Error( errMsg, RC, thisLoc )
        RETURN
     ENDIF
