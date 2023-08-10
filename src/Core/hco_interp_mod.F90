@@ -493,9 +493,6 @@ CONTAINS
     ! Assume success until otherwise
     RC = HCO_SUCCESS
 
-    ! If IsModelLev is already TRUE, nothing to do
-    IF ( IsModelLev ) RETURN
-
     ! Shadow number of vertical levels on grid
     nz = HcoState%NZ
 

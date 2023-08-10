@@ -690,33 +690,23 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! Are these model levels? This will only return true if the long
-       ! name of the level variable contains "GEOS-Chem level".
-       ! For now, we assume levels are already on model levels if the
-       ! number of levels to be read is explicitly set in the configuration
-       ! file (ckeller, 5/20/15).
+       ! Are these model levels? This will only return true if 
+       ! the variable is on 72/73 levels and you are going to 47
+       ! levels or if you are on 102/103 levels and you are going
+       ! to 74 levels. Otherwise, we will use MESSy regridding.
        IF ( Lct%Dct%Dta%Levels == 0 ) THEN
 
-          ! Check if vertical coordinate is GEOS-Chem levels
-          IsModelLevel = NC_IsModelLevel( ncLun, LevName )
-
-          ! Further check if the given number of vertical levels should be
+          ! Check if the given number of vertical levels should be
           ! treated as model levels. This is the case if e.g. the number of
           ! levels found on the file exactly matches the number of vertical
           ! levels of the grid. Alternatively, if the number of levels on
           ! the file represents a native grid (72/73 GMAO, 102/103 GISS) and 
           ! the output is a reduced grid (47 GMA, 74 GISS). (nbalasus, 8/10/23)
-          ! IsModelLev will stay True if is was set so in NC_ISMODELLEVEL
-          ! above. (ckeller, 9/29/15)
           CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
               CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
               RETURN
           ENDIF
-
-          ! Override IsModelLevel if the long_name contains
-          ! "atmospheric_hybrid_sigma_pressure_coordinate"
-          IsModelLevel = ( .not. NC_IsSigmaLevel( ncLun, LevName ) )
 
           ! Set level indeces to be read
           lev1 = 1
@@ -724,10 +714,6 @@ CONTAINS
 
        ! If levels are explicitly given:
        ELSE
-
-          ! If long_name is "atmospheric_hybrid_sigma_pressure_coordinate",
-          ! then treat it as sigma levels; otherwise assume model levels.
-          IsModelLevel = ( .not. NC_IsSigmaLevel( ncLun, LevName ) )
 
           ! Number of levels to be read must be smaller or equal to total
           ! number of available levels
