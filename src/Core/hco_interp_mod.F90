@@ -889,6 +889,8 @@ CONTAINS
     REAL(hp)              :: THICK
     REAL(hp), POINTER     :: EDG(:)
     REAL(hp), ALLOCATABLE :: WGT(:)
+    CHARACTER(LEN=255)      :: MSG
+    CHARACTER(LEN=255)      :: LOC = 'ModelLev_Interpolate (hco_interp_mod.F90)'
 
     !=================================================================
     ! COLLAPSE begins here
@@ -914,7 +916,7 @@ CONTAINS
        EDG => G5_EDGE_NATIVE(InLev1:TOPLEV)
     ELSE
        WRITE(MSG,*) 'The Met value given was not valid: ', Met
-       CALL HCO_ERROR( MSG, RC )
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
