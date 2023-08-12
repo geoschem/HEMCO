@@ -864,7 +864,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE COLLAPSE ( Lct, REGR_4D, OutLev, InLev1, NLEV, T, MET )
+  SUBROUTINE COLLAPSE ( Lct, REGR_4D, OutLev, InLev1, NLEV, T, MET, RC )
 !
 ! !INPUT PARAMETERS:
 !
@@ -878,6 +878,7 @@ CONTAINS
 ! !INPUT/OUTPUT PARAMETERS:
 !
     TYPE(ListCont),   POINTER        :: Lct               ! HEMCO list container
+    INTEGER,          INTENT(INOUT)  :: RC                ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  30 Dec 2014 - C. Keller   - Initial version
@@ -895,6 +896,9 @@ CONTAINS
     !=================================================================
     ! COLLAPSE begins here
     !=================================================================
+
+   ! Assume success until otherwise
+    RC = HCO_SUCCESS
 
     ! Init
     EDG => NULL()
