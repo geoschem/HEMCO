@@ -501,7 +501,7 @@ CONTAINS
        IsModelLev = .TRUE.
 
    ! If input is 72 layer and output is 47 layer
-    ELSE IF ( nz == 47 ) THEN
+    ELSEIF ( nz == 47 ) THEN
        IF ( nlev == 72 .OR. &
             nlev == 73       ) THEN
          IsModelLev = .TRUE.
@@ -548,8 +548,8 @@ CONTAINS
 !
 ! Currently, this routine can remap the following combinations:
 !
-! Native GEOS-5 onto reduced GEOS-5 (72 --> 47 levels)
-! Native GISS onto reduced GISS (102 -> 74 levels) 
+! Native GEOS-5 onto reduced GEOS-5 (72 --> 47 levels, 73 --> 48 edges)
+! Native GISS onto reduced GISS (102 -> 74 levels, 103 -> 75 edges) 
 !
 !
 ! !INTERFACE:
@@ -859,7 +859,7 @@ CONTAINS
 ! !DESCRIPTION: Helper routine to collapse input levels onto the output grid.
 ! The input data is weighted by the grid box thicknesses defined on top of
 ! this module. The input parameter T determines the time slice to be considered,
-! and MET denotes the met field type of the input data (22 = GISS, else GEOS-5).
+! and MET denotes the met field type of the input data (22 = GISS, 5= GEOS-5).
 !\\
 !\\
 ! !INTERFACE:
@@ -910,8 +910,12 @@ CONTAINS
     ! Get pointer to grid edges on the native input grid
     IF ( Met == 22 ) THEN
        EDG => E102_EDGE_NATIVE(InLev1:TOPLEV)
-    ELSE
+    ELSEIF ( Met == 5 ) THEN 
        EDG => G5_EDGE_NATIVE(InLev1:TOPLEV)
+    ELSE
+       WRITE(MSG,*) 'The Met value given was not valid: ', Met
+       CALL HCO_ERROR( MSG, RC )
+       RETURN
     ENDIF
 
     ! Thickness of output level
