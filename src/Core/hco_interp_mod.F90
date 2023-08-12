@@ -708,18 +708,18 @@ CONTAINS
             ! If remapping model grid layers, collapse layers 
              IF ( nlev == 72 ) THEN
                ! Collapse two levels (e.g. levels 37-38 into level 37):
-               CALL COLLAPSE( Lct, REGR_4D, 37, 37, 2, T, 5 )
-               CALL COLLAPSE( Lct, REGR_4D, 38, 39, 2, T, 5 )
-               CALL COLLAPSE( Lct, REGR_4D, 39, 41, 2, T, 5 )
-               CALL COLLAPSE( Lct, REGR_4D, 40, 43, 2, T, 5 )
+               CALL COLLAPSE( Lct, REGR_4D, 37, 37, 2, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 38, 39, 2, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 39, 41, 2, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 40, 43, 2, T, 5, RC )
                ! Collapse four levels:
-               CALL COLLAPSE( Lct, REGR_4D, 41, 45, 4, T, 5 )
-               CALL COLLAPSE( Lct, REGR_4D, 42, 49, 4, T, 5 )
-               CALL COLLAPSE( Lct, REGR_4D, 43, 53, 4, T, 5 )
-               CALL COLLAPSE( Lct, REGR_4D, 44, 57, 4, T, 5 )
-               CALL COLLAPSE( Lct, REGR_4D, 45, 61, 4, T, 5 )
-               CALL COLLAPSE( Lct, REGR_4D, 46, 65, 4, T, 5 )
-               CALL COLLAPSE( Lct, REGR_4D, 47, 69, 4, T, 5 )
+               CALL COLLAPSE( Lct, REGR_4D, 41, 45, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 42, 49, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 43, 53, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 44, 57, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 45, 61, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 46, 65, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 47, 69, 4, T, 5, RC )
              ! If remapping model grid edges, sample at edges
              ELSE
                Lct%Dct%Dta%V3(T)%Val(:,:,38) = REGR_4D(:,:,39,T)
@@ -779,21 +779,21 @@ CONTAINS
              ! If remapping model grid layers, collapse layers
              IF ( nlev == 102 ) THEN
                 ! Collapse two levels (e.g. levels 61-62 into level 61):
-                CALL COLLAPSE( Lct, REGR_4D, 61, 61, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 62, 63, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 63, 65, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 64, 67, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 65, 69, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 66, 71, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 67, 73, 2, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 61, 61, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 62, 63, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 63, 65, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 64, 67, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 65, 69, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 66, 71, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 67, 73, 2, T, 22, RC )
                 ! Collapse four levels:
-                CALL COLLAPSE( Lct, REGR_4D, 68, 75, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 69, 79, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 70, 83, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 71, 87, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 72, 91, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 73, 95, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 74, 99, 4, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 68, 75, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 69, 79, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 70, 83, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 71, 87, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 72, 91, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 73, 95, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 74, 99, 4, T, 22, RC )
              ! If remapping model grid edges, sample at the edges
              ELSE
                 Lct%Dct%Dta%V3(T)%Val(:,:,62) = REGR_4D(:,:,63,T)
@@ -896,9 +896,6 @@ CONTAINS
     !=================================================================
     ! COLLAPSE begins here
     !=================================================================
-
-   ! Assume success until otherwise
-    RC = HCO_SUCCESS
 
     ! Init
     EDG => NULL()
