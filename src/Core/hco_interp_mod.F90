@@ -832,8 +832,6 @@ CONTAINS
           ! Done!
           DONE = .TRUE.
 
-       ENDIF
-
        !----------------------------------------------------------------
        ! Reduced to native GEOS-5 levels
        !----------------------------------------------------------------
@@ -923,6 +921,8 @@ CONTAINS
           DONE = .TRUE.
 
        ENDIF
+
+      ENDIF ! nz == (47,74,72)
 
     ENDIF ! Vertical regridding required
 
