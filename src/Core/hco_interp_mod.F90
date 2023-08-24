@@ -591,7 +591,7 @@ CONTAINS
     INTEGER                 :: nx, ny, nz, nt
     INTEGER                 :: fineIDX, coarseIDX
     INTEGER                 :: minlev, nlev, nout
-    INTEGER                 :: L, T, NL
+    INTEGER                 :: L, T, NL, I
     INTEGER                 :: OS
     LOGICAL                 :: verb, infl, clps
     LOGICAL                 :: DONE
