@@ -703,7 +703,7 @@ CONTAINS
                    'input data has exactly 72 or 73 levels: '//TRIM(Lct%Dct%cName)
              CALL HCO_ERROR( MSG, RC )
              RETURN
-          ENDIF
+          ENDIF ! nlev == (72,73,ELSE)
 
           ! Make sure output array is allocated
           CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
@@ -744,7 +744,7 @@ CONTAINS
                Lct%Dct%Dta%V3(T)%Val(:,:,46) = REGR_4D(:,:,65,T)
                Lct%Dct%Dta%V3(T)%Val(:,:,47) = REGR_4D(:,:,69,T)
                Lct%Dct%Dta%V3(T)%Val(:,:,48) = REGR_4D(:,:,73,T)
-             ENDIF
+             ENDIF ! nlev == (72,ELSE)
 
           ENDDO ! T
 
@@ -774,7 +774,7 @@ CONTAINS
                    'input data has exactly 102 or 103 levels: '//TRIM(Lct%Dct%cName)
              CALL HCO_ERROR( MSG, RC )
              RETURN
-          ENDIF
+          ENDIF ! nlev == (102,103,ELSE)
 
           ! Make sure output array is allocated
           CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
@@ -821,7 +821,7 @@ CONTAINS
                 Lct%Dct%Dta%V3(T)%Val(:,:,73) = REGR_4D(:,:,95,T)
                 Lct%Dct%Dta%V3(T)%Val(:,:,74) = REGR_4D(:,:,99,T)
                 Lct%Dct%Dta%V3(T)%Val(:,:,75) = REGR_4D(:,:,103,T)
-             ENDIF
+             ENDIF ! nlev == (102,ELSE)
           ENDDO ! T
 
           ! Verbose
@@ -850,7 +850,7 @@ CONTAINS
                    'input data has exactly 47 or 48 levels: '//TRIM(Lct%Dct%cName)
              CALL HCO_ERROR( MSG, RC )
              RETURN
-          ENDIF
+          ENDIF ! nlev == (48,48,ELSE)
 
           ! Make sure output array is allocated
           CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
@@ -909,7 +909,7 @@ CONTAINS
                    Lct%Dct%Dta%V3(T)%Val(:,:,fineIDX) = REGR_4D(:,:,coarseIDX,T)
                 ENDDO ! I
 
-             ENDIF
+             ENDIF ! nlev == (47,ELSE)
           ENDDO ! T
 
           ! Verbose
@@ -921,9 +921,7 @@ CONTAINS
           ! Done!
           DONE = .TRUE.
 
-       ENDIF
-
-      ENDIF ! nz == (47,74,72)
+       ENDIF ! nz == (47,74,72)
 
     ENDIF ! Vertical regridding required
 
