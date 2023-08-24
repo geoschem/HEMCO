@@ -514,6 +514,12 @@ CONTAINS
          IsModelLev = .TRUE.
        ENDIF
 
+    ! If input is 47 layer and output is 72 layer
+    ELSEIF ( nz == 72 ) THEN
+       IF ( nlev == 47 .OR. & 
+            nlev == 48       ) THEN
+         IsModelLev = .TRUE.
+
     ELSE
       IsModelLev = .FALSE.
     ENDIF
@@ -543,14 +549,16 @@ CONTAINS
 ! data holds 72/73 input levels, this is interpreted as native data and will
 ! be collapsed onto the reduced GEOS-5 grid. If the input holds 102/103 input
 ! levels, this is interpreted as native data and will be collapsed onto the 
-! reduced GISS grid (nbalasus, 8/10/2023).
+! reduced GISS grid. If the input holds 47/48 input levels, this is interpreted
+! as reduced GEOS-5 data and it will be inflated to the native GEOS-5 grid
+! (with a warning, as this is not recommended) (nbalasus, 8/24/2023).
 !
 !
 ! Currently, this routine can remap the following combinations:
 !
 ! Native GEOS-5 onto reduced GEOS-5 (72 --> 47 levels, 73 --> 48 edges)
-! Native GISS onto reduced GISS (102 -> 74 levels, 103 -> 75 edges) 
-!
+! Native GISS onto reduced GISS (102 --> 74 levels, 103 --> 75 edges) 
+! Reduced GEOS-5 onto native GEOS-5 (47 --> 72 levels, 48 --> 73 edges)
 !
 ! !INTERFACE:
 !
@@ -580,6 +588,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER                 :: nx, ny, nz, nt
+    INTEGER                 :: fineIDX, coarseIDX
     INTEGER                 :: minlev, nlev, nout
     INTEGER                 :: L, T, NL
     INTEGER                 :: OS
@@ -630,9 +639,10 @@ CONTAINS
     nt   = SIZE(REGR_4D,4)
 
     ! Check to make sure ModelLev_Interpolate should have been called
-    IF ( ( ( nlev == nz ) .OR. ( nlev == nz+1 ) ) .OR. & 
-         ( ( nz == 47 ) .AND. ( ( nlev == 72 ) .OR. ( nlev == 73 ) ) ) .OR. &
-         ( ( nz == 74 ) .AND. ( ( nlev == 102 ) .OR. ( nlev == 103 ) ) ) ) THEN
+    IF ( ( ( nlev == nz ) .OR. ( nlev == nz+1 ) ) .OR. &                          ! write data without doing anything
+         ( ( nz == 47 ) .AND. ( ( nlev == 72 ) .OR. ( nlev == 73 ) ) ) .OR. &     ! collapse native to reduced GEOS-5
+         ( ( nz == 74 ) .AND. ( ( nlev == 102 ) .OR. ( nlev == 103 ) ) ) .OR. &   ! collapse native to reduced GISS
+         ( ( nz == 72 ) .AND. ( ( nlev == 47 ) .OR. ( nlev == 48 ) ) ) ) THEN     ! inflate reduced to native GEOS-5
          ! do nothing
     ELSE
       WRITE(MSG,*) 'ModelLev_Interpolate was called but MESSy should have been used: ',TRIM(Lct%Dct%cName)
@@ -676,7 +686,7 @@ CONTAINS
     IF ( .NOT. DONE ) THEN
 
        !----------------------------------------------------------------
-       ! Reduced GEOS-5 levels
+       ! Native to reduced GEOS-5 levels
        !----------------------------------------------------------------
        IF ( nz == 47 ) THEN
 
@@ -747,7 +757,7 @@ CONTAINS
           DONE = .TRUE.
 
        !----------------------------------------------------------------
-       ! Reduced GISS levels
+       ! Native to reduced GISS levels
        !----------------------------------------------------------------
        ELSEIF ( nz == 74 ) THEN
 
@@ -816,6 +826,96 @@ CONTAINS
           ! Verbose
           IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GISS levels.'
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
+          ENDIF
+
+          ! Done!
+          DONE = .TRUE.
+
+       ENDIF
+
+       !----------------------------------------------------------------
+       ! Reduced to native GEOS-5 levels
+       !----------------------------------------------------------------
+       ELSEIF ( nz == 72 ) THEN
+
+          ! Determine if the variable is on model levels or edges
+          IF ( nlev == 47 ) THEN
+             NL   = 36
+             nout = 72
+          ELSEIF ( nlev == 48 ) THEN
+             NL   = 37
+             nout = 73
+          ELSE
+             MSG = 'Can only remap from reduced onto native GEOS-5 if '// &
+                   'input data has exactly 47 or 48 levels: '//TRIM(Lct%Dct%cName)
+             CALL HCO_ERROR( MSG, RC )
+             RETURN
+          ENDIF
+
+          ! Make sure output array is allocated
+          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
+
+          ! Do for every time slice
+          DO T = 1, nt
+
+             ! Levels that are passed level-by-level.
+             DO L = 1, NL
+                Lct%Dct%Dta%V3(T)%Val(:,:,L) = REGR_4D(:,:,L,T)
+             ENDDO !L
+
+             ! If remapping model grid layers, inflate layers
+             IF ( nlev == 47 ) THEN
+
+                ! Inflate two levels (e.g. levels 37-38 on the fine grid are copies of level 37 on the coarse grid):
+                coarseIDX = 36
+                DO I = 1,8
+                   fineIDX = 36 + I
+                   IF ( MOD(I,2) /= 0 ) THEN
+                     coarseIDX = coarseIDX + 1
+                   ENDIF
+                   Lct%Dct%Dta%V3(T)%Val(:,:,fineIDX) = REGR_4D(:,:,coarseIDX,T)
+                ENDDO ! I
+
+                ! Inflate four levels (e.g. levels 45-48 on the fine grid are copies of level 41 on the coarse grid)
+                coarseIDX = 40
+                DO I = 1,28
+                   fineIDX = 44 + i
+                   IF ( MOD(I-1,4) == 0 ) THEN
+                      coarseIDX = coarseIDX + 1
+                   ENDIF
+                   Lct%Dct%Dta%V3(T)%Val(:,:,fineIDX) = REGR_4D(:,:,coarseIDX,T)
+                ENDDO ! I
+
+             ! If remapping model grid edges, inflate edges
+             ELSE
+
+                ! Sample every two edges (e.g. edges 38-39 on the fine grid are copies of edge 38 on the coarse grid)
+                coarseIDX = 37
+                DO I = 1,8
+                   fineIDX = 37 + I
+                   IF ( MOD(I,2) /= 0 ) THEN
+                     coarseIDX = coarseIDX + 1
+                   ENDIF
+                   Lct%Dct%Dta%V3(T)%Val(:,:,fineIDX) = REGR_4D(:,:,coarseIDX,T)
+                ENDDO ! I
+
+                ! Sample every four edges (e.g. edges 46-49 on the fine grid are copies of edge 42 on the coarse grid)
+                coarseIDX = 40
+                DO I = 1,28
+                   fineIDX = 44 + i
+                   IF ( MOD(I-1,4) == 0 ) THEN
+                      coarseIDX = coarseIDX + 1
+                   ENDIF
+                   Lct%Dct%Dta%V3(T)%Val(:,:,fineIDX) = REGR_4D(:,:,coarseIDX,T)
+                ENDDO ! I
+
+             ENDIF
+          ENDDO ! T
+
+          ! Verbose
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+             WRITE(MSG,*) 'Mapped ', nlev, ' levels onto native GEOS-5 levels (not recommended).'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
 

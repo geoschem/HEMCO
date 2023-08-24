@@ -689,17 +689,12 @@ CONTAINS
        ENDIF
 
        ! Are these model levels? This will only return true if 
-       ! the variable is on 72/73 levels and you are going to 47
-       ! levels or if you are on 102/103 levels and you are going
-       ! to 74 levels. Otherwise, we will use MESSy regridding.
+       ! (1) the variable is on 72/73 levels and you are going to 47
+       ! levels, (2) if you are on 102/103 levels and you are going
+       ! to 74 levels, (3) if you are on 47/48 levels and you are
+       ! going to 72 levels. Otherwise, use MESSy (nbalasus, 8/24/2023).
        IF ( Lct%Dct%Dta%Levels == 0 ) THEN
 
-          ! Check if the given number of vertical levels should be
-          ! treated as model levels. This is the case if e.g. the number of
-          ! levels found on the file exactly matches the number of vertical
-          ! levels of the grid. Alternatively, if the number of levels on
-          ! the file represents a native grid (72/73 GMAO, 102/103 GISS) and 
-          ! the output is a reduced grid (47 GMA, 74 GISS). (nbalasus, 8/10/23)
           CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
               CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
