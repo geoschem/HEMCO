@@ -519,6 +519,7 @@ CONTAINS
        IF ( nlev == 47 .OR. & 
             nlev == 48       ) THEN
          IsModelLev = .TRUE.
+       ENDIF
 
     ELSE
       IsModelLev = .FALSE.
