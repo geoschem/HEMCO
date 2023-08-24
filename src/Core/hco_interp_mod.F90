@@ -933,7 +933,7 @@ CONTAINS
 
     ! Pass levels to output data, one after each other
     Lct%Dct%Dta%V3(T)%Val(:,:,OutLev) = REGR_4D(:,:,InLev1,T) * WGT(1)
-    DO I = 1, NLEV
+    DO I = 1, NLEV-1
        ILEV = InLev1 + I
        IF ( NZ < ILEV ) EXIT
        Lct%Dct%Dta%V3(T)%Val(:,:,OutLev) = Lct%Dct%Dta%V3(T)%Val(:,:,OutLev) &
