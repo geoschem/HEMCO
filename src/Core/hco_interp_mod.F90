@@ -752,6 +752,8 @@ CONTAINS
           IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GEOS-5 levels.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
+             WRITE(MSG,*) 'Pressure-weighted vertical regridding was done - consider if this is appropriate for the variable units.'
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
 
           ! Done!
@@ -827,6 +829,8 @@ CONTAINS
           ! Verbose
           IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GISS levels.'
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             WRITE(MSG,*) 'Pressure-weighted vertical regridding was done - consider if this is appropriate for the variable units.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
 
@@ -914,7 +918,9 @@ CONTAINS
 
           ! Verbose
           IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
-             WRITE(MSG,*) 'Mapped ', nlev, ' levels onto native GEOS-5 levels (not recommended).'
+             WRITE(MSG,*) 'Mapped ', nlev, ' levels onto native GEOS-5 levels.'
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             WRITE(MSG,*) 'Inflating from 47/48 to 72/73 levels is not recommended and is likely not mass-conserving.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
 
