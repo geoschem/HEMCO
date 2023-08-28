@@ -502,24 +502,15 @@ CONTAINS
 
    ! If input is 72 layer and output is 47 layer
     ELSEIF ( nz == 47 ) THEN
-       IF ( nlev == 72 .OR. &
-            nlev == 73       ) THEN
-         IsModelLev = .TRUE.
-       ENDIF
+       IsModelLev = ( nlev == 72 .OR. nlev == 73 )
 
     ! If input is 102 layer and output is 74 layer
     ELSEIF ( nz == 74 ) THEN
-       IF ( nlev == 102 .OR. &
-            nlev == 103       ) THEN
-         IsModelLev = .TRUE.
-       ENDIF
+       IsModelLev = ( nlev == 102 .OR. nlev == 103 )
 
     ! If input is 47 layer and output is 72 layer
     ELSEIF ( nz == 72 ) THEN
-       IF ( nlev == 47 .OR. & 
-            nlev == 48       ) THEN
-         IsModelLev = .TRUE.
-       ENDIF
+       IsModelLev = ( nlev == 47 .OR. nlev == 48 )
 
     ELSE
       IsModelLev = .FALSE.
