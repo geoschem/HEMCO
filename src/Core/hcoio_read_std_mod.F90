@@ -692,7 +692,8 @@ CONTAINS
        ! (1) the variable is on 72/73 levels and you are going to 47
        ! levels, (2) if you are on 102/103 levels and you are going
        ! to 74 levels, (3) if you are on 47/48 levels and you are
-       ! going to 72 levels. Otherwise, use MESSy (nbalasus, 8/24/2023).
+       ! going to 72 levels, (4) if you are on 36 levels and you
+       ! are going to 47/72 levels. Otherwise, use MESSy (nbalasus, 8/29/2023).
        IF ( Lct%Dct%Dta%Levels == 0 ) THEN
 
           CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
