@@ -638,8 +638,8 @@ CONTAINS
     IF ( ( ( nlev == nz ) .OR. ( nlev == nz+1 ) ) .OR. &                          ! write data without doing anything
          ( ( nz == 47 ) .AND. ( ( nlev == 72 ) .OR. ( nlev == 73 ) ) ) .OR. &     ! collapse native to reduced GEOS-5
          ( ( nz == 74 ) .AND. ( ( nlev == 102 ) .OR. ( nlev == 103 ) ) ) .OR. &   ! collapse native to reduced GISS
-         ( ( nz == 72 ) .AND. ( ( nlev == 47 ) .OR. ( nlev == 48 ) ) ) ) .OR. &   ! inflate reduced to native GEOS-5
-         ( ( ( nz == 72 ) .OR. ( nz == 47 ) ) .AND. ( nlev == 36 ) ) THEN         ! write 36 levels to reduced/native GEOS-5
+         ( ( nz == 72 ) .AND. ( ( nlev == 47 ) .OR. ( nlev == 48 ) ) ) .OR. &   ! inflate reduced to native GEOS-5
+         ( ( ( nz == 72 ) .OR. ( nz == 47 ) ) .AND. ( nlev == 36 ) ) ) THEN         ! write 36 levels to reduced/native GEOS-5
          ! do nothing
     ELSE
       WRITE(MSG,*) 'ModelLev_Interpolate was called but MESSy should have been used: ',TRIM(Lct%Dct%cName)
