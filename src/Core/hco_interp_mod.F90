@@ -500,17 +500,17 @@ CONTAINS
     IF ( nlev == nz .OR. nlev == nz + 1 ) THEN
        IsModelLev = .TRUE.
 
-   ! If input is 72 layer and output is 47 layer
+   ! If input is 72 layer (or 36 layer) and output is 47 layer
     ELSEIF ( nz == 47 ) THEN
-       IsModelLev = ( nlev == 72 .OR. nlev == 73 )
+       IsModelLev = ( nlev == 72 .OR. nlev == 73 .OR. nlev == 36)
 
     ! If input is 102 layer and output is 74 layer
     ELSEIF ( nz == 74 ) THEN
        IsModelLev = ( nlev == 102 .OR. nlev == 103 )
 
-    ! If input is 47 layer and output is 72 layer
+    ! If input is 47 layer (or 36 layer) and output is 72 layer
     ELSEIF ( nz == 72 ) THEN
-       IsModelLev = ( nlev == 47 .OR. nlev == 48 )
+       IsModelLev = ( nlev == 47 .OR. nlev == 48 .OR. nlev == 36)
 
     ELSE
       IsModelLev = .FALSE.
@@ -543,14 +543,18 @@ CONTAINS
 ! levels, this is interpreted as native data and will be collapsed onto the 
 ! reduced GISS grid. If the input holds 47/48 input levels, this is interpreted
 ! as reduced GEOS-5 data and it will be inflated to the native GEOS-5 grid
-! (with a warning, as this is not recommended) (nbalasus, 8/24/2023).
+! (with a warning, as this is not recommended). If the input holds 36 input levels,
+! this is assumed to be the first 36 levels of the GEOS-5 grid, meaning they will be
+! written as levels 1-36 of a 47 or 72 level output grid (with the remaining values
+! left to be zero) (nbalasus, 8/29/2023).
 !
 !
 ! Currently, this routine can remap the following combinations:
 !
-! Native GEOS-5 onto reduced GEOS-5 (72 --> 47 levels, 73 --> 48 edges)
-! Native GISS onto reduced GISS (102 --> 74 levels, 103 --> 75 edges) 
-! Reduced GEOS-5 onto native GEOS-5 (47 --> 72 levels, 48 --> 73 edges)
+! * Native GEOS-5 onto reduced GEOS-5 (72 --> 47 levels, 73 --> 48 edges)
+! * Native GISS onto reduced GISS (102 --> 74 levels, 103 --> 75 edges) 
+! * Reduced GEOS-5 onto native GEOS-5 (47 --> 72 levels, 48 --> 73 edges)
+! * 36 levels onto native/reduced GEOS-5 (36 --> levels 1-36 levels of 47/72 level grid, rest are 0)
 !
 ! !INTERFACE:
 !
@@ -634,7 +638,8 @@ CONTAINS
     IF ( ( ( nlev == nz ) .OR. ( nlev == nz+1 ) ) .OR. &                          ! write data without doing anything
          ( ( nz == 47 ) .AND. ( ( nlev == 72 ) .OR. ( nlev == 73 ) ) ) .OR. &     ! collapse native to reduced GEOS-5
          ( ( nz == 74 ) .AND. ( ( nlev == 102 ) .OR. ( nlev == 103 ) ) ) .OR. &   ! collapse native to reduced GISS
-         ( ( nz == 72 ) .AND. ( ( nlev == 47 ) .OR. ( nlev == 48 ) ) ) ) THEN     ! inflate reduced to native GEOS-5
+         ( ( nz == 72 ) .AND. ( ( nlev == 47 ) .OR. ( nlev == 48 ) ) ) ) .OR. &   ! inflate reduced to native GEOS-5
+         ( ( ( nz == 72 ) .OR. ( nz == 47 ) ) .AND. ( nlev == 36 ) ) THEN         ! write 36 levels to reduced/native GEOS-5
          ! do nothing
     ELSE
       WRITE(MSG,*) 'ModelLev_Interpolate was called but MESSy should have been used: ',TRIM(Lct%Dct%cName)
@@ -689,12 +694,15 @@ CONTAINS
           ELSEIF ( nlev == 73 ) THEN
              NL   = 37
              nout = 48
+          ELSEIF ( nlev == 36 ) THEN
+             NL   = 36
+             nout = 47
           ELSE
              MSG = 'Can only remap from native onto reduced GEOS-5 if '// &
-                   'input data has exactly 72 or 73 levels: '//TRIM(Lct%Dct%cName)
+                   'input data has exactly 72, 73, or 36 levels: '//TRIM(Lct%Dct%cName)
              CALL HCO_ERROR( MSG, RC )
              RETURN
-          ENDIF ! nlev == (72,73,ELSE)
+          ENDIF ! nlev == (72,73,36,ELSE)
 
           ! Make sure output array is allocated
           CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
@@ -723,7 +731,7 @@ CONTAINS
                CALL COLLAPSE( Lct, REGR_4D, 46, 65, 4, T, 5, RC )
                CALL COLLAPSE( Lct, REGR_4D, 47, 69, 4, T, 5, RC )
              ! If remapping model grid edges, sample at edges
-             ELSE
+             ELSEIF ( nlev == 73 ) THEN
                Lct%Dct%Dta%V3(T)%Val(:,:,38) = REGR_4D(:,:,39,T)
                Lct%Dct%Dta%V3(T)%Val(:,:,39) = REGR_4D(:,:,41,T)
                Lct%Dct%Dta%V3(T)%Val(:,:,40) = REGR_4D(:,:,43,T)
@@ -735,7 +743,12 @@ CONTAINS
                Lct%Dct%Dta%V3(T)%Val(:,:,46) = REGR_4D(:,:,65,T)
                Lct%Dct%Dta%V3(T)%Val(:,:,47) = REGR_4D(:,:,69,T)
                Lct%Dct%Dta%V3(T)%Val(:,:,48) = REGR_4D(:,:,73,T)
-             ENDIF ! nlev == (72,ELSE)
+            ! If the input is 36 levels, levels 37-47 are set to 0
+             ELSEIF ( nlev == 36 ) THEN
+               DO L = 37,47
+                  Lct%Dct%Dta%V3(T)%Val(:,:,L) = 0.0_hp
+               ENDDO !L
+             ENDIF ! nlev == (72,73,36)
 
           ENDDO ! T
 
@@ -743,8 +756,12 @@ CONTAINS
           IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GEOS-5 levels.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
-             WRITE(MSG,*) 'Pressure-weighted vertical regridding was done - consider if this is appropriate for the variable units.'
+             IF ( nlev == 36 ) THEN
+               WRITE(MSG,*) 'The input variable has 36 L, which were written to be L 1-36 on the output 47 L grid (remaining values set to 0).'
+             ELSE
+               WRITE(MSG,*) 'Pressure-weighted vertical regridding was done - consider if this is appropriate for the variable units.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
+             ENDIF
           ENDIF
 
           ! Done!
@@ -840,12 +857,15 @@ CONTAINS
           ELSEIF ( nlev == 48 ) THEN
              NL   = 37
              nout = 73
+          ELSEIF ( nlev == 36 ) THEN
+             NL   = 36
+             nout = 72
           ELSE
              MSG = 'Can only remap from reduced onto native GEOS-5 if '// &
-                   'input data has exactly 47 or 48 levels: '//TRIM(Lct%Dct%cName)
+                   'input data has exactly 47, 48, or 36 levels: '//TRIM(Lct%Dct%cName)
              CALL HCO_ERROR( MSG, RC )
              RETURN
-          ENDIF ! nlev == (48,48,ELSE)
+          ENDIF ! nlev == (48,48,36,ELSE)
 
           ! Make sure output array is allocated
           CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
@@ -882,7 +902,7 @@ CONTAINS
                 ENDDO ! I
 
              ! If remapping model grid edges, inflate edges
-             ELSE
+             ELSEIF ( nlev == 48 ) THEN
 
                 ! Sample every two edges (e.g. edges 38-39 on the fine grid are copies of edge 38 on the coarse grid)
                 coarseIDX = 37
@@ -903,15 +923,24 @@ CONTAINS
                    ENDIF
                    Lct%Dct%Dta%V3(T)%Val(:,:,fineIDX) = REGR_4D(:,:,coarseIDX,T)
                 ENDDO ! I
+                
+             ELSEIF ( nlev == 36 ) THEN
+               DO L = 37,72
+                  Lct%Dct%Dta%V3(T)%Val(:,:,L) = 0.0_hp
+               ENDDO !L
 
-             ENDIF ! nlev == (47,ELSE)
+             ENDIF ! nlev == (47,48,36)
           ENDDO ! T
 
           ! Verbose
           IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto native GEOS-5 levels.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
-             WRITE(MSG,*) 'Inflating from 47/48 to 72/73 levels is not recommended and is likely not mass-conserving.'
+             IF ( nlev == 36 ) THEN
+               WRITE(MSG,*) 'The input variable has 36 L, which were written to be L 1-36 on the output 72 L grid (remaining values set to 0).'
+             ELSE
+               WRITE(MSG,*) 'Inflating from 47/48 to 72/73 levels is not recommended and is likely not mass-conserving.'
+             ENDIF
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
 
