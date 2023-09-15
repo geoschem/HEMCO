@@ -1000,9 +1000,9 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
+    INTEGER,    INTENT(IN)  :: nTime
     REAL(dp),   INTENT(IN)  :: prefYMDhm
     REAL(dp),   INTENT(IN)  :: availYMDhm(nTime)
-    INTEGER,    INTENT(IN)  :: nTime
     INTEGER,    INTENT(IN)  :: ctidx1
 !
 ! !OUTPUT PARAMETERS:

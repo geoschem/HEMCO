@@ -200,7 +200,7 @@ CONTAINS
     LOC = 'HCO_CharSplit_R4 (HCO_CHARTOOLS_MOD.F90)'
 
     ! Init
-    Reals(:) = -999_sp
+    Reals(:) = -999._sp
 
     ! Extract strings to be translated into integers
     !CALL STRSPLIT( CharStr, TRIM(SEP), SUBSTR, N )
@@ -218,9 +218,9 @@ CONTAINS
     ! character with -999!
     DO I = 1, N
        IF ( TRIM(SUBSTR(I)) == TRIM(WC) ) THEN
-          Reals(I) = -999_sp
+          Reals(I) = -999._sp
        ELSEIF ( TRIM(SUBSTR(I)) == '-' ) THEN
-          Reals(I) = -999_sp
+          Reals(I) = -999._sp
        ELSE
           READ( SUBSTR(I), * ) Reals(I)
        ENDIF
@@ -338,10 +338,10 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    CHARACTER(LEN=*), INTENT(IN   ) :: vec1(n1)     ! char. vector 1
     INTEGER,          INTENT(IN   ) :: n1           ! len of vec1
-    CHARACTER(LEN=*), INTENT(IN   ) :: vec2(n2)     ! char. vector 2
     INTEGER,          INTENT(IN   ) :: n2           ! len of vec2
+    CHARACTER(LEN=*), INTENT(IN   ) :: vec1(n1)     ! char. vector 1
+    CHARACTER(LEN=*), INTENT(IN   ) :: vec2(n2)     ! char. vector 2
 !
 ! !OUTPUT PARAMETERS:
 !

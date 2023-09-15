@@ -26,6 +26,7 @@ MODULE HCO_NCDF_MOD
   USE HCO_m_netcdf_io_define
   USE HCO_m_netcdf_io_write
   USE HCO_m_netcdf_io_checks
+  USE HCO_PRECISION_MOD, ONLY : SP => f4, DP => f8
 
   IMPLICIT NONE
   PRIVATE
@@ -1996,8 +1997,8 @@ CONTAINS
 !
     INTEGER,          INTENT(IN   ) :: fID             ! Ncdf File ID
     INTEGER,          INTENT(IN   ) :: AXIS            ! 1=lon, 2=lat
-    REAL*4,           INTENT(IN   ) :: MID(NMID)       ! midpoints
     INTEGER,          INTENT(IN   ) :: NMID            ! # of midpoints
+    REAL*4,           INTENT(IN   ) :: MID(NMID)       ! midpoints
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -2047,8 +2048,8 @@ CONTAINS
 !
     INTEGER,          INTENT(IN   ) :: fID             ! Ncdf File ID
     INTEGER,          INTENT(IN   ) :: AXIS            ! 1=lon, 2=lat
-    REAL*8,           INTENT(IN   ) :: MID(NMID)       ! midpoints
     INTEGER,          INTENT(IN   ) :: NMID            ! # of midpoints
+    REAL*8,           INTENT(IN   ) :: MID(NMID)       ! midpoints
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -2095,9 +2096,9 @@ CONTAINS
 !
     INTEGER,          INTENT(IN   ) :: fID             ! Ncdf File ID
     INTEGER,          INTENT(IN   ) :: AXIS            ! 1=lon, 2=lat
+    INTEGER,          INTENT(IN   ) :: NMID            ! # of midpoints
     REAL*4, OPTIONAL, INTENT(IN   ) :: MID4(NMID)       ! midpoints
     REAL*8, OPTIONAL, INTENT(IN   ) :: MID8(NMID)       ! midpoints
-    INTEGER,          INTENT(IN   ) :: NMID            ! # of midpoints
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -4038,7 +4039,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN)  :: fId           ! file ID
     CHARACTER(LEN=*), INTENT(IN)  :: VarName       ! variable name
-    REAL(kind=8)                  :: Var           ! Variable to be written
+    REAL(kind=dp)                 :: Var           ! Variable to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4085,7 +4086,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN)  :: fId           ! file ID
     CHARACTER(LEN=*), INTENT(IN)  :: VarName       ! variable name
-    REAL(kind=8),     POINTER     :: Arr1D(:)      ! array to be written
+    REAL(kind=dp),    POINTER     :: Arr1D(:)      ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4139,7 +4140,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=8),     POINTER    :: Arr2D(:,:)     ! array to be written
+    REAL(kind=dp),    POINTER    :: Arr2D(:,:)     ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4199,7 +4200,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=8),     POINTER    :: Arr3D(:,:,:)   ! array to be written
+    REAL(kind=dp),    POINTER    :: Arr3D(:,:,:)   ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4259,7 +4260,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=8),     POINTER    :: Arr4D(:,:,:,:) ! array to be written
+    REAL(kind=dp),    POINTER    :: Arr4D(:,:,:,:) ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4319,7 +4320,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN)  :: fId           ! file ID
     CHARACTER(LEN=*), INTENT(IN)  :: VarName       ! variable name
-    REAL(kind=4)                  :: Var           ! Variable to be written
+    REAL(kind=sp)                 :: Var           ! Variable to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4366,7 +4367,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=4),     POINTER    :: Arr1D(:)       ! array to be written
+    REAL(kind=sp),    POINTER    :: Arr1D(:)       ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4420,7 +4421,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=4),     POINTER    :: Arr2D(:,:)     ! array to be written
+    REAL(kind=sp),    POINTER    :: Arr2D(:,:)     ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4480,7 +4481,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN)  :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN)  :: VarName        ! variable name
-    REAL(kind=4),     POINTER     :: Arr3D(:,:,:)   ! array to be written
+    REAL(kind=sp),    POINTER     :: Arr3D(:,:,:)   ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4540,7 +4541,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=4),     POINTER    :: Arr4D(:,:,:,:) ! array to be written
+    REAL(kind=sp),    POINTER    :: Arr4D(:,:,:,:) ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
