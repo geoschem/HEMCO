@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased 3.6.3] - TBD
+### Fixed
+- Fixed nvhpc compiler error in CESM by reducing line length of `GC_72_EDGE_SIGMA` assignment
+
 ## [3.6.2] - 2023-03-02
 ### Added
 - Added `.github/config.yml` with settings for the issue chooser page
