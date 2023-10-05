@@ -30,10 +30,19 @@ Currently, HEMCO can read data from the following data sources:
     |br|
 
 #.  **Country-specific data specified in a separate ASCII file.** This file
-    must end with the suffix '.txt' and hold the country specific values
-    listed by country ID. The IDs must correspond to the IDs of a
-    corresponding (netCDF) mask file. The mask file must be listed in the
-    HEMCO configuration file. For example:
+    must end with the suffix '.txt'. The first line must be the container
+    name of a netCDF country mask file (e.g. :literal:`COUNTRY_MASK`). The
+    rest of the file must contain the country-specific values listed by
+    country name and ID. The IDs must correspond to the IDs of the netCDF
+    mask file specified in the first line and must be integers. ID 0 is
+    reserved for the default values that are applied to all countries with no
+    specific values listed. The :literal:`CountryValues` are interpreted the
+    same way as scalar values, except that they are applied to all grid
+    boxes with the given country ID. Below are examples of file
+    specifications and a country-specific data file. Note that in an ESMF
+    environment you must use absolute path for the scale factors ASCII file
+    rather than use $ROOT, and include the country mask but not the ASCII
+    file in :literal:`ExtData.rc`.
 
 .. code-block:: kconfig
 
@@ -42,11 +51,10 @@ Currently, HEMCO can read data from the following data sources:
    #==============================================================================
    * COUNTRY_MASK $ROOT/MASKS/v2014-07/countrymask_0.1x0.1.nc CountryID 2000/1/1/0 C xy count * - 1 1
 
-In the .txt file containing the country-specific scale factors, the
-container name of this mask file (e.g. :literal:`COUNTRY_MASK`) must
-be given in the first line of the file. In that file, ID 0 is reserved
-for the default values that are applied to all countries with no
-specific values listed. The .txt file must be structured as follows:
+   #==============================================================================
+   # --- Country scale factors ---
+   #==============================================================================
+   * COUNTRY_SCALE_FACTORS $ROOT/MASKS/country_scale_factors.txt - - - xy count 1
 
 .. code-block:: kconfig
 
@@ -56,9 +64,6 @@ specific values listed. The .txt file must be structured as follows:
    # CountryName CountryID CountryValues
    DEFAULT       0         1.0/2.0/3.0/4.0/5.0/6.0/7.0
 
-The :literal:`CountryValues` are interpreted the same way as scalar
-values, except that they are applied to all grid boxes with the given country
-ID.
 
 .. _hco-filefmt-coards:
 

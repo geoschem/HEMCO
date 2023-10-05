@@ -5,12 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased 3.7.0]
+## [3.7.0] - 2023-10-05
 ### Added
 - HEMCO extensions now display a first-time message, whether `Verbose` is `true` or `false`.
 - Added 'src/Shared/NcdfUtil/README.md` file directing users to look for netCDF utility scripts at https://github.com/geoschem/netcdf-scripts
 - Added GFED4 biomass burning emissions for furans, PHEN, MVK, ISOP, ACTA, MGLY, MYLX, RCHO
 - Add GEOSIT as an allowable meteorology directory name in HEMCO_Config.rc
+- Added `.readthedocs.yaml` file to configure ReadTheDocs builds
 
 # Changed
 - `Verbose` is now a `true/false` variable in `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
@@ -21,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Created a `Restarts/` subdirectory in HEMCO standalone run directories
 - Added changes needed to build with NAG compiler
 - Renamed Be7Strat and Be10Strat to Be7s and Be10s for consistency with GMAO's TR_GridComp
+- Updated ReadTheDocs documentation about time cycle options `RFY`, `RFY3`
+- Updated ReadTheDocs documentation about the `HEMCO_Diagn.rc` file
+- Updated `AUTHORS.txt` for GEOS-Chem 14.2.0 and HEMCO 3.7.0
+- Updated formatting in `README.md`
+- Updated title and links to badges in `README.md`
+- Updated version number to 3.7.0
 
 ### Fixed
 - Do not read masks if the filename is `-` (non-ESMF environments only)
