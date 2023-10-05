@@ -230,36 +230,9 @@ more information about HEMCO diagnostics, please see the
 .. option:: DiagnFile
 
    Specifies the configuration file for the HEMCO default diagnostics
-   collection. This is usually named :file:`HEMCO_Diagn.rc`.  This
-   file contains a list of fields to be added to the default
-   collection.
-
-   Each line of the diagnostics definition file
-   represents a diagnostics container. It expects the following 7 entries
-   (all on the same line):
-
-   #. Container name (character)
-   #. HEMCO species (character)
-   #. Extension number (integer)
-   #. Emission category (integer)
-   #. Emission hierarchy (integer)
-   #. Space dimension (2 or 3)
-   #. Output unit (character)
-   #. Long name of diagnostic, for the netCDF :literal:`long_name`
-      variable attribute (character)
-
-   .. note::
-
-      If you are not sure what the container name, extension number,
-      category, and hierarchy are for a given diagnostic, you can set
-      :literal:`Verbose` to 3 in the HEMCO configuration file, and run a
-      very short simulation (a couple of model hours). Then you can look
-      at the output in the :file:`HEMCO.log` file to determine what these
-      values should be.
-
-   Please see the :ref:`Default diagnostics collection
-   <hco-diag-default>` section for more information about the
-   configuration file (e.g. :file:`HEMCO_Diagn.rc`).
+   collection. This file is customarily  named :file:`HEMCO_Diagn.rc`.
+   For more information, please see :ref:`Default
+   diagnostics collection <hco-diag-default>` section.
 
 .. option:: DiagnFreq
 
@@ -600,7 +573,9 @@ are:
    the expression, e.g. :literal:`MATH:2.0+sin(HH/12*PI)`.
 
    **Country-specific data** can be provided through an ASCII file
-   (:literal:`.txt`). More details on this option are given in the
+   (:literal:`.txt`). In an ESMF environment you must specify the
+   absolute file path rather than use the $ROOT specifier. More
+   details on the country-specific data option are given in the
    Input File Format section.
 
    If this entry is **left empty** (:literal:`-`), the filename from
@@ -788,31 +763,33 @@ are:
    .. option:: CY
 
       **Cycling, Use Simulation Year:**, Same as :option:`C`, except
-      don't allow :envvar:`Emission year` setting to override year value.
+      it does not allow :envvar:`Emission year` setting to override
+      the simulation year.
 
    .. option:: CYS
 
       **Cycling, Use Simulation Year, Skip:**  Same as :option:`CS`,
-      except don't allow :envvar:`Emission year` setting to override year
-      value.
+      except it does not allow :envvar:`Emission year` setting to
+      override the simulation year.
 
    .. option:: R
 
       **Range:** Data are only considered as long as the simulation
-      time is within the time range specified in attribute :option:`sourceTime`.
-      The provided range does not necessarily need to match the time
-      stamps of the input file. If it is outside of the range of the
-      netCDF time stamps, the closest available date will be used.
+      time is within the time range specified in attribute
+      :option:`sourceTime`. The provided range does not necessarily
+      need to match the time stamps of the input file. If it is
+      outside of the range of the netCDF time stamps, the closest
+      available date will be used.
 
       For instance, if a file contains data for years 2003 to 2010 and
-      the  provided range is set to :literal:`2006-2010/1/1/0 R`, the file
-      will only be considered between simulation years 2006-2010. For
-      simulation years 2006 through 2009, the corresponding field on
-      the file is used. For all years beyond 2009, data of year 2010
-      is used. If the simulation date is outside the provided time
-      range, the data is ignored but HEMCO does not return an error -
-      the field is simply treated as empty (a corresponding warning is
-      issued in the HEMCO log file).
+      the  provided range is set to :literal:`2006-2010/1/1/0 R`, the
+      file will only be considered between simulation years
+      2006-2010. For simulation years 2006 through 2009, the
+      corresponding field on the file is used. For all years beyond
+      2009, data of year 2010 is used. If the simulation date is
+      outside the provided time range, the data is ignored but HEMCO
+      does not return an error---the field is simply treated as empty
+      (a corresponding warning is issued in the HEMCO log file).
 
       - Example: if the source time attribute is set to
         :literal:`2000-2002/1-12/1/0 R`, the data will be used for
@@ -843,17 +820,30 @@ are:
 	sure that HEMCO uses the monthly data of the current year if
 	the simulation  year is between 2005 and  2010, and the
 	2005-2010 average for simulation  years before and after 2005
-	and 2010,  respectively.
+	and 2010, respectively.
 
    .. option:: RF
 
-      **Range, Forced:**  Same as ``R``, but HEMCO stops with an error
-      if the simulation date is outside the provided range.
+      **Range, Forced:**  Same as :option:`R`, but HEMCO stops with an
+      error if the simulation date is outside the provided range.
 
    .. option:: RY
 
       **Range, Use Simulation Year:** Same as :option:`R`, except
-      don't allow :envvar:`Emission year` to override year value.
+      it does not allow :envvar:`Emission year` to override the
+      simulation year.
+
+   .. option:: RFY
+
+      **Range, Forced, Use Simulation Year**.  Same as :option:`RY`,
+      except it does not allow :envvar:`Emission year` to override the
+      simulation year.
+
+   .. option:: RFY3
+
+      **Ranged, Forced, Use Simulation Year, 3-hourly data**: Same as
+      :option:`RFY`, but used with data that is read from disk every 3
+      hours (e.g. meteorological data and related quantities).
 
    .. option:: E
 
@@ -907,8 +897,9 @@ are:
 
    .. option:: EY
 
-      **Exact, Use Smulation Year:** Same as :option:`E`, except don't
-      allow :envvar:`Emission year` setting to override year value.
+      **Exact, Use Smulation Year:** Same as :option:`E`, except it
+      does not allow :envvar:`Emission year` setting to override the
+      simulation year.
 
    .. option:: A
 

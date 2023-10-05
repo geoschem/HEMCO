@@ -41,12 +41,13 @@ their ISO3166-1-numeric codes are listed in the `country_codes.csv
 file.
 
 The country-specific scale factors can be specified in a separate
-ASCII file ending with with the suffix :literal:`.txt.` The container
-name of the mask file (e.g. :literal:`COUNTRY_MASK`) must be given in
-the first line of the file. The following lines define the
-country-specific scale factors. ID 0 is reserved for the default
-values that are applied to all countries with no specific values
-listed. An example :file:`scalefactor.txt` file is provided below:
+ASCII file ending with the suffix :literal:`.txt.` Within the file
+the container name of the mask file (e.g. :literal:`COUNTRY_MASK`)
+must be given in the first line of the file. The lines following it
+define the country-specific scale factors. ID 0 is reserved for the
+default values that are applied to all countries with no specific values
+listed. All IDs must be integers. An example :file:`scalefactor.txt`
+file is provided below:
 
 .. code-block:: kconfig
 
@@ -76,7 +77,9 @@ configuration file <hco-cfg>` as:
 
    501 SCALE_COUNTRY /path/to/file/scalefactor.txt  - - - xy count 1
 
-The scale factors can the be applied to the emission field(s) that you
+In an ESMF environment the filepath specified in :literal:`HEMCO_Config.rc` must
+be the absolute path to the file rather than use the :literal:`$ROOT` specifier.
+The scale factors can then be applied to the emission field(s) that you
 wish to scale. For example:
 
 .. code-block:: kconfig

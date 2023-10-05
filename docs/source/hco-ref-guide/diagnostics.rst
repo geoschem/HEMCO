@@ -107,38 +107,121 @@ are :option:`DiagnFile`, :option:`DiagnFreq`, and
 Configuration file for the Default collection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Adding the following entries to the diagnostic configuration file
-(i.e. the same file specified by :option:`DiagnFreq`, commonly called
-:file:`HEMCO_Diagn.rc`) will make HEMCO write out total NO and CO
-emissions, as well as GFED biomass burning CO emissions (e.g. only
-emissions from extension 111):
+You may specify the name of the Default diagnostics configuration file
+with the :option:`DiagnFile` option in :ref:`the
+HEMCO configuration file <hco-cfg>`. This file, which is customarily
+named :file:`HEMCO_Diagn.rc`, uses the following format:
 
-   .. code-block:: console
+.. code-block:: kconfig
+
+   # Name         Spec ExtNr  Cat Hier Dim Unit     LongName
+   EmisNO_Total   NO   -1     -1  -1   2   kg/m2/s  NO_emission_flux_from_all_sectors
+
+The columns of :file:`HEMCO_Diagn.rc` allow you to specify several options:
+
+.. option:: Name
+
+   netCDF variable name under which this diagnostic quantity will be
+   named in the HEMCO diagnostic output files.
+
+.. option:: Spec
+
+   Species short name (same as in :ref:`the HEMCO configuration file
+   <hco-cfg>`) .
+
+.. option:: ExtNr
+
+   Extension number  (same as in :ref:`the HEMCO configuration file
+   <hco-cfg>`) .
+
+   The :literal:`-1` value means to sum over all extensions.
+
+.. option:: Cat
+
+   Category (same as in :ref:`the HEMCO configuration file
+   <hco-cfg>`).
+
+   The :literal:`-1` value means to sum over all categories.
+
+.. option:: Hier
+
+   Hierarchy (same as in :ref:`the HEMCO configuration file
+   <hco-cfg>`).
+
+   The :literal:`-1` value means to sum over all categories.
+
+.. option:: Dim
+
+   Number of dimensions that you wish this diagnostic to have:
+
+   - :literal:`1`: Scalar
+   - :literal:`2`: Lat-lon or X-Y
+   - :literal:`3`: Lat-lon-lev or X-Y-Z
+
+.. option:: LongName
+
+   A longer descriptive name for the diagnostic.  This will be used to
+   define the netCDF :literal:`long_name` variable attribute in the
+   HEMCO diagnostic files.
+
+Here are a few examples.
+
+#. **Basic usage**
+
+   Adding these entries to :file:`HEMCO_Config.rc` will make HEMCO write
+   out total NO and CO emissions, as well as GFED biomass burning CO
+   emissions (e.g. only emissions from :option:`ExtNr` 111):
+
+   .. code-block:: kconfig
 
       # Name         Spec ExtNr  Cat Hier Dim Unit     LongName
       EmisNO_Total   NO   -1     -1  -1   2   kg/m2/s  NO_emission_flux_from_all_sectors
       EmisCO_Total   CO   -1     -1  -1   2   kg/m2/s  CO_emission_flux_from_all_sectors
       EmisCO_GFED    CO   111    -1  -1   2   kg/m2/s  CO_emission_flux_from_biomass_burning
 
-If you want to just diagnose regional emissions, then you need to
-set the diagnostics extension number, category and hierarchy
-accordingly. For example, if you want EPA16 emissions for CO over
-the USA, then add this line:
 
-   .. code-block:: console
+#. **Archive diagnostics for regional emissions**
 
-      #Name          Spec ExtNr  Cat Hier Dim Unit     Longname
+   To diagnose regional emissions, you must set :option:`ExtNr`,
+   :option:`Cat`, and :option:`Hier` accordingly.  The example below
+   defines a diagnostic entry for CO emissions from the EPA16 USA
+   inventory:
+
+   .. code-block:: kconfig
+
+      # Name         Spec ExtNr  Cat Hier Dim Unit     Longname
       EmisCO_EPA16   CO   0      1   50   2   kg/m2/s  CO_emission_flux_from_EPA16_inventory
 
-It is important that you define valid values for all attributes up
-to the hierarchy. As soon as you set an attribute to default
-(:literal:`-1`),  HEMCO will take the sum up to this attribute. For
-example, the following diagnostics would simply return total base
-emissions:
+   You will have to look up the relevant category and hierarchy values
+   for each emissions inventory in :ref:`the HEMCO configuration file
+   <hco-cfg>`.
 
-   .. code-block:: console
+   .. tip::
 
-     #Name           Spec ExtNr  Cat Hier Dim Unit     Longname
+      If you are not sure what the container name, extension number,
+      category, and hierarchy are for a given diagnostic, set
+      :literal:`Verbose: true` in :ref:`the HEMCO configuration file
+      <hco-cfg>`, and run a very short simulation (a couple of model
+      hours). Then look at the log file output to determine what
+      these values should be.
+
+#. **Use caution when summing over all extensions/categories/hierarchies**
+
+   If you wish to obtain emissions from a specific inventory or
+   sector, then it is important that you define valid values for all
+   attributes up to the hierarchy. As soon as you set an attribute to
+   default (:literal:`-1`),  HEMCO will take the sum up to this
+   attribute.
+
+   In the example below, we intended to define a diagnostic for
+   CO emissions from the EPA16 USA inventory. But because
+   :literal:`Cat = -1` is specified, this will return CO emissions
+   summed over all categories (= total CO emissions) instead of CO
+   only from EPA16.
+
+   .. code-block:: kconfig
+
+     # Name          Spec ExtNr  Cat Hier Dim Unit     Longname
      EmisCO_EPA16    CO   0      -1  50   2   kg/m2/s  CO_emission_flux_from_EPA16_inventory
 
 .. _hco-diag-restart:

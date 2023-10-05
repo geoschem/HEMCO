@@ -1,3 +1,7 @@
+.. |br| raw:: html
+
+   <br />
+
 .. _hco-sa-soft:
 
 ###################################
@@ -9,15 +13,17 @@ installed on your system in order to use :program:`HEMCO standalone`.
 
 - If you are using a shared computer cluster, then many of these
   libraries have probably already been pre-installed by your IT
-  staff.  Consult with them for more information.
+  staff.  Consult with them for more information. |br|
+  |br|
 
 - If you plan to run HEMCO standalone on the Amazon Web services
   cloud, then all of these libraries will be included with the Amazon
-  Machine Image (AMI) that you will use to start your cloud instance.
+  Machine Image (AMI) that you will use to start your cloud instance. |br|
+  |br|
 
 - If your computer cluster has none of these libraries installed, then
-  you will have to install them yourself
-  (cf. :ref:`build-libraries-with-spack`).
+  you will have to install them yourself.  See our supplemental guide
+  :ref:`spackguide` for detailed installation instructions.
 
 .. _hco-sa-soft-compilers:
 
@@ -59,7 +65,7 @@ may work as well):
 .. tip::
 
    Intel 2021 may be obtained for free, or installed with a
-   package manager such as `Spack <https://spack.readthedocs.io>`_.
+   package manager such as :ref:`Spack <spackguide>`.
 
 .. _hco-sa-soft-gnu:
 
@@ -86,8 +92,7 @@ The GCST has tested HEMCO standalone with these versions
 - 7.1.0
 - 6.2.0
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _required-software-packages:
 
@@ -120,8 +125,7 @@ or scripts that direct how the HEMCO source code will be compiled
 into an executable.  You will need CMake version 3.13 or later to
 build HEMCO.
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _hco-sa-soft-make:
 
@@ -132,8 +136,7 @@ as **make**) is software that can build executables from source code.
 It executes the instructions in the Makefiles created by
 :ref:`hco-sa-soft-cmake`.
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _hco-sa-soft-netcdf:
 
@@ -145,8 +148,7 @@ HEMCO input and output data files use the netCDF file format
 hat allows meadata (descriptive text) to be stored alongside data
 values.
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _optional-but-recommended-software-packages:
 
@@ -179,8 +181,7 @@ graphical interface (cgdb) <https://cgdb.github.io/>`_ are very useful
 tools for tracking down the source of HEMCO errors, such
 as segmentation faults, out-of-bounds errors, etc.
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _hco-sa-soft-ncview:
 
@@ -201,8 +202,7 @@ nco
 powerful command-line tools for editing and manipulating data in
 netCDF format.
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _hco-sa-soft-cdo:
 
@@ -213,5 +213,4 @@ cdo
 command-line utilities for editing and manipulating data in netCDF
 format.
 
-**Best way to install:** :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:** :ref:`With Spack <spackguide>`.

@@ -47,14 +47,8 @@ be considered.
    - **Species**: DST1, DST2, DST3, DST4
    - **Reference**: :cite:t:`Ginoux_et_al._2001`
 
-.. option:: FINN
-
-   Biomass burning emissions from the FINN model.
-
-   - **Species**: NO, CO, ALK4, ACET, MEK, ALD2, PRPE, C2H2, C2H4,
-     C3H8, CH2O, C2H6, SO2, NH3, BCPI, BCPO, OCPI, OCPO, GLYC, HAC,
-     SOAP
-   - **Reference**: :cite:t:`Wiedinmyer_et_al._2014`
+**Species**: DST1, DST2, DST3, DST4
+   - **Reference**: :cite:t:`Ginoux_et_al._2001`
 
 .. option:: GC_Rn-Pb-Be
 
@@ -78,7 +72,12 @@ be considered.
    - **Version**: GFED3 and GFED4 are available.
    - **Species**: NO, CO, ALK4, ACET, MEK, ALD2, PRPE, C2H2, C2H4, C3H8, CH2O
      C2H6, SO2, NH3, BCPO, BCPI, OCPO, OCPI, POG1, POG2, MTPA, BENZ, TOLU, XYLE
-     NAP, EOH, MOH, SOAP,
+     NAP, EOH, MOH, SOAP, and others
+   - :literal:`GFED_daily` option: Applies a daily scale factor to
+     emissions computed by GFED.
+   - :literal:`GFED_3hourly` option: Applies a consistent diurnal profile
+     for a given month (in 3-hr increments) to emissions computed by
+     GFED.  This is the default setting.
    - **Reference**: :cite:t:`van_der_Werf_et_al._2010`
 
 .. option:: Inorg_Iodine
