@@ -1,4 +1,3 @@
-#if defined( TOMAS )
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -42,6 +41,7 @@
 ! !INTERFACE:
 !
       MODULE HCOX_TOMAS_DustDead_Mod
+#if defined( TOMAS )
 !
 ! !USES:
 !
@@ -708,9 +708,17 @@
 
       ! Verbose mode
       IF ( Hcostate%amIRoot ) THEN
-         MSG = 'Use DEAD dust emissions (extension module)'
-         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
 
+         ! Write the name of the extension regardless of the verbose setting
+         msg = 'Using HEMCO extension: TOMAS_DustDead '
+     &       // 'dust mobilization for TOMAS)'
+         IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+            CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+         ELSE
+            CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+         ENDIF
+
+         ! Write all other messages as debug printout only
          MSG = 'Use the following species (Name: HcoID):'
          CALL HCO_MSG(HcoState%Config%Err,MSG)
          DO N = 1, nSpc
@@ -5934,6 +5942,6 @@ c Fix up for negative argument, erf, etc.
 
       END SUBROUTINE InstRemove
 !EOC
+#endif
       END MODULE HCOX_TOMAS_DustDead_Mod
 !EOM
-#endif

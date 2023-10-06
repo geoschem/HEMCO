@@ -439,7 +439,7 @@
 
             ! Orography at surface
             ! Ocean is 0; land is 1; ice is 2
-            ORO(I)         = REAL(OROGRAPHY(I,J),KIND=8)
+            ORO(I)         = REAL(OROGRAPHY(I,J),KIND=dp)
 
             ! Snow [m H2O]. SNOWHGT is in kg H2O/m2, which is equivalent to
             ! mm H2O. Convert to m H2O here.
@@ -716,9 +716,16 @@
 
       ! Verbose mode
       IF ( HcoState%amIRoot ) THEN
-         MSG = 'Use DEAD dust emissions (extension module)'
-         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
 
+         ! Write the name of the extension regardless of the verbose setting
+         msg = 'Using HEMCO extension: DustDead (dust mobilization)'
+         IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+            CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+         ELSE
+            CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
+         ENDIF
+
+         ! Write all other messages as debug printout only
          IF ( Inst%ExtNrAlk > 0 ) THEN
             MSG = 'Use dust alkalinity option'
             CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
@@ -5861,7 +5868,7 @@ c Fix up for negative argument, erf, etc.
       FNDLABEL = TRIM(CSLABEL) 
       IF ( .NOT. HcoState%Grid%AREA_M2%Alloc ) THEN
          MSG = 'Warning: AREA_M2 not found, will use default number'
-         CALL HCO_WARNING( MSG, RC, 1, LOC )
+         CALL HCO_WARNING( MSG, RC, .TRUE., LOC )
       ELSE
          AM2 = SUM(HcoState%Grid%AREA_M2%Val)/(HcoState%NX*HcoState%NY)
          RES = SQRT(AM2)

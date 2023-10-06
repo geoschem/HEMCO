@@ -82,9 +82,9 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOIO_Write    ( HcoState, ForceWrite,  &
-                              RC,          PREFIX,   UsePrevTime, &
-                              OnlyIfFirst, COL                     )
+  SUBROUTINE HCOIO_Write( HcoState,    ForceWrite,                           &
+                          RC,          PREFIX,      UsePrevTime,             &
+                          OnlyIfFirst, COL                                  )
 !
 ! !USES:
 !
@@ -321,6 +321,11 @@ CONTAINS
     ENDIF
     ncFile = TRIM(Pfx)//'.'//Yrs//Mts//Dys//hrs//mns//'.nc'
 
+    ! Place HEMCO restart files in the Restarts folder of the run directory
+    IF ( PS == HcoState%Diagn%HcoDiagnIDRestart ) THEN
+       ncFile = 'Restarts/' // TRIM( ncFile )
+    ENDIF
+
     ! Multiple time slice update. Comment out for now since it causes
     ! timestamping the filename twice (ewl, 10/19/18)
     ! Add default time stamp if no time tokens are in the file template.
@@ -346,11 +351,11 @@ CONTAINS
     ENDIF
 
     ! verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND. PS==1 ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) .AND. PS==1 ) THEN
        MSG = 'Write diagnostics into file '//TRIM(ncFile)
        CALL HCO_MSG( HcoState%Config%Err, MSG )
     ENDIF
-    IF ( HCO_IsVerb(HcoState%Config%Err,3) .AND. PS==1 ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) .AND. PS==1 ) THEN
        WRITE(MSG,*) '--> write level dimension: ', .NOT.NoLevDim
        CALL HCO_MSG( HcoState%Config%Err, MSG )
     ENDIF
@@ -542,7 +547,7 @@ CONTAINS
                            VarUnit     = 'Pa',                            &
                            DataType    = dp,                              &
                            VarCt       = VarCt,                           &
-                           Compress    = .TRUE.                          )
+                           Compress    = .FALSE.                         )
           CALL NC_Var_Write( fId, 'P0', P0 )
 
           ! Deallocate arrays
@@ -609,7 +614,7 @@ CONTAINS
     ELSE
        MSG = 'Unrecognized output reference time, will ' // &
              'assume `days since`: '//TRIM(timeunit)
-       CALL HCO_WARNING( MSG, WARNLEV=2, THISLOC=LOC, RC=RC )
+       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Special case where we have an old file but it has the same time stamp: in
@@ -783,7 +788,7 @@ CONTAINS
           ENDIF
 
           ! verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err,2) .AND. PS==1 ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) .AND. PS==1 ) THEN
              MSG = '--- Added diagnostics: '//TRIM(myName)
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF

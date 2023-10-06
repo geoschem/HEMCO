@@ -178,7 +178,7 @@ MODULE HCOIO_MESSY_MOD
     ArrOut   => NULL()
 
     ! verbose?
-    verb = HCO_IsVerb(HcoState%Config%Err,3)
+    verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! Horizontal dimension of input data
     NXIN = SIZE(NcArr,1)

@@ -76,7 +76,7 @@ CONTAINS
 
     MSG = 'Species ' // TRIM(HcoState%Spc(ID)%SpcName)
     CALL HCO_MSG(HcoState%Config%Err,MSG)
-    IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        write(MSG,*) '--> HcoID         : ', HcoState%Spc(ID)%HcoID
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        write(MSG,*) '--> ModID         : ', HcoState%Spc(ID)%ModID
@@ -105,7 +105,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-      SUBROUTINE HCO_PrintList ( HcoState, List, Verbose )
+      SUBROUTINE HCO_PrintList ( HcoState, List )
 !
 ! !USES:
 !
@@ -116,7 +116,6 @@ CONTAINS
 !
       TYPE(HCO_STATE),POINTER    :: HcoState
       TYPE(ListCont), POINTER    :: List
-      INTEGER,        INTENT(IN) :: Verbose
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -138,7 +137,7 @@ CONTAINS
       TmpLct => List
       DO WHILE ( ASSOCIATED(TmpLct) )
          IF ( ASSOCIATED(TmpLct%Dct) ) THEN
-            CALL HCO_PrintDataCont(HcoState,TmpLct%Dct,Verbose)
+            CALL HCO_PrintDataCont( HcoState,TmpLct%Dct )
          ENDIF
          TmpLct => TmpLct%NextCont
       ENDDO
@@ -160,7 +159,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-      SUBROUTINE HCO_PrintDataCont ( HcoState, Dct, Verbose )
+      SUBROUTINE HCO_PrintDataCont ( HcoState, Dct )
 !
 ! !USES
 !
@@ -171,7 +170,6 @@ CONTAINS
 !
       TYPE(HCO_STATE),POINTER    :: HcoState
       TYPE(DataCont), POINTER    :: Dct
-      INTEGER,        INTENT(IN) :: Verbose
 !
 ! !REVISION HISTORY:
 !  20 Apr 2013 - C. Keller - Initial version
@@ -220,13 +218,13 @@ CONTAINS
       ENDIF
 
       ! Print name for verbose > 0
-      IF ( HCO_IsVerb(HcoState%Config%Err,1) ) THEN
+      IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
          MSG = 'Container ' // TRIM(Dct%cName)
          CALL HCO_MSG(HcoState%Config%Err,MSG)
       ENDIF
 
       ! Eventually add details
-      IF ( HCO_IsVerb(HcoState%Config%Err,Verbose) ) THEN
+      IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
 
          ! General information
          write(MSG,*) '   -->Data type       : ', Dct%DctType

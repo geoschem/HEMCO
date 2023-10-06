@@ -354,11 +354,7 @@ CONTAINS
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
-    IF ( ExtNr <= 0 ) THEN
-       MSG = 'The Volcano extension is turned off.'
-       CALL HCO_MSG( HcoState%Config%Err,  MSG )
-       RETURN
-    ENDIF
+    IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
@@ -367,13 +363,22 @@ CONTAINS
         RETURN
     ENDIF
 
-    ! Create Volcano instance for this simulation
+    ! Create instance for this simulation
     Inst => NULL()
     CALL InstCreate( ExtNr, ExtState%Volcano, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_Error(                                  &
-                      'Cannot create Volcano instance', RC                  )
+       CALL HCO_Error( 'Cannot create Volcano instance', RC )
        RETURN
+    ENDIF
+
+    ! Write the name of the extension regardless of the verbose settings
+    IF ( HcoState%amIRoot ) THEN
+       msg = 'Using HEMCO extension: Volcano (volcanic SO2 emissions)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
+       ENDIF
     ENDIF
 
     ! Get species IDs.
@@ -471,9 +476,6 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use emissions extension `Volcano`:'
-       CALL HCO_MSG( HcoState%Config%Err,  MSG )
-
        MSG = ' - use the following species (Name, HcoID, Scaling relative to kgS):'
        CALL HCO_MSG( HcoState%Config%Err, MSG)
        DO N = 1, Inst%nSpc
@@ -712,7 +714,7 @@ CONTAINS
        ENDDO
 
        ! Verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err,2) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Number of volcanoes: ', nVolc
           CALL HCO_MSG( HcoState%Config%Err, MSG)
        ENDIF
@@ -753,7 +755,7 @@ CONTAINS
 
        ELSE
           WRITE(MSG,*) 'No volcano data found for year/mm/dd: ', YYYY, MM, DD
-          CALL HCO_WARNING(HcoState%Config%Err,MSG,RC,WARNLEV=1,THISLOC=LOC)
+          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
        ENDIF
 
        ! Now read records
@@ -1039,7 +1041,7 @@ CONTAINS
           ENDDO
 
           ! testing
-          !IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+          !IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           !   WRITE(MSG,*) 'Total eruptive  emissions of volcano ', N, ' [kgS/s]: ', volcE
           !   CALL HCO_MSG(HcoState%Config%Err,MSG)
           !   WRITE(MSG,*) 'Total degassing emissions of volcano ', N, ' [kgS/s]: ', volcD
@@ -1054,7 +1056,7 @@ CONTAINS
     ENDIF
 
     ! verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Total eruptive  emissions [kgS/s]: ', totE
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) 'Total degassing emissions [kgS/s]: ', totD

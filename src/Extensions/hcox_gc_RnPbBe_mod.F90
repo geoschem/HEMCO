@@ -75,16 +75,16 @@ MODULE HCOX_GC_RnPbBe_Mod
    INTEGER               :: ExtNrZhang    ! ZHANG_Rn222 extension number
    INTEGER               :: IDTRn222      ! Index # for Rn222
    INTEGER               :: IDTBe7        ! Index # for Be7
-   INTEGER               :: IDTBe7Strat   ! Index # for Be7Strat
+   INTEGER               :: IDTBe7s       ! Index # for Be7s
    INTEGER               :: IDTBe10       ! Index # for Be10
-   INTEGER               :: IDTBe10Strat  ! Index # for Be10Strat
+   INTEGER               :: IDTBe10s      ! Index # for Be10s
 
    ! For tracking Rn222, Be7, and Be10 emissions
-   REAL(hp), POINTER     :: EmissRn222    (:,:  )
-   REAL(hp), POINTER     :: EmissBe7      (:,:,:)
-   REAL(hp), POINTER     :: EmissBe7Strat (:,:,:)
-   REAL(hp), POINTER     :: EmissBe10     (:,:,:)
-   REAL(hp), POINTER     :: EmissBe10Strat(:,:,:)
+   REAL(hp), POINTER     :: EmissRn222(:,:  )
+   REAL(hp), POINTER     :: EmissBe7  (:,:,:)
+   REAL(hp), POINTER     :: EmissBe7s (:,:,:)
+   REAL(hp), POINTER     :: EmissBe10 (:,:,:)
+   REAL(hp), POINTER     :: EmissBe10s(:,:,:)
 
    ! For Lal & Peters 7Be emissions input data
    REAL(hp), POINTER     :: LATSOU(:    ) ! Array for latitudes
@@ -421,18 +421,18 @@ CONTAINS
           Inst%EmissBe7 (I,J,L) = ADD_Be7
           Inst%EmissBe10(I,J,L) = ADD_Be10
           IF ( L > ExtState%TropLev%Arr%Val(I,J) ) THEN
-             IF ( Inst%IDTBe7Strat > 0 ) THEN
-                Inst%EmissBe7Strat (I,J,L) = Add_Be7
+             IF ( Inst%IDTBe7s > 0 ) THEN
+                Inst%EmissBe7s (I,J,L) = Add_Be7
              ENDIF
-             IF ( Inst%IDTBe10Strat > 0 ) THEN
-                Inst%EmissBe10Strat(I,J,L) = Add_Be10
+             IF ( Inst%IDTBe10s > 0 ) THEN
+                Inst%EmissBe10s(I,J,L) = Add_Be10
              ENDIF
           ELSE
-             IF ( Inst%IDTBe7Strat > 0 ) THEN
-                Inst%EmissBe7Strat (I,J,L) = 0d0
+             IF ( Inst%IDTBe7s > 0 ) THEN
+                Inst%EmissBe7s (I,J,L) = 0d0
              ENDIF
-             IF ( Inst%IDTBe10Strat > 0 ) THEN
-                Inst%EmissBe10Strat(I,J,L) = 0d0
+             IF ( Inst%IDTBe10s > 0 ) THEN
+                Inst%EmissBe10s(I,J,L) = 0d0
              ENDIF
           ENDIF
 
@@ -459,14 +459,14 @@ CONTAINS
        ENDIF
 
        ! Add emissions
-       IF ( Inst%IDTBe7Strat > 0 ) THEN
-          Arr3D => Inst%EmissBe7Strat(:,:,:)
-          CALL HCO_EmisAdd( HcoState, Arr3D, Inst%IDTBe7Strat, &
+       IF ( Inst%IDTBe7s > 0 ) THEN
+          Arr3D => Inst%EmissBe7s(:,:,:)
+          CALL HCO_EmisAdd( HcoState, Arr3D, Inst%IDTBe7s, &
                             RC,       ExtNr=Inst%ExtNr )
           Arr3D => NULL()
           IF ( RC /= HCO_SUCCESS ) THEN
              CALL HCO_ERROR( &
-                             'HCO_EmisAdd error: EmissBe7Strat', RC )
+                             'HCO_EmisAdd error: EmissBe7s', RC )
              RETURN
           ENDIF
        ENDIF
@@ -485,14 +485,14 @@ CONTAINS
        ENDIF
 
        ! Add emissions
-       IF ( Inst%IDTBe10Strat > 0 ) THEN
-          Arr3D => Inst%EmissBe10Strat(:,:,:)
-          CALL HCO_EmisAdd( HcoState, Arr3D, Inst%IDTBe10Strat, &
+       IF ( Inst%IDTBe10s > 0 ) THEN
+          Arr3D => Inst%EmissBe10s(:,:,:)
+          CALL HCO_EmisAdd( HcoState, Arr3D, Inst%IDTBe10s, &
                             RC,       ExtNr=Inst%ExtNr )
           Arr3D => NULL()
           IF ( RC /= HCO_SUCCESS ) THEN
              CALL HCO_ERROR( &
-                             'HCO_EmisAdd error: EmissBe10Strat', RC )
+                             'HCO_EmisAdd error: EmissBe10s', RC )
              RETURN
           ENDIF
        ENDIF
@@ -601,9 +601,16 @@ CONTAINS
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use gc_RnPbBe emissions module (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
 
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: GC_RnPbBe (radionuclide emissions)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+       ENDIF
+
+       ! Write all other messages as debug printout only
        MSG = 'Use the following species (Name: HcoID):'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        DO N = 1, nSpc
@@ -619,12 +626,12 @@ CONTAINS
              Inst%IDTRn222     = HcoIDs(N)
           CASE( 'Be', 'Be7', '7Be' )
              Inst%IDTBe7       = HcoIDs(N)
-          CASE( 'Be7Strat', '7BeStrat' )
-             Inst%IDTBe7Strat  = HcoIDs(N)
+          CASE( 'Be7s', '7Bes' )
+             Inst%IDTBe7s  = HcoIDs(N)
           CASE( 'Be10', '10Be' )
              Inst%IDTBe10      = HcoIDs(N)
-          CASE( 'Be10Strat', '10BeStrat' )
-             Inst%IDTBe10Strat = HcoIDs(N)
+          CASE( 'Be10s', '10Bes' )
+             Inst%IDTBe10s = HcoIDs(N)
           CASE DEFAULT
              ! Do nothing
        END SELECT
@@ -711,15 +718,15 @@ CONTAINS
        CALL Init_7Be_Emissions( Inst )
     ENDIF
 
-    IF ( Inst%IDTBe7Strat > 0 ) THEN
-       ALLOCATE( Inst%EmissBe7Strat( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
+    IF ( Inst%IDTBe7s > 0 ) THEN
+       ALLOCATE( Inst%EmissBe7s( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
                  STAT=RC )
        IF ( RC /= 0 ) THEN
           CALL HCO_ERROR ( &
-                           'Cannot allocate EmissBe7Strat', RC )
+                           'Cannot allocate EmissBe7s', RC )
           RETURN
        ENDIF
-       Inst%EmissBe7Strat = 0.0_hp
+       Inst%EmissBe7s = 0.0_hp
     ENDIF
 
     IF ( Inst%IDTBe10 > 0 ) THEN
@@ -732,15 +739,15 @@ CONTAINS
        ENDIF
     ENDIF
 
-    IF ( Inst%IDTBe10Strat > 0 ) THEN
-       ALLOCATE( Inst%EmissBe10Strat( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
+    IF ( Inst%IDTBe10s > 0 ) THEN
+       ALLOCATE( Inst%EmissBe10s( HcoState%Nx, HcoState%NY, HcoState%NZ ), &
                  STAT=RC )
        IF ( RC /= 0 ) THEN
           CALL HCO_ERROR ( &
-                           'Cannot allocate EmissBe10Strat', RC )
+                           'Cannot allocate EmissBe10s', RC )
           RETURN
        ENDIF
-       Inst%EmissBe10Strat = 0.0_hp
+       Inst%EmissBe10s = 0.0_hp
     ENDIF
 
     !=======================================================================
@@ -1311,20 +1318,20 @@ CONTAINS
        ENDIF
        Inst%EmissBe7 => NULL()
 
-       IF ( ASSOCIATED( Inst%EmissBe7Strat  ) ) THEN
-          DEALLOCATE( Inst%EmissBe7Strat )
+       IF ( ASSOCIATED( Inst%EmissBe7s  ) ) THEN
+          DEALLOCATE( Inst%EmissBe7s )
        ENDIF
-       Inst%EmissBe7Strat  => NULL()
+       Inst%EmissBe7s  => NULL()
 
        IF ( ASSOCIATED( Inst%EmissBe10 ) ) THEN
           DEALLOCATE(Inst%EmissBe10 )
        ENDIF
        Inst%EmissBe10  => NULL()
 
-       IF ( ASSOCIATED( Inst%EmissBe10Strat ) ) THEN
-          DEALLOCATE( Inst%EmissBe10Strat )
+       IF ( ASSOCIATED( Inst%EmissBe10s ) ) THEN
+          DEALLOCATE( Inst%EmissBe10s )
        ENDIF
-       Inst%EmissBe10Strat => NULL()
+       Inst%EmissBe10s => NULL()
 
        IF ( ASSOCIATED( Inst%LATSOU ) ) THEN
           DEALLOCATE( Inst%LATSOU  )

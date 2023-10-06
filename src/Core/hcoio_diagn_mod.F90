@@ -236,39 +236,52 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255), PARAMETER :: LOC = 'HCOIO_DIAGN_WRITEOUT (hcoio_diagn_mod.F90)'
+    ! Strings
+    CHARACTER(LEN=255) :: errMsg, thisLoc
 
     !=================================================================
     ! HCOIO_DIAGN_WRITEOUT begins here!
     !=================================================================
 
+    ! Initialize
+    RC      = HCO_SUCCESS
+    errMsg  = ''
+    thisLoc = 'HCOIO_DIAGN_WRITEOUT (src/Core/hcoio_diagn_mod.F90)'
+
+
 #if defined(ESMF_)
-    !-----------------------------------------------------------------
+    !------------------------------------------------------------------------
     ! ESMF environment: call ESMF output routines
-    !-----------------------------------------------------------------
-    CALL HCOIO_Write     ( HcoState,                &
-                           RC,                      &
-                           OnlyIfFirst=OnlyIfFirst, &
-                           COL=COL                   )
+    !------------------------------------------------------------------------
+    CALL HCOIO_Write( HcoState,                                              &
+                      RC,                                                    &
+                      OnlyIfFirst = OnlyIfFirst,                             &
+                      COL          = COL                                    )
+
+    ! Trap errors
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Error encountered in routine "HCOIO_Write"!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
 
 #else
-    !-----------------------------------------------------------------
+    !------------------------------------------------------------------------
     ! Standard environment: call default output routines
-    !-----------------------------------------------------------------
-    CALL HCOIO_Write    ( HcoState,                 &
-                          ForceWrite,               &
-                          RC,                       &
-                          PREFIX      =PREFIX,      &
-                          UsePrevTime =UsePrevTime, &
-                          OnlyIfFirst =OnlyIfFirst, &
-                          COL         = COL          )
+    !------------------------------------------------------------------------
+    CALL HCOIO_Write( HcoState,                                              &
+                      ForceWrite,                                            &
+                      RC,                                                    &
+                      PREFIX      = PREFIX,                                  &
+                      UsePrevTime = UsePrevTime,                             &
+                      OnlyIfFirst = OnlyIfFirst,                             &
+                      COL         = COL                                     )
+
+    ! Trap errors
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
-        RETURN
+       errMsg = 'Error encountered in routine "HCOIO_Write"!'
+       CALL HCO_ERROR( errMsg, RC, thisLoc )
+       RETURN
     ENDIF
 
 #endif

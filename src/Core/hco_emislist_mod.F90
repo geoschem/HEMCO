@@ -106,7 +106,7 @@ CONTAINS
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! Set verbose flag
-    VERBOSE = HCO_IsVerb( HcoState%Config%Err, 2 )
+    VERBOSE = HCO_IsVerb( HcoState%Config%Err )
 
     ! Init
     Lct => NULL()
@@ -148,7 +148,7 @@ CONTAINS
     IF ( VERBOSE ) THEN
        MSG = 'Container added to EmisList:'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
-       CALL HCO_PrintDataCont( HcoState, Lct%Dct, 3 )
+       CALL HCO_PrintDataCont( HcoState, Lct%Dct )
     ENDIF
 
     ! Leave w/ success
@@ -472,7 +472,7 @@ CONTAINS
     TargetLct => NULL()
 
     ! Verbose mode
-    verb = HCO_IsVerb( HcoState%Config%Err, 2 )
+    verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! Initialize Add flag. This fill only be set to FALSE
     ! if the data of the current container is added to the data of

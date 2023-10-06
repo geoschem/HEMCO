@@ -874,8 +874,16 @@ CONTAINS
 
     ! Write to log file
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use FINN extension'
-       CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: FINN (biomass burning)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
+       ENDIF
+
+       ! Other print statements will only be written as debug output
        WRITE(MSG,*) '   - Use daily data          : ', Inst%UseDay
        CALL HCO_MSG(HcoState%Config%Err,MSG )
     ENDIF

@@ -39,7 +39,7 @@ GridFile:            {GRID_FILE}
 SpecFile:            HEMCO_sa_Spec.rc
 TimeFile:            HEMCO_sa_Time.rc
 DiagnFile:           HEMCO_Diagn.rc
-Logfile:             HEMCO.log
+Logfile:             *
 #-----------------------------------------------------
 # Settings for HEMCO grid
 #-----------------------------------------------------
@@ -57,12 +57,11 @@ DiagnPrefix:         OutputDir/HEMCO_sa_diagnostics
 DiagnFreq:           00000100 000000
 #-----------------------------------------------------
 # Debugging options
-# (set verbose and warnings to 3 for maximum output)
+# (set verbose to true to toggle debug printout)
 #-----------------------------------------------------
 Unit tolerance:      1
 Negative values:     0
-Verbose:             0
-Warnings:            1
+Verbose:             false
 #-----------------------------------------------------
 # Additional settings
 #-----------------------------------------------------

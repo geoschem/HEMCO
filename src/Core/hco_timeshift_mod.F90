@@ -180,7 +180,7 @@ CONTAINS
     ENDIF
 
     ! verbose mode
-    IF ( HCO_IsVerb(HcoConfig%Err,2) ) THEN
+    IF ( HCO_IsVerb( HcoConfig%Err ) ) THEN
        WRITE(MSG,*) 'Will shift time stamp of field ', TRIM(Dta%ncPara), &
                     ': ', TRIM(tShift)
        CALL HCO_MSG(HcoConfig%Err,MSG)
@@ -378,7 +378,7 @@ CONTAINS
           nDy = oDy
           nHr = 0
           nMn = 0
-          IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              MSG = 'Options set to cap time shift - set to low bound'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -388,7 +388,7 @@ CONTAINS
           nDy = oDy
           nHr = 23
           nMn = 59
-          IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              MSG = 'Options set to cap time shift - set to high bound'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
@@ -396,7 +396,7 @@ CONTAINS
     ENDIF
 
     ! verbose mode
-    IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,*) 'Adjusted time stamp of field ', TRIM(Lct%Dct%cName)
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) 'Time shift (YMDhms): ', Lct%Dct%Dta%tShift
@@ -413,7 +413,7 @@ CONTAINS
     Mn = nMn
 
     ! verbose mode
-    IF ( HCO_IsVerb(HcoState%Config%Err,3) ) THEN
+    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
        WRITE(MSG,'(a27,i4.4,a1,i2.2,a1,i2.2,a1,i2.2,a1,i2.2)') 'Adjusted Yr/Mt/Dy-Hr:Mn = ',Yr,'/',Mt,'/',Dy,'-',Hr,':',Mn
        CALL HCO_MSG(HcoState%Config%Err,MSG)
     ENDIF

@@ -36,11 +36,9 @@ MODULE HCO_Interp_Mod
   PUBLIC  :: ModelLev_Interpolate
   PUBLIC  :: REGRID_MAPA2A
 !
-! !PUBLIC MEMBER FUNCTIONS:
+! !PRIVATE MEMBER FUNCTIONS:
 !
-  PRIVATE :: GEOS5_TO_GEOS4_LOWLEV
   PRIVATE :: COLLAPSE
-  PRIVATE :: INFLATE
 !
 ! !REVISION HISTORY:
 !  30 Dec 2014 - C. Keller - Initialization
@@ -73,29 +71,6 @@ MODULE HCO_Interp_Mod
               2.113490e-01_hp, 1.594950e-01_hp, 1.197030e-01_hp, 8.934502e-02_hp, &
               6.600001e-02_hp, 4.758501e-02_hp, 3.270000e-02_hp, 2.000000e-02_hp, &
               1.000000e-02_hp /)
-
-  ! AP parameter of native GEOS-4 grid. Needed to remap GEOS-4 data from native
-  ! onto the reduced vertical grid.
-  REAL(hp), TARGET :: G4_EDGE_NATIVE(56) = (/       &
-                    0.000000_hp,   0.000000_hp,  12.704939_hp, &
-                   35.465965_hp,  66.098427_hp, 101.671654_hp, &
-                  138.744400_hp, 173.403183_hp, 198.737839_hp, &
-                  215.417526_hp, 223.884689_hp, 224.362869_hp, &
-                  216.864929_hp, 201.192093_hp, 176.929993_hp, &
-                  150.393005_hp, 127.837006_hp, 108.663429_hp, &
-                   92.365662_hp,  78.512299_hp,  66.603378_hp, &
-                   56.387939_hp,  47.643932_hp,  40.175419_hp, &
-                   33.809956_hp,  28.367815_hp,  23.730362_hp, &
-                   19.791553_hp,  16.457071_hp,  13.643393_hp, &
-                   11.276889_hp,   9.292943_hp,   7.619839_hp, &
-                    6.216800_hp,   5.046805_hp,   4.076567_hp, &
-                    3.276433_hp,   2.620212_hp,   2.084972_hp, &
-                    1.650792_hp,   1.300508_hp,   1.019442_hp, &
-                    0.795134_hp,   0.616779_hp,   0.475806_hp, &
-                    0.365041_hp,   0.278526_hp,   0.211349_hp, &
-                    0.159495_hp,   0.119703_hp,   0.089345_hp, &
-                    0.066000_hp,   0.047585_hp,   0.032700_hp, &
-                    0.020000_hp,   0.010000_hp /)
 
   ! AP parameter of native 102-layer GISS grid
   REAL(hp), TARGET :: E102_EDGE_NATIVE(103) = (/                                            &
@@ -203,7 +178,7 @@ CONTAINS
     REGR_4D => NULL()
 
     ! Check for verbose mode
-    verb = HCO_IsVerb(HcoState%Config%Err,  3 )
+    verb = HCO_IsVerb( HcoState%Config%Err )
 
     ! get longitude / latitude sizes
     nLonEdge = SIZE(LonE,1)
@@ -385,7 +360,7 @@ CONTAINS
        ENDDO !L
        ENDDO !T
 
-       ! Eventually inflate/collapse levels onto simulation levels.
+       ! Eventually collapse levels onto simulation levels.
        IF ( Lct%Dct%Dta%SpaceDim == 3 ) THEN
           CALL ModelLev_Interpolate( HcoState, REGR_4D, Lct, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
@@ -517,9 +492,6 @@ CONTAINS
     ! Assume success until otherwise
     RC = HCO_SUCCESS
 
-    ! If IsModelLev is already TRUE, nothing to do
-    IF ( IsModelLev ) RETURN
-
     ! Shadow number of vertical levels on grid
     nz = HcoState%NZ
 
@@ -527,43 +499,21 @@ CONTAINS
     ! levels or levels + 1 (edges)
     IF ( nlev == nz .OR. nlev == nz + 1 ) THEN
        IsModelLev = .TRUE.
-       RETURN
-    ENDIF
 
-    ! Other supported levels that depend on compiler flags
-    ! Full grid
-    IF ( nz == 72 ) THEN
-       IF ( nlev <= 73 ) THEN
-          IsModelLev = .TRUE.
-       ENDIF
-
-    ! Reduced grid
+   ! If input is 72 layer (or 36 layer) and output is 47 layer
     ELSEIF ( nz == 47 ) THEN
-       IF ( nlev == 72 .OR. &
-            nlev == 73 .OR. &
-            nlev <= 47       ) THEN
-          IsModelLev = .TRUE.
-       ENDIF
+       IsModelLev = ( nlev == 72 .OR. nlev == 73 .OR. nlev == 36)
 
-    ! Full GISS 102-layer grid
-    ELSEIF ( nz == 102 ) THEN
-       IF ( nlev <= 103 ) THEN
-          IsModelLev = .TRUE.
-       ENDIF
-
-    ! Full GISS 40-layer grid
-    ELSEIF ( nz == 40 ) THEN
-       IF ( nlev <= 41 ) THEN
-          IsModelLev = .TRUE.
-       ENDIF
-
-    ! Reduced GISS 74-layer grid
+    ! If input is 102 layer and output is 74 layer
     ELSEIF ( nz == 74 ) THEN
-       IF ( nlev == 102 .OR. &
-            nlev == 103 .OR. &
-            nlev <= 74       ) THEN
-                    IsModelLev = .TRUE.
-       ENDIF
+       IsModelLev = ( nlev == 102 .OR. nlev == 103 )
+
+    ! If input is 47 layer (or 36 layer) and output is 72 layer
+    ELSEIF ( nz == 72 ) THEN
+       IsModelLev = ( nlev == 47 .OR. nlev == 48 .OR. nlev == 36)
+
+    ELSE
+      IsModelLev = .FALSE.
     ENDIF
 
   END SUBROUTINE ModelLev_Check
@@ -578,46 +528,34 @@ CONTAINS
 ! !DESCRIPTION: Subroutine ModelLev\_Interpolate puts 3D data from an
 ! arbitrary number of model levels onto the vertical levels of the simulation
 ! grid. Since the input data is already on model levels, this is only to
-! inflate/collapse fields between native/reduced vertical levels, e.g. from
-! 72 native GEOS-5 levels onto the reduced 47 levels. The vertical
-! interpolation scheme depends on compiler switches. If none of the compiler
-! switches listed below is used, no vertical interpolation is performed,
-! e.g. the vertical levels of the input grid are retained.
-!\\
-!\\
+! collapse fields between native/reduced vertical levels, e.g. from
+! 72 native GEOS-5 levels onto the reduced 47 levels.
+!
+!
 ! The input data (REGR\_4D) is expected to be already regridded horizontally.
 ! The 4th dimension of REGR\_4D denotes time.
-!\\
-!\\
+!
+!
 ! The 3rd dimension of REGR\_3D holds the vertical levels. It is assumed that
 ! these are model levels, starting at the surface (level 1). If the input
-! data holds 72 input levels, this is interpreted as native data and will
-! be collapsed onto the reduced grid. If the input data holds X <=47 levels,
-! these levels are interpreted as levels 1-X of the reduced grid. In other
-! words, input data with 33 levels will be interpreted as 33 levels on the
-! reduced grid, and the data is accordingly mapped onto the simulation grid.
-! If data becomes inflated or collapsed, the output data will always extent
-! over all vertical levels of the simulation grid. If necessary, the unused
-! upper levels will be filled with zeros. If no data interpolation is needed,
-! the vertical extent of the output data is limited to the number of used
-! levels. For instance, if the input data has 5 vertical levels, the output
-! array will only extent over those 5 (bottom) levels.
-!\\
-!\\
+! data holds 72/73 input levels, this is interpreted as native data and will
+! be collapsed onto the reduced GEOS-5 grid. If the input holds 102/103 input
+! levels, this is interpreted as native data and will be collapsed onto the 
+! reduced GISS grid. If the input holds 47/48 input levels, this is interpreted
+! as reduced GEOS-5 data and it will be inflated to the native GEOS-5 grid
+! (with a warning, as this is not recommended). If the input holds 36 input levels,
+! this is assumed to be the first 36 levels of the GEOS-5 grid, meaning they will be
+! written as levels 1-36 of a 47 or 72 level output grid (with the remaining values
+! left to be zero) (nbalasus, 8/29/2023).
+!
+!
 ! Currently, this routine can remap the following combinations:
-!\begin{itemize}
-! \item Native  GEOS-5 onto reduced GEOS-5 (72 --> 47 levels)
-! \item Reduced GEOS-5 onto native  GEOS-5 (47 --> 72 levels)
-! \item Native  GEOS-4 onto reduced GEOS-4 (55 --> 30 levels)
-! \item Reduced GEOS-4 onto native  GEOS-4 (30 --> 55 levels)
-! \item Native  GEOS-5 onto native  GEOS-4 (72 --> 55 levels)
-! \item Reduced GEOS-5 onto native  GEOS-4 (47 --> 55 levels)
-! \item Native  GEOS-5 onto reduced GEOS-4 (72 --> 30 levels)
-! \item Reduced GEOS-5 onto reduced GEOS-4 (47 --> 30 levels)
-!\end{itemize}
-! Interpolation from GEOS-5 onto GEOS-4 levels is currently not supported.
-!\\
-!\\
+!
+! * Native GEOS-5 onto reduced GEOS-5 (72 --> 47 levels, 73 --> 48 edges)
+! * Native GISS onto reduced GISS (102 --> 74 levels, 103 --> 75 edges) 
+! * Reduced GEOS-5 onto native GEOS-5 (47 --> 72 levels, 48 --> 73 edges)
+! * 36 levels onto native/reduced GEOS-5 (36 --> levels 1-36 levels of 47/72 level grid, rest are 0)
+!
 ! !INTERFACE:
 !
   SUBROUTINE ModelLev_Interpolate( HcoState, REGR_4D, Lct, RC )
@@ -646,10 +584,10 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER                 :: nx, ny, nz, nt
+    INTEGER                 :: fineIDX, coarseIDX
     INTEGER                 :: minlev, nlev, nout
-    INTEGER                 :: L, T, NL
+    INTEGER                 :: L, T, NL, I
     INTEGER                 :: OS
-    INTEGER                 :: G5T4
     LOGICAL                 :: verb, infl, clps
     LOGICAL                 :: DONE
     CHARACTER(LEN=255)      :: MSG, LOC
@@ -667,7 +605,7 @@ CONTAINS
     ENDIF
 
     ! Check for verbose mode
-    verb = HCO_IsVerb(HcoState%Config%Err,  3 )
+    verb = HCO_IsVerb( HcoState%Config%Err )
     IF ( verb ) THEN
        MSG = 'Vertically interpolate model levels: '//TRIM(Lct%Dct%cName)
        CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -677,10 +615,6 @@ CONTAINS
     nx = HcoState%NX
     ny = HcoState%NY
     nz = HcoState%NZ
-
-    ! Variable G5T4 is the # of GEOS-5 levels that need to be mapped
-    ! onto GEOS-4 levels.
-    G5T4 = 0
 
     ! Input data must be on horizontal HEMCO grid
     IF ( SIZE(REGR_4D,1) /= nx ) THEN
@@ -699,6 +633,19 @@ CONTAINS
     ! Get vertical and time dimension of input data
     nlev = SIZE(REGR_4D,3)
     nt   = SIZE(REGR_4D,4)
+
+    ! Check to make sure ModelLev_Interpolate should have been called
+    IF ( ( ( nlev == nz ) .OR. ( nlev == nz+1 ) ) .OR. &                          ! write data without doing anything
+         ( ( nz == 47 ) .AND. ( ( nlev == 72 ) .OR. ( nlev == 73 ) ) ) .OR. &     ! collapse native to reduced GEOS-5
+         ( ( nz == 74 ) .AND. ( ( nlev == 102 ) .OR. ( nlev == 103 ) ) ) .OR. &   ! collapse native to reduced GISS
+         ( ( nz == 72 ) .AND. ( ( nlev == 47 ) .OR. ( nlev == 48 ) ) ) .OR. &   ! inflate reduced to native GEOS-5
+         ( ( ( nz == 72 ) .OR. ( nz == 47 ) ) .AND. ( nlev == 36 ) ) ) THEN         ! write 36 levels to reduced/native GEOS-5
+         ! do nothing
+    ELSE
+      WRITE(MSG,*) 'ModelLev_Interpolate was called but MESSy should have been used: ',TRIM(Lct%Dct%cName)
+      CALL HCO_ERROR( MSG, RC )
+      RETURN
+    ENDIF
 
     ! Vertical interpolation done?
     DONE = .FALSE.
@@ -721,7 +668,7 @@ CONTAINS
        ENDDO
 
        ! Verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           MSG = '# of input levels = # of output levels - passed as is.'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
@@ -736,94 +683,26 @@ CONTAINS
     IF ( .NOT. DONE ) THEN
 
        !----------------------------------------------------------------
-       ! Native levels
+       ! Native to reduced GEOS-5 levels
        !----------------------------------------------------------------
-       IF ( nz == 72 ) THEN
+       IF ( nz == 47 ) THEN
 
-          ! Determine number of output levels. If the input data has
-          ! 47 or less levels, it is assumed to represent reduced
-          ! GEOS-5 levels and data is mapped accordingly. If input data
-          ! has more than 47 levels, it cannot be on the reduced grid
-          ! and mapping is done 1:1
-          IF ( nlev > 36 .AND. nlev <= 48 ) THEN
-             IF ( nlev == 48 ) THEN
-                nz   = nz + 1
-                nout = nz
-                NL   = 37
-             ELSE
-                nout = nz
-                NL   = 36
-             ENDIF
-          ELSE
-             nout = nlev
-             NL   = nout
-          ENDIF
-
-          ! Make sure output array is allocated
-          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
-
-          ! Do for every time slice
-          DO T = 1, nt
-
-             ! Levels that are passed level-by-level.
-             DO L = 1, NL
-                Lct%Dct%Dta%V3(T)%Val(:,:,L) = REGR_4D(:,:,L,T)
-             ENDDO !L
-
-             ! If needed, inflate from reduced GEOS-5 grid onto native GEOS-5
-             IF ( ( NL == 36 .AND. nz == 72 ) .OR. &
-                  ( NL == 37 .AND. nz == 73 )       ) THEN
-                ! Distribute over 2 levels (e.g. level 38 into 39-40):
-                CALL INFLATE( Lct, REGR_4D, NL+1 , NL+1, 2, T )
-                CALL INFLATE( Lct, REGR_4D, NL+2 , NL+3, 2, T )
-                CALL INFLATE( Lct, REGR_4D, NL+3 , NL+5, 2, T )
-                CALL INFLATE( Lct, REGR_4D, NL+4 , NL+7, 2, T )
-                ! Distribute over 4 levels:
-                CALL INFLATE( Lct, REGR_4D, NL+5 , NL+9, 4, T )
-                CALL INFLATE( Lct, REGR_4D, NL+6 , NL+13, 4, T )
-                CALL INFLATE( Lct, REGR_4D, NL+7 , NL+17, 4, T )
-                CALL INFLATE( Lct, REGR_4D, NL+8 , NL+21, 4, T )
-                CALL INFLATE( Lct, REGR_4D, NL+9 , NL+25, 4, T )
-                CALL INFLATE( Lct, REGR_4D, NL+10, NL+29, 4, T )
-                CALL INFLATE( Lct, REGR_4D, NL+11, NL+33, 4, T )
-             ENDIF
-
-          ENDDO ! T
-
-          ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
-             WRITE(MSG,*) 'Mapped ', nlev, ' levels onto native GEOS-5 levels.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
-          ENDIF
-
-          ! Done!
-          DONE = .TRUE.
-
-       !----------------------------------------------------------------
-       ! Reduced levels
-       !----------------------------------------------------------------
-       ELSEIF ( nz == 47 ) THEN
-
-          ! Determine number of output levels. If input data is on the
-          ! native grid, we collapse them onto the reduced GEOS-5 grid.
-          ! In all other cases, we assume the input data is already on
-          ! the reduced levels and mappings occurs 1:1.
+          ! Determine if the variable is on model levels or edges
           IF ( nlev == 72 ) THEN
-             nout = nz
              NL   = 36
+             nout = 47
           ELSEIF ( nlev == 73 ) THEN
-             nz   = nz + 1
-             nout = nz
              NL   = 37
-          ELSEIF ( nlev > 47 ) THEN
+             nout = 48
+          ELSEIF ( nlev == 36 ) THEN
+             NL   = 36
+             nout = 47
+          ELSE
              MSG = 'Can only remap from native onto reduced GEOS-5 if '// &
-                   'input data has exactly 72 or 73 levels: '//TRIM(Lct%Dct%cName)
+                   'input data has exactly 72, 73, or 36 levels: '//TRIM(Lct%Dct%cName)
              CALL HCO_ERROR( MSG, RC )
              RETURN
-          ELSE
-             nout = nlev
-             NL   = nout
-          ENDIF
+          ENDIF ! nlev == (72,73,36,ELSE)
 
           ! Make sure output array is allocated
           CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
@@ -836,62 +715,76 @@ CONTAINS
                 Lct%Dct%Dta%V3(T)%Val(:,:,L) = REGR_4D(:,:,L,T)
              ENDDO !L
 
-             ! If needed, collapse from native GEOS-5 onto reduced GEOS-5
-             IF ( nlev == 72 .OR. nlev == 73 ) THEN
+            ! If remapping model grid layers, collapse layers 
+             IF ( nlev == 72 ) THEN
+               ! Collapse two levels (e.g. levels 37-38 into level 37):
+               CALL COLLAPSE( Lct, REGR_4D, 37, 37, 2, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 38, 39, 2, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 39, 41, 2, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 40, 43, 2, T, 5, RC )
+               ! Collapse four levels:
+               CALL COLLAPSE( Lct, REGR_4D, 41, 45, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 42, 49, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 43, 53, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 44, 57, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 45, 61, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 46, 65, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 47, 69, 4, T, 5, RC )
+             ! If remapping model grid edges, sample at edges
+             ELSEIF ( nlev == 73 ) THEN
+               Lct%Dct%Dta%V3(T)%Val(:,:,38) = REGR_4D(:,:,39,T)
+               Lct%Dct%Dta%V3(T)%Val(:,:,39) = REGR_4D(:,:,41,T)
+               Lct%Dct%Dta%V3(T)%Val(:,:,40) = REGR_4D(:,:,43,T)
+               Lct%Dct%Dta%V3(T)%Val(:,:,41) = REGR_4D(:,:,45,T)
+               Lct%Dct%Dta%V3(T)%Val(:,:,42) = REGR_4D(:,:,49,T)
+               Lct%Dct%Dta%V3(T)%Val(:,:,43) = REGR_4D(:,:,53,T)
+               Lct%Dct%Dta%V3(T)%Val(:,:,44) = REGR_4D(:,:,57,T)
+               Lct%Dct%Dta%V3(T)%Val(:,:,45) = REGR_4D(:,:,61,T)
+               Lct%Dct%Dta%V3(T)%Val(:,:,46) = REGR_4D(:,:,65,T)
+               Lct%Dct%Dta%V3(T)%Val(:,:,47) = REGR_4D(:,:,69,T)
+               Lct%Dct%Dta%V3(T)%Val(:,:,48) = REGR_4D(:,:,73,T)
+            ! If the input is 36 levels, levels 37-47 are set to 0
+             ELSEIF ( nlev == 36 ) THEN
+               DO L = 37,47
+                  Lct%Dct%Dta%V3(T)%Val(:,:,L) = 0.0_hp
+               ENDDO !L
+             ENDIF ! nlev == (72,73,36)
 
-                ! Add one level offset if these are edges
-                IF ( nlev == 73 ) THEN
-                   OS = 1
-                ELSE
-                   OS = 0
-                ENDIF
-
-                ! Collapse two levels (e.g. levels 39-40 into level 38):
-                CALL COLLAPSE( Lct, REGR_4D, 37+OS, 37+OS, 2, T, 5 )
-                CALL COLLAPSE( Lct, REGR_4D, 38+OS, 39+OS, 2, T, 5 )
-                CALL COLLAPSE( Lct, REGR_4D, 39+OS, 41+OS, 2, T, 5 )
-                CALL COLLAPSE( Lct, REGR_4D, 40+OS, 43+OS, 2, T, 5 )
-                ! Collapse four levels:
-                CALL COLLAPSE( Lct, REGR_4D, 41+OS, 45+OS, 4, T, 5 )
-                CALL COLLAPSE( Lct, REGR_4D, 42+OS, 49+OS, 4, T, 5 )
-                CALL COLLAPSE( Lct, REGR_4D, 43+OS, 53+OS, 4, T, 5 )
-                CALL COLLAPSE( Lct, REGR_4D, 44+OS, 57+OS, 4, T, 5 )
-                CALL COLLAPSE( Lct, REGR_4D, 45+OS, 61+OS, 4, T, 5 )
-                CALL COLLAPSE( Lct, REGR_4D, 46+OS, 65+OS, 4, T, 5 )
-                CALL COLLAPSE( Lct, REGR_4D, 47+OS, 69+OS, 4, T, 5 )
-
-             ENDIF
           ENDDO ! T
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
+          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GEOS-5 levels.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
+             IF ( nlev == 36 ) THEN
+               WRITE(MSG,*) 'The input variable has 36 L, which were written to be L 1-36 on the output 47 L grid (remaining values set to 0).'
+             ELSE
+               WRITE(MSG,*) 'Pressure-weighted vertical regridding was done - consider if this is appropriate for the variable units.'
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             ENDIF
           ENDIF
 
           ! Done!
           DONE = .TRUE.
 
        !----------------------------------------------------------------
-       ! Reduced GISS levels
+       ! Native to reduced GISS levels
        !----------------------------------------------------------------
        ELSEIF ( nz == 74 ) THEN
 
-          ! Determine number of output levels. If input data is on the
-          ! native grid, we collapse them onto the reduced GISS grid.
-          ! In all other cases, we assume the input data is already on
-          ! the reduced levels and mappings occurs 1:1.
+          ! Determine if the variable is on model levels or edges
           IF ( nlev == 102 ) THEN
-             nout = nz
              NL   = 60
+             nout = 74
           ELSEIF ( nlev == 103 ) THEN
-             nz   = nz + 1
-             nout = nz
              NL   = 61
+             nout = 75
           ELSE
-             nout = nlev
-             NL   = nout
-          ENDIF
+             MSG = 'Can only remap from native onto reduced GISS if '// &
+                   'input data has exactly 102 or 103 levels: '//TRIM(Lct%Dct%cName)
+             CALL HCO_ERROR( MSG, RC )
+             RETURN
+          ENDIF ! nlev == (102,103,ELSE)
 
           ! Make sure output array is allocated
           CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
@@ -904,79 +797,165 @@ CONTAINS
                 Lct%Dct%Dta%V3(T)%Val(:,:,L) = REGR_4D(:,:,L,T)
              ENDDO !L
 
-             ! If needed, collapse from native GEOS-5 onto reduced GEOS-5
-             IF ( nlev == 102 .OR. nlev == 103 ) THEN
-
-                ! Add one level offset if these are edges
-                IF ( nlev == 103 ) THEN
-                   OS = 1
-                ELSE
-                   OS = 0
-                ENDIF
-
+             ! If remapping model grid layers, collapse layers
+             IF ( nlev == 102 ) THEN
                 ! Collapse two levels (e.g. levels 61-62 into level 61):
-                CALL COLLAPSE( Lct, REGR_4D, 61+OS, 61+OS, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 62+OS, 63+OS, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 63+OS, 65+OS, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 64+OS, 67+OS, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 65+OS, 69+OS, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 66+OS, 71+OS, 2, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 67+OS, 73+OS, 2, T, 22 )
+                CALL COLLAPSE( Lct, REGR_4D, 61, 61, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 62, 63, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 63, 65, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 64, 67, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 65, 69, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 66, 71, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 67, 73, 2, T, 22, RC )
                 ! Collapse four levels:
-                CALL COLLAPSE( Lct, REGR_4D, 68+OS, 75+OS, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 69+OS, 79+OS, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 70+OS, 83+OS, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 71+OS, 87+OS, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 72+OS, 91+OS, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 73+OS, 95+OS, 4, T, 22 )
-                CALL COLLAPSE( Lct, REGR_4D, 74+OS, 99+OS, 4, T, 22 )
-
-             ENDIF
+                CALL COLLAPSE( Lct, REGR_4D, 68, 75, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 69, 79, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 70, 83, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 71, 87, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 72, 91, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 73, 95, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 74, 99, 4, T, 22, RC )
+             ! If remapping model grid edges, sample at the edges
+             ELSE
+                Lct%Dct%Dta%V3(T)%Val(:,:,62) = REGR_4D(:,:,63,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,63) = REGR_4D(:,:,65,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,64) = REGR_4D(:,:,67,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,65) = REGR_4D(:,:,69,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,66) = REGR_4D(:,:,71,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,67) = REGR_4D(:,:,73,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,68) = REGR_4D(:,:,75,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,69) = REGR_4D(:,:,79,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,70) = REGR_4D(:,:,83,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,71) = REGR_4D(:,:,87,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,72) = REGR_4D(:,:,91,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,73) = REGR_4D(:,:,95,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,74) = REGR_4D(:,:,99,T)
+                Lct%Dct%Dta%V3(T)%Val(:,:,75) = REGR_4D(:,:,103,T)
+             ENDIF ! nlev == (102,ELSE)
           ENDDO ! T
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GISS levels.'
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             WRITE(MSG,*) 'Pressure-weighted vertical regridding was done - consider if this is appropriate for the variable units.'
              CALL HCO_MSG(HcoState%Config%Err,MSG)
           ENDIF
 
           ! Done!
           DONE = .TRUE.
 
-       ENDIF
+       !----------------------------------------------------------------
+       ! Reduced to native GEOS-5 levels
+       !----------------------------------------------------------------
+       ELSEIF ( nz == 72 ) THEN
+
+          ! Determine if the variable is on model levels or edges
+          IF ( nlev == 47 ) THEN
+             NL   = 36
+             nout = 72
+          ELSEIF ( nlev == 48 ) THEN
+             NL   = 37
+             nout = 73
+          ELSEIF ( nlev == 36 ) THEN
+             NL   = 36
+             nout = 72
+          ELSE
+             MSG = 'Can only remap from reduced onto native GEOS-5 if '// &
+                   'input data has exactly 47, 48, or 36 levels: '//TRIM(Lct%Dct%cName)
+             CALL HCO_ERROR( MSG, RC )
+             RETURN
+          ENDIF ! nlev == (48,48,36,ELSE)
+
+          ! Make sure output array is allocated
+          CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nout, nt, RC )
+
+          ! Do for every time slice
+          DO T = 1, nt
+
+             ! Levels that are passed level-by-level.
+             DO L = 1, NL
+                Lct%Dct%Dta%V3(T)%Val(:,:,L) = REGR_4D(:,:,L,T)
+             ENDDO !L
+
+             ! If remapping model grid layers, inflate layers
+             IF ( nlev == 47 ) THEN
+
+                ! Inflate two levels (e.g. levels 37-38 on the fine grid are copies of level 37 on the coarse grid):
+                coarseIDX = 36
+                DO I = 1,8
+                   fineIDX = 36 + I
+                   IF ( MOD(I,2) /= 0 ) THEN
+                     coarseIDX = coarseIDX + 1
+                   ENDIF
+                   Lct%Dct%Dta%V3(T)%Val(:,:,fineIDX) = REGR_4D(:,:,coarseIDX,T)
+                ENDDO ! I
+
+                ! Inflate four levels (e.g. levels 45-48 on the fine grid are copies of level 41 on the coarse grid)
+                coarseIDX = 40
+                DO I = 1,28
+                   fineIDX = 44 + i
+                   IF ( MOD(I-1,4) == 0 ) THEN
+                      coarseIDX = coarseIDX + 1
+                   ENDIF
+                   Lct%Dct%Dta%V3(T)%Val(:,:,fineIDX) = REGR_4D(:,:,coarseIDX,T)
+                ENDDO ! I
+
+             ! If remapping model grid edges, inflate edges
+             ELSEIF ( nlev == 48 ) THEN
+
+                ! Sample every two edges (e.g. edges 38-39 on the fine grid are copies of edge 38 on the coarse grid)
+                coarseIDX = 37
+                DO I = 1,8
+                   fineIDX = 37 + I
+                   IF ( MOD(I,2) /= 0 ) THEN
+                     coarseIDX = coarseIDX + 1
+                   ENDIF
+                   Lct%Dct%Dta%V3(T)%Val(:,:,fineIDX) = REGR_4D(:,:,coarseIDX,T)
+                ENDDO ! I
+
+                ! Sample every four edges (e.g. edges 46-49 on the fine grid are copies of edge 42 on the coarse grid)
+                coarseIDX = 40
+                DO I = 1,28
+                   fineIDX = 44 + i
+                   IF ( MOD(I-1,4) == 0 ) THEN
+                      coarseIDX = coarseIDX + 1
+                   ENDIF
+                   Lct%Dct%Dta%V3(T)%Val(:,:,fineIDX) = REGR_4D(:,:,coarseIDX,T)
+                ENDDO ! I
+                
+             ELSEIF ( nlev == 36 ) THEN
+               DO L = 37,72
+                  Lct%Dct%Dta%V3(T)%Val(:,:,L) = 0.0_hp
+               ENDDO !L
+
+             ENDIF ! nlev == (47,48,36)
+          ENDDO ! T
+
+          ! Verbose
+          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+             WRITE(MSG,*) 'Mapped ', nlev, ' levels onto native GEOS-5 levels.'
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             IF ( nlev == 36 ) THEN
+               WRITE(MSG,*) 'The input variable has 36 L, which were written to be L 1-36 on the output 72 L grid (remaining values set to 0).'
+             ELSE
+               WRITE(MSG,*) 'Inflating from 47/48 to 72/73 levels is not recommended and is likely not mass-conserving.'
+             ENDIF
+             CALL HCO_MSG(HcoState%Config%Err,MSG)
+          ENDIF
+
+          ! Done!
+          DONE = .TRUE.
+
+       ENDIF ! nz == (47,74,72)
 
     ENDIF ! Vertical regridding required
-
-    !===================================================================
-    ! For all other cases, do not do any vertical regridding
-    !===================================================================
-    IF ( .NOT. DONE ) THEN
-       CALL FileData_ArrCheck( HcoState%Config, Lct%Dct%Dta, nx, ny, nlev, nt, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-           RETURN
-       ENDIF
-
-       DO T = 1, nt
-          Lct%Dct%Dta%V3(T)%Val(:,:,:) = REGR_4D(:,:,:,T)
-       ENDDO
-
-       ! Verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err, 3) ) THEN
-          WRITE(MSG,*) 'Could not find vertical interpolation key - ', &
-                       'kept the original ', nlev, ' levels.'
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
-       ENDIF
-
-       ! Done!
-       DONE = .TRUE.
-    ENDIF
 
     !===================================================================
     ! Error check / verbose mode
     !===================================================================
     IF ( DONE ) THEN
-      IF ( HCO_IsVerb(HcoState%Config%Err, 2) ) THEN
+      IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Did vertical regridding for ',TRIM(Lct%Dct%cName),':'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
           WRITE(MSG,*) 'Number of original levels: ', nlev
@@ -1000,240 +979,17 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: GEOS5_TO_GEOS4_LOWLEV
-!
-! !DESCRIPTION: Helper routine to map the lowest 28 GEOS-5 levels onto the
-! lowest 11 GEOS-4 levels. The individual level weights were calculated
-! offline and are hard-coded here.
-! These are the edge pressure values on the lowest 28 GEOS-5 levels:
-! 1013.25, 998.05, 982.76, 967.47, 952.19, 936.91
-!  921.62, 906.34, 891.05, 875.77, 860.49, 845.21,
-!  829.92, 809.55, 784.08, 758.62, 733.15, 707.69,
-!  682.23, 644.05, 605.87, 567.70, 529.54, 491.40,
-!  453.26, 415.15, 377.07, 339.00, 288.92
-!
-! And these are the edge pressure values on the lowest 12 GEOS-4 levels:
-! 1013.25, 998.16, 968.49, 914.79, 841.15, 752.89,
-!  655.96, 556.85, 472.64, 401.14, 340.43, 288.92
-!
-! The value at every given GEOS-4 level is determined from the GEOS-5 values
-! by multiplying the (GEOS-5) input data by the normalized level weights. For
-! instance, the first GEOS-5 level is the only level contributing to the 1st
-! GEOS-4 level. For the 2nd GEOS-4 level, contributions from GEOS-5 levels
-! 1-3 are used. Of GEOS-5 level 1, only 0.7% lies in level 2 of GEOS-4 (99.3%
-! is in GEOS-4 level 1), whereas 100% of GEOS-5 level 2 and 93.3% of GEOS-5
-! level 3 contribute to GEOS-4 level 2. The corresponding normalized weights
-! become 0.00378,0.515, and 0.481, respectively.
-!\\
-!\\
-! The weights don't always add up to exactly 1.00 due to rounding errors.
-!\\
-!\\
-! !INTERFACE:
-!
-  SUBROUTINE GEOS5_TO_GEOS4_LOWLEV( HcoState, Lct, REGR_4D, NZ, T, RC )
-!
-! !INPUT PARAMETERS:
-!
-    TYPE(HCO_State),  POINTER        :: HcoState          ! HEMCO state object
-    REAL(sp),         POINTER        :: REGR_4D(:,:,:,:)  ! 4D input data
-    INTEGER,          INTENT(IN)     :: T                 ! Time index
-    INTEGER,          INTENT(IN)     :: NZ                ! # of vertical levels to remap. Must be 28 or 29
-!
-! !INPUT/OUTPUT PARAMETERS:
-!
-    TYPE(ListCont),   POINTER        :: Lct               ! HEMCO list container
-    INTEGER,          INTENT(INOUT)  :: RC                ! Return code
-!
-! !REVISION HISTORY:
-!  07 Jan 2015 - C. Keller   - Initial version.
-!  See https://github.com/geoschem/hemco for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-    REAL(hp)           :: WGHT
-    CHARACTER(LEN=255) :: MSG
-    CHARACTER(LEN=255) :: LOC = 'GEOS5_TO_GEOS4_LOWLEV (hco_interp_mod.F90)'
-
-    !=================================================================
-    ! GEOS5_TO_GEOS4_LOWLEV begins here
-    !=================================================================
-
-    ! Check number of levels to be used
-    IF ( NZ /= 28 .AND. NZ /= 29 ) THEN
-       MSG = 'Cannot map GEOS-5 onto GEOS-4 data, number of levels must be 28 or 29: '//TRIM(Lct%Dct%cName)
-       CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
-       RETURN
-    ENDIF
-
-    ! Error check: make sure array REGR_4D has at least NZ levels
-    IF ( SIZE(REGR_4D,3) < NZ ) THEN
-       WRITE(MSG,*) 'Cannot map GEOS-5 onto GEOS-4 data, original data has not enough levels: ', &
-          TRIM(Lct%Dct%cName), ' --> ', SIZE(REGR_4D,3), ' smaller than ', NZ
-       CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
-       RETURN
-    ENDIF
-
-    ! Map 28 GEOS-5 levels onto 11 GEOS-4 levels (grid midpoints):
-    IF ( NZ == 28 ) THEN
-
-       ! Reset
-       Lct%Dct%Dta%V3(T)%Val(:,:,1:11) = 0.0_sp
-
-       ! Level 1:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 1) = REGR_4D(:,:,1,T)
-
-       ! Level 2:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 2) = 3.78e-3_sp * REGR_4D(:,:, 1,T) &
-                                     + 0.515_sp   * REGR_4D(:,:, 2,T) &
-                                     + 0.481_sp   * REGR_4D(:,:, 3,T)
-
-       ! Level 3:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 3) = 1.88e-2_sp * REGR_4D(:,:, 3,T) &
-                                     + 0.285_sp   * REGR_4D(:,:, 4,T) &
-                                     + 0.285_sp   * REGR_4D(:,:, 5,T) &
-                                     + 0.285_sp   * REGR_4D(:,:, 6,T) &
-                                     + 0.127_sp   * REGR_4D(:,:, 7,T)
-
-       ! Level 4:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 4) = 0.115_sp   * REGR_4D(:,:, 7,T) &
-                                     + 0.208_sp   * REGR_4D(:,:, 8,T) &
-                                     + 0.208_sp   * REGR_4D(:,:, 9,T) &
-                                     + 0.208_sp   * REGR_4D(:,:,10,T) &
-                                     + 0.208_sp   * REGR_4D(:,:,11,T) &
-                                     + 5.51e-2_sp * REGR_4D(:,:,12,T)
-
-       ! Level 5:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 5) = 0.189_sp   * REGR_4D(:,:,12,T) &
-                                     + 0.253_sp   * REGR_4D(:,:,13,T) &
-                                     + 0.253_sp   * REGR_4D(:,:,14,T) &
-                                     + 0.253_sp   * REGR_4D(:,:,15,T) &
-                                     + 5.68e-2_sp * REGR_4D(:,:,16,T)
-
-       ! Level 6:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 6) = 0.224_sp   * REGR_4D(:,:,16,T) &
-                                     + 0.289_sp   * REGR_4D(:,:,17,T) &
-                                     + 0.289_sp   * REGR_4D(:,:,18,T) &
-                                     + 0.199_sp   * REGR_4D(:,:,19,T)
-
-       ! Level 7:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 7) = 0.120_sp   * REGR_4D(:,:,19,T) &
-                                     + 0.385_sp   * REGR_4D(:,:,20,T) &
-                                     + 0.385_sp   * REGR_4D(:,:,21,T) &
-                                     + 0.110_sp   * REGR_4D(:,:,22,T)
-
-       ! Level 8:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 8) = 0.324_sp   * REGR_4D(:,:,22,T) &
-                                     + 0.453_sp   * REGR_4D(:,:,23,T) &
-                                     + 0.223_sp   * REGR_4D(:,:,24,T)
-
-       ! Level 9:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 9) = 0.271_sp   * REGR_4D(:,:,24,T) &
-                                     + 0.533_sp   * REGR_4D(:,:,25,T) &
-                                     + 0.196_sp   * REGR_4D(:,:,26,T)
-
-       ! Level 10:
-       Lct%Dct%Dta%V3(T)%Val(:,:,10) = 0.396_sp   * REGR_4D(:,:,26,T) &
-                                     + 0.604_sp   * REGR_4D(:,:,27,T)
-
-       ! Level 11:
-       Lct%Dct%Dta%V3(T)%Val(:,:,11) = 3.63e-2_sp * REGR_4D(:,:,27,T) &
-                                     + 0.964_sp   * REGR_4D(:,:,28,T)
-
-    ! Map 29 GEOS-5 levels onto 12 GEOS-4 levels (grid edges):
-    ELSEIF ( NZ == 29 ) THEN
-
-       ! Reset
-       Lct%Dct%Dta%V3(T)%Val(:,:,1:12) = 0.0_sp
-
-       ! Level 1
-       Lct%Dct%Dta%V3(T)%Val(:,:, 1) = REGR_4D(:,:,1,T)
-
-       ! Level 2:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 2) = 5.01e-3_sp * REGR_4D(:,:, 1,T) &
-                                     + 0.680_sp   * REGR_4D(:,:, 2,T) &
-                                     + 0.314_sp   * REGR_4D(:,:, 3,T)
-
-       ! Level 3:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 3) = 0.197_sp   * REGR_4D(:,:, 3,T) &
-                                     + 0.366_sp   * REGR_4D(:,:, 4,T) &
-                                     + 0.366_sp   * REGR_4D(:,:, 5,T) &
-                                     + 6.98e-2_sp * REGR_4D(:,:, 6,T)
-
-       ! Level 4:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 4) = 0.194_sp   * REGR_4D(:,:, 6,T) &
-                                     + 0.240_sp   * REGR_4D(:,:, 7,T) &
-                                     + 0.240_sp   * REGR_4D(:,:, 8,T) &
-                                     + 0.240_sp   * REGR_4D(:,:, 9,T) &
-                                     + 8.55e-2_sp * REGR_4D(:,:,10,T)
-
-       ! Level 5:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 5) = 0.139_sp   * REGR_4D(:,:,10,T) &
-                                     + 0.216_sp   * REGR_4D(:,:,11,T) &
-                                     + 0.216_sp   * REGR_4D(:,:,12,T) &
-                                     + 0.216_sp   * REGR_4D(:,:,13,T) &
-                                     + 0.214_sp   * REGR_4D(:,:,14,T)
-
-       ! Level 6:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 6) = 2.20e-2_sp * REGR_4D(:,:,14,T) &
-                                     + 0.275_sp   * REGR_4D(:,:,15,T) &
-                                     + 0.275_sp   * REGR_4D(:,:,16,T) &
-                                     + 0.275_sp   * REGR_4D(:,:,17,T) &
-                                     + 0.173_sp   * REGR_4D(:,:,18,T)
-
-       ! Level 7:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 7) = 0.130_sp   * REGR_4D(:,:,18,T) &
-                                     + 0.345_sp   * REGR_4D(:,:,19,T) &
-                                     + 0.345_sp   * REGR_4D(:,:,20,T) &
-                                     + 0.170_sp   * REGR_4D(:,:,21,T)
-
-       ! Level 8:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 8) = 0.214_sp   * REGR_4D(:,:,21,T) &
-                                     + 0.416_sp   * REGR_4D(:,:,22,T) &
-                                     + 0.370_sp   * REGR_4D(:,:,23,T)
-
-       ! Level 9:
-       Lct%Dct%Dta%V3(T)%Val(:,:, 9) = 5.49e-2_sp * REGR_4D(:,:,23,T) &
-                                     + 0.490_sp   * REGR_4D(:,:,24,T) &
-                                     + 0.455_sp   * REGR_4D(:,:,25,T)
-
-       ! Level 10:
-       Lct%Dct%Dta%V3(T)%Val(:,:,10) = 4.06e-2_sp * REGR_4D(:,:,25,T) &
-                                     + 0.576_sp   * REGR_4D(:,:,26,T) &
-                                     + 0.383_sp   * REGR_4D(:,:,27,T)
-
-       ! Level 11:
-       Lct%Dct%Dta%V3(T)%Val(:,:,11) = 0.254_sp   * REGR_4D(:,:,27,T) &
-                                     + 0.746_sp   * REGR_4D(:,:,28,T)
-
-       ! Level 12:
-       Lct%Dct%Dta%V3(T)%Val(:,:,12) = 1.60e-2_sp * REGR_4D(:,:,28,T) &
-                                     + 0.984_sp   * REGR_4D(:,:,29,T)
-
-    ENDIF
-
-    ! Return with success
-    RC = HCO_SUCCESS
-
-  END SUBROUTINE GEOS5_TO_GEOS4_LOWLEV
-!EOC
-!------------------------------------------------------------------------------
-!                   Harmonized Emissions Component (HEMCO)                    !
-!------------------------------------------------------------------------------
-!BOP
-!
 ! !IROUTINE: COLLAPSE
 !
 ! !DESCRIPTION: Helper routine to collapse input levels onto the output grid.
 ! The input data is weighted by the grid box thicknesses defined on top of
 ! this module. The input parameter T determines the time slice to be considered,
-! and MET denotes the met field type of the input data (4 = GEOS-4 levels, GEOS-5
-! otherwise).
+! and MET denotes the met field type of the input data (22 = GISS, 5= GEOS-5).
 !\\
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE COLLAPSE ( Lct, REGR_4D, OutLev, InLev1, NLEV, T, MET )
+  SUBROUTINE COLLAPSE ( Lct, REGR_4D, OutLev, InLev1, NLEV, T, MET, RC )
 !
 ! !INPUT PARAMETERS:
 !
@@ -1242,11 +998,12 @@ CONTAINS
     INTEGER,          INTENT(IN)     :: InLev1
     INTEGER,          INTENT(IN)     :: NLEV
     INTEGER,          INTENT(IN)     :: T
-    INTEGER,          INTENT(IN)     :: MET               ! 4=GEOS-4, 22=GISS E2.2, else GEOS-5
+    INTEGER,          INTENT(IN)     :: MET               ! 22=GISS E2.2, else GEOS-5
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
     TYPE(ListCont),   POINTER        :: Lct               ! HEMCO list container
+    INTEGER,          INTENT(INOUT)  :: RC                ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  30 Dec 2014 - C. Keller   - Initial version
@@ -1258,6 +1015,8 @@ CONTAINS
     REAL(hp)              :: THICK
     REAL(hp), POINTER     :: EDG(:)
     REAL(hp), ALLOCATABLE :: WGT(:)
+    CHARACTER(LEN=255)      :: MSG
+    CHARACTER(LEN=255)      :: LOC = 'ModelLev_Interpolate (hco_interp_mod.F90)'
 
     !=================================================================
     ! COLLAPSE begins here
@@ -1274,24 +1033,26 @@ CONTAINS
     IF ( NZ < InLev1 ) RETURN
 
     ! Get maximum level to be used for pressure thickness calculations.
-    TOPLEV = InLev1 + ( NLEV-1 )
+    TOPLEV = InLev1 + NLEV
 
     ! Get pointer to grid edges on the native input grid
-    IF ( Met == 4 ) THEN
-       EDG => G4_EDGE_NATIVE(InLev1:TOPLEV)
-    ELSE IF ( Met == 22 ) THEN
+    IF ( Met == 22 ) THEN
        EDG => E102_EDGE_NATIVE(InLev1:TOPLEV)
-    ELSE
+    ELSEIF ( Met == 5 ) THEN 
        EDG => G5_EDGE_NATIVE(InLev1:TOPLEV)
+    ELSE
+       WRITE(MSG,*) 'The Met value given was not valid: ', Met
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Thickness of output level
-    THICK = EDG(1) - EDG(NLEV)
+    THICK = EDG(1) - EDG(NLEV+1)
 
     ! Get level weights
     ALLOCATE(WGT(NLEV))
     WGT = 0.0
-    DO I = 1, NLEV-1
+    DO I = 1, NLEV
        WGT(I) = ( EDG(I) - EDG(I+1) ) / THICK
     ENDDO
 
@@ -1309,74 +1070,5 @@ CONTAINS
     EDG => NULL()
 
   END SUBROUTINE COLLAPSE
-!EOC
-!------------------------------------------------------------------------------
-!                   Harmonized Emissions Component (HEMCO)                    !
-!------------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: INFLATE
-!
-! !DESCRIPTION: Helper routine to inflate input levels onto the output grid.
-! The values on the input data are evenly distributed amongst all output
-! levels.
-!\\
-!\\
-! !INTERFACE:
-!
-  SUBROUTINE INFLATE ( Lct, REGR_4D, InLev, OutLev1, NLEV, T )
-!
-! !INPUT PARAMETERS:
-!
-    REAL(sp),         POINTER        :: REGR_4D(:,:,:,:)  ! 4D input data
-    INTEGER,          INTENT(IN)     :: InLev
-    INTEGER,          INTENT(IN)     :: OutLev1
-    INTEGER,          INTENT(IN)     :: NLEV
-    INTEGER,          INTENT(IN)     :: T
-!
-! !INPUT/OUTPUT PARAMETERS:
-!
-    TYPE(ListCont),   POINTER        :: Lct               ! HEMCO list container
-!
-! !REVISION HISTORY:
-!  30 Dec 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/hemco for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-    INTEGER :: I, DZ, NZ, ILEV
-
-    !=================================================================
-    ! INFLATE begins here
-    !=================================================================
-
-    ! Get input data array
-    NZ = SIZE( REGR_4D, 3 )
-
-    ! Get size of data array in the HEMCO state (bmy, 22 Mar 2022)
-    DZ = SIZE( Lct%Dct%Dta%V3(T)%Val, 3 )
-
-    ! Do for every output level
-    DO I = 1, NLEV
-
-       ! Current output level
-       ILEV = OutLev1 + I - 1
-
-       ! Avoid out-of-bounds errors if ILEV is greater than the
-       ! number of levels in Lct%Dct%Dta%V3(T)%Val (bmy, 22 Mar 2022)
-       IF ( ILEV > DZ ) EXIT
-
-       ! If input level is beyond vert. extent of input data, set output
-       ! data to zero.
-       IF ( InLev > NZ ) THEN
-          Lct%Dct%Dta%V3(T)%Val(:,:,ILEV) = 0.0_hp
-
-       ! Otherwise, evenly distribute input data
-       ELSE
-          Lct%Dct%Dta%V3(T)%Val(:,:,ILEV) = REGR_4D(:,:,InLev,T)
-       ENDIF
-    ENDDO
-
-  END SUBROUTINE INFLATE
 !EOC
 END MODULE HCO_Interp_Mod

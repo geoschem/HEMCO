@@ -92,8 +92,7 @@ MODULE HCOX_GFED_MOD
   ! N_SPEC  : Max. number of species
   !=================================================================
   INTEGER,           PARAMETER :: N_EMFAC = 6
-  INTEGER,           PARAMETER :: N_SPEC  = 35 ! increase from 34 (v12.5.0 default)
-                                               ! to 35 for MOH
+  INTEGER,           PARAMETER :: N_SPEC  = 45
 !
 ! !PRIVATE TYPES:
 !
@@ -766,8 +765,16 @@ CONTAINS
 
     ! Prompt to log file
     IF ( HcoState%amIRoot ) THEN
-       MSG = 'Use GFED extension'
-       CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+
+       ! Write the name of the extension regardless of the verbose setting
+       msg = 'Using HEMCO extension: GFED (biomass burning)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
+       ENDIF
+
+       ! Write all other messages as debug printout only
        WRITE(MSG,*) '   - Use GFED-4              : ', Inst%IsGFED4
        CALL HCO_MSG(HcoState%Config%Err,MSG )
        WRITE(MSG,*) '   - Use daily scale factors : ', Inst%DoDay

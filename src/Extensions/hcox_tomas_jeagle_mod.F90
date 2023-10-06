@@ -1,4 +1,3 @@
-#if defined( TOMAS )
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -27,6 +26,7 @@
 ! !INTERFACE:
 !
 MODULE HCOX_TOMAS_Jeagle_Mod
+#if defined( TOMAS )
 !
 ! !USES:
 !
@@ -383,6 +383,19 @@ CONTAINS
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
         RETURN
+    ENDIF
+
+    ! Only print on the root core
+    IF ( HcoState%amIRoot ) THEN
+
+       ! Write the name of the extension regardless of the verbose setting
+       msg = &
+        'Using HEMCO extension: TOMAS_Jeagle (sea salt emissions for TOMAS)'
+       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       ELSE
+          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+       ENDIF
     ENDIF
 
     ! Create Instance
@@ -833,5 +846,5 @@ CONTAINS
 
    END SUBROUTINE InstRemove
 !EOC
-END MODULE HCOX_TOMAS_Jeagle_Mod
 #endif
+END MODULE HCOX_TOMAS_Jeagle_Mod
