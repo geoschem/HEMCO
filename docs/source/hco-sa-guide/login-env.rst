@@ -48,60 +48,72 @@ cluster.  This file will load software libraries built with the GNU
 10.2.0 compilers.
 
 Save the code below (with any appropriate modifications for your own
-computer system) to a file named :file:`~/gnu102.env`.
+computer system) to a file named :file:`~/gnu10.env`.
 
 .. code-block:: bash
 
-   # Echo message if we are in a interactive (terminal) session
-   if [[ $- = *i* ]] ; then
-     echo "Loading modules for GEOS-Chem, please wait ..."
-   fi
-
    #==============================================================================
-   # Modules (specific to Cannon @ Harvard)
+   # Load software packages (EDIT AS NEEDED)
    #==============================================================================
 
-   # Remove previously-loaded modules
+   # Unload all modules first
    module purge
 
-   # Load modules for GNU Compilers v10.2.0
-   module load git/2.17.0-fasrc01
-   module load gcc/10.2.0-fasrc01
-   module load openmpi/4.1.0-fasrc01
-   module load netcdf-fortran/4.5.3-fasrc03
-   module load flex/2.6.4-fasrc01
-   module load cmake/3.17.3-fasrc01
+   # Load modules
+   module load gcc/10.2.0-fasrc01             # gcc / g++ / gfortran
+   module load openmpi/4.1.0-fasrc01          # MPI
+   module load netcdf-c/4.8.0-fasrc01         # netcdf-c
+   module load netcdf-fortran/4.5.3-fasrc01   # netcdf-fortran
+   module load flex/2.6.4-fasrc01             # Flex lexer (needed for KPP)
+   module load cmake/3.25.2-fasrc01           # CMake (needed to compile)
 
    #==============================================================================
-   # Environment variables
+   # Environment variables and related settings
+   # (NOTE: Lmod will define <module>_HOME variables for each loaded module
    #==============================================================================
-
-   # Parallelization settings
-   export OMP_NUM_THREADS=8
-   export OMP_STACKSIZE=500m
 
    # Make all files world-readable by default
    umask 022
 
-   # Specify compilers
-   export CC=gcc
-   export CXX=g++
-   export FC=gfortran
+   # Set number of threads for OpenMP.  If running in a SLURM environment,
+   # use the number of requested cores.  Otherwise use 8 cores for OpenMP.
+   if [[ "x${SLURM_CPUS_PER_TASK}" == "x" ]]; then
+       export OMP_NUM_THREADS=8
+   else
+       export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK}"
+   fi
 
-   # Netcdf variables for CMake
-   # NETCDF_HOME and NETCDF_FORTRAN_HOME are automatically
-   # defined by the "module load" commands on Cannon.
-   export NETCDF_C_ROOT=${NETCDF_HOME}
-   export NETCDF_FORTRAN_ROOT=${NETCDF_FORTRAN_HOME}
+   # Max out the stacksize memory limit
+   export OMP_STACKSIZE="500m"
 
-   # Set memory limits to max allowable
-   ulimit -c unlimited              # coredumpsize
-   ulimit -l unlimited              # memorylocked
-   ulimit -u 50000                  # maxproc
-   ulimit -v unlimited              # vmemoryuse
-   ulimit -s unlimited              # stacksize
+   # Compilers
+   export CC="gcc"
+   export CXX="g++"
+   export FC="gfortran"
+   export F77="${FC}"
 
-   # List modules loaded
+   # netCDF
+   if [[ "x${NETCDF_HOME}" == "x" ]]; then
+      export NETCDF_HOME="${NETCDF_C_HOME}"
+   fi
+   export NETCDF_C_ROOT="${NETCDF_HOME}"
+   export NETCDF_FORTRAN_ROOT="${NETCDF_FORTRAN_HOME}"
+
+   # KPP 3.0.0+
+   export KPP_FLEX_LIB_DIR="${FLEX_HOME}/lib64"
+
+   #==============================================================================
+   # Set limits
+   #==============================================================================
+
+   ulimit -c unlimited   # coredumpsize
+   ulimit -u 50000       # maxproc
+   ulimit -v unlimited   # vmemoryuse
+   ulimit -s unlimited   # stacksize
+
+   #==============================================================================
+   # Print information
+   #==============================================================================
    module list
 
 .. tip::
@@ -115,73 +127,85 @@ Then you can activate these seetings from the command line by typing:
 
 .. code-block:: console
 
-   $ source ~/gnu102.env
+   $ source ~/gnu10.env
 
 .. _hco-sa-login-intel:
 
-==============================================
-Sample environment file for Intel 19 compilers
-==============================================
+================================================
+Sample environment file for Intel 2023 compilers
+================================================
 
-To load software libraries based on the Intel 19 compilers, we can
-start from our :ref:`GNU 10.2.0 environment file <hco-sa-login-gnu>`
-and add the proper :command:`module load` commands for Intel 19.
+Below is a sample environment file from the Harvard Cannon computer
+cluster.  This file will load software libraries built with the Intel
+2023 compilers.
 
 Add the code below (with the appropriate modifications for your
-system) into a file named :file:`~/intel19.env`.
+system) into a file named :file:`~/intel23.env`.
 
 .. code-block:: bash
 
-   # Echo message if we are in a interactive (terminal) session
-   if [[ $- = *i* ]] ; then
-     echo "Loading modules for GEOS-Chem, please wait ..."
-   fi
-
    #==============================================================================
-   # Modules (specific to Cannon @ Harvard)
+   # Load software packages (EDIT AS NEEDED)
    #==============================================================================
 
-   # Remove previously-loaded modules
+   # Unload all modules first
    module purge
 
-   # Load modules for Intel compilers v19.0.4
-   module load git/2.17.0-fasrc01
-   module load intel/19.0.5-fasrc01
-   module load openmpi/4.0.1-fasrc01
-   module load netcdf-fortran/4.5.2-fasrc03
-   module load flex/2.6.4-fasrc01
-   module load cmake/3.17.3-fasrc01
+   # Load modules
+   module load intel/23.0.0-fasrc01           # icc / i++ / gfortran
+   module load intelmpi/2021.8.0-fasrc01      # MPI
+   module load netcdf-fortran/4.6.0-fasrc03   # netCDF-Fortran
+   module load flex/2.6.4-fasrc01             # Flex lexer (needed for KPP)
+   module load cmake/3.25.2-fasrc01           # CMake (needed to compile)
 
    #==============================================================================
-   # Environment variables
+   # Environment variables and related settings
+   # (NOTE: Lmod will define <module>_HOME variables for each loaded module
    #==============================================================================
-
-   # Parallelization settings
-   export OMP_NUM_THREADS=8
-   export OMP_STACKSIZE=500m
 
    # Make all files world-readable by default
    umask 022
 
-   # Specify compilers
-   export CC=icc
-   export CXX=icpc
-   export FC=ifort
+   # Set number of threads for OpenMP.  If running in a SLURM environment,
+   # use the number of requested cores.  Otherwise use 8 cores for OpenMP.
+   if [[ "x${SLURM_CPUS_PER_TASK}" == "x" ]]; then
+       export OMP_NUM_THREADS=8
+   else
+       export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK}"
+   fi
 
-   # Netcdf variables for CMake
-   # NETCDF_HOME and NETCDF_FORTRAN_HOME are automatically
-   # defined by the "module load" commands on Cannon.
-   export NETCDF_C_ROOT=${NETCDF_HOME}
-   export NETCDF_FORTRAN_ROOT=${NETCDF_FORTRAN_HOME}
+   # Max out the stacksize memory limit
+   export OMP_STACKSIZE="500m"
 
-   # Set memory limits to max allowable
-   ulimit -c unlimited              # coredumpsize
-   ulimit -l unlimited              # memorylocked
-   ulimit -u 50000                  # maxproc
-   ulimit -v unlimited              # vmemoryuse
-   ulimit -s unlimited              # stacksize
+   # Compilers
+   export CC="icx"
+   export CXX="icx"
+   export FC="ifort"
+   export F77="${FC}"
 
-   # List modules loaded
+   # netCDF
+   if [[ "x${NETCDF_HOME}" == "x" ]]; then
+      export NETCDF_HOME="${NETCDF_C_HOME}"
+   fi
+   export NETCDF_C_ROOT="${NETCDF_HOME}"
+   export NETCDF_FORTRAN_ROOT="${NETCDF_FORTRAN_HOME}"
+
+   # KPP 3.0.0+
+   export KPP_FLEX_LIB_DIR="${FLEX_HOME}/lib64"
+
+   #==============================================================================
+   # Set limits
+   #==============================================================================
+
+   ulimit -c unlimited   # coredumpsize
+   ulimit -u 50000       # maxproc
+   ulimit -v unlimited   # vmemoryuse
+   ulimit -s unlimited   # stacksize
+
+   #==============================================================================
+   # Print information
+   #==============================================================================
+
    module list
 
 .. tip::
@@ -195,7 +219,7 @@ Then you can activate these seetings from the command line by typing:
 
 .. code-block:: console
 
-   $ source intel19.env
+   $ source intel23.env
 
 .. tip::
 
@@ -217,9 +241,9 @@ specify the compilers that you wish to use:
    +---------------+------------------+--------------------+-----------------+
    | Variable      | Specifies the:   | GNU name           | Intel name      |
    +===============+==================+====================+=================+
-   | :envvar:`CC`  | C compiler       | :envvar:`gcc`      | :envvar:`icc`   |
+   | :envvar:`CC`  | C compiler       | :envvar:`gcc`      | :envvar:`icx`   |
    +---------------+------------------+--------------------+-----------------+
-   | :envvar:`CXX` | C++ compiler     | :envvar:`g++`      | :envvar:`icpc`  |
+   | :envvar:`CXX` | C++ compiler     | :envvar:`g++`      | :envvar:`icx`   |
    +---------------+------------------+--------------------+-----------------+
    | :envvar:`FC`  | Fortran compiler | :envvar:`gfortran` | :envvar:`ifort` |
    +---------------+------------------+--------------------+-----------------+
@@ -229,10 +253,15 @@ These environment variables should be defined in your
 
 .. note::
 
-   Only the Fortran compiler is needed to compile the HEMCO
-   standalone.  But if you need to :ref:`manually install libraries
-   <build-libraries-with-spack>`, you will also need the C and C++
-   compilers.
+   HEMCOc only requires the Fortran compiler.  But you will
+   also need the C and C++ compilers if you plan to build other
+   software packages (:ref:`such as KPP <kppguide>`) or :ref:`install
+   libraries manually <build-libraries-with-spack>`.
+
+   Also, older Intel compiler versions used :envvar:`icc` as the name
+   for the C compiler and :envvar:`icpc` as the name of the C++ compiler.
+   These names have been deprecated in Intel 2023 and will be removed
+   from future Intel compiler releases.
 
 .. _hco-sa-envvar-parallel:
 
@@ -269,7 +298,7 @@ control the OpenMP parallelization settings:
 
 .. option:: OMP_STACKSIZE
 
-   In order to use HEMCO standalone with `OpenMP 
+   In order to use HEMCO standalone with `OpenMP
    parallelization <Parallelizing_GEOS-Chem>`_, you must request the
    maximum amount of stack memory in your login environment. (The
    stack memory is where local automatic variables and temporary

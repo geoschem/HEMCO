@@ -50,6 +50,7 @@ these compilers.
 The GCST has tested :program:`HEMCO` with these versions (but others
 may work as well):
 
+- 23.0.0
 - 19.0.5.281
 - 19.0.4
 - 18.0.5
@@ -58,14 +59,11 @@ may work as well):
 - 13.0.079
 - 11.1.069
 
-**Best way to install:**  `Direct from Intel
+**Best way to install:** With :ref:`Spack <spackguide>` (Intel 2021
+and later); `Directly
+from Intel
 <https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/fortran-compiler.html>`_
-(may require purchase of a site license or a student license)
-
-.. tip::
-
-   Intel 2021 may be obtained for free, or installed with a
-   package manager such as :ref:`Spack <spackguide>`.
+(older versions).
 
 .. _hco-sa-soft-gnu:
 
@@ -81,6 +79,7 @@ are running HEMCO standalone on the Amazon EC2 cloud environment.
 The GCST has tested HEMCO standalone with these versions
 (but others may work as well):
 
+- 12.2.0
 - 11.2.0
 - 11.1.0
 - 10.2.0
@@ -170,7 +169,7 @@ horizontal plots from HEMCO output. It also contains scripts to
 generate plots and tables from HEMCO benchmark simulations.
 
 **Best way to install:**
-`With Conda (see gcpy.readthedocs.io) <https://gcpy.readthedocs.io/en/stable/Getting-Started-with-GCPy.html>`__
+`With Mamba or Conda (see gcpy.readthedocs.io) <https://gcpy.readthedocs.io/en/stable/Getting-Started-with-GCPy.html>`__
 
 .. _hco-sa-soft-gdb:
 

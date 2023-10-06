@@ -35,7 +35,21 @@ comment lines:
    ### BEGIN SECTION SETTINGS
    ###############################################################################
 
-   settings go here
+   ROOT:                        /path/to/hemco/data/dir
+   METDIR:                      /path/to/hemco/met/dir
+   GCAPSCENARIO:                not_used
+   GCAPVERTRES:                 47
+   Logfile:                     *
+   DiagnFile:                   HEMCO_Diagn.rc
+   DiagnPrefix:                 ./OutputDir/HEMCO_diagnostics
+   DiagnFreq:                   00000000 010000
+   Wildcard:                    *
+   Separator:                   /
+   Unit tolerance:              1
+   Negative values:             0
+   Only unitless scale factors: false
+   Verbose:                     false
+   VerboseOnCores:              root       # Accepted values: root all
 
    ### END SECTION SETTINGS ###
 
@@ -59,6 +73,18 @@ These settings control HEMCO simulation options.
 
    Root folder of meteorology data files that are needed for HEMCO
    extensions.  Usually this is a subdirectory of :option:`ROOT`.
+
+.. option:: GCAPSCENARIO:
+
+   Specifies the future scenario when using GCAP meteorology.
+
+   Default value: :literal:`not used`
+
+.. option:: GCAPVERTRES
+
+   Specifies the number of vertical levels for GCAP meteorology.
+
+   Default value: :literal:`47`
 
 .. option:: MODEL
 
@@ -118,20 +144,20 @@ These settings control HEMCO simulation options.
 
 .. option:: Verbose
 
-   Integer value that controls the amount of additional information
-   printed to the HEMCO log file.  Allowable values are :literal:`0`
-   (no additional output) to :literal:`3` (lots of additional output).
-   Setting  :literal:`3` is useful for debugging.
+   Activates (:literal:`true`) or deactivates (:literal:`false`)
+   additional printout for debugging purposes.
 
-   **Default setting**: :literal:`0`.
+   **Default setting**: :literal:`false`
 
-.. option:: Warnings
+.. option:: VerboseOnCores
 
-   Integer value that controls the amount of warnings printed
-   to the HEMCO log file.  Allowable values are :literal:`0` (no
-   warnings) to :literal:`3` (all warnings).
+   Specifies whether :option:`Verbose` printout will be restricted to
+   the :literal:`root` core, or will be printed on :literal:`all`
+   cores.  This facilitates running HEMCO in Earth System Models,
+   where the additional overhead of printing verbose output on every
+   core could negatively impact performance.
 
-   **Default setting**: :literal:`1` (only severe warnings).
+   **Default setting:** :literal:`root`
 
 .. option:: Wildcard
 
