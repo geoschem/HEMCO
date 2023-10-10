@@ -1,3 +1,7 @@
+.. |br| raw:: html
+
+   <br />
+
 .. _hco-sa-soft:
 
 ###################################
@@ -9,15 +13,17 @@ installed on your system in order to use :program:`HEMCO standalone`.
 
 - If you are using a shared computer cluster, then many of these
   libraries have probably already been pre-installed by your IT
-  staff.  Consult with them for more information.
+  staff.  Consult with them for more information. |br|
+  |br|
 
 - If you plan to run HEMCO standalone on the Amazon Web services
   cloud, then all of these libraries will be included with the Amazon
-  Machine Image (AMI) that you will use to start your cloud instance.
+  Machine Image (AMI) that you will use to start your cloud instance. |br|
+  |br|
 
 - If your computer cluster has none of these libraries installed, then
-  you will have to install them yourself
-  (cf. :ref:`build-libraries-with-spack`).
+  you will have to install them yourself.  See our supplemental guide
+  :ref:`spackguide` for detailed installation instructions.
 
 .. _hco-sa-soft-compilers:
 
@@ -44,6 +50,7 @@ these compilers.
 The GCST has tested :program:`HEMCO` with these versions (but others
 may work as well):
 
+- 23.0.0
 - 19.0.5.281
 - 19.0.4
 - 18.0.5
@@ -52,14 +59,11 @@ may work as well):
 - 13.0.079
 - 11.1.069
 
-**Best way to install:**  `Direct from Intel
+**Best way to install:** With :ref:`Spack <spackguide>` (Intel 2021
+and later); `Directly
+from Intel
 <https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/fortran-compiler.html>`_
-(may require purchase of a site license or a student license)
-
-.. tip::
-
-   Intel 2021 may be obtained for free, or installed with a
-   package manager such as `Spack <https://spack.readthedocs.io>`_.
+(older versions).
 
 .. _hco-sa-soft-gnu:
 
@@ -75,6 +79,7 @@ are running HEMCO standalone on the Amazon EC2 cloud environment.
 The GCST has tested HEMCO standalone with these versions
 (but others may work as well):
 
+- 12.2.0
 - 11.2.0
 - 11.1.0
 - 10.2.0
@@ -86,8 +91,7 @@ The GCST has tested HEMCO standalone with these versions
 - 7.1.0
 - 6.2.0
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _required-software-packages:
 
@@ -120,8 +124,7 @@ or scripts that direct how the HEMCO source code will be compiled
 into an executable.  You will need CMake version 3.13 or later to
 build HEMCO.
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _hco-sa-soft-make:
 
@@ -132,8 +135,7 @@ as **make**) is software that can build executables from source code.
 It executes the instructions in the Makefiles created by
 :ref:`hco-sa-soft-cmake`.
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _hco-sa-soft-netcdf:
 
@@ -145,8 +147,7 @@ HEMCO input and output data files use the netCDF file format
 hat allows meadata (descriptive text) to be stored alongside data
 values.
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _optional-but-recommended-software-packages:
 
@@ -168,7 +169,7 @@ horizontal plots from HEMCO output. It also contains scripts to
 generate plots and tables from HEMCO benchmark simulations.
 
 **Best way to install:**
-`With Conda (see gcpy.readthedocs.io) <https://gcpy.readthedocs.io/en/stable/Getting-Started-with-GCPy.html>`__
+`With Mamba or Conda (see gcpy.readthedocs.io) <https://gcpy.readthedocs.io/en/stable/Getting-Started-with-GCPy.html>`__
 
 .. _hco-sa-soft-gdb:
 
@@ -179,8 +180,7 @@ graphical interface (cgdb) <https://cgdb.github.io/>`_ are very useful
 tools for tracking down the source of HEMCO errors, such
 as segmentation faults, out-of-bounds errors, etc.
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _hco-sa-soft-ncview:
 
@@ -201,8 +201,7 @@ nco
 powerful command-line tools for editing and manipulating data in
 netCDF format.
 
-**Best way to install:**  :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:**  :ref:`With Spack <spackguide>`.
 
 .. _hco-sa-soft-cdo:
 
@@ -213,5 +212,4 @@ cdo
 command-line utilities for editing and manipulating data in netCDF
 format.
 
-**Best way to install:** :ref:`With Spack
-<build-libraries-with-spack>`.
+**Best way to install:** :ref:`With Spack <spackguide>`.

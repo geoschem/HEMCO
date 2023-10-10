@@ -294,6 +294,7 @@ mkdir -p ${rundir}
 
 # Copy run directory files and subdirectories
 cp -r ./OutputDir ${rundir}
+mkdir -p ${rundir}/Restarts
 cp ./HEMCO_sa_Config.template       ${rundir}/HEMCO_sa_Config.rc
 cp ./HEMCO_sa_Time.rc               ${rundir}
 cp ./HEMCO_sa_Spec.rc               ${rundir}

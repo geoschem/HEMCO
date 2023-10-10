@@ -21,13 +21,24 @@ different branch.  For example, to check out the **dev** branch, type:
 
   $ git checkout dev
 
-You can also check out the :program:`HEMCO` source code at the
-position of any tag.  For example, to use the :program:`HEMCO` version
-3.0.0 code (which is by now an old version), type:
+.. tip::
 
-.. code-block:: console
+   To use an older HEMCO version (e.g. 3.0.0), follow
+   these additional steps:
 
-   $ git checkout tags/3.0.0
+   .. code-block:: console
 
-If you have any unsaved changes, make sure you commit those to a
-branch prior to updating versions.
+      $ git checkout tags/3.0.0                  # Points HEAD to the tag "3.0.0"
+      $ git branch version_3.0.0                 # Creates a new branch at tag "3.0.0"
+      $ git checkout version_3.0.0               # Checks out the version_3.0.0 branch
+      $ git submodule update --init --recursive  # Reverts submodules to the "3.0.0" tag
+
+   You can do this for any tag in the version history.   For a list of
+   all tags, type:
+
+   .. code-block:: console
+
+      $ git tag
+
+   If you have any unsaved changes, make sure you commit those to a
+   branch prior to updating versions.

@@ -17,6 +17,7 @@ MODULE HCO_NCDF_MOD
 ! !USES:
 !
   ! Modules for netCDF read
+  USE netCDF
   USE HCO_m_netcdf_io_open
   USE HCO_m_netcdf_io_get_dimlen
   USE HCO_m_netcdf_io_read
@@ -26,10 +27,10 @@ MODULE HCO_NCDF_MOD
   USE HCO_m_netcdf_io_define
   USE HCO_m_netcdf_io_write
   USE HCO_m_netcdf_io_checks
+  USE HCO_PRECISION_MOD, ONLY : SP => f4, DP => f8
 
   IMPLICIT NONE
   PRIVATE
-# include "netcdf.inc"
 !
 ! !PUBLIC MEMBER FUNCTIONS:
 !
@@ -49,8 +50,6 @@ MODULE HCO_NCDF_MOD
   PUBLIC  :: NC_GET_GRID_EDGES
   PUBLIC  :: NC_GET_SIGMA_LEVELS
   PUBLIC  :: NC_WRITE
-  PUBLIC  :: NC_ISMODELLEVEL
-  PUBLIC  :: NC_ISSIGMALEVEL
   PUBLIC  :: GET_TAU0
 !
 ! !PRIVATE MEMBER FUNCTIONS:
@@ -84,8 +83,7 @@ MODULE HCO_NCDF_MOD
   PRIVATE :: NC_READ_VAR_CORE
 !
 ! !REVISION HISTORY:
-!  27 Jul 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -156,8 +154,7 @@ CONTAINS
     INTEGER,          INTENT(OUT) :: fID
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -196,8 +193,7 @@ CONTAINS
     INTEGER,          OPTIONAL    :: nTime
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -216,11 +212,7 @@ CONTAINS
     ! Also return the number of time slices so that we can
     ! append to an existing file w/o clobbering any data
     IF ( PRESENT( nTime ) ) THEN
-       nTime = -1
-       RC = Nf_Inq_DimId( fId, 'time', vId )
-       IF ( RC == NF_NOERR ) THEN
-          RC = Nf_Inq_DimLen( fId, vId, nTime )
-       ENDIF
+       CALL Ncget_Unlim_Dimlen( fId, nTime )
     ENDIF
 
   END SUBROUTINE NC_APPEND
@@ -245,8 +237,7 @@ CONTAINS
     INTEGER, INTENT(IN   ) :: fID
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -284,8 +275,7 @@ CONTAINS
 !  NcdfUtil module m_netcdf_define_mod.F90.
 !
 ! !REVISION HISTORY:
-!  06 Jan 2015 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -348,8 +338,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)            :: RC
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -435,11 +424,11 @@ CONTAINS
              ! Do nothing
         END SELECT
        ENDIF
-       
+
        ! Reset RC so that we won't halt execution elsewhere
        RC = 0
     ENDIF
-    
+
   END SUBROUTINE NC_READ_TIME
 !EOC
 !------------------------------------------------------------------------------
@@ -474,8 +463,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)            :: RC
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -516,8 +504,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)            :: RC
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -559,8 +546,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)            :: RC
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -711,8 +697,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)         :: RC
 !
 ! !REVISION HISTORY:
-!  27 Jul 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1193,12 +1178,12 @@ CONTAINS
     a_name  = "missing_value"
     ReadAtt = Ncdoes_Attr_Exist ( fId, TRIM(v_name), TRIM(a_name), a_type )
     IF ( ReadAtt ) THEN
-       IF ( a_type == NF_REAL ) THEN
+       IF ( a_type == NF90_REAL ) THEN
           CALL NcGet_Var_Attributes( fId, TRIM(v_name), TRIM(a_name), miss4 )
           WHERE ( ncArr == miss4 )
              ncArr = MissValue
           END WHERE
-       ELSE IF ( a_type == NF_DOUBLE ) THEN
+       ELSE IF ( a_type == NF90_DOUBLE ) THEN
           CALL NcGet_Var_Attributes( fId, TRIM(v_name), TRIM(a_name), miss8 )
           miss4 = REAL( miss8 )
           WHERE ( ncArr == miss4 )
@@ -1211,12 +1196,12 @@ CONTAINS
     a_name  = "_FillValue"
     ReadAtt = Ncdoes_Attr_Exist ( fId, TRIM(v_name), TRIM(a_name), a_type )
     IF ( ReadAtt ) THEN
-       IF ( a_type == NF_REAL ) THEN
+       IF ( a_type == NF90_REAL ) THEN
           CALL NcGet_Var_Attributes( fId, TRIM(v_name), TRIM(a_name), miss4 )
           WHERE ( ncArr == miss4 )
              ncArr = MissValue
           END WHERE
-       ELSE IF ( a_type == NF_DOUBLE ) THEN
+       ELSE IF ( a_type == NF90_DOUBLE ) THEN
           CALL NcGet_Var_Attributes( fId, TRIM(v_name), TRIM(a_name), miss8 )
           miss4 = REAL( miss8 )
           WHERE ( ncArr == miss4 )
@@ -1301,8 +1286,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT)           :: RC
 !
 ! !REVISION HISTORY:
-!  27 Jul 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1437,8 +1421,7 @@ CONTAINS
 ! !REMARKS:
 !
 ! !REVISION HISTORY:
-!  18 Jan 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1655,8 +1638,7 @@ CONTAINS
 ! !REMARKS:
 !
 ! !REVISION HISTORY:
-!  04 Nov 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1819,8 +1801,7 @@ CONTAINS
 ! !REMARKS:
 !
 ! !REVISION HISTORY:
-!  18 Jan 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -1996,8 +1977,8 @@ CONTAINS
 !
     INTEGER,          INTENT(IN   ) :: fID             ! Ncdf File ID
     INTEGER,          INTENT(IN   ) :: AXIS            ! 1=lon, 2=lat
-    REAL*4,           INTENT(IN   ) :: MID(NMID)       ! midpoints
     INTEGER,          INTENT(IN   ) :: NMID            ! # of midpoints
+    REAL*4,           INTENT(IN   ) :: MID(NMID)       ! midpoints
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -2006,8 +1987,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  16 Jul 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2047,8 +2027,8 @@ CONTAINS
 !
     INTEGER,          INTENT(IN   ) :: fID             ! Ncdf File ID
     INTEGER,          INTENT(IN   ) :: AXIS            ! 1=lon, 2=lat
-    REAL*8,           INTENT(IN   ) :: MID(NMID)       ! midpoints
     INTEGER,          INTENT(IN   ) :: NMID            ! # of midpoints
+    REAL*8,           INTENT(IN   ) :: MID(NMID)       ! midpoints
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -2057,8 +2037,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  16 Jul 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2095,9 +2074,9 @@ CONTAINS
 !
     INTEGER,          INTENT(IN   ) :: fID             ! Ncdf File ID
     INTEGER,          INTENT(IN   ) :: AXIS            ! 1=lon, 2=lat
+    INTEGER,          INTENT(IN   ) :: NMID            ! # of midpoints
     REAL*4, OPTIONAL, INTENT(IN   ) :: MID4(NMID)       ! midpoints
     REAL*8, OPTIONAL, INTENT(IN   ) :: MID8(NMID)       ! midpoints
-    INTEGER,          INTENT(IN   ) :: NMID            ! # of midpoints
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -2107,8 +2086,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  16 Jul 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2311,8 +2289,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  03 Oct 2014 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2359,8 +2336,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  03 Oct 2014 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2418,8 +2394,7 @@ CONTAINS
     REAL*8, OPTIONAL, POINTER       :: SigLev8(:,:,:)  ! specified boundaries
 !
 ! !REVISION HISTORY:
-!  03 Oct 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2600,8 +2575,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  03 Oct 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2841,8 +2815,7 @@ CONTAINS
     INTEGER,          INTENT(INOUT) :: RC              ! Return code
 !
 ! !REVISION HISTORY:
-!  03 Oct 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2922,8 +2895,7 @@ CONTAINS
 !  with subsequent hand-editing.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -2996,8 +2968,7 @@ CONTAINS
 !  with subsequent hand-editing.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3071,8 +3042,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3114,7 +3084,7 @@ CONTAINS
     CALL NcCr_Wr( fId, TRIM(ncFile) )
 
     ! Turn filling off
-    CALL NcSetFill( fId, NF_NOFILL, omode )
+    CALL NcSetFill( fId, NF90_NOFILL, omode )
 
     !--------------------------------
     ! GLOBAL ATTRIBUTES
@@ -3169,7 +3139,7 @@ CONTAINS
     ! Define the "lon" variable
     v_name = "lon"
     var1d = (/ id_lon /)
-    CALL NcDef_Variable( fId, TRIM(v_name), NF_FLOAT, 1, var1d, vId )
+    CALL NcDef_Variable( fId, TRIM(v_name), NF90_FLOAT, 1, var1d, vId )
 
     ! Define the "lon:long_name" attribute
     a_name = "long_name"
@@ -3188,7 +3158,7 @@ CONTAINS
     ! Define the "lat" variable
     v_name = "lat"
     var1d = (/ id_lat /)
-    CALL NcDef_Variable( fId, TRIM(v_name), NF_FLOAT, 1, var1d, vId )
+    CALL NcDef_Variable( fId, TRIM(v_name), NF90_FLOAT, 1, var1d, vId )
 
     ! Define the "lat:long_name" attribute
     a_name = "long_name"
@@ -3209,7 +3179,7 @@ CONTAINS
        ! Define the "levels" variable
        v_name = "lev"
        var1d = (/ id_lev /)
-       CALL NcDef_Variable( fId, TRIM(v_name), NF_INT, 1, var1d, vId )
+       CALL NcDef_Variable( fId, TRIM(v_name), NF90_INT, 1, var1d, vId )
 
        ! Define the "time:long_name" attribute
        a_name = "long_name"
@@ -3229,7 +3199,7 @@ CONTAINS
     ! Define the "time" variable
     v_name = "time"
     var1d = (/ id_time /)
-    CALL NcDef_Variable( fId, TRIM(v_name), NF_INT, 1, var1d, vId )
+    CALL NcDef_Variable( fId, TRIM(v_name), NF90_INT, 1, var1d, vId )
 
     ! Define the "time:long_name" attribute
     a_name = "long_name"
@@ -3250,10 +3220,10 @@ CONTAINS
        v_name = TRIM(ncVars(I))
        IF ( PRESENT(nlev) ) THEN
           var4d = (/ id_lon, id_lat, id_lev, id_time /)
-          CALL NcDef_Variable(fId,TRIM(v_name),NF_DOUBLE,4,var4d,vId)
+          CALL NcDef_Variable(fId,TRIM(v_name),NF90_DOUBLE,4,var4d,vId)
        ELSE
           var3d = (/ id_lon, id_lat, id_time /)
-          CALL NcDef_Variable(fId,TRIM(v_name),NF_DOUBLE,3,var3d,vId)
+          CALL NcDef_Variable(fId,TRIM(v_name),NF90_DOUBLE,3,var3d,vId)
        ENDIF
 
        ! Define the long_name attribute
@@ -3314,8 +3284,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  30 Jan 2012 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3398,8 +3367,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  30 Jan 2012 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3452,8 +3420,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  30 Jan 2012 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3540,8 +3507,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3647,7 +3613,7 @@ CONTAINS
     CALL NcCr_Wr( fId, TRIM( ncFile ), Save_As_Nc4 )
 
     ! Turn filling off
-    CALL NcSetFill( fId, NF_NOFILL, omode )
+    CALL NcSetFill( fId, NF90_NOFILL, omode )
 
     !=======================================================================
     ! Set global attributes
@@ -3778,8 +3744,7 @@ CONTAINS
 !  (2) The NcdfUtilities package (from Bob Yantosca) source code
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -3791,7 +3756,7 @@ CONTAINS
 
     ! Scalars
     INTEGER              :: nDim,     Pos
-    INTEGER              :: NF_TYPE,  tmpIlevId
+    INTEGER              :: NF90_TYPE,  tmpIlevId
     LOGICAL              :: isDefMode
 
     ! Strings
@@ -3858,20 +3823,20 @@ CONTAINS
 
     ! Set data type
     IF ( DataType == 1 ) THEN
-       NF_TYPE = NF_INT
+       NF90_TYPE = NF90_INT
     ELSEIF ( DataType == 4 ) THEN
-       NF_TYPE = NF_FLOAT
+       NF90_TYPE = NF90_FLOAT
     ELSEIF ( DataType == 8 ) THEN
-       NF_TYPE = NF_DOUBLE
+       NF90_TYPE = NF90_DOUBLE
     ELSE
-       NF_TYPE = NF_FLOAT
+       NF90_TYPE = NF90_FLOAT
     ENDIF
 
     !-----------------------------------------------------------------------
     ! Define variable
     !-----------------------------------------------------------------------
-    CALL NcDef_Variable( fId,  TRIM(VarName), NF_TYPE,              &
-                         nDim, VarDims,       VarCt,     Compress  )
+    CALL NcDef_Variable( fId,  TRIM(VarName), NF90_TYPE,                     &
+                         nDim, VarDims,       VarCt,      Compress          )
     DEALLOCATE( VarDims )
 
     !-----------------------------------------------------------------------
@@ -3880,11 +3845,11 @@ CONTAINS
 
     ! long_name (reuired)
     Att = 'long_name'
-    CALL NcDef_Var_Attributes(  fId, VarCt, TRIM(Att), TRIM(VarLongName) )
+    CALL NcDef_Var_Attributes( fId, VarCt, TRIM(Att), TRIM(VarLongName) )
 
     ! units (requited)
     Att = 'units'
-    CALL NcDef_Var_Attributes(  fId, VarCt, TRIM(Att),  TRIM(VarUnit) )
+    CALL NcDef_Var_Attributes( fId, VarCt, TRIM(Att),  TRIM(VarUnit) )
 
     ! add_offset (optional)
     IF ( PRESENT( AddOffset ) ) THEN
@@ -3996,8 +3961,7 @@ CONTAINS
 !  an error code of -111.
 !
 ! !REVISION HISTORY:
-!  28 Aug 2017 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4008,7 +3972,7 @@ CONTAINS
 
     ! Turn on chunking for this variable
     ! But only if the netCDF library supports it
-    RC = NF_Def_Var_Chunking( fId, vId, NF_CHUNKED, ChunkSizes )
+    RC = NF90_Def_Var_Chunking( fId, vId, NF90_CHUNKED, ChunkSizes )
 
 #else
 
@@ -4038,7 +4002,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN)  :: fId           ! file ID
     CHARACTER(LEN=*), INTENT(IN)  :: VarName       ! variable name
-    REAL(kind=8)                  :: Var           ! Variable to be written
+    REAL(kind=dp)                 :: Var           ! Variable to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4049,8 +4013,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  25 Aug 2017 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4085,7 +4048,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN)  :: fId           ! file ID
     CHARACTER(LEN=*), INTENT(IN)  :: VarName       ! variable name
-    REAL(kind=8),     POINTER     :: Arr1D(:)      ! array to be written
+    REAL(kind=dp),    POINTER     :: Arr1D(:)      ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4096,8 +4059,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4139,7 +4101,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=8),     POINTER    :: Arr2D(:,:)     ! array to be written
+    REAL(kind=dp),    POINTER    :: Arr2D(:,:)     ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4150,8 +4112,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4199,7 +4160,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=8),     POINTER    :: Arr3D(:,:,:)   ! array to be written
+    REAL(kind=dp),    POINTER    :: Arr3D(:,:,:)   ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4210,8 +4171,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4259,7 +4219,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=8),     POINTER    :: Arr4D(:,:,:,:) ! array to be written
+    REAL(kind=dp),    POINTER    :: Arr4D(:,:,:,:) ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4270,8 +4230,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4319,7 +4278,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN)  :: fId           ! file ID
     CHARACTER(LEN=*), INTENT(IN)  :: VarName       ! variable name
-    REAL(kind=4)                  :: Var           ! Variable to be written
+    REAL(kind=sp)                 :: Var           ! Variable to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4330,8 +4289,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  25 Aug 2017 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4366,7 +4324,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=4),     POINTER    :: Arr1D(:)       ! array to be written
+    REAL(kind=sp),    POINTER    :: Arr1D(:)       ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4377,8 +4335,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4420,7 +4377,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=4),     POINTER    :: Arr2D(:,:)     ! array to be written
+    REAL(kind=sp),    POINTER    :: Arr2D(:,:)     ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4431,8 +4388,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4480,7 +4436,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN)  :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN)  :: VarName        ! variable name
-    REAL(kind=4),     POINTER     :: Arr3D(:,:,:)   ! array to be written
+    REAL(kind=sp),    POINTER     :: Arr3D(:,:,:)   ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4491,8 +4447,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4540,7 +4495,7 @@ CONTAINS
 !
     INTEGER,          INTENT(IN) :: fId            ! file ID
     CHARACTER(LEN=*), INTENT(IN) :: VarName        ! variable name
-    REAL(kind=4),     POINTER    :: Arr4D(:,:,:,:) ! array to be written
+    REAL(kind=sp),    POINTER    :: Arr4D(:,:,:,:) ! array to be written
 !
 ! !REMARKS:
 !  Assumes that you have:
@@ -4551,8 +4506,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4610,8 +4564,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  25 Aug 2017 - R. Yantosca - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4657,8 +4610,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4711,8 +4663,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4771,8 +4722,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4831,8 +4781,7 @@ CONTAINS
 !  hand-editing may be required.
 !
 ! !REVISION HISTORY:
-!  15 Jun 2012 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4907,7 +4856,7 @@ CONTAINS
 !  TAU0 is hours elapsed since 00:00 GMT on 01 Jan 1985.
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -4965,155 +4914,4 @@ CONTAINS
                 ( TMP_MIN   / 60d0 ) + ( TMP_SEC / 3600d0 )
 
   END FUNCTION GET_TAU0
-!------------------------------------------------------------------------------
-!       NcdfUtilities: by Harvard Atmospheric Chemistry Modeling Group        !
-!                      and NASA/GFSC, SIVO, Code 610.3                        !
-!------------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: Nc_IsModelLevel
-!
-! !DESCRIPTION: Function NC\_IsModelLevel returns true if (and only if) the
-!  long name of the level variable name of the given file ID contains the
-!  character "GEOS-Chem level".
-!\\
-!\\
-! !INTERFACE:
-!
-  FUNCTION NC_IsModelLevel( fID, lev_name ) RESULT ( IsModelLevel )
-!
-! !USES:
-!
-#   include "netcdf.inc"
-!
-! !INPUT PARAMETERS:
-!
-    INTEGER,          INTENT(IN) :: fID        ! file ID
-    CHARACTER(LEN=*), INTENT(IN) :: lev_name   ! level variable name
-!
-! !RETURN VALUE:
-!
-    LOGICAL                      :: IsModelLevel
-!
-! !REVISION HISTORY:
-!  12 Dec 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-!
-! !LOCAL VARIABLES:
-!
-    LOGICAL                :: HasLngN
-    CHARACTER(LEN=255)     :: a_name, LngName
-    INTEGER                :: a_type
-
-    !=======================================================================
-    ! NC_IsModelLevel begins here!
-    !=======================================================================
-
-    ! Init
-    IsModelLevel = .FALSE.
-
-    ! Check if there is a long_name attribute
-    a_name = "long_name"
-    HasLngN = Ncdoes_Attr_Exist ( fId, TRIM(lev_name), TRIM(a_name), a_type )
-
-    ! Only if attribute exists...
-    IF ( HasLngN ) THEN
-       ! Read attribute
-       CALL NcGet_Var_Attributes( fID, TRIM(lev_name), TRIM(a_name), LngName )
-
-       ! See if this is a GEOS-Chem model level
-       IF ( INDEX( TRIM(LngName), "GEOS-Chem level" ) > 0 ) THEN
-          IsModelLevel = .TRUE.
-       ENDIF
-    ENDIF
-
-  END FUNCTION NC_IsModelLevel
-!EOC
-!------------------------------------------------------------------------------
-!       NcdfUtilities: by Harvard Atmospheric Chemistry Modeling Group        !
-!                      and NASA/GFSC, SIVO, Code 610.3                        !
-!------------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: Nc_IsSigmaLevel
-!
-! !DESCRIPTION: Function NC\_IsSigmaLevels returns true if (and only if) the
-!  long name of the level variable name of the given file ID contains the
-!  character "atmospheric_hybrid_sigma_pressure_coordinate".
-!\\
-!\\
-! !INTERFACE:
-!
-  FUNCTION NC_IsSigmaLevel( fID, lev_name ) RESULT ( IsSigmaLevel )
-!
-! !USES:
-!
-#   include "netcdf.inc"
-!
-! !INPUT PARAMETERS:
-!
-    INTEGER,          INTENT(IN) :: fID        ! file ID
-    CHARACTER(LEN=*), INTENT(IN) :: lev_name   ! level variable name
-!
-! !RETURN VALUE:
-!
-    LOGICAL                      :: IsSigmaLevel
-!
-! !REVISION HISTORY:
-!  12 Dec 2014 - C. Keller   - Initial version
-!  See https://github.com/geoschem/ncdfutil for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-!
-! !LOCAL VARIABLES:
-!
-    ! Scalars
-    LOGICAL                :: found
-    INTEGER                :: a_type
-
-    ! Strings
-    CHARACTER(LEN=255)     :: a_name
-    CHARACTER(LEN=255)     :: a_val
-
-    !=======================================================================
-    ! NC_IsSigmaLevel begins here!
-    !=======================================================================
-
-    ! Initialize
-    IsSigmaLevel = .FALSE.
-
-    ! Check if there is a long_name attribute
-    a_name = "standard_name"
-    found  = Ncdoes_Attr_Exist( fId, TRIM(lev_name), TRIM(a_name), a_type )
-
-    ! First check if the "standard_name" attribute exists
-    IF ( found ) THEN
-
-       ! Read "standard_name" attribute
-       CALL NcGet_Var_Attributes( fID, TRIM(lev_name), TRIM(a_name), a_val )
-
-    ELSE
-
-       ! If the "standard_name" attribute isn't found, try "long_name"
-       a_name = "long_name"
-       found = Ncdoes_Attr_Exist( fId, TRIM(lev_name), TRIM(a_name), a_type )
-
-       ! Read "long_name" attribute
-       IF ( found ) THEN
-          CALL NcGet_Var_Attributes( fID, TRIM(lev_name), TRIM(a_name), a_val )
-       ENDIF
-    ENDIF
-
-    ! Test if the attribute value indicates a hybrid sigma-pressure grid
-    IF ( INDEX( TRIM( a_val ),                                               &
-         "atmospheric_hybrid_sigma_pressure_coordinate" ) > 0 ) THEN
-       IsSigmaLevel = .TRUE.
-    ENDIF
-
-  END FUNCTION NC_IsSigmaLevel
-!EOC
 END MODULE HCO_NCDF_MOD

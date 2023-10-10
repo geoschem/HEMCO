@@ -2177,7 +2177,7 @@ CONTAINS
        ELSE
           msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is OFF'
        ENDIF
-       CALL HCO_Msg( msg, verb=.TRUE. )
+       IF ( HcoConfig%amIRoot ) CALL HCO_Msg( msg, verb=.TRUE. )
 
        ! Logfile to write into
        CALL GetExtOpt( HcoConfig, CoreNr, 'Logfile', &
@@ -2417,10 +2417,25 @@ CONTAINS
           lon2 = Lct%Dct%Dta%ncMts(1)
           lat2 = Lct%Dct%Dta%ncMts(2)
 
-          ThisCover = CALC_COVERAGE( lon1,  lon2,  &
-                                     lat1,  lat2,  &
-                                     cpux1, cpux2, &
-                                     cpuy1, cpuy2   )
+          ! If ncFile is passed as the lon1/lat1/lon2/lat2 instead
+          ! of netCDF file name, then set ncRead to false, so that
+          ! HEMCO won't try to read a file from disk.  Also set the
+          ! IsLocTime flag to TRUE.  This should fix Github issue
+          ! https://github.com/geoschem/HEMCO/issues/153.
+          !  -- Bob Yantosca (12 Jul 2022)
+          !
+          ! Also allow for the .$NC replaceable token, see:
+          ! https://github.com/geoschem/HEMCO/issues/204
+          !  -- Melissa Sulprizio & Bob Yantosca (11 Apr 2023)
+          IF ( INDEX( Lct%Dct%Dta%ncFile,   ".nc" ) == 0 ) THEN
+             IF ( INDEX( Lct%Dct%Dta%ncFile, ".$NC" ) == 0 ) THEN
+                Lct%Dct%Dta%ncRead    = .FALSE.
+                Lct%Dct%Dta%IsLocTime = .TRUE.
+             ENDIF
+          ENDIF
+
+          ThisCover = CALC_COVERAGE( lon1,  lon2,  lat1,  lat2,              &
+                                     cpux1, cpux2, cpuy1, cpuy2             )
 #endif
 
           ! Update container information

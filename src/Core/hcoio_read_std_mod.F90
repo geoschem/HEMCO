@@ -62,7 +62,20 @@ MODULE HCOIO_Read_Mod
   REAL(dp), PRIVATE, PARAMETER :: EPSILON = 1.0e-5_dp
 
 #if defined( MODEL_CESM ) || defined( MODEL_WRF )
-  REAL(hp), PRIVATE            :: GC_72_EDGE_SIGMA(73) = (/1.000000E+00, 9.849998E-01, 9.699136E-01, 9.548285E-01, 9.397434E-01, 9.246593E-01, 9.095741E-01, 8.944900E-01, 8.794069E-01, 8.643237E-01, 8.492406E-01, 8.341584E-01, 8.190762E-01, 7.989697E-01, 7.738347E-01, 7.487007E-01, 7.235727E-01, 6.984446E-01, 6.733175E-01, 6.356319E-01, 5.979571E-01, 5.602823E-01, 5.226252E-01, 4.849751E-01, 4.473417E-01, 4.097261E-01, 3.721392E-01, 3.345719E-01, 2.851488E-01, 2.420390E-01, 2.055208E-01, 1.746163E-01, 1.484264E-01, 1.261653E-01, 1.072420E-01, 9.115815E-02, 7.748532E-02, 6.573205E-02, 5.565063E-02, 4.702097E-02, 3.964964E-02, 3.336788E-02, 2.799704E-02, 2.341969E-02, 1.953319E-02, 1.624180E-02, 1.346459E-02, 1.112953E-02, 9.171478E-03, 7.520355E-03, 6.135702E-03, 4.981002E-03, 4.023686E-03, 3.233161E-03, 2.585739E-03, 2.057735E-03, 1.629410E-03, 1.283987E-03, 1.005675E-03, 7.846040E-04, 6.089317E-04, 4.697755E-04, 3.602270E-04, 2.753516E-04, 2.082408E-04, 1.569208E-04, 1.184308E-04, 8.783617E-05, 6.513694E-05, 4.737232E-05, 3.256847E-05, 1.973847E-05, 9.869233E-06/)
+  REAL(hp), PRIVATE            :: GC_72_EDGE_SIGMA(73) = (/ &
+    1.000000E+00, 9.849998E-01, 9.699136E-01, 9.548285E-01, 9.397434E-01, 9.246593E-01, &
+    9.095741E-01, 8.944900E-01, 8.794069E-01, 8.643237E-01, 8.492406E-01, 8.341584E-01, &
+    8.190762E-01, 7.989697E-01, 7.738347E-01, 7.487007E-01, 7.235727E-01, 6.984446E-01, &
+    6.733175E-01, 6.356319E-01, 5.979571E-01, 5.602823E-01, 5.226252E-01, 4.849751E-01, &
+    4.473417E-01, 4.097261E-01, 3.721392E-01, 3.345719E-01, 2.851488E-01, 2.420390E-01, &
+    2.055208E-01, 1.746163E-01, 1.484264E-01, 1.261653E-01, 1.072420E-01, 9.115815E-02, &
+    7.748532E-02, 6.573205E-02, 5.565063E-02, 4.702097E-02, 3.964964E-02, 3.336788E-02, &
+    2.799704E-02, 2.341969E-02, 1.953319E-02, 1.624180E-02, 1.346459E-02, 1.112953E-02, &
+    9.171478E-03, 7.520355E-03, 6.135702E-03, 4.981002E-03, 4.023686E-03, 3.233161E-03, &
+    2.585739E-03, 2.057735E-03, 1.629410E-03, 1.283987E-03, 1.005675E-03, 7.846040E-04, &
+    6.089317E-04, 4.697755E-04, 3.602270E-04, 2.753516E-04, 2.082408E-04, 1.569208E-04, &
+    1.184308E-04, 8.783617E-05, 6.513694E-05, 4.737232E-05, 3.256847E-05, 1.973847E-05, &
+    9.869233E-06/)
 #endif
 
 CONTAINS
@@ -112,8 +125,6 @@ CONTAINS
     USE HCO_Ncdf_Mod,       ONLY : NC_Read_Arr
     USE HCO_Ncdf_Mod,       ONLY : NC_Get_Grid_Edges
     USE HCO_Ncdf_Mod,       ONLY : NC_Get_Sigma_Levels
-    USE HCO_Ncdf_Mod,       ONLY : NC_IsModelLevel
-    USE HCO_Ncdf_Mod,       ONLY : NC_IsSigmaLevel
     USE HCO_CHARPAK_MOD,    ONLY : TRANLC
     USE HCO_Unit_Mod,       ONLY : HCO_Unit_Change
     USE HCO_Unit_Mod,       ONLY : HCO_Unit_ScalCheck
@@ -201,6 +212,14 @@ CONTAINS
     ! HCOIO_READ begins here
     !=================================================================
     LOC = 'HCOIO_READ (HCOIO_READ_STD_MOD.F90)'
+
+    ! Do not try to read a mask file where the mask bounding box limits
+    ! are given in the srcFile location, as there is no file to read.
+    ! This should fix https://github.com/geoschem/HEMCO/issues/153.
+    !   -- Bob Yantosca (12 Jul 2022)
+    IF ( Lct%Dct%DctType == HCO_DCTTYPE_MASK ) THEN
+       IF ( .not. Lct%Dct%Dta%ncRead ) RETURN
+    ENDIF
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
@@ -669,31 +688,18 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! Are these model levels? This will only return true if the long
-       ! name of the level variable contains "GEOS-Chem level".
-       ! For now, we assume levels are already on model levels if the
-       ! number of levels to be read is explicitly set in the configuration
-       ! file (ckeller, 5/20/15).
+       ! Are these model levels? This will only return true if 
+       ! (1) the variable is on 72/73 levels and you are going to 47
+       ! levels, (2) if you are on 102/103 levels and you are going
+       ! to 74 levels, (3) if you are on 47/48 levels and you are
+       ! going to 72 levels. Otherwise, use MESSy (nbalasus, 8/24/2023).
        IF ( Lct%Dct%Dta%Levels == 0 ) THEN
 
-          ! Check if vertical coordinate is GEOS-Chem levels
-          IsModelLevel = NC_IsModelLevel( ncLun, LevName )
-
-          ! Further check if the given number of vertical levels should be
-          ! treated as model levels. This is the case if e.g. the nuber of
-          ! levels found on the file exactly matches the number of vertical
-          ! levels of the grid. Some of these assumptions are rather arbitrary.
-          ! IsModelLev will stay True if is was set so in NC_ISMODELLEVEL
-          ! above. (ckeller, 9/29/15)
           CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
               CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
               RETURN
           ENDIF
-
-          ! Override IsModelLevel if the long_name contains
-          ! "atmospheric_hybrid_sigma_pressure_coordinate"
-          IsModelLevel = ( .not. NC_IsSigmaLevel( ncLun, LevName ) )
 
           ! Set level indeces to be read
           lev1 = 1
@@ -701,10 +707,6 @@ CONTAINS
 
        ! If levels are explicitly given:
        ELSE
-
-          ! If long_name is "atmospheric_hybrid_sigma_pressure_coordinate",
-          ! then treat it as sigma levels; otherwise assume model levels.
-          IsModelLevel = ( .not. NC_IsSigmaLevel( ncLun, LevName ) )
 
           ! Number of levels to be read must be smaller or equal to total
           ! number of available levels
@@ -726,11 +728,19 @@ CONTAINS
              lev2 = nlev + Lct%Dct%Dta%Levels + 1
           ENDIF
 
+          ! Use MESSy regridding
+          IsModelLevel = .FALSE.
+
        ENDIF
 
        ! Verbose
        IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           WRITE(MSG,*) 'Will read vertical levels ', lev1, ' to ', lev2
+          CALL HCO_MSG(HcoState%Config%Err,MSG)
+       ENDIF
+
+       IF ( HCO_IsVerb( HcoState%Config%Err ) .AND. IsModelLevel ) THEN
+          WRITE(MSG,*) 'Data is assumed to already be on the model level grid'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
 
@@ -1354,7 +1364,7 @@ CONTAINS
 
        ! Note: This seems to be a soft restriction - removing this
        ! does not conflict with MESSy regridding. Need to check (hplin, 5/30/20)
-       ! This has to be used for WRF-GC and HEMCO_CESM so ifdefd out
+       ! This has to be used for WRF-GC and CESM so ifdefd out
 #endif
 
 #if defined( MODEL_WRF ) || defined( MODEL_CESM )

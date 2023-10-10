@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!       NcdfUtilities: by Harvard Atmospheric Chemistry Modeling Group        !
+!       Ncdfutilities: by Harvard Atmospheric Chemistry Modeling Group        !
 !                      and NASA/GSFC, SIVO, Code 610.3                        !
 !------------------------------------------------------------------------------
 !BOP
@@ -26,7 +26,7 @@ module HCO_m_netcdf_io_checks
 !  Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -44,9 +44,7 @@ CONTAINS
 !
   function Ncdoes_Udim_Exist (ncid)
 !
-    implicit none
-!
-    include "netcdf.inc"
+    use netCDF
 !
 ! !INPUT PARAMETERS:
 !!  ncid : netCDF file id to check
@@ -63,25 +61,18 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 !
 ! !LOCAL VARIABLES:
-    integer :: ierr
-    integer :: udimid
-!
-    ierr = Nf_Inq_Unlimdim (ncid, udimid)
+    integer :: ierr, udim_id
 
-    if (ierr == NF_NOERR) then
-       Ncdoes_Udim_Exist = .true.
-    else
-       Ncdoes_Udim_Exist = .false.
-    end if
-
-    return
-
+    Ncdoes_Udim_Exist = .false.
+    ierr = NF90_Inquire(ncid, unlimitedDimId=udim_id)
+    IF ( ierr /= NF90_NOERR ) Ncdoes_Udim_Exist = .true.
+       
   end function Ncdoes_Udim_Exist
 !EOC
 !------------------------------------------------------------------------------
@@ -96,9 +87,7 @@ CONTAINS
 !
   function Ncdoes_Var_Exist (ncid, varname)
 !
-    implicit none
-!
-    include "netcdf.inc"
+    use netCDF
 !
 ! !INPUT PARAMETERS:
 !!  ncid    : netCDF file id       to check
@@ -117,7 +106,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -126,15 +115,9 @@ CONTAINS
     integer :: ierr
     integer :: varid
 !
-    ierr = Nf_Inq_Varid (ncid, varname, varid)
-
-    if (ierr == NF_NOERR) then
-       Ncdoes_Var_Exist = .true.
-    else
-       Ncdoes_Var_Exist = .false.
-    end if
-
-    return
+    ierr = NF90_Inq_Varid(ncid, varname, varid)
+    Ncdoes_Var_Exist = .false.
+    if (ierr == NF90_NOERR) Ncdoes_Var_Exist = .true.
 
   end function Ncdoes_Var_Exist
 !EOC
@@ -148,11 +131,9 @@ CONTAINS
 !
 ! !INTERFACE:
 !
-  function Ncdoes_Attr_Exist (ncid, varname, attname, attType)
+  function Ncdoes_Attr_Exist(ncid, varname, attname, attType)
 !
-    implicit none
-!
-    include "netcdf.inc"
+    use netCDF
 !
 ! !INPUT PARAMETERS:
 !!  ncid    : netCDF file id       to check
@@ -179,32 +160,29 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 !
 ! !LOCAL VARIABLES:
-    integer :: ierr
-    integer :: varid
-    INTEGER :: attLen
+    INTEGER :: ierr, varId, attLen, attNum
 
     ! Init
     Ncdoes_Attr_Exist = .false.
     attType           = -1
 
     ! First check the variable
-    ierr = Nf_Inq_Varid (ncid, varname, varid)
+    ierr = NF90_Inq_Varid (ncid, varname, varid)
 
     ! Check the attribute if variable was found
-    IF ( ierr == NF_NOERR ) THEN
-       ierr = Nf_Inq_Att( ncId, varId, attName, attType, attLen )
-       IF ( ierr == NF_NOERR ) THEN
+    IF ( ierr == NF90_NOERR ) THEN
+       ierr = NF90_Inquire_Attribute( ncId,    varId,  attName,  &
+                                      attType, attLen, attNum   )
+       IF ( ierr == NF90_NOERR ) THEN
           NcDoes_Attr_Exist = .TRUE.
        ENDIF
     ENDIF
-
-    return
 
   end function Ncdoes_Attr_Exist
 !EOC
@@ -220,9 +198,7 @@ CONTAINS
 !
   function Ncdoes_Dim_Exist (ncid, dimname )
 !
-    implicit none
-!
-    include "netcdf.inc"
+    use netCDF
 !
 ! !INPUT PARAMETERS:
 !!  ncid    : netCDF file id        to check
@@ -241,7 +217,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-----------------------------------------------------------------------------
 !BOC
@@ -251,14 +227,11 @@ CONTAINS
     integer :: dimid
 
     ! First check the variable
-    ierr = Nf_Inq_Dimid (ncid, dimname, dimid)
+    ierr = NF90_Inq_Dimid(ncid, dimname, dimid)
 
     ! Check the attribute if variable was found
-    if (ierr == NF_NOERR) then
-       Ncdoes_Dim_Exist = .true.
-    else
-       Ncdoes_Dim_Exist = .false.
-    end if
+    Ncdoes_Dim_Exist = .false.
+    if (ierr == NF90_NOERR) Ncdoes_Dim_Exist = .true.
 
     return
 

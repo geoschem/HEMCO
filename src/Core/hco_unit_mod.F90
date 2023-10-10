@@ -46,9 +46,9 @@ MODULE HCO_Unit_Mod
 ! !DEFINED PARAMETERS:
 !
   REAL(dp),  PARAMETER :: N_0             = 6.022140857e+23_dp
-  REAL(hp),  PARAMETER :: SEC_IN_DAY      = 86400_hp
-  REAL(hp),  PARAMETER :: SEC_IN_LEAPYEAR = SEC_IN_DAY * 366_hp
-  REAL(hp),  PARAMETER :: SEC_IN_REGYEAR  = SEC_IN_DAY * 365_hp
+  REAL(hp),  PARAMETER :: SEC_IN_DAY      = 86400._hp
+  REAL(hp),  PARAMETER :: SEC_IN_LEAPYEAR = SEC_IN_DAY * 366._hp
+  REAL(hp),  PARAMETER :: SEC_IN_REGYEAR  = SEC_IN_DAY * 365._hp
 
   ! Accepted units for unitless data. No unit conversion is applied to
   ! data with any of these units. The first entry represents the
