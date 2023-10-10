@@ -105,7 +105,7 @@ MODULE HCO_Error_Mod
 #endif
 
   ! HEMCO version number.
-  CHARACTER(LEN=12), PARAMETER, PUBLIC :: HCO_VERSION = '3.7.0'
+  CHARACTER(LEN=12), PARAMETER, PUBLIC :: HCO_VERSION = '3.7.1'
 
   INTERFACE HCO_Error
      MODULE PROCEDURE HCO_ErrorNoErr
@@ -707,7 +707,7 @@ CONTAINS
     LOGICAL,          INTENT(INOUT)  :: doVerbose       ! Verbose output T/F?
     LOGICAL,          INTENT(INOUT)  :: doVerboseOnRoot ! =T: Verbose on root
                                                         ! =F: Verbose on all
-    INTEGER,          INTENT(INOUT)  :: RC              
+    INTEGER,          INTENT(INOUT)  :: RC
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
@@ -732,7 +732,7 @@ CONTAINS
     Err%Loc(:) = ''
 
     ! Pass values
-    Err%IsRoot  = am_I_Root 
+    Err%IsRoot  = am_I_Root
     Err%LogFile = TRIM(LogFile)
 
     ! Specify if verbose will be printed on the root core, or all cores
@@ -1059,4 +1059,3 @@ CONTAINS
   END SUBROUTINE HCO_LogFile_Close
 !EOC
 END MODULE HCO_Error_Mod
-

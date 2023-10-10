@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased 3.7.1] - TBD
+### Changed
+- Updated version numbers to 3.7.1
+- Make Hg0 emission factors in `hcox_gfed_include_gfed4.H` multipliers  of the CO emission factor
+- Removed superfluous routine `GetExtSpcVal_Dr` in `src/Core/hco_extlist_mod.F90`
+- NetCDF routines in `src/Shared/NcdfUtil` now use the Fortran-90 API
+- Overhauled vertical regridding `src/Core/hco_interp_mod.F90`
+    - Removed `INFLATE` (but retained its behavior only for 47L -> 72L vertical regridding, warning users that this isn't recommended)
+    - `ModelLev_Interpolate` is only called when the input is 47/48, 72/73, or 102/103 levels (otherwise, MESSy is used).
+    - A bug that averaged the wrong number of levels in `COLLAPSE` is fixed (and edges are now sampled instead of averaged).
+    - Removed the now superfluous `NC_ISMODELLEVEL` and `NC_SISIGMALEVEL` from `src/Shared/NcdfUtil/hco_ncdf_mod.F90`
+    - Removed old code and references to `GEOS-4`.
+
+### Fixed
+- Fixed incorrect `XMIN`, `XMAX` values in  `HEMCO_sa_Grid.025x03125.rc` and `HEMCO_sa_Grid.05x0625.rc`
+- Fixed line length too long for the `GC_72_EDGE_SIGMA` variable in `src/Core/hcoio_read_std_mod.F90`
+
 ## [3.7.0] - 2023-10-05
 ### Added
 - HEMCO extensions now display a first-time message, whether `Verbose` is `true` or `false`.

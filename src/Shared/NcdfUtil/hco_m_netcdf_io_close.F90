@@ -44,11 +44,8 @@ CONTAINS
 !
 ! !USES:
 !
+    use netCDF
     use m_do_err_out
-!
-    implicit none
-!
-    include "netcdf.inc"
 !
 ! !INPUT PARAMETERS:
 !!  ncid : netCDF file id
@@ -70,10 +67,10 @@ CONTAINS
     character (len=512) :: err_msg
     integer             :: ierr
 !
-    ierr = Nf_Close (ncid)
+    ierr = Nf90_Close (ncid)
 
-    if (ierr /= NF_NOERR) then
-       err_msg = 'In Nccl:  ' // Nf_Strerror (ierr)
+    if (ierr /= NF90_NOERR) then
+       err_msg = 'In Nccl:  ' // Nf90_Strerror (ierr)
        call Do_Err_Out (err_msg, .true., 1, ncid, 0, 0, 0.0d0, 0.0d0)
     end if
 
@@ -93,9 +90,7 @@ CONTAINS
 !
   subroutine Nccl_Noerr (ncid)
 !
-    implicit none
-!
-    include "netcdf.inc"
+    use netCDF
 !
 ! !INPUT PARAMETERS:
 !!  ncid : netCDF file id
@@ -117,7 +112,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
     integer             :: ierr
 !
-    ierr = Nf_Close (ncid)
+    ierr = Nf90_Close (ncid)
 
     return
 

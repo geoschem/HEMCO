@@ -547,7 +547,7 @@ CONTAINS
                            VarUnit     = 'Pa',                            &
                            DataType    = dp,                              &
                            VarCt       = VarCt,                           &
-                           Compress    = .TRUE.                          )
+                           Compress    = .FALSE.                         )
           CALL NC_Var_Write( fId, 'P0', P0 )
 
           ! Deallocate arrays
