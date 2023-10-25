@@ -23,7 +23,7 @@ module HCO_m_netcdf_io_handle_err
 !  Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-----------------------------------------------------------------------------
 !BOC
@@ -43,11 +43,8 @@ CONTAINS
 !
 ! !USES:
 !
+    use netCDF
     use m_do_err_out
-!
-    implicit none
-!
-    include "netcdf.inc"
 !
 ! !INPUT PARAMETERS:
 !   ierr : netCDF error number
@@ -60,7 +57,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !-------------------------------------------------------------------------
 !BOC
@@ -68,7 +65,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
     character (len=512) :: err_msg
 !
-    err_msg = 'In Nchandle_Err:  ' // Nf_Strerror (ierr)
+    err_msg = 'In Nchandle_Err:  ' // Nf90_Strerror (ierr)
 
     call Do_Err_Out (err_msg, .true., 0, 0, 0, 0, 0.0d0, 0.0d0)
 

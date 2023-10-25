@@ -439,7 +439,7 @@
 
             ! Orography at surface
             ! Ocean is 0; land is 1; ice is 2
-            ORO(I)         = REAL(OROGRAPHY(I,J),KIND=8)
+            ORO(I)         = REAL(OROGRAPHY(I,J),KIND=dp)
 
             ! Snow [m H2O]. SNOWHGT is in kg H2O/m2, which is equivalent to
             ! mm H2O. Convert to m H2O here.
@@ -5868,7 +5868,7 @@ c Fix up for negative argument, erf, etc.
       FNDLABEL = TRIM(CSLABEL) 
       IF ( .NOT. HcoState%Grid%AREA_M2%Alloc ) THEN
          MSG = 'Warning: AREA_M2 not found, will use default number'
-         CALL HCO_WARNING( MSG, RC, 1, LOC )
+         CALL HCO_WARNING( MSG, RC, .TRUE., LOC )
       ELSE
          AM2 = SUM(HcoState%Grid%AREA_M2%Val)/(HcoState%NX*HcoState%NY)
          RES = SQRT(AM2)

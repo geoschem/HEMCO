@@ -5,21 +5,63 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased 3.7.0]
+## [Unreleased 3.8.0] - TBD
+### Changed
+- Updated TOMAS_Jeagle sea salt extension
+
+## [3.7.1] - 2023-10-10
+### Changed
+- Updated version numbers to 3.7.1
+- Make Hg0 emission factors in `hcox_gfed_include_gfed4.H` multipliers  of the CO emission factor
+- Removed superfluous routine `GetExtSpcVal_Dr` in `src/Core/hco_extlist_mod.F90`
+- NetCDF routines in `src/Shared/NcdfUtil` now use the Fortran-90 API
+- Overhauled vertical regridding `src/Core/hco_interp_mod.F90`
+    - Removed `INFLATE` (but retained its behavior only for 47L -> 72L vertical regridding, warning users that this isn't recommended)
+    - `ModelLev_Interpolate` is only called when the input is 47/48, 72/73, or 102/103 levels (otherwise, MESSy is used).
+    - A bug that averaged the wrong number of levels in `COLLAPSE` is fixed (and edges are now sampled instead of averaged).
+    - Removed the now superfluous `NC_ISMODELLEVEL` and `NC_SISIGMALEVEL` from `src/Shared/NcdfUtil/hco_ncdf_mod.F90`
+    - Removed old code and references to `GEOS-4`.
+
+### Fixed
+- Fixed incorrect `XMIN`, `XMAX` values in  `HEMCO_sa_Grid.025x03125.rc` and `HEMCO_sa_Grid.05x0625.rc`
+- Fixed line length too long for the `GC_72_EDGE_SIGMA` variable in `src/Core/hcoio_read_std_mod.F90`
+
+## [3.7.0] - 2023-10-05
 ### Added
 - HEMCO extensions now display a first-time message, whether `Verbose` is `true` or `false`.
 - Added 'src/Shared/NcdfUtil/README.md` file directing users to look for netCDF utility scripts at https://github.com/geoschem/netcdf-scripts
 - Added GFED4 biomass burning emissions for furans, PHEN, MVK, ISOP, ACTA, MGLY, MYLX, RCHO
+- Add GEOSIT as an allowable meteorology directory name in HEMCO_Config.rc
+- Added `.readthedocs.yaml` file to configure ReadTheDocs builds
 
-### Changed
+# Changed
 - `Verbose` is now a `true/false` variable in `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
 - HEMCO warnings are now only generated when `Verbose: true` is found in the HEMCO configuration file (no more numerical levels)
 - Updated GFED4 emission factors for VOCs to Andreae et al. (2019)
-- Updated TOMAS_Jeagle sea salt extension
+- Refactored `hco_calc_mod.F90` to avoid computational bottlenecks (PR #201)
+- Restart files are now written to the rundir `Restarts/` subdirectory
+- Created a `Restarts/` subdirectory in HEMCO standalone run directories
+- Added changes needed to build with NAG compiler
+- Renamed Be7Strat and Be10Strat to Be7s and Be10s for consistency with GMAO's TR_GridComp
+- Updated ReadTheDocs documentation about time cycle options `RFY`, `RFY3`
+- Updated ReadTheDocs documentation about the `HEMCO_Diagn.rc` file
+- Updated `AUTHORS.txt` for GEOS-Chem 14.2.0 and HEMCO 3.7.0
+- Updated formatting in `README.md`
+- Updated title and links to badges in `README.md`
+- Updated version number to 3.7.0
+
+### Fixed
+- Do not read masks if the filename is `-` (non-ESMF environments only)
+- Always assume partial coverage when reading masks in an ESMF environment (#163)
+- Increased the string length for reading lines from HEMCO grid file to fix error in global 0.25x0.3125 standalone simulations
 
 ### Removed
 - Warnings is now removed from `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
 - Removed the `src/Shared/NcdfUtil/perl` folder
+
+## [3.6.3] - 2023-09-15
+### Fixed
+- Fixed nvhpc compiler error in CESM by reducing line length of `GC_72_EDGE_SIGMA` assignment
 
 ## [3.6.2] - 2023-03-02
 ### Added
@@ -180,8 +222,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New main switches for emissions, meteorology, and chemistry input
 - Fixed HEMCO's time shift capability to properly accommodate units of year, month, day, hour, minute, and second
 - New checks to adjust date and timestamps so they fall within physical ranges
-- Now avoid running HEMCO for the end timestep of a simulation.
-- Now avoid running HEMCO twice on the first timestep of a simulation.
+- Now avoid running HEMCO for the end timestep of a simulation
+- Now avoid running HEMCO twice on the first timestep of a simulation
 - New `RFY3` time cycle option (3 hour input)
 
 ### Changed
@@ -408,7 +450,7 @@ Initial HEMCO release
 - Added `hco_restart_mod.F90` to define and obtain HEMCO restart variables
 - Vertical mapping between 72 and 47 level GEOS-Chem grids
 - The MEGAN extension can now read initial data from a HEMCO restart file
-- Index-sorted data can now be read from an ASCII file and mapped onto athe simulation grid
+- Index-sorted data can now be read from an ASCII file and mapped onto the simulation grid
 
 ### Changed
 - Treat OCPI, OCPO, BCPI, and BCPO separately

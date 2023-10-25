@@ -101,7 +101,10 @@ CONTAINS
     WRITE( 6, '(/,a,/)' ) REPEAT( '!', 79 )
 
     ! Flush the buffer
+    ! Flush is unavailable on the NAG compiler (for CESM) and CPRNAG is defined if using it.
+#ifndef CPRNAG
     CALL Flush( 6 )
+#endif
 
     ! Stop with error (if requested)
     ! NOTE: We should pass back the error code to the main routine
@@ -117,11 +120,14 @@ CONTAINS
         WRITE( 6, '(/,a,/)' ) REPEAT( '!', 79 )
 
         ! Flush stdout buffer
+        ! Flush is unavailable on the NAG compiler (for CESM) and CPRNAG is defined if using it.
+#ifndef CPRNAG
         CALL Flush( 6 )
+#endif
 
         ! NOTE: Should not exit but pass error code up
         ! work on this for a future version
-        CALL Exit( 999 )
+        stop 999
     ENDIF
 
     RETURN

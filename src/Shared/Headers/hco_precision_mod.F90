@@ -14,6 +14,7 @@
 MODULE HCO_PRECISION_MOD
 !
 ! !USES:
+  USE ISO_Fortran_Env, ONLY : REAL32, REAL64
 !
   IMPLICIT NONE
   PRIVATE
@@ -29,12 +30,12 @@ MODULE HCO_PRECISION_MOD
 #ifdef USE_REAL8
 
   ! Use 8-byte floating point precision when asked.
-  INTEGER, PARAMETER, PUBLIC :: fp = KIND( REAL( 0.0, 8 ) )
+  INTEGER, PARAMETER, PUBLIC :: fp = REAL64
 
 #else
 
   ! Use 4-byte floating point by default.
-  INTEGER, PARAMETER, PUBLIC :: fp = KIND( REAL( 0.0, 4 ) )
+  INTEGER, PARAMETER, PUBLIC :: fp = REAL32
 
 #endif
 
@@ -47,10 +48,10 @@ MODULE HCO_PRECISION_MOD
   !=================================================================
 
   ! KIND parameter for 4-byte precision
-  INTEGER, PARAMETER, PUBLIC :: f4 = KIND( REAL( 0.0, 4 ) )
+  INTEGER, PARAMETER, PUBLIC :: f4 = REAL32
 
   ! KIND parameter for 8-byte precision
-  INTEGER, PARAMETER, PUBLIC :: f8 = KIND( REAL( 0.0, 8 ) )
+  INTEGER, PARAMETER, PUBLIC :: f8 = REAL64
 !
 ! !REMARKS:
 !  This module is designed to help avoid hard-coding precision.

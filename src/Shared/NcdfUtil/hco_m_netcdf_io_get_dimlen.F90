@@ -24,7 +24,7 @@ module HCO_m_netcdf_io_get_dimlen
 !  Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -40,15 +40,12 @@ CONTAINS
 !
 ! !INTERFACE:
 !
-  subroutine Ncget_Dimlen (ncid, dim_name, dim_len )
+  subroutine Ncget_Dimlen(ncid, dim_name, dim_len)
 !
 ! !USES:
 !
+    use netCDF
     use m_do_err_out
-!
-    implicit none
-!
-    include 'netcdf.inc'
 !
 ! !INPUT PARAMETERS:
 !!  dim_name : netCDF dimension name
@@ -70,7 +67,7 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -80,18 +77,18 @@ CONTAINS
     integer             :: dimid
     integer             :: ierr
 
-    ierr = Nf_Inq_Dimid  (ncid, dim_name, dimid)
+    ierr = NF90_Inq_Dimid(ncid, dim_name, dimid)
 
-    if (ierr /= NF_NOERR ) then
+    if (ierr /= NF90_NOERR ) then
        err_msg = 'In Ncget_Dimlen #1:  ' // Trim (dim_name) // &
-                 ', ' // Nf_Strerror (ierr)
+                 ', ' // NF90_Strerror (ierr)
        call Do_Err_Out (err_msg, .true., 1, ncid, 0, 0, 0.0d0, 0.0d0)
     end if
 
-    ierr = Nf_Inq_Dimlen (ncid, dimid, dim_len)
+    ierr = NF90_Inquire_Dimension(ncid, dimid, len=dim_len)
 
-    if (ierr /= NF_NOERR) then
-       err_msg = 'In Ncget_Dimlen #2:  ' // Nf_Strerror (ierr)
+    if (ierr /= NF90_NOERR) then
+       err_msg = 'In Ncget_Dimlen #2:  ' // NF90_Strerror (ierr)
        call Do_Err_Out (err_msg, .true., 2, ncid, dimid, 0, 0.0d0, 0.0d0)
     end if
 
@@ -112,11 +109,8 @@ CONTAINS
 !
 ! !USES:
 !
+    use netCDF
     use m_do_err_out
-!
-    implicit none
-!
-    include 'netcdf.inc'
 !
 ! !INPUT PARAMETERS:
 !!  ncid     : netCDF file id
@@ -133,31 +127,20 @@ CONTAINS
 !  John Tannahill (LLNL) and Jules Kouatchou
 !
 ! !REVISION HISTORY:
-!  See https://github.com/geoschem/ncdfutil for complete history
+!  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
 !
 ! !LOCAL VARIABLES:
-    character (len=512) :: err_msg
-    integer             :: ierr
-    integer             :: udimid
-!
-    ierr = Nf_Inq_Unlimdim (ncid, udimid)
+    character(len=512) :: err_msg
+    integer            :: ierr, udim_id
 
-    if (ierr /= NF_NOERR) then
-       err_msg = 'In Ncget_Unlim_Dimlen #1:  ' // Nf_Strerror (ierr)
-       call Do_Err_Out (err_msg, .true., 1, ncid, 0, 0, 0.0d0, 0.0d0)
-    end if
-
-    ierr = Nf_Inq_Dimlen (ncid, udimid, udim_len)
-
-    if (ierr /= NF_NOERR) then
-       err_msg = 'In Ncget_Unlim_Dimlen #2:  ' // Nf_Strerror (ierr)
-       call Do_Err_Out (err_msg, .true., 2, ncid, udimid, 0, 0.0d0, 0.0d0)
-    end if
-
-    return
+    udim_len = -1
+    ierr = NF90_Inquire(ncid, unlimitedDimId=udim_id)
+    IF ( ierr /= NF90_NOERR ) THEN
+       ierr = NF90_Inquire_Dimension( ncid, udim_id, len=udim_len )
+    ENDIF
 
   end subroutine Ncget_Unlim_Dimlen
 !EOC

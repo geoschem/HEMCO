@@ -20,7 +20,9 @@ environent (see sections :ref:`hco-hood` and :ref:`hco-hood-int`).
 
 In the sections that follow, we provide some basic examples that
 demonstrate how to modify the configuration file to customize your
-HEMCO simulation.
+HEMCO simulation.  Please also see our :ref:`customguide`
+Supplemental Guide to learn how you can activate alternate science
+options in your simulations.
 
 .. _edit-hco-cfg-ex1:
 

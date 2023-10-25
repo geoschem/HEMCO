@@ -1,4 +1,3 @@
-#if defined( TOMAS )
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -27,6 +26,7 @@
 ! !INTERFACE:
 !
 MODULE HCOX_TOMAS_Jeagle_Mod
+#if defined( TOMAS )
 !
 ! !USES:
 !
@@ -1444,5 +1444,5 @@ CONTAINS
 
    END SUBROUTINE InstRemove
 !EOC
-END MODULE HCOX_TOMAS_Jeagle_Mod
 #endif
+END MODULE HCOX_TOMAS_Jeagle_Mod
