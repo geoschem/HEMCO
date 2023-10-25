@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.8.0]
+### Changed
+
+### Fixed
+- Rename `HEMCO_Config.rc.sample` to `HEMCO_Config.rc` in `createRunDir.sh` if sample is used.
+
 ## [3.7.1] - 2023-10-10
 ### Changed
 - Updated version numbers to 3.7.1
@@ -30,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add GEOSIT as an allowable meteorology directory name in HEMCO_Config.rc
 - Added `.readthedocs.yaml` file to configure ReadTheDocs builds
 
-# Changed
+### Changed
 - `Verbose` is now a `true/false` variable in `run/HEMCO_sa_Config.rc` and `run/HEMCO_Config.rc.sample`
 - HEMCO warnings are now only generated when `Verbose: true` is found in the HEMCO configuration file (no more numerical levels)
 - Updated GFED4 emission factors for VOCs to Andreae et al. (2019)

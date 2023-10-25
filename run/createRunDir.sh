@@ -202,6 +202,11 @@ while [ "$valid_path" -eq 0 ]; do
     if [[ "$hco_config_file" == *".rc"* ]]; then
 	hco_config_dir=$(dirname $hco_config_file)
     fi
+
+    if [[ "$hco_config_file" == "./HEMCO_Config.rc.sample" ]]; then
+    mv "./HEMCO_Config.rc.sample" "./HEMCO_Config.rc"
+    hco_config_file="./HEMCO_Config.rc"
+    fi
     
 done
 
