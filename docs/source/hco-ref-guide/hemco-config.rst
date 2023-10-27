@@ -231,7 +231,7 @@ year, month, day, or hour, and to scale emissions to a given value:
    If omitted, the emisison month will be set to the model simulation
    hour.
 
-.. option:: EmissScale_<species-name>
+.. option:: EmisScale_<species-name>
 
    Optional argument to define a uniform scale factor that will be
    applied across all inventories, categories, hierarchies, and
