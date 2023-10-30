@@ -67,8 +67,8 @@ MODULE HCOX_TOMAS_Jeagle_Mod
    INTEGER,  ALLOCATABLE :: HcoIDs    (:      )    ! HEMCO species ID's
    REAL(dp), POINTER     :: TOMAS_DBIN(:      )    ! TOMAS bin width
    REAL(dp), POINTER     :: DRFAC     (:      )    ! TOMAS area?
-   REAL(dp), POINTER     :: TC1       (:,:,:,:)    ! Aerosol mass
-   REAL(dp), POINTER     :: TC2       (:,:,:,:)    ! Aerosol number
+   REAL(dp), POINTER     :: TC1       (:,:,:,:)    ! Aerosol number
+   REAL(dp), POINTER     :: TC2       (:,:,:,:)    ! Aerosol mass
    LOGICAL               :: ColdSST                ! Flag to correct SSA emissions over cold waters
 
    ! Scale factors
@@ -232,7 +232,7 @@ CONTAINS
     REAL(dp), POINTER :: ptr3D(:,:,:)
 
     ! For debugging
-    !INTEGER            :: ii=50, jj=10
+    INTEGER            :: ii=50, jj=10
 
     !=================================================================
     ! SRCSALT30 begins here!
@@ -272,7 +272,6 @@ CONTAINS
       CALL HCO_EvalFld ( HcoState, 'MULTISEAICE', MULTI, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
           WRITE(MSG,*) 'Cannot find MULTISEAICE data for blowing snow'
-          !CALL HCO_ERROR(HcoState%Config%Err, MSG, RC)
           CALL HCO_ERROR(MSG, RC )
           RETURN
       ENDIF
@@ -282,7 +281,7 @@ CONTAINS
     ! adjusting coeff
 
     !### Debug
-    print*, 'JACK IN HCOX TOMAS Jeagle'
+    print*, 'IN HCOX_TOMAS_Jeagle_Mod.F90'
 
     ! Init
     ptr3D => NULL()
@@ -504,15 +503,11 @@ CONTAINS
                 ENDIF
              ENDDO
           ENDDO
-       !ELSE  ! move initialization to start of loop
-       !   Inst%TC1(I,J,:,:) = 0d0
-       !   Inst%TC2(I,J,:,:) = 0d0
-       !ENDIF
     ENDDO
     ENDDO
 
     !### Debug
-    !print*, 'JACK SEASALT EMISSIONS AT 50, 10,7: ', TC2(ii,jj,1,7)
+    !print*, 'Aerosol mass AT 50, 10, 7: ', Inst%TC2(ii,jj,1,7)
     !print*, 'BINS: ', HcoState%MicroPhys%nBins
 
     ! Loop over # of microphysics bins
@@ -521,14 +516,13 @@ CONTAINS
        ! Add mass to the HEMCO data structure (jkodros)
        CALL HCO_EmisAdd( HcoState, Inst%TC2(:,:,:,K), Inst%HcoIDs(K), RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          !CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALT', RC )
           CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALT', RC )
           RETURN
        ENDIF
 
        ! Get the proper species name
        IF ( K<10  ) THEN
-         WRITE(SpcName,'(A2,I1)') 'NK', K
+         WRITE(SpcName,'(A3,I1)') 'NK0', K
        ELSE
          WRITE(SpcName,'(A2,I2)') 'NK', K
        ENDIF
@@ -537,13 +531,12 @@ CONTAINS
        HcoID = HCO_GetHcoID( TRIM(SpcName), HcoState )
 
        !### Debug
-       !print*, 'JACK SEASALT EMISSIONS AT 50, 10,: ', TC1(ii,jj,1,k)
-       !print*, 'JACK HCO ID: ', HcoID
+       print*, 'Aerosol number AT 50, 10,: ', Inst%TC1(ii,jj,1,k)
+       print*, 'HCO ID: ', K, SpcName, HcoID
 
        ! Add number to the HEMCO data structure
        CALL HCO_EmisAdd( HcoState, Inst%TC1(:,:,:,K), HcoID, RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-          !CALL HCO_ERROR( HcoState%Config%Err, 'HCO_EmisAdd error: FLUXSALT', RC )
           CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSALT', RC )
           RETURN
        ENDIF
@@ -649,9 +642,9 @@ CONTAINS
        msg = &
         'Using HEMCO extension: TOMAS_Jeagle (sea salt emissions for TOMAS)'
        IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
        ENDIF
     ENDIF
 
@@ -659,7 +652,6 @@ CONTAINS
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%TOMAS_Jeagle, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       !CALL HCO_ERROR ( HcoState%Config%Err, 'Cannot create TOMAS_Jeagle instance', RC )
        CALL HCO_ERROR ( 'Cannot create TOMAS_Jeagle instance', RC )
        RETURN
     ENDIF
@@ -755,23 +747,27 @@ CONTAINS
        CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
-
-    !print*,'Betty start to allocate'
+    IF ( HcoState%amIRoot ) THEN
+       MSG = 'Use the following species (Name: HcoID):'
+       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       DO N = 1, nSpc
+          WRITE(MSG,*) TRIM(SpcNames(N)), ':', Inst%HcoIDs(N)
+          CALL HCO_MSG(HcoState%Config%Err,MSG)
+       ENDDO
+    ENDIF
 
     ALLOCATE ( Inst%SS_DEN  ( HcoState%MicroPhys%nBins ), STAT=AS )
     IF ( AS/=0 ) THEN
        MSG = 'Cannot allocate SS_DEN'
-       !CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate SS_DEN', RC )
        CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
     Inst%SS_DEN = 2200.d0
 
-   ! Allocate for blowing snow simulation
+    ! Allocate for blowing snow simulation
     IF ( Inst%EmitSnowSS ) THEN
         ALLOCATE ( Inst%F_DI_N_FYI( NR_MAX,   HcoState%MicroPhys%nBins ), STAT=AS )
         IF ( AS/=0 ) THEN
-           !CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DI_N_FYI', RC )
            MSG = 'Cannot allocate F_DI_N_FYI'
            CALL HCO_ERROR(MSG, RC )
            RETURN
@@ -780,7 +776,6 @@ CONTAINS
 
         ALLOCATE ( Inst%F_DI_N_MYI( NR_MAX,   HcoState%MicroPhys%nBins ), STAT=AS )
         IF ( AS/=0 ) THEN
-           !CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DI_N_MYI', RC )
            MSG = 'Cannot allocate F_DI_N_MYI'
            CALL HCO_ERROR(MSG, RC )
            RETURN
@@ -789,7 +784,6 @@ CONTAINS
 
         ALLOCATE ( Inst%F_DN_N_FYI( NR_MAX,   HcoState%MicroPhys%nBins ), STAT=AS )
         IF ( AS/=0 ) THEN
-           !CALL HCO_ERROR( 'HcoState%Config%Err, Cannot allocate F_DN_N_FYI', RC )
            MSG = 'Cannot allocate F_DN_N_FYI'
            CALL HCO_ERROR(MSG, RC )
            RETURN
@@ -798,7 +792,6 @@ CONTAINS
 
         ALLOCATE ( Inst%F_DN_N_MYI( NR_MAX,   HcoState%MicroPhys%nBins ), STAT=AS )
         IF ( AS/=0 ) THEN
-           !CALL HCO_ERROR( 'HcoState%Config%Err, Cannot allocate F_DN_N_MYI', RC )
            MSG = 'Cannot allocate F_DN_N_MYI'
            CALL HCO_ERROR(MSG, RC )
            RETURN
@@ -807,7 +800,6 @@ CONTAINS
 
     	ALLOCATE ( Inst%F_DI_S_FYI( NR_MAX,   HcoState%MicroPhys%nBins ), STAT=AS )
 	IF ( AS/=0 ) THEN
-           !CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DI_S_FYI', RC )
            MSG = 'Cannot allocate F_DI_S_FYI'
            CALL HCO_ERROR(MSG, RC )
            RETURN
@@ -816,7 +808,6 @@ CONTAINS
 
         ALLOCATE ( Inst%F_DI_S_MYI( NR_MAX,   HcoState%MicroPhys%nBins ), STAT=AS )
 	IF ( AS/=0 ) THEN
-           !CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DI_S_MYI', RC )
            MSG = 'Cannot allocate F_DI_S_MYI'
            CALL HCO_ERROR(MSG, RC )
            RETURN
@@ -825,7 +816,6 @@ CONTAINS
 
         ALLOCATE ( Inst%F_DN_S_FYI( NR_MAX,   HcoState%MicroPhys%nBins ), STAT=AS )
 	IF ( AS/=0 ) THEN
-           !CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DN_S_FYI', RC )
            MSG = 'Cannot allocate F_DN_S_FYI'
            CALL HCO_ERROR(MSG, RC )
            RETURN
@@ -834,7 +824,6 @@ CONTAINS
 
         ALLOCATE ( Inst%F_DN_S_MYI( NR_MAX,   HcoState%MicroPhys%nBins ), STAT=AS )
 	IF ( AS/=0 ) THEN
-    	   !CALL HCO_ERROR( HcoState%Config%Err, 'Cannot allocate F_DN_S_MYI', RC )
            MSG = 'Cannot allocate F_DN_S_MYI'
            CALL HCO_ERROR(MSG, RC )
 	      RETURN
@@ -842,14 +831,10 @@ CONTAINS
         Inst%F_DN_S_MYI = 0.0_sp
     ENDIF
 
-
-     !print *, 'Betty still allocating'
-
     ! Allocate TOMAS_DBIN
     ALLOCATE ( Inst%TOMAS_DBIN( HcoState%MicroPhys%nBins ), STAT=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Cannot allocate TOMAS_DBIN array (hcox_tomas_jeagle_mod.F90)'
-       !CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
        CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
@@ -858,38 +843,33 @@ CONTAINS
     ALLOCATE ( Inst%DRFAC( HcoState%MicroPhys%nBins ), STAT=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Cannot allocate DRFAC array (hcox_tomas_jeagle_mod.F90)'
-       !CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
        CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
-    ! JKODROS - ALLOCATE TC1 and TC2
+    ! Allocate TC1
     ALLOCATE ( Inst%TC1( HcoState%NX, HcoState%NY,&
                HcoState%NZ, HcoState%MicroPhys%nBins ), STAT=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Cannot allocate TC1 array (hcox_tomas_jeagle_mod.F90)'
-       !CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
        CALL HCO_ERROR(MSG, RC )
        RETURN
     ELSE
     Inst%TC1 = 0d0
     ENDIF
 
-    ! JKODROS - ALLOCATE TC1 and TC2
+    ! Allocate TC2
     ALLOCATE ( Inst%TC2( HcoState%NX, HcoState%NY,&
                HcoState%NZ, HcoState%MicroPhys%nBins ), STAT=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Cannot allocate TC2 array (hcox_tomas_jeagle_mod.F90)'
-       !CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
        CALL HCO_ERROR(MSG, RC )
        RETURN
     ELSE
     Inst%TC2 = 0d0
     ENDIF
 
-      !print *,'Betty done allocating'
-
-      !size bins for blowing snow - Huang 6/12/20
+    !size bins for blowing snow - Huang 6/12/20
        IF ( Inst%EmitSnowSS ) THEN
 
     DO K = 1, HcoState%MicroPhys%nBins
@@ -902,7 +882,6 @@ CONTAINS
 
          !-------------- Define size distribution ---------------------
          ! for northern hemisphere FYI
-!         D_SNOW = 1.0d0
          D_SNOW = 1.0d0
          DO ND = 1, NR_MAX
             D_DRY =  ( Inst%NSLNT_FYI * RHOICE / (1000.d0 &
@@ -1093,7 +1072,6 @@ CONTAINS
     ELSE
 
        MSG = 'Adjust TOMAS_Jeagle emiss coeff (TOMAS_COEF) for your model res: SRCSALT30: hcox_TOMAS_jeagle_mod.F90'
-       !CALL HCO_ERROR(HcoState%Config%Err,MSG, RC )
        CALL HCO_ERROR(MSG, RC )
 
     ENDIF
