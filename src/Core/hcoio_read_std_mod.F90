@@ -695,6 +695,8 @@ CONTAINS
        ! going to 72 levels. Otherwise, use MESSy (nbalasus, 8/24/2023).
        IF ( Lct%Dct%Dta%Levels == 0 ) THEN
 
+#if defined( MODEL_CESM ) || defined( MODEL_WRF )
+
           ! In WRF/CESM, IsModelLevel has a different meaning of "GEOS-Chem levels"
           ! because the models in WRF and CESM are user-defined and thus fixed input
           ! files would never be on the model level. In this case, a check is added
@@ -702,8 +704,7 @@ CONTAINS
           ! data will be handled later in this file accordingly to be vertically
           ! regridded to the runtime model levels using MESSy.
           ! This fixes a regression from the vertical regridding fixes in 3.7.1.
-          ! (hplin, 10/16/23)
-#if defined( MODEL_CESM ) || defined( MODEL_WRF )
+          !
           ! The meaning of "is model levels" in WRF and CESM are different.
           ! Model levels can be changed and thus data is never on the model level.
           ! In this case, IsModelLevel means that the data is on standard
@@ -716,12 +717,15 @@ CONTAINS
           !     nlev == 47 .or. nlev == 48 .or. nlev == 36 .or. nlev == 72 .or. nlev == 73 ) THEN
               IsModelLevel = .true.
           ENDIF
+
 #else
+
           CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
               CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
               RETURN
           ENDIF
+
 #endif
 
           ! Set level indeces to be read
