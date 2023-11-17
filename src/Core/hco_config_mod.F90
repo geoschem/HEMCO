@@ -635,7 +635,7 @@ CONTAINS
     LOGICAL                   :: Found
     CHARACTER(LEN= 63)        :: cName
     CHARACTER(LEN=255)        :: srcFile
-    CHARACTER(LEN= 50)        :: srcVar
+    CHARACTER(LEN=100)        :: srcVar
     CHARACTER(LEN= 31)        :: srcTime
     CHARACTER(LEN= 31)        :: TmCycle
     CHARACTER(LEN=  1)        :: WildCard
