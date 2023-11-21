@@ -19,28 +19,38 @@
 #------------------------------------------------------------------------------
 #BOC
 
-# Function to replace text in a file
 function replace() {
+
+    #========================================================================
+    # Function to replace text in a file via sed.
+    # 
+    # 1st argument: Search pattern
+    # 2nd argument: Replacement text
+    # 3rd argument: File in which to search and replace
+    #========================================================================
+
     sed -i -e "s/${1}/${2}/" "${3}"
 }
 
-#-----------------------------------------------------------------------------
-
-# Display and error message and exit
+ 
 function exitWithError() {
+
+    #========================================================================
+    # Display and error message and exit
+    #========================================================================
+
     echo "Could not update version numbers in ${1}... Exiting!"
     exit 1
 }
 
-#-----------------------------------------------------------------------------
 
 function main() {
 
-    # Expect 1 arguments, or exit with error
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: ./changeVersionNumbers.sh VERSION"
-        exit 1
-    fi
+    #========================================================================
+    # Replaces the version number in the files listed.
+    #
+    # 1st argument: New version number to use
+    #========================================================================
 
     # New version number
     version="${1}"
@@ -71,10 +81,16 @@ function main() {
     cd "${thisDir}"
 }
 
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+
+# Expect 1 argument, or exit with error
+if [[ $# -ne 1 ]]; then
+    echo "Usage: ./changeVersionNumbers.sh VERSION"
+    exit 1
+fi
 
 # Replace version numbers
-main()
+main "${1}"
 
 # Return status
 exit $?
