@@ -55,16 +55,19 @@ function main() {
     # New version number
     version="${1}"
 
-    # Directories
+    # Save this directory path and change to root directory
     thisDir=$(pwd -P)
     cd ..
-    rootDir=$(pwd -P)
 
+    #========================================================================
+    # Update version numbers in various files
+    #========================================================================
+    
     # Pattern to match: X.Y.Z
     pattern='[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*'
 
     # List of files to replace
-    files=(                                   \
+    files=(                                     \
         "CMakeLists.txt"                        \
         "docs/source/conf.py"                   \
         "src/Core/hco_error_mod.F90"
@@ -77,6 +80,15 @@ function main() {
         echo "HEMCO version updated to ${version} in ${file}"
     done
 
+    #========================================================================
+    # Update version number and date in CHANGELOG.md
+    #========================================================================
+
+    # Pattern to match: "[Unreleased] - TBD"
+    pattern='\[.*Unreleased.*\].*'
+    date=$(date -Idate)
+    replace "${pattern}" "\[${version}\] - ${date}" "CHANGELOG.md"
+    
     # Return to the starting directory
     cd "${thisDir}"
 }
