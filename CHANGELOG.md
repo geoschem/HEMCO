@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - TBD
+### Added
+- Script `.release/changeVersionNumbers.sh` to change version numbers before a new HEMCO release
+
 ### Changed
 - Increased netCDF variable string length from 50 to 100
 
