@@ -1816,9 +1816,9 @@ CONTAINS
 !
 ! !USES:
 !
-    USE HCO_CHARPAK_Mod,    ONLY : STRREPL, STRSPLIT, TRANLC
-    USE HCO_EXTLIST_MOD,    ONLY : AddExt, AddExtOpt, HCO_GetOpt
-    USE HCO_EXTLIST_MOD,    ONLY : GetExtNr
+    USE HCO_CHARPAK_Mod,    ONLY : STRREPL,  STRSPLIT, TRANLC
+    USE HCO_EXTLIST_MOD,    ONLY : AddExt,   AddExtOpt, HCO_GetOpt
+    USE HCO_EXTLIST_MOD,    ONLY : GetExtNr, GetExtOpt
 !
 ! !INPUT PARAMETERS:
 !
@@ -1841,6 +1841,7 @@ CONTAINS
 !
     INTEGER               :: I, N, Idx, ExtNr
     LOGICAL               :: Enabled, NewExt
+    LOGICAL               :: DoEmis,  Found, LTMP
     CHARACTER(LEN=255)    :: loc
     CHARACTER(LEN=512)    :: msg
     CHARACTER(LEN=1023)   :: OPTS
@@ -1856,6 +1857,10 @@ CONTAINS
     msg   = ''
     loc   = 'ExtSwitch2Buffer (hco_config_mod.F90)'
     ExtNr = -1
+
+    ! Initialize
+    DoEmis= .TRUE.
+    Found = .FALSE.
 
     ! Do until exit
     DO
@@ -1889,6 +1894,18 @@ CONTAINS
                 CALL HCO_ERROR( msg, RC, thisLoc=loc )
                 RETURN
              ENDIF
+          ENDIF
+
+          ! Check if EMISSIONS setting is found. If so, overwrite DoEmis.
+          IF ( .not. Found ) THEN
+             CALL GetExtOpt( HcoConfig, -999, 'EMISSIONS',           &
+                             OptValBool=LTMP, FOUND=Found,  RC=RC )
+             IF ( RC /= HCO_SUCCESS ) THEN
+                msg = 'Error encountered in "GetExtOpt( EMISSIONS )"!'
+                CALL HCO_Error( msg, RC, ThisLoc=loc )
+                RETURN
+             ENDIF
+             IF ( Found ) DoEmis = LTMP
           ENDIF
           CYCLE
        ENDIF
@@ -1939,6 +1956,11 @@ CONTAINS
           IF ( TRIM(SUBSTR(idx)) == 'on' ) THEN
              Enabled = .TRUE.
           ELSE
+             Enabled = .FALSE.
+          ENDIF
+
+          ! Disable extension if EMISSIONS logical is false
+          IF ( .not. DoEmis ) THEN
              Enabled = .FALSE.
           ENDIF
 
