@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Rename `HEMCO_Config.rc.sample` to `HEMCO_Config.rc` in `createRunDir.sh` if sample is used.
+- Added fix to turn off emissions extensions when `EMISSIONS` logical is false
 
 ## [3.7.1] - 2023-10-10
 ### Changed
