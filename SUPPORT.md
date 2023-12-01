@@ -13,7 +13,7 @@ We use GitHub issues to support user questions. To ask a question, **[open a new
 
 ## What type of support can I expect?
 
-We will be happy to assist you in resolving bugs and technical issues that arise when compiling or running HEMCO.  User support and outreach is an important part of our  mission to support the [International GEOS-Chem User Community](https://geoschem.github.io/geos-chem-people-projects-map/).
+We will be happy to assist you in resolving bugs and technical issues that arise when compiling or running HEMCO.  User support and outreach is an important part of our  mission to support the [International GEOS-Chem User Community](https://geoschem.github.io/people.html).
 
 Even though we can assist in several ways, we cannot possibly do everything.  We rely on HEMCO users being resourceful and willing to try to resolve problems on their own to the greatest extent possible.
 
