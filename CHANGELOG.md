@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased 3.8.0] - TBD
+### Changed
+- Updated TOMAS_Jeagle sea salt extension
+
 ## [3.7.2] - 2023-12-01
 ### Added
 - Script `.release/changeVersionNumbers.sh` to change version numbers before a new HEMCO release
@@ -111,14 +115,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.5.2] - 2022-11-29
 ### Added
-- Added sanitizer option for detecting memory leaks in HEMCO
-    standalone during build
+- Added sanitizer option for detecting memory leaks in HEMCO standalone during build
 
 ### Changed
 - Remove unused, commented-out code in `src/Extensions/hcox_dustdead_mod.F`
-- Replaced placeholder error messages in
-    `src/Core/hco_config_mod.F90` with more informational messages
-    (often including the line of the HEMCO_Config.rc in the printout)
+- Replaced placeholder error messages in `src/Core/hco_config_mod.F90` with more informational messages (often including the line of the HEMCO_Config.rc in the printout)
 - Added improved documentation for time cycle flag `EFYO` in ReadTheDocs
 
 ### Fixed
@@ -132,8 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support for MAPL 2.16 (needed by GCHP and GEOS)
 - Bug fix for HEMCO standalone run directory creation
-- Bug fix: If HEMCO masks are specified as `lon1/lat1/lon2/lat2`,
-    then don't try to read from disk
+- Bug fix: If HEMCO masks are specified as `lon1/lat1/lon2/lat2`, then don't try to read from disk
 - Documentation from the GEOS-Chem wiki (now on ReadTheDocs)
 - Badges for the ReadTheDocs front page
 - Bug fix for masking issues in MPI environment (for WRF, CESM)
@@ -276,6 +276,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bug fix for distributing emissions in the vertical dimension
 - New error checks in the HEMCO standalone module
 - Bug fix for `ifort` compiler in soil NOx extension
+
 ### Removed
 - Null string character from netCDF unit string
 
@@ -291,8 +292,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.004] - 2017-12-30
 ### Added
-- Updates to remove possible issues and excessive print statements when
-    operating in GEOS environment
+- Updates to remove possible issues and excessive print statements when operating in GEOS environment
 - Fixed possible tracer ID mismatch in sea salt extension
 - New option to normalize MEGAN LAI, HEMCO diagnostics
 - Now write multiple time slices into one file
@@ -375,8 +375,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.009] - 2015-09-10
 ### Added
-- Bug fixes to allow specifying flexible diagnostics output
-    frequencies.
+- Bug fixes to allow specifying flexible diagnostics output frequencies.
 
 ## [1.1.008] - 2015-07-06
 ### Added
