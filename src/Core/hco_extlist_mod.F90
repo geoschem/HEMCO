@@ -1567,7 +1567,7 @@ CONTAINS
     ELSE IF ( TRIM(CF%MetField) == 'GEOSIT' ) THEN
        DEF_MET_UC = 'GEOSIT'
        DEF_MET_LC = 'geosit'
-       DEF_CN_YR  = '2018' ! Constant met fld year
+       DEF_CN_YR  = '1998' ! Constant met fld year
        DEF_NC_VER = 'nc'   ! NetCDF extension
     ENDIF
 
