@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated TOMAS_Jeagle sea salt extension
 
+### Fixed
+- Updated IsModelLevel check for CESM and WRF-GC
+
 ## [3.7.2] - 2023-12-01
 ### Added
 - Script `.release/changeVersionNumbers.sh` to change version numbers before a new HEMCO release

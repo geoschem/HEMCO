@@ -695,11 +695,38 @@ CONTAINS
        ! going to 72 levels. Otherwise, use MESSy (nbalasus, 8/24/2023).
        IF ( Lct%Dct%Dta%Levels == 0 ) THEN
 
+#if defined( MODEL_CESM ) || defined( MODEL_WRF )
+
+          ! In WRF/CESM, IsModelLevel has a different meaning of "GEOS-Chem levels"
+          ! because the models in WRF and CESM are user-defined and thus fixed input
+          ! files would never be on the model level. In this case, a check is added
+          ! in order to match the file with known GEOS-Chem levels, and if so, the
+          ! data will be handled later in this file accordingly to be vertically
+          ! regridded to the runtime model levels using MESSy.
+          ! This fixes a regression from the vertical regridding fixes in 3.7.1.
+          !
+          ! The meaning of "is model levels" in WRF and CESM are different.
+          ! Model levels can be changed and thus data is never on the model level.
+          ! In this case, IsModelLevel means that the data is on standard
+          ! GEOS-Chem levels, and if so, the data will be handled accordingly
+          ! using a hard-coded set of GEOS-Chem levels to be interpolated using MESSy.
+          ! (hplin, 10/15/23)
+          IF ( TRIM(LevUnit) == "level" .or. TRIM(LevUnit) == "GEOS-Chem level" ) THEN
+          ! the below check will be obsolete and is unmaintainable, but would be consistent with ModelLev_Check.
+          ! it is more robust to check for the explicit intention of LevUnit
+          !     nlev == 47 .or. nlev == 48 .or. nlev == 36 .or. nlev == 72 .or. nlev == 73 ) THEN
+              IsModelLevel = .true.
+          ENDIF
+
+#else
+
           CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
               CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
               RETURN
           ENDIF
+
+#endif
 
           ! Set level indeces to be read
           lev1 = 1
