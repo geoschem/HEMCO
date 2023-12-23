@@ -44,6 +44,7 @@ MODULE HCOIO_Util_Mod
   PUBLIC :: HCOIO_ReadOther
   PUBLIC :: HCOIO_ReadCountryValues
   PUBLIC :: HCOIO_ReadFromConfig
+  PUBLIC :: HCOIO_IsValid
   PUBLIC :: GetDataVals
   PUBLIC :: GetSliceIdx
   PUBLIC :: FillMaskBox
@@ -3444,5 +3445,103 @@ CONTAINS
     RC = HCO_SUCCESS
 
   END SUBROUTINE ReadMath
+!EOC
+!------------------------------------------------------------------------------
+!                   Harmonized Emissions Component (HEMCO)                    !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: HCOIO_IsValid 
+!
+! !DESCRIPTION: Helper routine to check if a field is valid. This is primarily
+!  used in the ESMF version to check if MAPL/ESMF has changed the status of an
+!  import field to undefined. In the standard version, this shadow routine 
+!  simply checks if the field is indeed an element of the emissions list. 
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE HCOIO_IsValid( HcoState, FieldName, IsValid, RC )
+!
+! !USES:
+!
+    USE HCO_DAtaCont_Mod,  ONLY : ListCont_Find
+#if defined ( ESMF_ )
+    USE ESMF
+    USE MAPLBase_mod
+
+# include "MAPL_Generic.h"
+#endif
+!
+! !INPUT PARAMETERS:
+!
+    TYPE(HCO_State),  POINTER        :: HcoState
+    CHARACTER(LEN=*), INTENT(IN)     :: FieldName
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+    LOGICAL,          INTENT(  OUT)  :: IsValid
+    INTEGER,          INTENT(INOUT)  :: RC
+!
+! !REVISION HISTORY:
+!  21 Dec 2023 - C. Keller   - Initial version
+!  See https://github.com/geoschem/hemco for complete history
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    CHARACTER(LEN=255)            :: MSG
+    CHARACTER(LEN=255), PARAMETER :: LOC = 'HCOIO_IsValid (hcoio_util_mod.F90)'
+    LOGICAL                       :: FND
+#if defined ( ESMF_ )
+    INTEGER                       :: STAT
+    TYPE(ESMF_State), POINTER     :: IMPORT
+    TYPE(ESMF_Field)              :: this_field
+    LOGICAL                       :: field_is_undefined
+    CHARACTER(LEN=ESMF_MAXSTR)    :: Iam
+#endif
+
+    !=================================================================
+    ! HCOIO_IsValid begins here
+    !=================================================================
+
+    ! Init 
+    IsValid = .FALSE.
+    CALL HCO_ENTER( HcoState%Config%Err,  LOC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    ! In ESMF environment, use ESMF routines to check status of this field 
+#if defined ( ESMF_ )
+    Iam = LOC
+    IMPORT => HcoState%IMPORT
+    ASSERT_(ASSOCIATED(IMPORT))
+
+    CALL ESMF_StateGet( IMPORT, TRIM(FieldName), this_field, RC=STAT )
+    IF( STAT /= ESMF_SUCCESS ) THEN
+       MSG = 'Cannot get state: ' // TRIM(FieldName)
+       CALL HCO_ERROR( MSG, RC )
+       RETURN
+    ENDIF
+    field_is_undefined = ESMFL_field_is_undefined(this_field, RC=STAT )
+    IsValid = .not. field_is_undefined
+
+    ! Cleanup
+    IMPORT => NULL()
+
+    ! In non-ESMF_ environment, simply check if field is in emissions list
+#else
+    CALL ListCont_Find ( HcoState%EmisList, TRIM(FieldName), FND )
+    IsValid = FND
+#endif
+
+    ! Return w/ success
+    CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
+
+  END SUBROUTINE HCOIO_IsValid
 !EOC
 END MODULE HCOIO_Util_Mod
