@@ -1177,27 +1177,6 @@ CONTAINS
           IF ( tidx2 > 0 ) EXIT
        ENDDO
 
-       ! Repeat above but now only modify month.
-       IF ( tidx2 < 0 ) THEN
-          tmpYMDhm = availYMDhm(tidx1)
-          DO
-             ! Increase by one month
-             tmpYMDhm = tmpYMDhm + 1.0e6_dp
-
-             ! Exit if we are beyond available dates
-             IF ( tmpYMDhm > availYMDhm(nTime) ) EXIT
-
-             ! Check if there is a time slice with that date
-             DO I = tidx1,nTime
-                IF ( ABS( tmpYMDhm - availYMDhm(I) ) < EPSILON ) THEN
-                   tidx2 = I
-                   EXIT
-                ENDIF
-             ENDDO
-             IF ( tidx2 > 0 ) EXIT
-          ENDDO
-       ENDIF
-
        ! Repeat above but now only modify day
        IF ( tidx2 < 0 ) THEN
           tmpYMDhm = availYMDhm(tidx1)
