@@ -255,8 +255,7 @@ These environment variables should be defined in your
 
    HEMCOc only requires the Fortran compiler.  But you will
    also need the C and C++ compilers if you plan to build other
-   software packages (:ref:`such as KPP <kppguide>`) or :ref:`install
-   libraries manually <build-libraries-with-spack>`.
+   software packages or :ref:`install libraries manually <spackguide>`.
 
    Also, older Intel compiler versions used :envvar:`icc` as the name
    for the C compiler and :envvar:`icpc` as the name of the C++ compiler.
