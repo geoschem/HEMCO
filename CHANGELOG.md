@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated IsModelLevel check for CESM and WRF-GC
 - Interpolation error for 8-day MODIS LAI files (removed month loop in `GetIndex2Interp`)
 
+### Added
+- Add subroutine HCOIO_IsValid to query if a HEMCO container has a valid field attached to it.
+
 ## [3.7.2] - 2023-12-01
 ### Added
 - Script `.release/changeVersionNumbers.sh` to change version numbers before a new HEMCO release
