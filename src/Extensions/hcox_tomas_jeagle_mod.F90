@@ -281,7 +281,7 @@ CONTAINS
     ! adjusting coeff
 
     !### Debug
-    print*, 'IN HCOX_TOMAS_Jeagle_Mod.F90'
+    !print*, 'IN HCOX_TOMAS_Jeagle_Mod.F90'
 
     ! Init
     ptr3D => NULL()
@@ -530,9 +530,9 @@ CONTAINS
        ! HEMCO species ID
        HcoID = HCO_GetHcoID( TRIM(SpcName), HcoState )
 
-       !### Debug
-       print*, 'Aerosol number AT 50, 10,: ', Inst%TC1(ii,jj,1,k)
-       print*, 'HCO ID: ', K, SpcName, HcoID
+       !### Debug - comment out print over random oceen box - update indices if needed bc, 18/12/23
+       !!print*, 'Aerosol number AT 1, 1,: ', Inst%TC1(ii,jj,1,k)
+       !!print*, 'HCO ID: ', K, SpcName, HcoID
 
        ! Add number to the HEMCO data structure
        CALL HCO_EmisAdd( HcoState, Inst%TC1(:,:,:,K), HcoID, RC)
@@ -1052,29 +1052,33 @@ CONTAINS
        4.02325d-01, 5.06898d-01, 6.38652d-01, 8.04651d-01, 1.01380d+00 /)
 #endif
 
+
+    !bc, 10/01/24 - comment this out as coef is not being used
     !=======================================================================
     ! Allocate quantities depending on horizontal resolution
     !=======================================================================
-    IF ( TRIM( HcoState%Config%GridRes) == '4.0x5.0' ) THEN
-
-       !-----------------------------------------------------------------------
-       ! TOMAS simulations at 4 x 5 global resolution
-       !-----------------------------------------------------------------------
-       Inst%TOMAS_COEF = 1.d0
-
-    ELSE IF ( TRIM( HcoState%Config%GridRes) == '2.0x2.5' ) THEN
-
-       !-----------------------------------------------------------------------
-       ! TOMAS simulations at 2 x 2.5 global resolution
-       !-----------------------------------------------------------------------
-       Inst%TOMAS_COEF = 1.d0
-
-    ELSE
-
-       MSG = 'Adjust TOMAS_Jeagle emiss coeff (TOMAS_COEF) for your model res: SRCSALT30: hcox_TOMAS_jeagle_mod.F90'
-       CALL HCO_ERROR(MSG, RC )
-
-    ENDIF
+!    !IF ( TRIM( HcoState%Config%GridRes) == '4.0x5.0' ) THEN !comment out for
+!    resolution independence in code and consider implementing offline SS in
+!    TOMAS
+!
+!       !-----------------------------------------------------------------------
+!       ! TOMAS simulations at 4 x 5 global resolution
+!       !-----------------------------------------------------------------------
+!       Inst%TOMAS_COEF = 1.d0
+!
+!    ELSE IF ( TRIM( HcoState%Config%GridRes) == '2.0x2.5' ) THEN
+!
+!       !-----------------------------------------------------------------------
+!       ! TOMAS simulations at 2 x 2.5 global resolution
+!       !-----------------------------------------------------------------------
+!       Inst%TOMAS_COEF = 1.d0
+!
+!    ELSE
+!
+!       MSG = 'Adjust TOMAS_Jeagle emiss coeff (TOMAS_COEF) for your model res: SRCSALT30: hcox_TOMAS_jeagle_mod.F90'
+!       CALL HCO_ERROR(MSG, RC )
+!
+!    ENDIF
 
     !=======================================================================
     ! Activate this module and the fields of ExtState that it uses
