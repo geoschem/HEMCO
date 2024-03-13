@@ -651,9 +651,11 @@ CONTAINS
           INQUIRE( FILE=TRIM( ThisFile ), EXIST=FileExists )
 
           ! Write message to stdout and HEMCO log
-          MSG = 'Attempting to read volcano climatology file'
-          WRITE( 6,   300 ) TRIM( MSG )             
-          CALL HCO_MSG( HcoState%Config%Err, MSG )
+          IF ( Hcostate%amIRoot ) THEN
+             MSG = 'Attempting to read volcano climatology file'
+             WRITE( 6,   300 ) TRIM( MSG )             
+             CALL HCO_MSG( HcoState%Config%Err, MSG )
+          ENDIF
 
           ! Create a display string based on whether or not the file is found
           IF ( FileExists ) THEN

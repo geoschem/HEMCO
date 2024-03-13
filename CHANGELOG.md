@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Now allow up to 10 nested brackets (`((( )))`) in the `HEMCO_Config.rc` file
 
+### Fixed
+- Limit volcano climatology file read message to root core
+
 ## [3.8.0] - 2024-02-07
 ### Changed
 - Updated TOMAS_Jeagle sea salt extension
