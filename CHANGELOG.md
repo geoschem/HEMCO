@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Changed
 - Now allow up to 10 nested brackets (`((( )))`) in the `HEMCO_Config.rc` file
+- Now use short submodule names (i.e. w/o path) in `.gitmodules`
 
 ### Fixed
 - Limit volcano climatology file read message to root core
