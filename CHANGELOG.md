@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Limit volcano climatology file read message to root core
+- Updated `hco_interp_mod.F90` to handle 3D NEI emissions.
 
 ## [3.8.0] - 2024-02-07
 ### Changed
