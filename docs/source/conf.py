@@ -23,7 +23,7 @@ copyright = '2023, GEOS-Chem Support Team'
 author = 'GEOS-Chem Support Team'
 
 # The full version, including alpha/beta/rc tags
-release = '3.7.1'
+release = '3.8.0'
 
 # -- General configuration ---------------------------------------------------
 
@@ -82,8 +82,11 @@ bibtex_bibfiles = [
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
-
+exclude_patterns = [
+    'geos-chem-shared-docs/README.md',
+    'geos-chem-shared-docs/supplemental-guides/species-guide.rst',
+    'geos-chem-shared-docs/supplemental-guides/using-kpp-with-gc.rst',
+]
 
 # -- Options for HTML output -------------------------------------------------
 
