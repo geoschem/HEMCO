@@ -8,8 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Changed
 - Updated Python package versions for ReadTheDocs in `docs/requirements.txt`
-- Now request Python 3.12 for ReadTheDocs builds in
-  `.readthedocs.yaml`
+- Now request Python 3.12 for ReadTheDocs builds in `.readthedocs.yaml`
 
 ## [3.8.0] - 2024-02-07
 ### Changed
