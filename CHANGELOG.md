@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub config files `.github/stale.yml` and `.github/no-response.yml`
 
 ### Changed
-- Converted Github issue templates into issue forms using TAML definition files
+- Converted Github issue templates into issue forms using YAML definition files
+- Updated Python package versions for ReadTheDocs in `docs/requirements.txt`
+- Now request Python 3.12 for ReadTheDocs builds in `.readthedocs.yaml`
 
 ## [3.8.1] - 2024-04-02
 ### Changed
