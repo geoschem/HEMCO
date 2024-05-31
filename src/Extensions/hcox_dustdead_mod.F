@@ -1500,6 +1500,11 @@
           RETURN
       ENDIF
 
+      DO I = 1, HcoState%NX
+         ! Use Ustar read from GEOS
+         WND_FRC(I) = WND_FRC_GEOS(I)
+      ENDDO
+
       !=================================================================
       ! Factor by which surface roughness increases threshold friction
       ! velocity.  The sink of atrmospheric momentum into non-erodible
