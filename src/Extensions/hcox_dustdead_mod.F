@@ -213,7 +213,7 @@
       INTEGER                :: I,      J,      L,       N
       INTEGER                :: M,      IOS,    INC,     LAT_IDX
       INTEGER                :: NDB,    NSTEP,  intDOY
-      REAL*8                 :: W10M,   DEN,    DIAM,    U_TS0
+      REAL*8                 :: DEN,    DIAM,    U_TS0
       REAL*8                 :: U_TS,   SRCE_P, Reynol,  YMID_R
       REAL*8                 :: ALPHA,  BETA,   GAMMA,   CW
       REAL*8                 :: XTAU,   P1,      P2
@@ -226,8 +226,8 @@
       REAL*8                 :: PMID(HcoState%NX)          ! mid layer P (L=1)
       REAL*8                 :: TLON(HcoState%NX)          ! temperature (L=1)
       REAL*8                 :: THLON(HcoState%NX)         ! pot. temp. (L=1)
-      REAL*8                 :: ULON(HcoState%NX)          ! U-wind (L=1)
-      REAL*8                 :: VLON(HcoState%NX)          ! V-wind (L=1)
+!      REAL*8                 :: ULON(HcoState%NX)          ! U-wind (L=1)
+!      REAL*8                 :: VLON(HcoState%NX)          ! V-wind (L=1)
       REAL*8                 :: BHT2(HcoState%NX)          ! half box height (L=1)
       REAL*8                 :: Q_H2O(HcoState%NX)         ! specific humidity (L=1)
       REAL*8                 :: ORO(HcoState%NX)           ! "orography"
@@ -398,7 +398,7 @@
 !$OMP PARALLEL DO
 !$OMP+DEFAULT( SHARED )
 !$OMP+PRIVATE( I,     J,      P1,    P2,   PTHICK,  PMID, TLON        )
-!$OMP+PRIVATE( THLON, ULON,   VLON,  BHT2, Q_H2O,   ORO,  SNW_HGT_LQD )
+!$OMP+PRIVATE( THLON,  BHT2, Q_H2O,   ORO,  SNW_HGT_LQD )
 !$OMP+PRIVATE( N,     YMID_R, DSRC,  RC,   AREA_M2, DUST_EMI_TOTAL    )
 
       ! Loop over latitudes
@@ -428,8 +428,8 @@
 
             ! U and V winds at surface [m/s]
             ! --> These variables won't be used at all...
-            ULON(I)        = ExtState%U10M%Arr%Val(I,J)
-            VLON(I)        = ExtState%V10M%Arr%Val(I,J)
+!            ULON(I)        = ExtState%U10M%Arr%Val(I,J)
+!            VLON(I)        = ExtState%V10M%Arr%Val(I,J)
 
             ! Half box height at surface [m]
             BHT2(I)        = HcoState%Grid%BXHEIGHT_M%Val(I,J,1) / 2.d0
@@ -460,7 +460,8 @@
          CALL DST_MBL( HcoState, ExtState,  Inst, DOY,
      &                 BHT2,   J,      YMID_R, ORO,
      &                 PTHICK, PMID,  Q_H2O,  DSRC,   SNW_HGT_LQD,
-     &                 DTSRCE, TLON,  THLON,  VLON,   ULON,
+     &                 DTSRCE, TLON,  THLON,
+!     &                 VLON,   ULON,
      &                 J,      RC )
 
          ! Error check
@@ -1005,13 +1006,13 @@
       ! Activate met fields used by this extension
       ExtState%SPHU%DoUse    = .TRUE.
       ExtState%TK%DoUse      = .TRUE.
-      ExtState%U10M%DoUse    = .TRUE.
-      ExtState%V10M%DoUse    = .TRUE.
+!      ExtState%U10M%DoUse    = .TRUE.
+!      ExtState%V10M%DoUse    = .TRUE.
       ExtState%T2M%DoUse     = .TRUE.
       ExtState%GWETTOP%DoUse = .TRUE.
       ExtState%SNOWHGT%DoUse = .TRUE.
       ExtState%USTAR%DoUse   = .TRUE.
-      ExtState%Z0%DoUse      = .TRUE.
+!      ExtState%Z0%DoUse      = .TRUE.
       ExtState%FRLAND%DoUse  = .TRUE.
       ExtState%FRLANDIC%DoUse= .TRUE.
       ExtState%FROCEAN%DoUse = .TRUE.
@@ -1071,7 +1072,8 @@
      &                    LAT_RDN,     ORO,         PRS_DLT,
      &                    PRS_MDP,     Q_H2O_VPR,   DSRC,
      &                    SNW_HGT_LQD, TM_ADJ,      TPT_MDP,
-     &                    TPT_PTN_MDP, WND_MRD_MDP, WND_ZNL_MDP,
+     &                    TPT_PTN_MDP,
+!     &                    WND_MRD_MDP, WND_ZNL_MDP,
      &                    NSTEP,       RC )
 !
 !******************************************************************************
@@ -1095,8 +1097,8 @@
 !  (10) TM_ADJ,     (REAL*8 ) : Adjustment timestep                 [s       ]
 !  (11) TPT_MDP,    (REAL*8 ) : Temperature                         [K       ]
 !  (12) TPT_PTN_MDP (REAL*8 ) : Midlayer local potential temp.      [K       ]
-!  (13) WND_MRD_MDP (REAL*8 ) : Meridional wind component (V-wind)  [m/s     ]
-!  (14) WND_ZNL_MDP (REAL*8 ) : Zonal wind component (U-wind)       [m/s     ]
+!  (13) WND_MRD_MDP (REAL*8 ) : Meridional wind component (V-wind)  [m/s     ] not used
+!  (14) WND_ZNL_MDP (REAL*8 ) : Zonal wind component (U-wind)       [m/s     ] not used
 !  (15) FIRST,      (LOGICAL) : Logical used ot open output dataset [unitless]
 !  (16) NSTEP       (INTEGER) : Iteration counter                   [unitless]
 !
@@ -1143,8 +1145,8 @@
       REAL*8,         INTENT(IN)    :: TM_ADJ
       REAL*8,         INTENT(IN)    :: TPT_MDP(HcoState%NX)
       REAL*8,         INTENT(IN)    :: TPT_PTN_MDP(HcoState%NX)
-      REAL*8,         INTENT(IN)    :: WND_MRD_MDP(HcoState%NX)
-      REAL*8,         INTENT(IN)    :: WND_ZNL_MDP(HcoState%NX)
+!      REAL*8,         INTENT(IN)    :: WND_MRD_MDP(HcoState%NX)
+!      REAL*8,         INTENT(IN)    :: WND_ZNL_MDP(HcoState%NX)
       INTEGER,        INTENT(IN)    :: NSTEP
       REAL*8,         INTENT(INOUT) :: DSRC(HcoState%NX, NBINS)
       INTEGER,        INTENT(INOUT)  :: RC
@@ -1187,10 +1189,10 @@
                                             !           of dust
       REAL*8 HGT_ZPD(HcoState%NX)             ! [m] Zero plane displacement
       REAL*8 LND_FRC_MBL_SLICE(HcoState%NX)   ! [frc] Bare ground fraction
-      REAL*8 MNO_LNG(HcoState%NX)             ! [m] Monin-Obukhov length
+!      REAL*8 MNO_LNG(HcoState%NX)             ! [m] Monin-Obukhov length
       REAL*8 WND_FRC(HcoState%NX)             ! [m/s] Friction velocity
-      REAL*8 WND_FRC_GEOS(HcoState%NX)        ! [m/s] Friction velocity
-      REAL*8 Z0_GEOS(HcoState%NX)             ! [m] roughness height
+!      REAL*8 WND_FRC_GEOS(HcoState%NX)        ! [m/s] Friction velocity
+!      REAL*8 Z0_GEOS(HcoState%NX)             ! [m] roughness height
       REAL*8 SNW_FRC(HcoState%NX)             ! [frc] Fraction of surface covered
                                         !       by snow
       REAL*8 TRN_FSH_VPR_SOI_ATM(HcoState%NX) ! [frc] Transfer efficiency of vapor
@@ -1198,9 +1200,9 @@
       REAL*8 wnd_frc_slt(HcoState%NX)      ! [m/s] Saltating friction velocity
       REAL*8 WND_FRC_THR_SLT(HcoState%NX)  ! [m/s] Threshold friction velocity
                                      !       for saltation
-      REAL*8 WND_MDP(HcoState%NX)          ! [m/s] Surface layer mean wind speed
-      REAL*8 WND_RFR(HcoState%NX)          ! [m/s] Wind speed at reference height
-      REAL*8 WND_RFR_THR_SLT(HcoState%NX)  ! [m/s] Threshold 10 m wind speed for
+!      REAL*8 WND_MDP(HcoState%NX)          ! [m/s] Surface layer mean wind speed
+!      REAL*8 WND_RFR(HcoState%NX)          ! [m/s] Wind speed at reference height
+!      REAL*8 WND_RFR_THR_SLT(HcoState%NX)  ! [m/s] Threshold 10 m wind speed for
                                      !       saltation
 
       LOGICAL FLG_CACO3            ! [FLG] Activate CaCO3 tracer
@@ -1243,8 +1245,8 @@
                                    !         content (sand-dependent)
       REAL*8 VWC_SFC_SLICE(HcoState%NX)  ! [m3/m3] Volumetric water content
       REAL*8 GWC_SFC(HcoState%NX)        ! [kg/kg] Gravimetric water content
-      REAL*8 RGH_MMN(HcoState%NX)        ! [m] Roughness length momentum
-      REAL*8 W10M
+!      REAL*8 RGH_MMN(HcoState%NX)        ! [m] Roughness length momentum
+!      REAL*8 W10M
 
       ! GCM diagnostics
       ! Dust tendency due to gravitational settling [kg/kg/s]
@@ -1279,11 +1281,11 @@
       FLX_MSS_VRT_DST(:,:)   = 0.0D0       ! [kg m-2 s-1]
       FLX_MSS_VRT_DST_TTL(:) = 0.0D0       ! [kg m-2 s-1]
       FRC_THR_NCR_WTR(:)     = 0.0D0       ! [frc]
-      WND_RFR(:)             = 0.0D0       ! [m s-1]
+!      WND_RFR(:)             = 0.0D0       ! [m s-1]
       WND_FRC(:)             = 0.0D0       ! [m s-1]
       WND_FRC_SLT(:)         = 0.0D0       ! [m s-1]
       WND_FRC_THR_SLT(:)     = 0.0D0       ! [m s-1]
-      WND_RFR_THR_SLT(:)     = 0.0D0       ! [m s-1]
+!      WND_RFR_THR_SLT(:)     = 0.0D0       ! [m s-1]
       HGT_ZPD(:)             = HGT_ZPD_MBL ! [m]
 
       DSRC(:,:)              = 0.0D0
@@ -1325,8 +1327,8 @@
          MPL_AIR(I) = PRS_DLT(I) * GRV_SFC_RCP
 
          ! Mean surface layer horizontal wind speed
-         WND_MDP(I) = SQRT( WND_ZNL_MDP(I)*WND_ZNL_MDP(I)
-     &              +       WND_MRD_MDP(I)*WND_MRD_MDP(I) )
+!         WND_MDP(I) = SQRT( WND_ZNL_MDP(I)*WND_ZNL_MDP(I)
+!     &              +       WND_MRD_MDP(I)*WND_MRD_MDP(I) )
 
       ENDDO
 
@@ -1433,36 +1435,37 @@
       LVL_DLT(:)     = 0.0D0
 
       !=================================================================
-      ! Get reference wind at 10m
+      ! Get reference wind at 10m 
+      ! Now ustar is read from meteorology so reference wind is not used
       !=================================================================
-      DO I = 1, HcoState%NX
-         W10M = ExtState%U10M%Arr%Val(I,LAT_IDX)**2 +
-     &          ExtState%V10M%Arr%Val(I,LAT_IDX)**2
-         W10M = SQRT(W10M)
+!      DO I = 1, HcoState%NX
+!         W10M = ExtState%U10M%Arr%Val(I,LAT_IDX)**2 +
+!     &          ExtState%V10M%Arr%Val(I,LAT_IDX)**2
+!         W10M = SQRT(W10M)
 
          ! add mobilisation criterion flag
-         IF ( FLG_MBL_SLICE(I) ) THEN
-            WND_RFR(I) = W10M
-         ENDIF
-      ENDDO
+!         IF ( FLG_MBL_SLICE(I) ) THEN
+!            WND_RFR(I) = W10M
+!         ENDIF
+!      ENDDO
 
       !=================================================================
       ! Compute standard roughness length.   This call is probably
       ! unnecessary, because we are only concerned with mobilisation
       ! candidates, for which roughness length is imposed in blm_mbl
       !=================================================================
-      CALL RGH_MMN_GET(      ! Set roughness length w/o zero plane displacement
-     &       HcoState, Inst,
-     &       ORO,            ! I [frc] Orography
-     &       RGH_MMN,        ! O [m] Roughness length momentum
-     &       SFC_TYP_SLICE,  ! I [idx] LSM surface type (0..28)
-     &       SNW_FRC,        ! I [frc] Fraction of surface covered by snow
-     &       WND_RFR,
-     &       RC )       ! I [m s-1] 10 m wind speed
-      IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
-          RETURN
-      ENDIF
+!      CALL RGH_MMN_GET(      ! Set roughness length w/o zero plane displacement
+!     &       HcoState, Inst,
+!     &       ORO,            ! I [frc] Orography
+!     &       RGH_MMN,        ! O [m] Roughness length momentum
+!     &       SFC_TYP_SLICE,  ! I [idx] LSM surface type (0..28)
+!     &       SNW_FRC,        ! I [frc] Fraction of surface covered by snow
+!     &       WND_RFR,
+!     &       RC )       ! I [m s-1] 10 m wind speed
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!          CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
+!      RETURN
+!      ENDIF
 
       !=================================================================
       ! Introduce Ustar and Z0 from GEOS data
@@ -1471,11 +1474,9 @@
 
          ! Just assign for flag mobilisation candidates
          IF ( FLG_MBL_SLICE(I) ) THEN
-            WND_FRC_GEOS(I) = ExtState%USTAR%Arr%Val(I,LAT_IDX)
-            Z0_GEOS(I)      = ExtState%Z0%Arr%Val(I,LAT_IDX)
+            WND_FRC(I) = ExtState%USTAR%Arr%Val(I,LAT_IDX)
          ELSE
-            WND_FRC_GEOS(I) = 0.0D0
-            Z0_GEOS(I)      = 0.0D0
+            WND_FRC(I) = 0.0D0
          ENDIF
       ENDDO
 
@@ -1486,19 +1487,20 @@
       !
       ! Now calling Stripped down (adiabatic) version     tdf 10/27/2K3
       ! rgh_mmn_mbl parameter included directly in blm_mbl
+      ! since Monin-Obukhov length is not used as well, comment out this call
       !=================================================================
-      CALL BLM_MBL(
-     &    HcoState,
-     &    FLG_MBL_SLICE,       ! I [flg] Mobilization candidate flag
-     &    RGH_MMN,             ! I [m] Roughness length momentum, Z0,m
-     &    WND_RFR,             ! I [m s-1] 10 m wind speed
-     &    MNO_LNG,             ! O [m] Monin-Obukhov length
-     &    WND_FRC,
-     &    RC )                 ! O [m s-1] Surface friction velocity, U*
-      IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
-          RETURN
-      ENDIF
+!      CALL BLM_MBL(
+!     &    HcoState,
+!     &    FLG_MBL_SLICE,       ! I [flg] Mobilization candidate flag
+!     &    RGH_MMN,             ! I [m] Roughness length momentum, Z0,m
+!     &    WND_RFR,             ! I [m s-1] 10 m wind speed
+!     &    MNO_LNG,             ! O [m] Monin-Obukhov length
+!     &    WND_FRC,
+!     &    RC )                 ! O [m s-1] Surface friction velocity, U*
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!          CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
+!          RETURN
+!      ENDIF
 
       !=================================================================
       ! Factor by which surface roughness increases threshold friction
@@ -1575,13 +1577,13 @@
       ENDDO
 
       ! Threshold saltation wind speed at reference height, 10m
-      DO I = 1, HcoState%NX
-         IF ( FLG_MBL_SLICE(I) ) THEN
-           WND_RFR_THR_SLT(I) =  ! [m s-1] Threshold 10 m wind speed
+!      DO I = 1, HcoState%NX
+!         IF ( FLG_MBL_SLICE(I) ) THEN
+!           WND_RFR_THR_SLT(I) =  ! [m s-1] Threshold 10 m wind speed
                                  !         for saltation
-     &     WND_RFR(I) * WND_FRC_THR_SLT(I) / WND_FRC(i)
-         ENDIF
-      ENDDO
+!     &     WND_RFR(I) * WND_FRC_THR_SLT(I) / WND_FRC(i)
+!         ENDIF
+!      ENDDO
 
       !=================================================================
       ! Saltation increases friction speed by roughening surface
@@ -1589,14 +1591,19 @@
       !
       ! Compute the wind friction velocity due to saltation, U*,s
       ! accounting for the Owen effect.
+      ! Comment out since WND_FRC_SLT is simply set to WND_FRC in this function
       !=================================================================
-      CALL WND_FRC_SLT_GET(
-     &    HcoState,
-     &    FLG_MBL_SLICE,     ! I [flg] Mobilization candidate flag
-     &    WND_FRC,           ! I [m s-1] Surface friction velocity
-     &    WND_FRC_SLT,       ! O [m s-1] Saltating friction velocity
-     &    WND_RFR,           ! I [m s-1] Wind speed at reference height
-     &    WND_RFR_THR_SLT )  ! I [m s-1] Thresh. 10 m wind speed for saltation
+!      CALL WND_FRC_SLT_GET(
+!     &    HcoState,
+!     &    FLG_MBL_SLICE,     ! I [flg] Mobilization candidate flag
+!     &    WND_FRC,           ! I [m s-1] Surface friction velocity
+!     &    WND_FRC_SLT,       ! O [m s-1] Saltating friction velocity
+!     &    WND_RFR,           ! I [m s-1] Wind speed at reference height
+!     &    WND_RFR_THR_SLT )  ! I [m s-1] Thresh. 10 m wind speed for saltation
+            !=================================================================
+      DO I = 1, HcoState%NX
+         WND_FRC_SLT(I) = WND_FRC(I)
+      ENDDO
 
       !=================================================================
       ! Compute horizontal streamwise mass flux, Zender et al., expr. (10)
