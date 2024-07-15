@@ -971,7 +971,7 @@ are:
 
       Data interpolation also works between multiple files. For
       instance, if monthly data are stored in files
-      :literal`file_200501.nc`, :file:`file_200502.nc`, etc., a
+      :literal:`file_200501.nc`, :file:`file_200502.nc`, etc., a
       combination of source file name :file:`file_$YYYY$MM.nc` and
       :option:`sourceTime` attribute :literal:`2005-2007/1-12/1-31/0
       :literal:I` will result in daily data interpolation between the two
@@ -1008,7 +1008,7 @@ are:
 
     The :option:`SrcDim` attribute can also be used to indicate the
     level into which 2D data shall be released by setting  the
-    vertical coordinate to `:literal:`LX```, with :literal:`X` being
+    vertical coordinate to :literal:`LX`, with :literal:`X` being
     the release level. For instance, to emit a 2D field into level 5,
     set :option:`SrcDim` to :literal:`xyL5`.
 
@@ -1336,7 +1336,7 @@ switches. Only fields that are part of an enabled collection will be
 used by HEMCO.
 
 The beginning and end of a collection is indicated by an opening and
-closing bracket, respectively: :literal:(((CollectionName` and
+closing bracket, respectively: :literal:`(((CollectionName` and
 :literal:`)))CollectionName`. These brackets must be on individual lines
 immediately preceeding / following the first/last entry of a collection.
 The same collection bracket can be used as many times as needed.
