@@ -31,9 +31,9 @@ HEMCO may not recognize alternate spellings of units
 ====================================================
 
 If a unit string (e.g. :literal:`kg/m2/s`) read from a netCDF
-file matches the unit string listed under the :option:`SrcUnit` column
-of :ref:`the HEMCO configuration file <hco-cfg>`, then no unit
-conversion will happen.
+file matches the unit string listed under the
+:ref:`hco-cfg-base-srcunit` column of :ref:`the HEMCO configuration
+file <hco-cfg>`, then no unit conversion will happen.
 
 But if the unit string in the file is e.g. :literal:`kg m-2 s-1` and
 the unit in the configuration file is :literal:`kg/m2/s`, then HEMCO

@@ -13,9 +13,9 @@ Overview
 HEMCO diagnostics are organized in **collections**, with each
 collection consisting of a dynamic number of diagnostic fields (aka
 **diagnostic containers**). Each collection has a fixed output
-frequency (:option:`DiagnFreq`) assigned to it.  All fields within a
-collection are written out at the same interval: :option:`Hourly`,
-:option:`Daily`, etc.
+frequency (:ref:`hco-cfg-set-diagnfreq`) assigned to it.  All fields
+within a collection are written out at the same interval:
+:literal:`Hourly`, :literal:`Daily`, etc.
 
 The contents of a collection (i.e. the diagnostics containers) are
 defined at the beginning of a simulation and become continuously updated
@@ -39,21 +39,17 @@ averaging method.
 
 Currently supported averaging methods are:
 
-.. option:: instantaneous
-
-   Instantaneous values (recommended method).
-
-.. option:: mean
-
-   Arithmetic mean over the diagnostic interval.
-
-.. option:: sum
-
-   Total sum over the diagnostic interval.
-
-.. option:: cumulsum
-
-   Cumulative sum since simulation start.
++-------------------+------------------------------------------------+
+| Value             | What it does                                   |
++===================+================================================+
+| ``instantaneous`` | Instantaneous values (recommended method).     |
++-------------------+------------------------------------------------+
+| ``mean``          | Arithmetic mean over the diagnostic interval.  |
++-------------------+------------------------------------------------+
+| ``sum``           | Total sum over the diagnostic interval.        |
++-------------------+------------------------------------------------+
+| ``cumulsum``      | Cumulative sum since simulation start.         |
++-------------------+------------------------------------------------+
 
 Explicitly setting the averaging method will disable automatic unit
 conversion and the fields passed to this diagnostic will be stored as
@@ -87,20 +83,19 @@ The Default collection
 The **Default** collection contains emission diagnostics intended to
 be written to disk, e.g. for analysis purposes. All fields of the
 default collection are written out at the frequency provided in
-setting :option:`DiagnFreq` in the settings section of the HEMCO
-configuration file. The name of the corresponding diagnostics files
-can be specified via the :code:`DiagnPrefix` setting. The simulation
-date at the time of output will be appended to the diagnostics prefix,
-e.g. the diagnostics for Aug 1, 2008 will be written as
-:file:`HEMCO_Diagnostics.200808010000.nc`. The  datetime can denote
-the beginning, middle, or end (default) of the time interval, as
-specified by setting :option:`DiagnTimeStamp` (see below).
+setting :ref:`hco-cfg-set-diagnfreq` in the settings section of the
+HEMCO configuration file. The name of the corresponding diagnostics files
+can be specified via the :ref:`hco-cfg-set-diagnprefix` setting. The
+simulation date at the time of output will be appended to the
+diagnostics prefix, e.g. the diagnostics for Aug 1, 2008 will be
+written as :file:`HEMCO_Diagnostics.200808010000.nc`. The datetime
+can denote the beginning, middle, or end (default) of the time
+interval, as specified by setting ::ref:`hco-cfg-set-diagntimestamp`.
 
-Several :ref:`options for the default diagnostic collection
-<hco-cfg-settings-diagnostics>` can be specified at the top of the
-:ref:`HEMCO configuration file <hco-cfg>` file.  Commonly-used options
-are :option:`DiagnFile`, :option:`DiagnFreq`, and
-:option:`DiagnPrefix`.
+Several options for the default diagnostic collection can be specified
+at the top of the :ref:`HEMCO configuration file <hco-cfg>` file.
+Commonly-used options are :ref:`hco-cfg-set-diagnfile`,
+:ref:`hco-cfg-set-diagnfreq`, and :ref:`hco-cfg-set-diagnprefix`.
 
 .. _hco-diag-configfile:
 
@@ -108,7 +103,7 @@ Configuration file for the Default collection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You may specify the name of the Default diagnostics configuration file
-with the :option:`DiagnFile` option in :ref:`the
+with the :ref:`hco-cfg-set-diagnfile` option in :ref:`the
 HEMCO configuration file <hco-cfg>`. This file, which is customarily
 named :file:`HEMCO_Diagn.rc`, uses the following format:
 
@@ -119,50 +114,34 @@ named :file:`HEMCO_Diagn.rc`, uses the following format:
 
 The columns of :file:`HEMCO_Diagn.rc` allow you to specify several options:
 
-.. option:: Name
-
-   netCDF variable name under which this diagnostic quantity will be
-   named in the HEMCO diagnostic output files.
-
-.. option:: Spec
-
-   Species short name (same as in :ref:`the HEMCO configuration file
-   <hco-cfg>`) .
-
-.. option:: ExtNr
-
-   Extension number  (same as in :ref:`the HEMCO configuration file
-   <hco-cfg>`) .
-
-   The :literal:`-1` value means to sum over all extensions.
-
-.. option:: Cat
-
-   Category (same as in :ref:`the HEMCO configuration file
-   <hco-cfg>`).
-
-   The :literal:`-1` value means to sum over all categories.
-
-.. option:: Hier
-
-   Hierarchy (same as in :ref:`the HEMCO configuration file
-   <hco-cfg>`).
-
-   The :literal:`-1` value means to sum over all categories.
-
-.. option:: Dim
-
-   Number of dimensions that you wish this diagnostic to have:
-
-   - :literal:`1`: Scalar
-   - :literal:`2`: Lat-lon or X-Y
-   - :literal:`3`: Lat-lon-lev or X-Y-Z
-
-.. option:: LongName
-
-   A longer descriptive name for the diagnostic.  This will be used to
-   define the netCDF :literal:`long_name` variable attribute in the
-   HEMCO diagnostic files.
++---------------+------------------------------------------------------------------+
+| Option        | What it does                                                     |
++===============+==================================================================+
+| ``Name``      | netCDF variable name under which this diagnostic quantity will   |
+|               | stored in the HEMCO diagnostic output files.                     |
++---------------+------------------------------------------------------------------+
+| ``Spec``      | :ref:`Species short name <hco-cfg-base-species>` as listed in    |
+|               | :ref:`the HEMCO configuration file <hco-cfg>`.                   |
++---------------+------------------------------------------------------------------+
+| ``ExtNr``     | :ref:`Extension number <hco-cfg-ext-switches-extnr>`.            |
+|               | The :literal:`-1` value means to sum over all extensions.        |
++---------------+------------------------------------------------------------------+
+| ``Cat``       | :ref:`Emission Category <hco-cfg-base-cat>`.                     |
+|               | The :literal:`-1` value means to sum over all categories.        |
++---------------+------------------------------------------------------------------+
+| ``Hier``      | :ref:`Emission Hierarchy <hco-cfg-base-hier>`.                   |
+|               | The :literal:`-1` value means to sum over all hierarchies.       |
++---------------+------------------------------------------------------------------+
+| ``Dim``       | Number of dimensions that you wish this diagnostic to have:      |
+|               |                                                                  |
+|               | - :literal:`1`: Scalar                                           |
+|               | - :literal:`2`: Lat-lon or X-Y                                   |
+|               | - :literal:`3`: Lat-lon-lev or X-Y-Z                             |
++---------------+------------------------------------------------------------------+
+| ``LongName``  | A longer descriptive name for the diagnostic.  This will define  |
+|               | the netCDF :literal:`long_name` variable attribute in the        |
+|               | HEMCO diagnostic files.                                          |
++---------------+------------------------------------------------------------------+
 
 Here are a few examples.
 
@@ -170,7 +149,7 @@ Here are a few examples.
 
    Adding these entries to :file:`HEMCO_Config.rc` will make HEMCO write
    out total NO and CO emissions, as well as GFED biomass burning CO
-   emissions (e.g. only emissions from :option:`ExtNr` 111):
+   emissions (e.g. only emissions from :ref:`hco-cfg-ext-switches-extnr` 111):
 
    .. code-block:: kconfig
 
@@ -182,10 +161,10 @@ Here are a few examples.
 
 #. **Archive diagnostics for regional emissions**
 
-   To diagnose regional emissions, you must set :option:`ExtNr`,
-   :option:`Cat`, and :option:`Hier` accordingly.  The example below
-   defines a diagnostic entry for CO emissions from the EPA16 USA
-   inventory:
+   To diagnose regional emissions, you must set
+   :ref:`hco-cfg-ext-switches-extnr`, :ref:`hco-cfg-base-cat`, and
+   :ref:`hco-cfg-base-hier` accordingly. The example below defines
+   a diagnostic entry for CO emissions from the EPA16 USA inventory:
 
    .. code-block:: kconfig
 
@@ -262,7 +241,7 @@ Importing diagnostic content into an external model
 
 The content of the :ref:`Default collection <hco-diag-default>` can
 be specified through the HEMCO diagnostics definitions file (specified
-by the :option:`DiagnFile` option).
+by the :ref:`hco-cfg-set-diagnfile` option).
 
 The content of the :ref:`Manual <hco-diag-manual>` and
 :ref:`Restart <hco-diag-restart>` collections currently need to
