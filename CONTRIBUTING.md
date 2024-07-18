@@ -14,7 +14,7 @@ Submit bug fixes right away, as these will be given the highest priority.  Pleas
 Submit updates (code and/or data) for mature model developments once you have submitted a paper on the topic.
 
 ## How can I submit updates?
-We use [GitHub Flow](https://guides.github.com/introduction/flow/index.html), so all changes happen through [pull requests](https://help.github.com/articles/creating-a-pull-request/). This workflow is [described here](https://docs.github.com/en/get-started/using-github/github-flow).
+We use **GitHub Flow**, so all changes happen through [pull requests](https://help.github.com/articles/creating-a-pull-request/). This workflow is [described here](https://docs.github.com/en/get-started/using-github/github-flow).
 
 As the author you are responsible for:
 - Testing your changes
