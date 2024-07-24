@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added definition of 0.125x0.15625 grid resolution
 
+## [3.9.1] - 2024-06-28
+### Fixed
+- Fixed formatting error in `.github/workflows/stale.yml` that caused the Mark Stale Issues action not to run
+
+## [3.9.0] - 2024-05-30
+### Added
+- GitHub Action config file `.github/workflows/stale.yml`, which replaces StaleBot
+
+### Removed
+- GitHub config files `.github/stale.yml` and `.github/no-response.yml`
+
+### Changed
+- Converted Github issue templates into issue forms using YAML definition files
+- Updated Python package versions for ReadTheDocs in `docs/requirements.txt`
+- Now request Python 3.12 for ReadTheDocs builds in `.readthedocs.yaml`
+
+## [3.8.1] - 2024-04-02
+### Changed
+- Now allow up to 10 nested brackets (`((( )))`) in the `HEMCO_Config.rc` file
+- Now use short submodule names (i.e. w/o path) in `.gitmodules`
+
+### Fixed
+- Limit volcano climatology file read message to root core
+- Updated `hco_interp_mod.F90` to handle 3D NEI emissions.
+
 ## [3.8.0] - 2024-02-07
 ### Changed
 - Updated TOMAS_Jeagle sea salt extension

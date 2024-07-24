@@ -1366,7 +1366,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Maximum number of nested brackets
-    INTEGER, PARAMETER            :: MAXBRACKNEST = 5
+    INTEGER, PARAMETER            :: MAXBRACKNEST = 10
     INTEGER                       :: IDX, STRLEN, ExtNr
     LOGICAL                       :: FOUND
     LOGICAL                       :: UseBracket, UseThis
