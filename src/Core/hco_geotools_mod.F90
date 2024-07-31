@@ -814,6 +814,7 @@ CONTAINS
     LOGICAL, SAVE                 :: EVAL_TK       = .TRUE.
     LOGICAL, SAVE                 :: EVAL_PEDGE    = .TRUE.
     LOGICAL, SAVE                 :: EVAL_BXHEIGHT = .TRUE.
+    LOGICAL, SAVE                 :: DO_SCALE_PSFC = .FALSE.
 
     !-------------------------------
     ! HCO_CalcVertGrid begins here
@@ -1178,11 +1179,26 @@ CONTAINS
        FoundPSFC = .TRUE.
     ENDIF
 
-    ! Set PEDGE
+    ! Test if we need to convert surface pressure (PSFC) from hPa to
+    ! Pa.  Only do this test on the first timestep for efficiency.
+    IF ( FIRST ) THEN
+       DO_SCALE_PSFC = ( MINVAL( HcoState%Grid%PSFC%Val) < 10000.0_hp )
+    ENDIF
+
+    ! Convert PSFC from hPa to Pa if necessary (on each timestep).
+    IF ( DO_SCALE_PSFC ) THEN
+       HcoState%Grid%PSFC%Val = HcoState%Grid%PSFC%Val * 100.0_hp
+    ENDIF
+
+    ! If we are using HEMCO in a CTM or ESM, then PEDGE will have
+    ! been passed to HEMCO as an input.  If PEDGE has not been passed
+    ! (e.g. HEMCO standalone), then compute it here using the surface
+    ! pressure PSFC and the Ap and Bp hybrid grid parameters.
     IF ( .NOT. FoundPEDGE ) THEN
        !$OMP PARALLEL DO        &
        !$OMP DEFAULT( SHARED  ) &
-       !$OMP PRIVATE( I, J, L )
+       !$OMP PRIVATE( I, J, L ) &
+       !$OMP COLLAPSE( 3      )
        DO L = 1, HcoState%NZ+1
        DO J = 1, HcoState%NY
        DO I = 1, HcoState%NX
