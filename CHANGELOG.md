@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Fixed
 - Added brackets around `exempt-issue-labels` list in `.github/workflows/stale.yml`
+- Fixed incorrect pressure handling in HEMCO standalone (see issue #277)
 
 ## [3.9.2] - 2024-07-24
 ### Changed
