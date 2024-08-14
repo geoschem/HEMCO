@@ -90,53 +90,6 @@ These steps can also be used to scale emissions for different regions
 (e.g. provinces, states) by providing HEMCO with a mask file
 containing the regions to be scaled.
 
-
-.. _cfg-ex-scl-rec-mask:
-
-Scale (or zero) emissions with a rectangular mask
--------------------------------------------------
-
-.. important::
-
-   If you are using HEMCO versions prior to 3.5.0, you may encounter a
-   bug when trying to follow this example. See Github issue:
-   https://github.com/geoschem/HEMCO/issues/153 for a workaround.
-
-Another way to scale all emissions over a country (or set them to
-zero) is to apply a rectangular mask.
-
-For example, to set all emissions over Australia and surrounding
-islands to zero, add this line to the :ref:`hco-cfg-masks` section of
-:ref:`the HEMCO configuration file <hco-cfg>`:
-
-.. code-block:: kconfig
-
-    1010 AUS_MASK 105.0/-46.0/160.0/-10.0 - 2000/1/1/0 C xy 1 1 105/-46/160/–10
-
-Here you directly provide the lower left and upper right corner of the
-mask region mask instead of a netCDF file:
-:literal:`lon1/lat1/lon2/lat2` You can then combine this mask with
-a scale factor of zero to eliminate any emissions over that area.
-
-In :ref:`Base emissions <hco-cfg-base>`
-
-.. code-block:: kconfig
-
-    0 HTAP_NO_IND /path/to/HTAP_NO_INDUSTRY.generic.01x01.nc emi_no 2008-2010/1-12/1/0 C xy kg/m2/s NO 1/27/25/501 1/2 4
-
-In :ref:`Scale Factors <hco-cfg-scalefac>`:
-
-.. code-block:: kconfig
-
-   501 SCALE_AUS 0.0 - - - xy unitless 1 1010
-
-In :ref:`hco-cfg-masks`:
-
-.. code-block:: kconfig
-
-   # Defines a rectangular region that should cover AUS + surrounding islands
-   1010 AUS_MASK 105.0/-46.0/160.0/-10.0 – 2000/1/1/0 C xy 1 1 105.0/-46.0/160.0/-10.0
-
 .. _cfg-ex-scl-spc:
 
 Scale emissions by species
