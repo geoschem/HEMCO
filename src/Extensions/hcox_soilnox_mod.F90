@@ -104,6 +104,7 @@ MODULE HCOX_SoilNOx_Mod
      INTEGER                        :: Instance
      INTEGER                        :: ExtNr          ! Extension number
      INTEGER                        :: IDTNO          ! NO tracer ID
+     LOGICAL                        :: UseSoilTemp    ! Use soil temperature?
      LOGICAL                        :: LFERTILIZERNOX ! Use fertilizer NOx?
      REAL(hp)                       :: FERT_SCALE     ! fertilizer scale factor
 
@@ -748,7 +749,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER                        :: ExtNr
-    CHARACTER(LEN=255)             :: MSG, LOC
+    CHARACTER(LEN=255)             :: MSG, ErrMsg, ThisLoc
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
     INTEGER, ALLOCATABLE           :: HcoIDs(:)
     INTEGER                        :: nSpc, I, J, II, AS
@@ -757,7 +758,14 @@ CONTAINS
     !=================================================================
     ! HCOX_SoilNOx_INIT begins here!
     !=================================================================
-    LOC = 'HCOX_SoilNOx_INIT (HCOX_SOILNOX_MOD.F90)'
+
+    ! Define strings for error messgaes
+    ErrMsg = ''
+    ThisLoc =  &
+    ' -> in HCOX_SoilNOx_Init (in module HEMCO/Extensions/hcox_soilnox_mod.F90)'
+
+    ! Assume success
+    RC = HCO_SUCCESS
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
@@ -766,15 +774,17 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 39', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error entering soil NOx extension' 
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! Create instance
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%SoilNox, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( 'Cannot create soil NOx instance', RC )
+       ErrMsg = 'Cannot create soil NOx instance'
+       CALL HCO_ERROR ( ErrMsg, RC )
        RETURN
     ENDIF
 
@@ -785,11 +795,20 @@ CONTAINS
     ! Read settings specified in configuration file
     ! Note: the specified strings have to match those in
     !       the config. file!
-    CALL GetExtOpt( HcoState%Config, ExtNr, 'Use fertilizer NOx', &
-                     OptValBool=Inst%LFERTILIZERNOX, RC=RC )
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'Use soil temperature', &
+                    OptValBool=Inst%UseSoilTemp, RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 40', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Use soil temperature not specified'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'Use fertilizer NOx', &
+                    OptValBool=Inst%LFERTILIZERNOX, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       ErrMsg = 'Use fertilizer NOx not specified'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! Get global scale factor
@@ -798,12 +817,13 @@ CONTAINS
     ! Get HEMCO species IDs
     CALL HCO_GetExtHcoID( HcoState, ExtNr, HcoIDs, SpcNames, nSpc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 41', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'No soil NOx species speficied'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
     IF ( nSpc /= 1 ) THEN
-       MSG = 'Module soil NOx accepts only one species!'
-       CALL HCO_ERROR(MSG, RC )
+       ErrMsg = 'Module soil NOx accepts only one species!'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
     Inst%IDTNO = HcoIDs(1)
@@ -812,15 +832,17 @@ CONTAINS
     CALL GetExtSpcVal( HcoState%Config, ExtNr, nSpc, &
                        SpcNames, 'Scaling', 1.0_sp, Inst%SpcScalVal, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 42', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error reading species scale factor'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     CALL GetExtSpcVal( HcoState%Config, ExtNr, nSpc, &
                        SpcNames, 'ScaleField', HCOX_NOSCALE, Inst%SpcScalFldNme, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 43', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error reading ScaleField'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! Verbose mode
@@ -840,6 +862,8 @@ CONTAINS
        WRITE(MSG,*) '   - NOx scale factor       : ', Inst%SpcScalVal(1)
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) '   - NOx scale field        : ', TRIM(Inst%SpcScalFldNme(1))
+       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       WRITE(MSG,*) '   - Use soil temperature   : ', Inst%UseSoilTemp
        CALL HCO_MSG(HcoState%Config%Err,MSG)
        WRITE(MSG,*) '   - Use fertilizer NOx     : ', Inst%LFERTILIZERNOX
        CALL HCO_MSG(HcoState%Config%Err,MSG)
@@ -976,6 +1000,7 @@ CONTAINS
 
     ! Activate required met fields
     ExtState%T2M%DoUse       = .TRUE.
+    ExtState%TSOIL1%DoUse    = .TRUE.
     ExtState%GWETTOP%DoUse   = .TRUE.
     ExtState%SUNCOS%DoUse    = .TRUE.
     ExtState%U10M%DoUse      = .TRUE.
@@ -1146,7 +1171,7 @@ CONTAINS
 !
     INTEGER   :: K
     REAL(hp)  :: BASE_TERM, CRF_TERM,  PULSE
-    REAL(hp)  :: TC,        TEMP_TERM, WINDSQR
+    REAL(hp)  :: TC,        TSOIL,     TEMP_TERM, WINDSQR
     REAL(hp)  :: WET_TERM,  A_FERT,    A_BIOM
     REAL(hp)  :: LAI,       SUNCOS,    GWET
     REAL(hp)  :: ARID,      NARID
@@ -1161,6 +1186,9 @@ CONTAINS
 
     ! Surface temperature [C]
     TC             = ExtState%T2M%Arr%Val(I,J) - 273.15_hp
+
+    ! Soil temperature [C]
+    TSOIL          = ExtState%TSOIL1%Arr%Val(I,J) - 273.15_hp
 
     ! Surface wind speed, squared
     WINDSQR        = ExtState%U10M%Arr%Val(I,J)**2 + &
@@ -1188,7 +1216,11 @@ CONTAINS
 
        ! Temperature-dependent term of soil NOx emissions [unitless]
        ! Use GWET instead of climo wet/dry
-       TEMP_TERM = SOILTEMP( K, TC, GWET )
+       IF ( Inst%UseSoilTemp ) THEN
+          TEMP_TERM = SOILTEMP( K, TC, GWET )
+       ELSE
+          TEMP_TERM = SOILTEMP( K , TSOIL, GWET)
+       ENDIF
 
        ! Soil moisture scaling of soil NOx emissions
        ARID      = Inst%CLIMARID(I,J)
@@ -1818,6 +1850,10 @@ CONTAINS
 !        Geophys. Res., 105 , 20,69720,706, 1999.
 !  (3 ) Yienger, J.J, and H. Levy, Empirical model of global soil-biogenic
 !        NOx emissions, J. Geophys. Res., 100, D6, 11,447-11464, June 20, 1995.
+!  (4 ) Wang, Y., C. Ge, L. Castro Garcia1, G.D. Jenerette, P.Y. Oikawa, and
+!       J. Wang, Improved modelling of soil NOx emissions in a high temperature
+!       agricultural region: role of background emissions on NO2 trend over the
+!       US, Environ. Res. Lett., 16(8), DOI: 10.1088/1748-9326/ac16a3, 2021.
 !
 ! !REVISION HISTORY:
 !  17 Aug 2009 - R. Yantosca - Initial Version
@@ -1837,18 +1873,20 @@ CONTAINS
     ! Save surface air temp in shadow variable TMMP
     TMMP   = TC
 
-    ! DRY
-    IF ( GWET < 0.3_hp ) THEN
+    IF ( .not. Inst%UseSoilTemp ) THEN
+       ! DRY
+       IF ( GWET < 0.3_hp ) THEN
 
-       ! Convert surface air temperature to model temperature
-       ! by adding 5 degrees C to model temperature
-       TMMP = TMMP + 5.0_hp
+          ! Convert surface air temperature to model temperature
+          ! by adding 5 degrees C to model temperature
+          TMMP = TMMP + 5.0_hp
 
-    ! WET
-    ELSE
+       ! WET
+       ELSE
 
-       TMMP = SOILTA(NN) * TMMP + SOILTB(NN)
+          TMMP = SOILTA(NN) * TMMP + SOILTB(NN)
 
+       ENDIF
     ENDIF
 
     !==============================================================
@@ -1867,12 +1905,26 @@ CONTAINS
 
     ELSE
 
-       ! Caps temperature response at 30C
-       IF ( TMMP >= 30.0_hp ) TMMP = 30.0_hp
+       IF ( Inst%UseSoilTemp ) THEN
 
-       SOIL_TEMP =  EXP( 0.103_hp * TMMP )
+          !----------------------------------------------
+          ! Soil NOx scheme from Yi Wang et al. (ERL, 2021) 
+          !----------------------------------------------
+          ! Caps temperature response at 40C
+          IF ( TMMP >= 40.e+0_hp ) TMMP = 40.e+0_hp
+          IF ( TMMP <= 20.e+0_hp ) SOIL_TEMP =  EXP( 0.103 * TMMP )
+          IF ( TMMP > 20.e+0_hp ) THEN
+             SOIL_TEMP=-0.009*(TMMP**3)+0.837*(TMMP**2)+(-22.527)*TMMP+196.149
+          ENDIF
 
-    ENDIF
+       ELSE
+
+          ! Caps temperature response at 30C
+          IF ( TMMP >= 30.0_hp ) TMMP = 30.0_hp
+
+          SOIL_TEMP =  EXP( 0.103_hp * TMMP )
+
+       ENDIF
 
   END FUNCTION SoilTemp
 !EOC
