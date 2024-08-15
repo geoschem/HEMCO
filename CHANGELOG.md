@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - TBD
+### Added
+- Added TSOIL1 field to ExtState
+
 ### Changed
 - Updated soil NOx extention to include the option to use soil temperature and parameterization based on Yi Wang et al. (ERL, 2021) instead of the temperature at 2 meters.
 

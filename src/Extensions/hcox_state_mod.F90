@@ -131,6 +131,7 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: ALBD        ! Surface albedo [-]
      TYPE(ExtDat_2R),  POINTER :: T2M         ! 2m Sfce temperature [K]
      TYPE(ExtDat_2R),  POINTER :: TSKIN       ! Surface skin temperature [K]
+     TYPE(ExtDat_2R),  POINTER :: TSOIL1      ! Soil temperature, layer 1 [K]
      TYPE(ExtDat_2R),  POINTER :: GWETROOT    ! Root soil wetness [1]
      TYPE(ExtDat_2R),  POINTER :: GWETTOP     ! Top soil moisture [-]
      TYPE(ExtDat_2R),  POINTER :: SNOWHGT     ! Snow height [mm H2O = kg H2O/m2]
@@ -352,6 +353,12 @@ CONTAINS
     CALL ExtDat_Init ( ExtState%TSKIN, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%TSOIL1, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Initializing TSOIL1', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -676,6 +683,7 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%ALBD       )
        CALL ExtDat_Cleanup( ExtState%T2M        )
        CALL ExtDat_Cleanup( ExtState%TSKIN      )
+       CALL ExtDat_Cleanup( ExtState%TSOIL1     )
        CALL ExtDat_Cleanup( ExtState%GWETROOT   )
        CALL ExtDat_Cleanup( ExtState%GWETTOP    )
        CALL ExtDat_Cleanup( ExtState%SNOWHGT    )
