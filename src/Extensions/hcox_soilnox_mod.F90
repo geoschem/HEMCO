@@ -795,7 +795,7 @@ CONTAINS
     ! Read settings specified in configuration file
     ! Note: the specified strings have to match those in
     !       the config. file!
-    CALL GetExtOpt( HcoState%Config, ExtNr, 'Use soil temperature', &
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'UseSoilTemperature', &
                     OptValBool=Inst%UseSoilTemp, RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        ErrMsg = 'Use soil temperature not specified'
@@ -1000,7 +1000,9 @@ CONTAINS
 
     ! Activate required met fields
     ExtState%T2M%DoUse       = .TRUE.
-    ExtState%TSOIL1%DoUse    = .TRUE.
+    IF (Inst%UseSoilTemp) THEN
+       ExtState%TSOIL1%DoUse = .TRUE.
+    ENDIF
     ExtState%GWETTOP%DoUse   = .TRUE.
     ExtState%SUNCOS%DoUse    = .TRUE.
     ExtState%U10M%DoUse      = .TRUE.
