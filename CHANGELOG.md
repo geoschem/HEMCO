@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Changed
+- Added emission factors for ALK6, C4H6, EBZ, STYR, TMB for GFED and FINN biomass burning extensions
+
 ## [3.9.3] - 2024-08-13
 ### Fixed
 - Added brackets around `exempt-issue-labels` list in `.github/workflows/stale.yml`
 - Fixed incorrect pressure handling in HEMCO standalone (see issue #277)
-
-### Changed
-- Added emission factors for ALK6, C4H6, EBZ, STYR, TMB for GFED and FINN biomass burning extensions
 
 ## [3.9.2] - 2024-07-24
 ### Changed
