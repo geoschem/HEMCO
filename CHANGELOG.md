@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ReadTheDocs update: Now use GNU 12.2.0 compilers in environment file examples
 - Updated `runHEMCO.sh` standalone script: Change partitions, and pipe output to log file
 
+### Fixed
+- Now use `jinja2==3.1.4` in `docs/requirements.txt` (fixes a security issue)
+
 ### Removed
 - Example "Scale (or zero) emissions with a rectangular mask" from ReadTheDocs. This is currently not working.
 
