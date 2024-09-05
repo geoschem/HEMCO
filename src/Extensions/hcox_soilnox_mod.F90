@@ -1264,7 +1264,9 @@ CONTAINS
     TC             = ExtState%T2M%Arr%Val(I,J) - 273.15_hp
 
     ! Soil temperature [C]
-    TSOIL          = ExtState%TSOIL1%Arr%Val(I,J) - 273.15_hp
+    IF ( Inst%UseSoilTemp ) THEN
+       TSOIL = ExtState%TSOIL1%Arr%Val(I,J) - 273.15_hp
+    ENDIF
 
     ! Surface wind speed, squared
     WINDSQR        = ExtState%U10M%Arr%Val(I,J)**2 + &
@@ -1293,9 +1295,9 @@ CONTAINS
        ! Temperature-dependent term of soil NOx emissions [unitless]
        ! Use GWET instead of climo wet/dry
        IF ( Inst%UseSoilTemp ) THEN
-          TEMP_TERM = SOILTEMP( Inst, K, TC, GWET )
-       ELSE
           TEMP_TERM = SOILTEMP( Inst, K , TSOIL, GWET )
+       ELSE
+          TEMP_TERM = SOILTEMP( Inst, K, TC, GWET )
        ENDIF
 
        ! Soil moisture scaling of soil NOx emissions
