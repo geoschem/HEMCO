@@ -2210,7 +2210,7 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% Air and skin temperature %%%%%
+    !%%%%% Air temperature %%%%%
     IF ( ExtState%T2M%DoUse ) THEN
        Name = 'T2M'
        CALL ExtDat_Set( HcoState,     ExtState%T2M,                          &
@@ -2224,9 +2224,24 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% Skin temperature %%%%%
     IF ( ExtState%TSKIN%DoUse ) THEN
        Name = 'TS'
        CALL ExtDat_Set( HcoState,     ExtState%TSKIN,                        &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                   '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% Soil temperature %%%%%
+    IF ( ExtState%TSOIL1%DoUse ) THEN
+       Name = 'TSOIL1'
+       CALL ExtDat_Set( HcoState,     ExtState%TSOIL1,                       &
                         TRIM( Name ), RC,       FIRST=FIRST                 )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
