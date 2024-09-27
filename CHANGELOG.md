@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added TSOIL1 field to ExtState
 
+### Fixed
+- Fixed formatting error in `.github/workflows/stale.yml` that caused the Mark Stale Issues action not to run
+
 ### Changed
 - Added emission factors for ALK6, C4H6, EBZ, STYR, TMB for GFED and FINN biomass burning extensions
 - Updated soil NOx extention to include the option to use soil temperature and parameterization based on Yi Wang et al. (ERL, 2021) instead of the temperature at 2 meters.
