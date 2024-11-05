@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Added emission factors for ALK6, C4H6, EBZ, STYR, TMB for GFED and FINN biomass burning extensions
 - Updated soil NOx extention to include the option to use soil temperature and parameterization based on Yi Wang et al. (ERL, 2021) instead of the temperature at 2 meters.
+- Updated HEMCO standalone to print the dry-run header to the HEMCO log file unit `HcoState%Config%Err%Lun` only if the file is opened
 
 ## [3.9.3] - 2024-08-13
 ### Fixed
