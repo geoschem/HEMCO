@@ -1,0 +1,7 @@
+.. _hco-sa-globus:
+
+#########################
+Download data with Globus
+#########################
+
+TBD
