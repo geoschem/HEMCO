@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added TSOIL1 field to `ExtState`
 - Added `download_data.py` and `download_data.yml` to the `run` folder.  These will be copied into HEMCO standalone rundirs
+- Added `run/cleanRunDir.sh` script to remove old output files & log files
 
 ### Fixed
 - Fixed formatting error in `.github/workflows/stale.yml` that caused the Mark Stale Issues action not to run
