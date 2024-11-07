@@ -3072,7 +3072,9 @@ CONTAINS
        CALL Print_Dry_Run_Warning( 6 )
 
        ! Print dry-run header to the HEMCO log file
-       CALL Print_Dry_Run_Warning( HcoState%Config%Err%LUN )
+       IF ( HcoState%Config%Err%LUN > 0 ) THEN
+          CALL Print_Dry_Run_Warning( HcoState%Config%Err%LUN )
+       ENDIF
 
     ELSE
 
@@ -3147,7 +3149,9 @@ CONTAINS
        CALL Print_Dry_Run_Warning( 6 )
 
        ! Print dry-run header to the HEMCO log file
-       CALL Print_Dry_Run_Warning( HcoState%Config%Err%LUN )
+       IF ( HcoState%Config%Err%LUN > 0 ) THEN
+          CALL Print_Dry_Run_Warning( HcoState%Config%Err%LUN )
+       ENDIF
 
     ENDIF
 
