@@ -158,7 +158,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
   !
-  SUBROUTINE HCOIO_DataRead( HcoState, Lct, RC )
+  SUBROUTINE HCOIO_DataRead( am_I_Root, HcoState, Lct, RC )
 !
 ! !USES:
 !
@@ -166,6 +166,7 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
+    LOGICAL,          INTENT(IN)     :: am_I_Root
     TYPE(HCO_State),  POINTER        :: HcoState
     TYPE(ListCont),   POINTER        :: Lct
 !
@@ -203,7 +204,7 @@ CONTAINS
 
     ! Call the HEMCO Data Input Layer
     ! Selection of which HCOIO module to be used is performed at compile level
-    CALL HCOIO_READ( HcoState, Lct, RC )
+    CALL HCOIO_READ( am_I_Root, HcoState, Lct, RC )
 
     ! Trap potential errors
     IF ( RC /= HCO_SUCCESS ) THEN
