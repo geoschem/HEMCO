@@ -7,7 +7,7 @@ Configure your login environment
 .. tip::
 
    You may :ref:`skip ahead <hco-sa-download>` if you will be using
-   :program:`GEOS-Chem Classic` on an Amazon EC2 cloud instance.
+   :program:`HEMCO standalone` on an Amazon EC2 cloud instance.
    When you initialize the EC2 instance with one of the pre-configured Amazon
    Machine Images  (AMIs) all of the required software libraries will be
    automatically loaded.
@@ -52,7 +52,7 @@ libraries built with the `GNU 12.2.0 compilers
 .. note::
 
    This environment file shown below assumes that required software
-   packages for :program:`GEOS-Chem Classic` are available as
+   packages for :program:`HEMCO standalone` are available as
    pre-built modules.  If your computer system does not have these
    packages pre-installed, you can build them with Spack.  Please see
    our :ref:`spackguide` supplemental guide for detailed instructions.

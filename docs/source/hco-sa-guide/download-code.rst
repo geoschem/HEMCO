@@ -11,15 +11,11 @@ default.
 
 .. code-block:: console
 
-   $ git clone https://github.com/geoschem/hemco.git HEMCO
+   $ git clone --recurse-submodules https://github.com/geoschem/hemco.git HEMCO
    $ cd HEMCO
 
-If you would like a different version of HEMCO you can check out a
-different branch.  For example, to check out the **dev** branch, type:
-
-.. code-block:: console
-
-  $ git checkout dev
+This will place you on the **main** branch, which contains the latest
+stable release of HEMCO.
 
 .. tip::
 
