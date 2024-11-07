@@ -5,19 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - TBD
+## [3.10.0] - 2024-11-07
 ### Added
 - Added TSOIL1 field to `ExtState`
 - Added `download_data.py` and `download_data.yml` to the `run` folder.  These will be copied into HEMCO standalone rundirs
 - Added `run/cleanRunDir.sh` script to remove old output files & log files
-
-### Fixed
-- Fixed formatting error in `.github/workflows/stale.yml` that caused the Mark Stale Issues action not to run
+- Added documentation for the HEMCO 3.10.0 release, including HEMCO standalone dry-run documentation
 
 ### Changed
 - Added emission factors for ALK6, C4H6, EBZ, STYR, TMB for GFED and FINN biomass burning extensions
 - Updated soil NOx extention to include the option to use soil temperature and parameterization based on Yi Wang et al. (ERL, 2021) instead of the temperature at 2 meters.
 - Updated HEMCO standalone to print the dry-run header to the HEMCO log file unit `HcoState%Config%Err%Lun` only if the file is opened
+- ReadTheDocs update: Now use GNU 12.2.0 compilers in environment file examples
+- Updated `runHEMCO.sh` standalone script: Change partitions, and pipe output to log file
+
+### Fixed
+- Fixed formatting error in `.github/workflows/stale.yml` that caused the Mark Stale Issues action not to run
+- Updated to `jinja2==3.1.4` in `docs/requirements.txt` (fixes a security issue)
+
+### Removed
+- Example "Scale (or zero) emissions with a rectangular mask" from ReadTheDocs. This is currently not working.
 
 ## [3.9.3] - 2024-08-13
 ### Fixed

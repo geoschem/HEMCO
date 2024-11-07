@@ -4,18 +4,15 @@
 Known bugs and issues
 #####################
 
-Please see our `HEMCO issue tracker on Github
-<https://github.com/geoschem/HEMCO/issues>`_ for a list of recent
-HEMCO bugs and fixes.
+Please see our HEMCO issue tracker on Github for a list of recent
+HEMCO bugs and fixes:
 
-===================
-Current bug reports
-===================
+- `Bugs and issues that have not yet been resolved
+  <https://github.com/geoschem/HEMCO/issues?q=is%3Aissue+is%3Aopen+bug+label%3A%22category%3A+Bug%22>`_
+- `Bugs that have been resolved
+  <https://github.com/geoschem/HEMCO/issues?q=is%3Aissue+bug+is%3Aclosed+label%3A%22category%3A+Bug%22>`_
 
-These `bug reports (listed on the  HEMCO issue tracker)
-<https://github.com/geoschem/HEMCO/issues?q=is%3Aissue+is%3Aopen+label%3Abug>`_
-are currently unresolved.  We hope to fix these in
-future HEMCO releases.
+Other known issues are listed below:
 
 =====================================
 Masks cannot be applied to extensions

@@ -218,7 +218,6 @@ def get_run_info():
     return run_info
 
 
-
 def replace_entry_in_list(
         the_list,
         old_entry,
