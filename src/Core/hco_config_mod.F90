@@ -2199,7 +2199,8 @@ CONTAINS
        ELSE
           msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is OFF'
        ENDIF
-       IF ( HcoConfig%amIRoot ) CALL HCO_Msg( msg, verb=.TRUE. )
+       IF ( HcoConfig%amIRoot ) &
+            CALL HCO_Msg( msg, verb=.TRUE., LUN=HcoConfig%outLUN )
 
        ! Logfile to write into
        CALL GetExtOpt( HcoConfig, CoreNr, 'Logfile', &

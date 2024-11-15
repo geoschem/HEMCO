@@ -187,7 +187,7 @@ CONTAINS
     CHARACTER(LEN=1023) :: MSG
 
     !======================================================================
-    ! HCO_ERROR begins here
+    ! HCO_ERROR (with Err object passed) begins here
     !======================================================================
 
     ! Print error message
@@ -230,7 +230,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_ErrorNoErr( ErrMsg, RC, THISLOC )
+  SUBROUTINE HCO_ErrorNoErr( ErrMsg, RC, THISLOC, LUN )
 !
 ! !USES:
 !
@@ -244,6 +244,7 @@ CONTAINS
 !
     CHARACTER(LEN=*), INTENT(IN   )            :: ErrMsg
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: THISLOC
+    INTEGER,          INTENT(IN   ), OPTIONAL  :: LUN
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -255,7 +256,7 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    INTEGER :: I, J
+    INTEGER :: I, J, outLUN
     CHARACTER(LEN=1023) :: MSG, MSG1, MSG2
 #if defined( ESMF_)
     INTEGER             :: localPET, STATUS
@@ -264,8 +265,15 @@ CONTAINS
 #endif
 
     !======================================================================
-    ! HCO_ERROR begins here
+    ! HCO_ERROR (without Err object passed) begins here
     !======================================================================
+
+    ! Specify where to write
+    IF ( PRESENT(LUN) ) THEN
+       outLUN = LUN
+    ELSE
+       outLUN = 6
+    ENDIF
 
     ! Construct error message
 #if defined( ESMF_ )
@@ -284,7 +292,7 @@ CONTAINS
     MSG = NEW_LINE('a') // TRIM(MSG1) // TRIM(MSG2)
 
     ! Print error message
-    WRITE(*,*) TRIM(MSG)
+    WRITE(outLUN,*) TRIM(MSG)
 
     ! Return w/ error
     RC = HCO_FAIL
@@ -326,7 +334,7 @@ CONTAINS
     CHARACTER(LEN=255) :: MSG
 
     !======================================================================
-    ! HCO_WARNING begins here
+    ! HCO_WARNING (with Err object passed) begins here
     !======================================================================
 
     ! Only print warnings when verbose output is requested
@@ -367,13 +375,14 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_WarningNoErr( ErrMsg, RC, verb, THISLOC )
+  SUBROUTINE HCO_WarningNoErr( ErrMsg, RC, verb, THISLOC, LUN )
 !
 ! !INPUT PARAMETERS"
 !
     CHARACTER(LEN=*), INTENT(IN   )            :: ErrMsg
     LOGICAL         , INTENT(IN   ), OPTIONAL  :: verb
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: THISLOC
+    INTEGER,          INTENT(IN   ), OPTIONAL  :: LUN
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -385,24 +394,31 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    INTEGER            :: WLEV
+    INTEGER            :: WLEV, outLUN
     CHARACTER(LEN=255) :: MSG
 
     !======================================================================
-    ! HCO_WARNING begins here
+    ! HCO_WARNING (with no Err object passed) begins here
     !======================================================================
 
     ! Exit if verbose output is not requested
     IF ( .not. verb ) RETURN
 
+    ! Specify where to write
+    IF ( PRESENT(LUN) ) THEN
+       outLUN = LUN
+    ELSE
+       LUN = 6
+    ENDIF
+
     ! Print warning
     MSG = 'HEMCO WARNING: ' // TRIM( ErrMsg )
-    WRITE( 6, '(a)' ) TRIM(MSG)
+    WRITE( outLUN, '(a)' ) TRIM(MSG)
 
     ! Print location
     IF ( PRESENT(THISLOC) ) THEN
        MSG = '--> LOCATION: ' // TRIM(THISLOC)
-       WRITE( 6, '(a)' ) TRIM(MSG)
+       WRITE( outLUN, '(a)' ) TRIM(MSG)
     ENDIF
 
     ! Return w/ success
@@ -449,7 +465,7 @@ CONTAINS
     INTEGER :: LUN
 
     !=======================================================================
-    ! HCO_MSG begins here
+    ! HCO_MSG (with Err object passed) begins here
     !=======================================================================
 
     ! Exit if Err is NULL
@@ -501,7 +517,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_MSGnoErr( Msg, Sep1, Sep2, Verb )
+  SUBROUTINE HCO_MSGnoErr( Msg, Sep1, Sep2, Verb, LUN )
 !
 ! !INPUT PARAMETERS:
 !
@@ -509,6 +525,7 @@ CONTAINS
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep1
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep2
     LOGICAL,          INTENT(IN   ), OPTIONAL  :: Verb
+    INTEGER,          INTENT(IN   ), OPTIONAL  :: LUN
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
@@ -517,22 +534,30 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
+    INTEGER :: outLUN
+
     !======================================================================
-    ! HCO_MSG begins here
+    ! HCO_MSG (with no Err object passed) begins here
     !======================================================================
 
     ! Exit if verbose is not requested
     IF ( .not. Verb ) RETURN
 
+    ! Specify where to write
+    IF ( PRESENT(LUN) ) THEN
+       outLUN = LUN
+    ELSE
+       outLUN = 6
+    ENDIF
     ! Print message and optional separator lines
     IF ( PRESENT( SEP1 ) ) THEN
-       WRITE( 6, '(a)' ) REPEAT( SEP1, 79 )
+       WRITE( outLUN, '(a)' ) REPEAT( SEP1, 79 )
     ENDIF
     IF ( PRESENT( msg ) ) THEN
-       WRITE( 6, '(a)' ) TRIM( msg )
+       WRITE( outLUN, '(a)' ) TRIM( msg )
     ENDIF
     IF ( PRESENT( SEP2 ) ) THEN
-       WRITE( 6, '(a)' ) REPEAT( SEP2, 79 )
+       WRITE( outLUN, '(a)' ) REPEAT( SEP2, 79 )
     ENDIF
 
   END SUBROUTINE HCO_MsgNoErr
