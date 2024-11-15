@@ -687,27 +687,30 @@ CONTAINS
 ! settings. This routine is called at the beginning of a HEMCO
 ! simulation. Its input parameter are directly taken from the
 ! HEMCO configuration file. If LogFile is set to '*' (asterik),
-! all output is directed to the standard output.
+! all output is directed to the standard output. If using HEMCO
+! within CESM then LogFile set to 'atm.log' results in sending HEMCO
+! log information to CAM atm.log. '*' sends outputs to cesm log.
 !\\
 !\\
 ! !INTERFACE:
 !
   SUBROUTINE HCO_ERROR_SET( am_I_Root, Err,             LogFile,             &
-                            doVerbose, doVerboseOnRoot, RC                  )
+                            doVerbose, doVerboseOnRoot, RC,      customLUN  )
 
 !
 !  !INPUT PARAMETERS:
 !
-    LOGICAL,          INTENT(IN)     :: am_I_Root       ! Root CPU?
-    TYPE(HcoErr),     POINTER        :: Err             ! Error object
-    CHARACTER(LEN=*), INTENT(IN)     :: LogFile         ! logfile path+name
+    LOGICAL,           INTENT(IN)     :: am_I_Root       ! Root CPU?
+    TYPE(HcoErr),      POINTER        :: Err             ! Error object
+    CHARACTER(LEN=*),  INTENT(IN)     :: LogFile         ! logfile path+name
+    INTEGER, OPTIONAL, INTENT(IN)     :: customLUN       ! Optional LUN
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    LOGICAL,          INTENT(INOUT)  :: doVerbose       ! Verbose output T/F?
-    LOGICAL,          INTENT(INOUT)  :: doVerboseOnRoot ! =T: Verbose on root
-                                                        ! =F: Verbose on all
-    INTEGER,          INTENT(INOUT)  :: RC
+    LOGICAL,           INTENT(INOUT)  :: doVerbose       ! Verbose output T/F?
+    LOGICAL,           INTENT(INOUT)  :: doVerboseOnRoot ! =T: Verbose on root
+                                                         ! =F: Verbose on all
+    INTEGER,           INTENT(INOUT)  :: RC
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
@@ -751,6 +754,8 @@ CONTAINS
     ! Otherwise, set lun to 0 (--> write into specified logfile)
     IF ( TRIM(Err%LogFile) == '*' ) THEN
        LUN = -1
+    ELSEIF ( PRESENT(customLUN) ) THEN
+       LUN = customLUN
     ELSE
        LUN = 0
     ENDIF

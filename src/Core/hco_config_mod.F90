@@ -2229,8 +2229,16 @@ CONTAINS
             LogFile = '*'
 
        ! We should now have everything to define the HEMCO error settings
+#ifndef MODEL_CESM
        CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err,   LogFile,      &
                            doVerbose,         doVerboseOnRoot, RC           )
+#else
+       ! Set Err%LUN to CAM atm.log LUN passed from HEMCO_CESM if HEMCO_Config.rc
+       ! entry for log is atm.log
+       CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err,   LogFile,      &
+                           doVerbose,         doVerboseOnRoot, RC,           &
+                           customLUN=HcoConfig%outLUN                       )
+#endif
        IF ( RC /= HCO_SUCCESS ) THEN
           msg = 'Error encountered in routine "Hco_Error_Set"!'
           CALL HCO_Error( msg, RC, thisLoc=loc )
@@ -4637,11 +4645,12 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE ConfigInit ( HcoConfig, RC, nModelSpecies )
+  SUBROUTINE ConfigInit ( HcoConfig, RC, nModelSpecies, outLUN )
 !
 ! !INPUT PARAMETERS:
 !
     INTEGER, INTENT(IN), OPTIONAL  :: nModelSpecies  ! # model species
+    INTEGER, INTENT(IN), OPTIONAL  :: outLUN         ! LUN for output log
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -4674,6 +4683,11 @@ CONTAINS
     HcoConfig%SpecNameList   => NULL()
     HcoConfig%ExtList        => NULL()
     HcoConfig%Err            => NULL()
+    IF ( PRESENT(outLUN) ) THEN
+       HcoConfig%OutLUN         = outLUN
+    ELSE
+       HcoConfig%OutLUN         = 6       ! Default is std out
+    ENDIF
 
     IF ( PRESENT( nModelSpecies ) ) THEN
 
