@@ -2203,6 +2203,7 @@ CONTAINS
             CALL HCO_Msg( msg, verb=.TRUE., LUN=HcoConfig%outLUN )
 
        ! Logfile to write into
+#ifndef MODEL_CESM
        CALL GetExtOpt( HcoConfig, CoreNr, 'Logfile', &
                        OptValChar=Logfile, FOUND=FOUND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -2210,10 +2211,19 @@ CONTAINS
           CALL HCO_Error( msg, RC, thisLoc=loc )
           RETURN
        ENDIF
+
        IF ( .NOT. FOUND ) THEN
           LogFile = 'HEMCO.log'
-          WRITE(*,*) 'Setting `Logfile` not found in HEMCO logfile - use `HEMCO.log`'
+          msg = 'Setting `Logfile` not found in HEMCO logfile - use '//trim(LogFile)
+          CALL HCO_MSG( msg, verb=.TRUE.)
        ENDIF
+#else
+       ! Always write to atm.log in CESM. LogFile entry in HEMCO_Config.rc
+       ! is omitted in CESM HEMCO_Config.rc. If it is found it will be ignored.
+       LogFile = 'atm.log'
+       msg = 'WARNING: HEMCO config entry for LogFile is ignored in CESM'
+       CALL HCO_MSG( msg, verb=.TRUE., LUN=HcoConfig%outLUN)
+#endif
 
        ! Initialize (standard) HEMCO tokens
        CALL HCO_SetDefaultToken( HcoConfig, RC )
