@@ -4574,7 +4574,7 @@ CONTAINS
 
           ! Write message to stdout and then return
           IF ( HcoConfig%amIRoot ) THEN
-             WRITE( 6, 300 ) TRIM( FileMsg ), TRIM( DiagnFile )
+             WRITE( HcoConfig%outLUN, 300 ) TRIM( FileMsg ), TRIM( DiagnFile )
  300         FORMAT( a, ' ./', a )
           ENDIF
           RETURN

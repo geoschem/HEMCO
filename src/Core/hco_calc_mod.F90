@@ -1310,7 +1310,7 @@ CONTAINS
                       error = -1
                       CYCLE
                    ELSE
-                      WRITE( 6, * ) 'Negative scale factor at ',             &
+                      WRITE(HcoState%Config%outLUN,*) 'Negative scale factor at ', &
                                      I, J, TmpLL, tidx, ': ',                &
                                      TRIM(ScalDct%cName), TMPVAL
                       error = 1

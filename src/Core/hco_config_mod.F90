@@ -223,7 +223,7 @@ CONTAINS
           ENDIF
 
           ! Write message to stdout
-          WRITE( 6, 300 ) TRIM( FileMsg ), TRIM( ConfigFile )
+          WRITE( HcoConfig%outLUN, 300 ) TRIM( FileMsg ), TRIM( ConfigFile )
  300      FORMAT( a, ' ./', a )
 
        ELSE
@@ -232,17 +232,17 @@ CONTAINS
           ! For regular simulations, write a message containing
           ! the configuration file as well as the Phase value.
           !-----------------------------------------------------------------
-          WRITE(6,*) ' '
+          WRITE(HcoConfig%outLUN,*) ' '
           IF ( Phase == 1 ) THEN
-             WRITE( 6, 310 ) TRIM(ConfigFile)
+             WRITE( HcoConfig%outLUN, 310 ) TRIM(ConfigFile)
  310         FORMAT( 'Reading settings & switches of HEMCO configuration file: ', a )
 
           ELSEIF ( Phase == 2 ) THEN
-             WRITE( 6, 320 ) TRIM(ConfigFile)
+             WRITE( HcoConfig%outLUN, 320 ) TRIM(ConfigFile)
  320         FORMAT( 'Reading fields of HEMCO configuration file: ', a )
 
           ELSE
-             WRITE( 6, 330 ) TRIM(ConfigFile)
+             WRITE( HcoConfig%outLUN, 330 ) TRIM(ConfigFile)
  330         FORMAT( 'Reading entire HEMCO configuration file: ', a )
           ENDIF
        ENDIF
@@ -264,7 +264,7 @@ CONTAINS
     INQUIRE( FILE=TRIM(ConfigFile), EXIST=EXISTS )
     IF ( .NOT. EXISTS ) THEN
        IF ( HcoConfig%amIRoot ) THEN
-          WRITE(*,*) 'Cannot read file - it does not exist: ', TRIM(ConfigFile)
+          WRITE(HcoConfig%outLUN,*) 'Cannot read file - it does not exist: ', TRIM(ConfigFile)
        ENDIF
        RC = HCO_FAIL
        RETURN
@@ -274,7 +274,7 @@ CONTAINS
     OPEN ( IU_HCO, FILE=TRIM( ConfigFile ), STATUS='OLD', IOSTAT=IOS )
     IF ( IOS /= 0 ) THEN
        IF ( HcoConfig%amIRoot ) THEN
-          WRITE(*,*) 'Error reading ', TRIM(ConfigFile)
+          WRITE(HcoConfig%outLUN,*) 'Error reading ', TRIM(ConfigFile)
        ENDIF
        RC = HCO_FAIL
        RETURN
@@ -412,8 +412,8 @@ CONTAINS
     ! Check if we caught all sections. Do that only for phase 1.
     ! Sections SETTINGS and extension switches are needed.
     IF ( PHASE == 1 .AND. NN /= 2 .AND. .NOT. NEST ) THEN
-       WRITE(*,*) 'Expected 2 sections, found/read ', NN
-       WRITE(*,*) 'Should read SETTINGS and EXTENSION SWITCHES'
+       WRITE(HcoConfig%outLUN,*) 'Expected 2 sections, found/read ', NN
+       WRITE(HcoConfig%outLUN,*) 'Should read SETTINGS and EXTENSION SWITCHES'
        RC = HCO_FAIL
        RETURN
     ENDIF
