@@ -5868,7 +5868,7 @@ c Fix up for negative argument, erf, etc.
       FNDLABEL = TRIM(CSLABEL) 
       IF ( .NOT. HcoState%Grid%AREA_M2%Alloc ) THEN
          MSG = 'Warning: AREA_M2 not found, will use default number'
-         CALL HCO_WARNING( MSG, RC, .TRUE., LOC )
+         CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
       ELSE
          AM2 = SUM(HcoState%Grid%AREA_M2%Val)/(HcoState%NX*HcoState%NY)
          RES = SQRT(AM2)

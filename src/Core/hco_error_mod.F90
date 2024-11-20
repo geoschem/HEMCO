@@ -404,12 +404,11 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_WarningNoErr( ErrMsg, RC, verb, THISLOC, LUN )
+  SUBROUTINE HCO_WarningNoErr( ErrMsg, RC, THISLOC, LUN )
 !
 ! !INPUT PARAMETERS"
 !
     CHARACTER(LEN=*), INTENT(IN   )            :: ErrMsg
-    LOGICAL         , INTENT(IN   ), OPTIONAL  :: verb
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: THISLOC
     INTEGER,          INTENT(IN   ), OPTIONAL  :: LUN
 !
@@ -430,14 +429,11 @@ CONTAINS
     ! HCO_WARNING (with no Err object passed) begins here
     !======================================================================
 
-    ! Exit if verbose output is not requested
-    IF ( .not. verb ) RETURN
-
     ! Specify where to write
     IF ( PRESENT(LUN) ) THEN
        outLUN = LUN
     ELSE
-       LUN = 6
+       outLUN = 6
     ENDIF
 
     ! Print warning
