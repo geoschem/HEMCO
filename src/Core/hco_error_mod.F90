@@ -7,7 +7,7 @@
 !
 ! !DESCRIPTION: Module HCO\_Error\_Mod contains routines and variables
 ! for error handling and logfile messages in HEMCO. It also contains
-! definitions of some globally used parameter, such as the single/double
+! definitions of some globally used parameters, such as the single/double
 ! precision as well as the HEMCO precision definitions. The HEMCO precision
 ! is used for almost all HEMCO internal data arrays and can be changed below
 ! if required.
@@ -16,37 +16,59 @@
 ! The error settings are specified in the HEMCO configuration file and
 ! error handling is performed according to these settings. They include:
 !
-! \begin{enumerate}
-! \item HEMCO logfile: all HEMCO information is written into the specified
-!     logfile. The logfile can be set to the wildcard character, in which
-!     case the standard output will be used (this may be another opened
-!     logfile).
-! \item Verbose: Number indicating the verbose level to be used.
-!     0 = no verbose, 3 = very verbose. The verbose level can be set in
-!     the HEMCO configuration file. The default value is 0.
-! \item Warnings: Number indicating the warning level to be shown.
-!     0 = no warnings, 3 = all warnings.
-! \end{enumerate}
+! 1.  HEMCO logfile: HEMCO information is written into one or two logfiles,
+!     each with logical unit number, LUN, indicating output stream. LUNs for
+!     the logfiles are stored in HcoState%Config%outLUN and Err%LUN. Err%LUN
+!     corresponds to the LUN of HcoState%Config%LogFile is configured using
+!     entry LogFile in HEMCO_Config.rc.
 !
-! The error settings are set via subroutine HCO\_ERROR\_SET, called when
-! reading section 'settings' of the HEMCO configuration file (subroutine
-! Config\_ReadFile in hco\_config\_mod.F90). The currently active verbose
-! settings can be checked using subroutines HCO\_IsVerb and
-! HCO\_VERBOSE\_INQ. Messages can be written into the logfile using
-! subroutine HCO\_MSG. Note that the logfile actively need to be opened
-! (HCO\_LOGFILE\_OPEN) before writing to it.
-!\\
-!\\
-! The verbose and warning settings are all set to false if it's not the
-! root CPU.
-!\\
-!\\
+!     HcoState%Config%outLUN is necessary to allow prints prior to reading
+!     HEMCO_Config.rc. It is always set to stdout unless HEMCO is
+!     initialized with an LUN from an external model, as is the case for CESM
+!     (atm.log). It may be used throughout HEMCO to call HCO_MSG, HCO_WARNING,
+!     or HCO_ERROR without passing an Err object, and the result will be
+!     writing to this file instead of LogFile configured in HEMCO_Config.rc.
+!
+!     Err%LUN contains the LUN for most HEMCO prints and can be std out, an
+!     existing file from a separate model, or a dedicated HEMCO file opened
+!     and closed locally, e.g. HEMCO.log. The 'LogFile' field stores the
+!     name of this file.
+!  
+!     Use the LogFile setting in HEMCO_Config.rc to specify Err%Lun. An
+!     asterisk sets it to stdout. A filename sets it to a dedicated file,
+!     e.g. HEMCO.log. If using CESM then LogFile is omitted from the
+!     configuration file and it is set internally to atm.log.
+!
+! 2.  Verbose: Logical of whether to enable verbose prints.
+!
+! 3.  VerboseOnCores: Set to 'root' to print verbose only on root core. Set to
+!     anything else to be verbose on all cores.
+!
+! The error settings are set via subroutine HCO_ERROR_SET, called when
+! reading section 'SETTINGS' of the HEMCO configuration file (subroutine
+! Config_ReadFile in hco_config_mod.F90). The currently active verbose
+! settings can be checked using subroutines HCO_IsVerb and
+! HCO_VERBOSE_INQ. Messages can be written into the logfile using
+! subroutine HCO_MSG. Note that the logfile must be open, either from
+! external model, or locally with HCO_LOGFILE_OPEN, before writing to it.
+!
 ! As of HEMCO v2.0, all HEMCO error variables are organized in derived
 ! type object HcoErr. HcoErr is a component of the HEMCO configuration
 ! object (type ConfigObj, see hco\_types\_mod.F90). It must be passed
 ! explicitly to all error routines. This design allows the invocation
 ! of multiple independent HEMCO instances at the same time (which may
 ! have different HEMCO error settings).
+! Beware that different error print subroutines have different behaviors:
+!   HCO_ERROR:
+!     - Always prints from all cores, regardless of Verbose and VerboseOnRoot
+!   HCO_WARNING:
+!     - Only prints if verbose (incorporates VerboseOnRoot)
+!   HCO_MSG:
+!     - Only prints if verbose and on root
+!   True for all three:
+!     - Prints to 'LogFile' if passed Err object
+!     - Prints to stdout or optional passed LUN if not passed Err object
+!
 ! !INTERFACE:
 !
 MODULE HCO_Error_Mod
@@ -450,9 +472,6 @@ CONTAINS
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep1
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep2
 !
-! !REMARKS:
-!  Refactored to avoid ELSE statements, which are a computational bottleneck.
-!
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
 !  See https://github.com/geoschem/hemco for complete history
@@ -505,11 +524,7 @@ CONTAINS
 !
 ! !DESCRIPTION: Subroutine HCO\_MSG passes message msg to the HEMCO
 ! logfile (or to standard output if the logfile is not open).
-! Sep1 and Sep2 denote line delimiters before and after the message,
-! respectively.
-! The optional argument Verb denotes the minimum verbose level associated
-! with this message. The message will only be prompted if the verbose level
-! on this CPU (e.g. of this Err object) is at least as high as Verb.
+! Sep1 and Sep2 denote line delimiters before and after the message.
 !\\
 !\\
 ! !INTERFACE:
@@ -704,10 +719,7 @@ CONTAINS
 ! !DESCRIPTION: Subroutine HCO\_Error\_Set defines the HEMCO error
 ! settings. This routine is called at the beginning of a HEMCO
 ! simulation. Its input parameter are directly taken from the
-! HEMCO configuration file. If LogFile is set to '*' (asterik),
-! all output is directed to the standard output. If using HEMCO
-! within CESM then LogFile set to 'atm.log' results in sending HEMCO
-! log information to CAM atm.log. '*' sends outputs to cesm log.
+! HEMCO configuration file.
 !\\
 !\\
 ! !INTERFACE:
@@ -1019,8 +1031,6 @@ CONTAINS
 ! !IROUTINE: HCO_LogFile_Close
 !
 ! !DESCRIPTION: Subroutine HCO\_LOGFILE\_CLOSE closes the HEMCO logfile.
-! If argument ShowSummary is enabled, it will prompt a summary of the
-! HEMCO run up to this point (number of warnings, etc.).
 !\\
 !\\
 ! !INTERFACE:

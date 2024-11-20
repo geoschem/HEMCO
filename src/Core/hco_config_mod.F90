@@ -107,9 +107,9 @@ CONTAINS
 !
 ! !DESCRIPTION: Subroutine CONFIG\_READFILE reads the HEMCO configuration file,
 ! archives all HEMCO options and settings (including traceback/error setup),
-! and creates a data container for every (used) emission field in the config.
+! and creates a data container for every (used) emission field in the config
 ! file. All containers become linked through the ConfigList linked list.
-! Note that lists EmisList and ReadList (created lateron)  will point to the
+! Note that lists EmisList and ReadList (created later on)  will point to the
 ! same containers, but will order the containers in a manner that is most
 ! efficient for the respective purpose.
 ! Argument HcoConfig represents the HEMCO configuration object. It contains
@@ -135,7 +135,8 @@ CONTAINS
     TYPE(ConfigObj),    POINTER                 :: HcoConfig  ! HEMCO config obj
     CHARACTER(LEN=*),   INTENT(IN)              :: ConfigFile ! Full file name
     INTEGER,            INTENT(IN)              :: Phase      ! 0: all
-                                                              ! 1: Settings and switches only
+                                                              ! 1: Settings and
+                                                              ! switches only
                                                               ! 2: fields only
     LOGICAL,            INTENT(IN),    OPTIONAL :: IsNest     ! Nested call?
     LOGICAL,            INTENT(IN),    OPTIONAL :: IsDryRun   ! Dry-run?
@@ -418,7 +419,7 @@ CONTAINS
        RETURN
     ENDIF
 
-    ! Close file
+    ! Close configuration file
     CLOSE( UNIT=IU_HCO, IOSTAT=IOS )
     IF ( IOS /= 0 ) THEN
        msg = 'Error closing ' // TRIM(ConfigFile)
@@ -2233,7 +2234,7 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! If LogFile is equal to wildcard character, set LogFile to asterik
+       ! If LogFile is equal to wildcard character, set LogFile to asterisk
        ! character. This will ensure that all output is written to standard
        ! output!
        IF ( TRIM(LogFile) == HCO_GetOpt(HcoConfig%ExtList,'Wildcard') )      &
