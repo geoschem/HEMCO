@@ -13,61 +13,93 @@
 ! if required.
 !\\
 !\\
-! The error settings are specified in the HEMCO configuration file and
-! error handling is performed according to these settings. They include:
+! All HEMCO error variables are organized in an object of derived type
+! HcoErr. The HcoErr object is generally referred to as Err throughout
+! HEMCO. Type HcoErr is a component of the HEMCO configuration object
+! (type ConfigObj, see module hco_types_mod.F90, referenced as
+! HcoState%Config%Err). This design allows the invocation of multiple
+! independent HEMCO instances at the same time which may have different
+! HEMCO error settings.
 !
-! 1.  HEMCO logfile: HEMCO information is written into one or two logfiles,
-!     each with logical unit number, LUN, indicating output stream. LUNs for
-!     the logfiles are stored in HcoState%Config%outLUN and Err%LUN. Err%LUN
-!     corresponds to the LUN of HcoState%Config%LogFile is configured using
-!     entry LogFile in HEMCO_Config.rc.
+! The HcoErr object is initialized via subroutine HCO_ERROR_SET, called
+! when reading section 'SETTINGS' of the HEMCO configuration file
+! (subroutine Config_ReadFile in hco_config_mod.F90). If writing to
+! a dedicated log file then it is further updated upon opening the file
+! in HCO_LOGFILE_OPEN.
 !
-!     HcoState%Config%outLUN is necessary to allow prints prior to reading
-!     HEMCO_Config.rc. It is always set to stdout unless HEMCO is
-!     initialized with an LUN from an external model, as is the case for CESM
-!     (atm.log). It may be used throughout HEMCO to call HCO_MSG, HCO_WARNING,
-!     or HCO_ERROR without passing an Err object, and the result will be
-!     writing to this file instead of LogFile configured in HEMCO_Config.rc.
+! Once instantiated, the HcoErr object is stored in HcoState%Config%Err
+! and can be passed to the three error subroutines in HEMCO: HCO_ERROR,
+! HCO_MSG, and HCO_WARNING. Each of these subroutines also has an
+! alternative implementation for if the HcoErr object is not passed or
+! otherwise does not exist.
 !
-!     Err%LUN contains the LUN for most HEMCO prints and can be std out, an
-!     existing file from a separate model, or a dedicated HEMCO file opened
-!     and closed locally, e.g. HEMCO.log. The 'LogFile' field stores the
-!     name of this file.
-!  
-!     Use the LogFile setting in HEMCO_Config.rc to specify Err%Lun. An
-!     asterisk sets it to stdout. A filename sets it to a dedicated file,
-!     e.g. HEMCO.log. If using CESM then LogFile is omitted from the
-!     configuration file and it is set internally to atm.log.
+! Configurable run-time error settings are stored in the HcoErr object and
+! specified in the HEMCO configuration file. Look for the following
+! three settings in HEMCO_Config.rc:
 !
-! 2.  Verbose: Logical of whether to enable verbose prints.
+! 1. LogFile:
+!     Use the LogFile setting in HEMCO_Config.rc to specify where HEMCO
+!     log prints will go. The LogFile setting is stored in
+!     Err%LogFile. If set to an asterisk (*) then HEMCO will
+!     print to stdout. If a filename is provided then HEMCO will open and
+!     write to that file. If using CESM then LogFile is omitted from the
+!     HEMCO_Config.rc and it is set internally to atm.log which already
+!     exists in the parent model.
 !
-! 3.  VerboseOnCores: Set to 'root' to print verbose only on root core. Set to
-!     anything else to be verbose on all cores.
+!     The logical unit number (LUN) for Err%LogFile is stored
+!     in the HcoErr object as Err%Lun. It is set to 6 if printing to
+!     stdout, is set to a free LUN if using a file specified in
+!     HEMCO_Config.rc, or is set to a passed LUN retrieved from a
+!     parent model, e.g. CESM.
 !
-! The error settings are set via subroutine HCO_ERROR_SET, called when
-! reading section 'SETTINGS' of the HEMCO configuration file (subroutine
-! Config_ReadFile in hco_config_mod.F90). The currently active verbose
-! settings can be checked using subroutines HCO_IsVerb and
-! HCO_VERBOSE_INQ. Messages can be written into the logfile using
-! subroutine HCO_MSG. Note that the logfile must be open, either from
-! external model, or locally with HCO_LOGFILE_OPEN, before writing to it.
+!     Note that HEMCO can still print to log prior the initialization of
+!     the HcoErr object. The LUN for prints that do not rely on the HcoErr
+!     object is stored in HcoState%Config%outLUN outside of this module.
+!     Having an alternative LUN for prints allows error handling at all times
+!     within HEMCO. For this reason, all of the error, message, and warning
+!     subroutines are implemented as Fortran procedures, with two
+!     implementations for each: one passing the HcoErr object as an
+!     argument, and the other omitting it. Prints for the latter go to
+!     stdout unless an LUN is explicitly passed to the submodule.
 !
-! As of HEMCO v2.0, all HEMCO error variables are organized in derived
-! type object HcoErr. HcoErr is a component of the HEMCO configuration
-! object (type ConfigObj, see hco\_types\_mod.F90). It must be passed
-! explicitly to all error routines. This design allows the invocation
-! of multiple independent HEMCO instances at the same time (which may
-! have different HEMCO error settings).
-! Beware that different error print subroutines have different behaviors:
-!   HCO_ERROR:
-!     - Always prints from all cores, regardless of Verbose and VerboseOnRoot
-!   HCO_WARNING:
-!     - Only prints if verbose (incorporates VerboseOnRoot)
-!   HCO_MSG:
-!     - Only prints if verbose and on root
-!   True for all three:
-!     - Prints to 'LogFile' if passed Err object
-!     - Prints to stdout or optional passed LUN if not passed Err object
+! 2. Verbose:
+!     Logical for whether to enable prints.
+!
+! 3. VerboseOnCores:
+!     Logical for whether to enable prints on cores other than root.
+!     Set to 'root' in HEMCO_Config.rc to print verbose only on the root
+!     core. Set to anything else to be verbose on all cores.
+!
+! Settings for Verbose and VerboseOnCores are used to set Err%doVerbose
+! when the HcoErr object is initialized. The currently active verbose
+! settings can be checked anywhere in HEMCO using submodule HCO_IsVerb.
+!
+! Note that there are different rules for whether to print in the
+! different error handling subroutines. The behavior is as follows:
+!
+! 1. HCO_ERROR with Err passed (HCO_ErrorErr)
+!     - Prints via HCO_MSG with Err passed (see below)
+!
+! 2. HCO_WARNING with Err passed (HCO_WarningErr)
+!     - If Err not associated or not verbose, then exits
+!     - Prints via HCO_MSG with Err passed (see below)
+!
+! 3. HCO_MSG with Err passed (HCO_MsgErr)
+!     - If Err not associated, then calls HCO_MSG without Err passed (see below)
+!     - If not root or not verbose, then exits
+!     - If Err%LogIsOpen is false, then prints to stdout
+!
+! 4. HCO_ERROR without Err passed (HCO_ErrorNoErr)
+!     - Prints to stdout unless LUN is passed
+!     - Always prints from all cores
+!
+! 5. HCO_WARNING without Err passed (HCO_WarningNoErr)
+!     - Prints to stdout unless LUN is passed
+!     - Always prints from all cores
+!
+! 6. HCO_MSG without Err passed (HCO_MsgNoErr)
+!     - Prints to stdout unless LUN is passed
+!     - Always prints from all cores
 !
 ! !INTERFACE:
 !
