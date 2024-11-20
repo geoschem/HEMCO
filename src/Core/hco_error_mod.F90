@@ -497,12 +497,14 @@ CONTAINS
     ! Write message
     !=======================================================================
 
-    ! Get the file unit, or if the file is not open, use stdout
-    LUN = Err%LUN
-    IF ( ( .not. Err%LogIsOpen ) .or. ( LUN <= 0 ) ) LUN = 6
+    ! Get the log file unit. Set to stdout if log is not open
+    IF ( Err%LogIsOpen ) THEN
+       LUN = Err%LUN
+    ELSE
+       LUN = 6
+    ENDIF
 
     ! If logfile is open then write to it
-    ! Otherwise write to stdout (unit #6)
     IF ( PRESENT(SEP1) ) THEN
        WRITE( LUN,'(a)' ) REPEAT( SEP1, 79 )
     ENDIF
