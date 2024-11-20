@@ -904,7 +904,7 @@ CONTAINS
 ! !ROUTINE: HCO_LOGFILE_OPEN
 !
 ! !DESCRIPTION: Subroutine HCO\_LOGFILE\_OPEN opens the HEMCO logfile
-! (if not yet open).
+! if using and not yet open.
 !\\
 !\\
 ! !INTERFACE:
@@ -937,12 +937,15 @@ CONTAINS
     ! Init
     RC = HCO_SUCCESS
 
-    ! Check if object exists
+    ! Check if Err object exists
     IF ( .NOT. ASSOCIATED(Err)) THEN
        PRINT *, 'Cannot open logfile - Err object not defined!'
        RC = HCO_FAIL
        RETURN
     ENDIF
+
+    ! Exit if not writing to dedicated HEMCO log
+    IF ( TRIM(Err%LogFile) == '*' ) RETURN
 
 #ifdef MODEL_CESM
     ! Exit if using CESM (for safety)
@@ -952,77 +955,68 @@ CONTAINS
     ! Never open if we are not on the root CPU
     IF ( .NOT. Err%IsRoot ) RETURN
 
-    ! Don't do anything if we write into standard output!
-    IF ( Err%LUN < 0 ) THEN
+    ! Find free LUN for the log file
+    FREELUN = findFreeLun()
+
+    ! Inquire if file is already open
+    INQUIRE( FILE=TRIM(Err%LogFile), OPENED=isOpen, EXIST=exists, NUMBER=LUN )
+
+    ! File exists and is opened ==> nothing to do
+    IF ( exists .AND. isOpen ) THEN
+       Err%LUN       = LUN
        Err%LogIsOpen = .TRUE.
 
-    ! Explicit HEMCO logfile:
-    ELSE
+    ! File exists but not opened ==> reopen
+    ELSEIF (exists .AND. .NOT. isOpen ) THEN
 
-       ! Find free LUN just in case we need it!
-       FREELUN = findFreeLun()
-
-       ! Inquire if file is already open
-       INQUIRE( FILE=TRIM(Err%LogFile), OPENED=isOpen, EXIST=exists, NUMBER=LUN )
-
-       ! File exists and is opened ==> nothing to do
-       IF ( exists .AND. isOpen ) THEN
-          Err%LUN       = LUN
-          Err%LogIsOpen = .TRUE.
-
-       ! File exists but not opened ==> reopen
-       ELSEIF (exists .AND. .NOT. isOpen ) THEN
-
-          ! Replace existing file on first call
-          IF ( Err%FirstOpen ) THEN
-             OPEN ( UNIT=FREELUN,   FILE=TRIM(Err%LogFile), STATUS='REPLACE', &
-                    ACTION='WRITE', FORM='FORMATTED',       IOSTAT=IOS         )
-             IF ( IOS /= 0 ) THEN
-                PRINT *, 'Cannot create logfile: ' // TRIM(Err%LogFile)
-                RC = HCO_FAIL
-                RETURN
-             ENDIF
-
-       ! File exists and is opened ==> nothing to do
-
-
-          ! Reopen otherwise
-          ELSE
-             OPEN ( UNIT=FREELUN,   FILE=TRIM(Err%LogFile), STATUS='OLD',     &
-                    ACTION='WRITE', POSITION='APPEND', FORM='FORMATTED',    &  ! NAG did not like ACCESS='APPEND' -- use standard-compliant position='append'
-                    IOSTAT=IOS   )
-             IF ( IOS /= 0 ) THEN
-                PRINT *, 'Cannot reopen logfile: ' // TRIM(Err%LogFile)
-                RC = HCO_FAIL
-                RETURN
-             ENDIF
-          ENDIF
-
-          Err%LUN       = FREELUN
-          Err%LogIsOpen = .TRUE.
-
-       ! File does not yet exist ==> open new file
-       ELSE
-          OPEN ( UNIT=FREELUN,    FILE=TRIM(Err%LogFile),      &
-                 STATUS='NEW',    ACTION='WRITE', IOSTAT=IOS,  &
-                 FORM='FORMATTED'                             )
+       ! Replace existing file on first call
+       IF ( Err%FirstOpen ) THEN
+          OPEN ( UNIT=FREELUN,   FILE=TRIM(Err%LogFile), STATUS='REPLACE', &
+               ACTION='WRITE', FORM='FORMATTED',       IOSTAT=IOS         )
           IF ( IOS /= 0 ) THEN
              PRINT *, 'Cannot create logfile: ' // TRIM(Err%LogFile)
              RC = HCO_FAIL
              RETURN
           ENDIF
-          Err%LUN       = FREELUN
-          Err%LogIsOpen = .TRUE.
+
+       ! Reopen otherwise
+       ELSE
+          ! NAG did not like ACCESS='APPEND' -- use standard-compliant position='append'
+          OPEN ( UNIT=FREELUN,   FILE=TRIM(Err%LogFile), STATUS='OLD',     &
+               ACTION='WRITE', POSITION='APPEND', FORM='FORMATTED',    &
+               IOSTAT=IOS   )
+          IF ( IOS /= 0 ) THEN
+             PRINT *, 'Cannot reopen logfile: ' // TRIM(Err%LogFile)
+             RC = HCO_FAIL
+             RETURN
+          ENDIF
        ENDIF
+
+       Err%LUN       = FREELUN
+       Err%LogIsOpen = .TRUE.
+
+    ! File does not yet exist ==> open new file
+    ELSE
+       OPEN ( UNIT=FREELUN,    FILE=TRIM(Err%LogFile),      &
+            STATUS='NEW',    ACTION='WRITE', IOSTAT=IOS,  &
+            FORM='FORMATTED'                             )
+       IF ( IOS /= 0 ) THEN
+          PRINT *, 'Cannot create logfile: ' // TRIM(Err%LogFile)
+          RC = HCO_FAIL
+          RETURN
+       ENDIF
+
+       Err%LUN       = FREELUN
+       Err%LogIsOpen = .TRUE.
+
     ENDIF
 
     ! Write header on first call
     IF ( Err%FirstOpen ) THEN
        LUN = Err%Lun                ! Log gets written to file
-       IF ( Err%LUN < 0 ) LUN = 6   ! or to stdout if file isn't open
 
        ! Only write the version info if verbose output is requested
-       IF ( HCO_IsVerb( Err ) ) THEN
+       IF ( Err%DoVerbose ) ) THEN
 
           ! Write header
           WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
