@@ -107,9 +107,9 @@ CONTAINS
 !
 ! !DESCRIPTION: Subroutine CONFIG\_READFILE reads the HEMCO configuration file,
 ! archives all HEMCO options and settings (including traceback/error setup),
-! and creates a data container for every (used) emission field in the config.
+! and creates a data container for every (used) emission field in the config
 ! file. All containers become linked through the ConfigList linked list.
-! Note that lists EmisList and ReadList (created lateron)  will point to the
+! Note that lists EmisList and ReadList (created later on)  will point to the
 ! same containers, but will order the containers in a manner that is most
 ! efficient for the respective purpose.
 ! Argument HcoConfig represents the HEMCO configuration object. It contains
@@ -135,7 +135,8 @@ CONTAINS
     TYPE(ConfigObj),    POINTER                 :: HcoConfig  ! HEMCO config obj
     CHARACTER(LEN=*),   INTENT(IN)              :: ConfigFile ! Full file name
     INTEGER,            INTENT(IN)              :: Phase      ! 0: all
-                                                              ! 1: Settings and switches only
+                                                              ! 1: Settings and
+                                                              ! switches only
                                                               ! 2: fields only
     LOGICAL,            INTENT(IN),    OPTIONAL :: IsNest     ! Nested call?
     LOGICAL,            INTENT(IN),    OPTIONAL :: IsDryRun   ! Dry-run?
@@ -418,7 +419,7 @@ CONTAINS
        RETURN
     ENDIF
 
-    ! Close file
+    ! Close configuration file
     CLOSE( UNIT=IU_HCO, IOSTAT=IOS )
     IF ( IOS /= 0 ) THEN
        msg = 'Error closing ' // TRIM(ConfigFile)
@@ -2200,7 +2201,7 @@ CONTAINS
           msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is OFF'
        ENDIF
        IF ( HcoConfig%amIRoot ) &
-            CALL HCO_Msg( msg, verb=.TRUE., LUN=HcoConfig%outLUN )
+            CALL HCO_Msg( msg, LUN=HcoConfig%outLUN )
 
        ! Logfile to write into
 #ifndef MODEL_CESM
@@ -2215,14 +2216,14 @@ CONTAINS
        IF ( .NOT. FOUND ) THEN
           LogFile = 'HEMCO.log'
           msg = 'Setting `Logfile` not found in HEMCO logfile - use '//trim(LogFile)
-          CALL HCO_MSG( msg, verb=.TRUE.)
+          CALL HCO_MSG( msg )
        ENDIF
 #else
        ! Always write to atm.log in CESM. LogFile entry in HEMCO_Config.rc
        ! is omitted in CESM HEMCO_Config.rc. If it is found it will be ignored.
        LogFile = 'atm.log'
        msg = 'WARNING: HEMCO config entry for LogFile is ignored in CESM'
-       CALL HCO_MSG( msg, verb=.TRUE., LUN=HcoConfig%outLUN)
+       CALL HCO_MSG( msg, LUN=HcoConfig%outLUN)
 #endif
 
        ! Initialize (standard) HEMCO tokens
@@ -2233,7 +2234,7 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! If LogFile is equal to wildcard character, set LogFile to asterik
+       ! If LogFile is equal to wildcard character, set LogFile to asterisk
        ! character. This will ensure that all output is written to standard
        ! output!
        IF ( TRIM(LogFile) == HCO_GetOpt(HcoConfig%ExtList,'Wildcard') )      &

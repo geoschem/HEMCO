@@ -722,7 +722,7 @@
          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
             CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
          ELSE
-            CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
+            CALL HCO_Msg( msg, LUN=HcoState%Config%outLUN    ) ! w/o separator
          ENDIF
 
          ! Write all other messages as debug printout only
@@ -5868,7 +5868,7 @@ c Fix up for negative argument, erf, etc.
       FNDLABEL = TRIM(CSLABEL) 
       IF ( .NOT. HcoState%Grid%AREA_M2%Alloc ) THEN
          MSG = 'Warning: AREA_M2 not found, will use default number'
-         CALL HCO_WARNING( MSG, RC, .TRUE., LOC )
+         CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
       ELSE
          AM2 = SUM(HcoState%Grid%AREA_M2%Val)/(HcoState%NX*HcoState%NY)
          RES = SQRT(AM2)
