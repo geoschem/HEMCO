@@ -834,8 +834,20 @@ CONTAINS
     ! HCO_ERROR_FINAL begins here
     !======================================================================
 
-    ! Eventually close logfile
-    CALL HCO_Logfile_Close( Err, ShowSummary=.TRUE. )
+    ! Print summary
+    MSG = ' '
+    CALL HCO_MSG ( Err, MSG )
+    MSG = 'HEMCO ' // TRIM(HCO_VERSION) // ' FINISHED.'
+    CALL HCO_MSG ( Err, MSG, SEP1='-' )
+
+    WRITE(MSG,'(A16,I1,A12,I6)') &
+       'Warnings: ', Err%nWarnings
+    CALL HCO_MSG ( Err, MSG, SEP2='-' )
+
+#ifndef MODEL_CESM
+    ! Close the log file
+    CALL HCO_Logfile_Close( Err )
+#endif
 
     IF ( ASSOCIATED(Err) ) THEN
        IF ( ASSOCIATED(Err%Loc) ) DEALLOCATE(Err%Loc)
@@ -1042,12 +1054,11 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_LogFile_Close( Err, ShowSummary )
+  SUBROUTINE HCO_LogFile_Close( Err )
 !
 ! !INPUT PARAMETERS:
 !
     TYPE(HcoErr),  POINTER        :: Err            ! Error object
-    LOGICAL, INTENT(IN), OPTIONAL :: ShowSummary
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
@@ -1056,7 +1067,6 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
     INTEGER            :: IOS
-    LOGICAL            :: Summary
     CHARACTER(LEN=255) :: MSG
 
     !======================================================================
@@ -1067,25 +1077,6 @@ CONTAINS
     IF ( .NOT. ASSOCIATED(Err)) RETURN
     IF ( .NOT. Err%LogIsOpen  ) RETURN
     IF ( .NOT. Err%IsRoot     ) RETURN
-
-    ! Show summary?
-    IF ( PRESENT(ShowSummary) ) THEN
-       Summary = ShowSummary
-    ELSE
-       Summary = .FALSE.
-    ENDIF
-
-    ! Eventually print summary
-    IF ( Summary ) THEN
-       MSG = ' '
-       CALL HCO_MSG ( Err, MSG )
-       MSG = 'HEMCO ' // TRIM(HCO_VERSION) // ' FINISHED.'
-       CALL HCO_MSG ( Err, MSG, SEP1='-' )
-
-       WRITE(MSG,'(A16,I1,A12,I6)') &
-          'Warnings: ', Err%nWarnings
-       CALL HCO_MSG ( Err, MSG, SEP2='-' )
-    ENDIF
 
     ! Close logfile only if lun is defined
     IF ( Err%Lun>0 ) THEN
