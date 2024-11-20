@@ -944,6 +944,11 @@ CONTAINS
        RETURN
     ENDIF
 
+#ifdef MODEL_CESM
+    ! Exit if using CESM (for safety)
+    RETURN
+#endif
+
     ! Never open if we are not on the root CPU
     IF ( .NOT. Err%IsRoot ) RETURN
 
@@ -1077,6 +1082,10 @@ CONTAINS
     IF ( .NOT. Err%LogIsOpen  ) RETURN
     IF ( .NOT. Err%IsRoot     ) RETURN
 
+#ifdef MODEL_CESM
+    ! Exit if using CESM (for safety)
+    RETURN
+#endif
     ! Close logfile only if lun is defined
     IF ( Err%Lun>0 ) THEN
        CLOSE ( UNIT=Err%Lun, IOSTAT=IOS )
