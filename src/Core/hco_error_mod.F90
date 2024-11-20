@@ -779,8 +779,13 @@ CONTAINS
 
     ! Init misc. values
     Err%FirstOpen = .TRUE.
-    Err%LogIsOpen = .FALSE.
     Err%CurrLoc   = 0
+#ifndef MODEL_CESM
+    Err%LogIsOpen = .FALSE.
+#else
+    ! Log file is already open when using CESM
+    Err%LogIsOpen = .TRUE.
+#endif
 
     ! If Logfile is set to '*', set lun to -1 (--> write into default file).
     ! Otherwise, set lun to 0 (--> write into specified logfile)
