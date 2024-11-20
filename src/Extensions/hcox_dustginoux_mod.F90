@@ -566,7 +566,7 @@ CONTAINS
        IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
        ELSE
-          CALL HCO_Msg( msg                           ) ! w/o separator
+          CALL HCO_Msg( msg, LUN=HcoState%Config%outLUN ) ! w/o separator
        ENDIF
      
        ! Write all other messages as debug printout only
