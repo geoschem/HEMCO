@@ -155,15 +155,15 @@ MODULE HCO_Error_Mod
 ! !PRIVATE VARIABLES:
 !
   TYPE, PUBLIC :: HcoErr
-     LOGICAL                     :: FirstOpen = .TRUE.
-     LOGICAL                     :: IsRoot    = .FALSE.
-     LOGICAL                     :: LogIsOpen = .FALSE.
-     LOGICAL                     :: doVerbose = .FALSE.
-     INTEGER                     :: nWarnings =  0
-     INTEGER                     :: CurrLoc   =  -1
-     CHARACTER(LEN=255), POINTER :: Loc(:)    => NULL()
-     CHARACTER(LEN=255)          :: LogFile   =  ''
-     INTEGER                     :: Lun       =  -1
+     LOGICAL                     :: FirstOpen  ! First time using new log file?
+     LOGICAL                     :: IsRoot     ! Is this root?
+     LOGICAL                     :: LogIsOpen  ! Is log open?
+     LOGICAL                     :: doVerbose  ! Verbose print?
+     INTEGER                     :: nWarnings  ! Warning counter
+     INTEGER                     :: CurrLoc    ! Call depth used for traceback
+     CHARACTER(LEN=255), POINTER :: Loc(:)     ! Location array used for traceback
+     CHARACTER(LEN=255)          :: LogFile    ! Log file string (*=stdout)
+     INTEGER                     :: Lun        ! logical unit number of file to write to
   END TYPE HcoErr
 
   ! MAXNEST is the maximum accepted subroutines nesting level.
@@ -780,6 +780,7 @@ CONTAINS
     ! Init misc. values
     Err%FirstOpen = .TRUE.
     Err%CurrLoc   = 0
+    Err%nWarnings = 0
 #ifndef MODEL_CESM
     Err%LogIsOpen = .FALSE.
 #else
