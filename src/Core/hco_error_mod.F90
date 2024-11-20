@@ -484,8 +484,8 @@ CONTAINS
     ! HCO_MSG (with Err object passed) begins here
     !=======================================================================
 
-    ! Exit if Err is NULL
-    IF ( .NOT. ASSOCIATED( Err) ) RETURN
+    ! If Err is NULL then print message without using Err object settings
+    IF ( .NOT. ASSOCIATED( Err) ) CALL HCO_MSG( Msg )
 
     ! Exit if we are not on the root core
     IF ( .NOT. Err%IsRoot ) RETURN
