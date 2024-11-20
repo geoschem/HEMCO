@@ -365,28 +365,27 @@ CONTAINS
     ! HCO_WARNING (with Err object passed) begins here
     !======================================================================
 
-    ! Only print warnings when verbose output is requested
-    IF ( HCO_IsVerb( Err ) ) THEN
-
-       ! Print warning
-       MSG = 'HEMCO WARNING: ' // TRIM( ErrMsg )
-       CALL HCO_MSG ( Err, MSG )
-
-       ! Print location
-       IF ( PRESENT(THISLOC) ) THEN
-          MSG = '--> LOCATION: ' // TRIM(THISLOC)
-          CALL HCO_MSG ( Err, MSG )
-       ELSEIF ( Err%CurrLoc > 0 ) THEN
-          MSG = '--> LOCATION: ' // TRIM(Err%Loc(Err%CurrLoc))
-          CALL HCO_MSG ( Err, MSG )
-       ENDIF
-
-       ! Increase # of warnings
-       Err%nWarnings = Err%nWarnings + 1
-    ENDIF
-
     ! Return w/ success
     RC = HCO_SUCCESS
+
+    ! Only print warnings when verbose output is requested
+    IF ( .NOT. HCO_IsVerb(Err) ) RETURN
+
+    ! Print warning
+    MSG = 'HEMCO WARNING: ' // TRIM( ErrMsg )
+    CALL HCO_MSG ( Err, MSG )
+
+    ! Print location
+    IF ( PRESENT(THISLOC) ) THEN
+       MSG = '--> LOCATION: ' // TRIM(THISLOC)
+       CALL HCO_MSG ( Err, MSG )
+    ELSEIF ( Err%CurrLoc > 0 ) THEN
+       MSG = '--> LOCATION: ' // TRIM(Err%Loc(Err%CurrLoc))
+       CALL HCO_MSG ( Err, MSG )
+    ENDIF
+
+    ! Increase # of warnings
+    Err%nWarnings = Err%nWarnings + 1
 
   END SUBROUTINE HCO_WarningErr
 !EOC
