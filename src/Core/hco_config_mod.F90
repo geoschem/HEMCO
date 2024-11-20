@@ -2200,7 +2200,7 @@ CONTAINS
           msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is OFF'
        ENDIF
        IF ( HcoConfig%amIRoot ) &
-            CALL HCO_Msg( msg, verb=.TRUE., LUN=HcoConfig%outLUN )
+            CALL HCO_Msg( msg, LUN=HcoConfig%outLUN )
 
        ! Logfile to write into
 #ifndef MODEL_CESM
@@ -2215,14 +2215,14 @@ CONTAINS
        IF ( .NOT. FOUND ) THEN
           LogFile = 'HEMCO.log'
           msg = 'Setting `Logfile` not found in HEMCO logfile - use '//trim(LogFile)
-          CALL HCO_MSG( msg, verb=.TRUE.)
+          CALL HCO_MSG( msg )
        ENDIF
 #else
        ! Always write to atm.log in CESM. LogFile entry in HEMCO_Config.rc
        ! is omitted in CESM HEMCO_Config.rc. If it is found it will be ignored.
        LogFile = 'atm.log'
        msg = 'WARNING: HEMCO config entry for LogFile is ignored in CESM'
-       CALL HCO_MSG( msg, verb=.TRUE., LUN=HcoConfig%outLUN)
+       CALL HCO_MSG( msg, LUN=HcoConfig%outLUN)
 #endif
 
        ! Initialize (standard) HEMCO tokens

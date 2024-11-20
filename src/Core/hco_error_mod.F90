@@ -437,9 +437,6 @@ CONTAINS
 ! logfile (or to standard output if the logfile is not open).
 ! Sep1 and Sep2 denote line delimiters before and after the message,
 ! respectively.
-! The optional argument Verb denotes the minimum verbose level associated
-! with this message. The message will only be prompted if the verbose level
-! on this CPU (e.g. of this Err object) is at least as high as Verb.
 !\\
 !\\
 ! !INTERFACE:
@@ -517,14 +514,13 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_MSGnoErr( Msg, Sep1, Sep2, Verb, LUN )
+  SUBROUTINE HCO_MSGnoErr( Msg, Sep1, Sep2, LUN )
 !
 ! !INPUT PARAMETERS:
 !
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: Msg
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep1
     CHARACTER(LEN=1), INTENT(IN   ), OPTIONAL  :: Sep2
-    LOGICAL,          INTENT(IN   ), OPTIONAL  :: Verb
     INTEGER,          INTENT(IN   ), OPTIONAL  :: LUN
 !
 ! !REVISION HISTORY:
@@ -539,9 +535,6 @@ CONTAINS
     !======================================================================
     ! HCO_MSG (with no Err object passed) begins here
     !======================================================================
-
-    ! Exit if verbose is not requested
-    IF ( .not. Verb ) RETURN
 
     ! Specify where to write
     IF ( PRESENT(LUN) ) THEN

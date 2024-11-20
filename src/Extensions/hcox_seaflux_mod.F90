@@ -707,7 +707,7 @@ CONTAINS
        IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
           CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! With separator
        ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! W/o separator
+          CALL HCO_Msg( msg                                ) ! W/o separator
        ENDIF
 
        ! Write all other messages as debug printout only
