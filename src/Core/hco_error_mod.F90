@@ -1077,21 +1077,23 @@ CONTAINS
     ! HCO_LOGFILE_CLOSE begins here
     !======================================================================
 
-    ! Check if object exists
+    ! Exit if object does not exist, log is closed, not root core, or writing
+    ! to standard out
     IF ( .NOT. ASSOCIATED(Err)) RETURN
     IF ( .NOT. Err%LogIsOpen  ) RETURN
     IF ( .NOT. Err%IsRoot     ) RETURN
+    IF ( TRIM(Err%LogFile) == '*' ) RETURN
 
 #ifdef MODEL_CESM
     ! Exit if using CESM (for safety)
     RETURN
 #endif
-    ! Close logfile only if lun is defined
-    IF ( Err%Lun>0 ) THEN
-       CLOSE ( UNIT=Err%Lun, IOSTAT=IOS )
-       IF ( IOS/= 0 ) THEN
-          PRINT *, 'Cannot close logfile: ' // TRIM(Err%LogFile)
-       ENDIF
+
+    ! Close logfile
+    CLOSE ( UNIT=Err%Lun, IOSTAT=IOS )
+    IF ( IOS/= 0 ) THEN
+       MSG = 'Cannot close logfile: ' // TRIM(Err%LogFile)
+       CALL HCO_MSG( MSG, RC )
     ENDIF
     Err%LogIsOpen = .FALSE.
 
