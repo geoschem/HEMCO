@@ -781,21 +781,19 @@ CONTAINS
     Err%FirstOpen = .TRUE.
     Err%CurrLoc   = 0
     Err%nWarnings = 0
-#ifndef MODEL_CESM
-    Err%LogIsOpen = .FALSE.
-#else
-    ! Log file is already open when using CESM
-    Err%LogIsOpen = .TRUE.
-#endif
 
-    ! If Logfile is set to '*', set lun to -1 (--> write into default file).
-    ! Otherwise, set lun to 0 (--> write into specified logfile)
+    ! If Logfile is set to '*', set LUN to 6 (writes to default, i.e. stdout)
+    ! If customLUN is passed, set LUN to this (assume log is open)
+    ! Otherwise, set LUN to 0 (writes to LogFile set in HEMCO_Config.rc)
     IF ( TRIM(Err%LogFile) == '*' ) THEN
-       LUN = -1
+       LUN = 6
+       Err%LogIsOpen = .TRUE.
     ELSEIF ( PRESENT(customLUN) ) THEN
        LUN = customLUN
+       Err%LogIsOpen = .TRUE.
     ELSE
        LUN = 0
+       Err%LogIsOpen = .FALSE.
     ENDIF
     Err%Lun = LUN
 
