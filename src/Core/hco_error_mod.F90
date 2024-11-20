@@ -182,7 +182,8 @@ CONTAINS
 !
 ! !DESCRIPTION: Subroutine HCO\_Error promts an error message and sets RC to
 ! HCO\_FAIL. Note that this routine does not stop a run, but it will cause a
-! stop at higher level (when RC gets evaluated).
+! stop at higher level (when RC gets evaluated). Prints are done via calls
+! to HCO_MSG and pass the Err object.
 !\\
 !\\
 ! !INTERFACE:
@@ -247,7 +248,9 @@ CONTAINS
 !
 ! !DESCRIPTION: Subroutine HCO\_Error promts an error message and sets RC to
 ! HCO\_FAIL. Note that this routine does not stop a run, but it will cause a
-! stop at higher level (when RC gets evaluated).
+! stop at higher level (when RC gets evaluated). Error messages are
+! printed by every core regardless of Verbose and VerboseOnRoot settings
+! in HEMCO_Config.rc.
 !\\
 !\\
 ! !INTERFACE:
@@ -278,7 +281,7 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    INTEGER :: I, J, outLUN
+    INTEGER             :: I, J, outLUN
     CHARACTER(LEN=1023) :: MSG, MSG1, MSG2
 #if defined( ESMF_)
     INTEGER             :: localPET, STATUS
@@ -328,8 +331,11 @@ CONTAINS
 !
 ! !IROUTINE: HCO_Warning
 !
-! !DESCRIPTION: Subroutine HCO\_Warning promts a warning message without
-! forcing HEMCO to stop, i.e. return code is set to HCO\_SUCCESS.
+! !DESCRIPTION: Subroutine HCO\_Warning prompts a warning message without
+! forcing HEMCO to stop, i.e. return code is set to HCO\_SUCCESS. It only
+! prints on threads where verbose is true, as set in configuration file
+! HEMCO_Config.rc entries Verbose (must be true to print warnings) and
+! VerboseOnRoot (must be root to print warnings only on root core).
 !\\
 !\\
 ! !INTERFACE:
@@ -391,8 +397,10 @@ CONTAINS
 !
 ! !IROUTINE: HCO_Warning
 !
-! !DESCRIPTION: Subroutine HCO\_Warning promts a warning message without
-! forcing HEMCO to stop, i.e. return code is set to HCO\_SUCCESS.
+! !DESCRIPTION: Subroutine HCO\_Warning prompts a warning message without
+! forcing HEMCO to stop, i.e. return code is set to HCO\_SUCCESS. Error
+! messages are printed by every core regardless of Verbose and VerboseOnRoot
+! settings in HEMCO_Config.rc.
 !\\
 !\\
 ! !INTERFACE:
@@ -455,10 +463,11 @@ CONTAINS
 !
 ! !IROUTINE: HCO_MSG
 !
-! !DESCRIPTION: Subroutine HCO\_MSG passes message msg to the HEMCO
-! logfile (or to standard output if the logfile is not open).
+! !DESCRIPTION: Subroutine HCO\_MSG prints message to log.
 ! Sep1 and Sep2 denote line delimiters before and after the message,
-! respectively.
+! respectively. Messages are only printed if the Err object exists,
+! only from the root thread, and only if verbose is true as defined
+! in the HEMCO_Config.rc configuration file.
 !\\
 !\\
 ! !INTERFACE:
@@ -491,7 +500,7 @@ CONTAINS
     IF ( .NOT. Err%IsRoot ) RETURN
 
     ! Exit if Verbose is turned off
-    IF ( .not. Err%doVerbose ) RETURN
+    IF ( .NOT. Err%doVerbose ) RETURN
 
     !=======================================================================
     ! Write message
@@ -524,8 +533,7 @@ CONTAINS
 !
 ! !IROUTINE: HCO_MSG
 !
-! !DESCRIPTION: Subroutine HCO\_MSG passes message msg to the HEMCO
-! logfile (or to standard output if the logfile is not open).
+! !DESCRIPTION: Subroutine HCO\_MSG prints the passed message to log.
 ! Sep1 and Sep2 denote line delimiters before and after the message.
 !\\
 !\\
@@ -559,6 +567,7 @@ CONTAINS
     ELSE
        outLUN = 6
     ENDIF
+
     ! Print message and optional separator lines
     IF ( PRESENT( SEP1 ) ) THEN
        WRITE( outLUN, '(a)' ) REPEAT( SEP1, 79 )
@@ -740,8 +749,8 @@ CONTAINS
 ! !INPUT/OUTPUT PARAMETERS:
 !
     LOGICAL,           INTENT(INOUT)  :: doVerbose       ! Verbose output T/F?
-    LOGICAL,           INTENT(INOUT)  :: doVerboseOnRoot ! =T: Verbose on root
-                                                         ! =F: Verbose on all
+    LOGICAL,           INTENT(INOUT)  :: doVerboseOnRoot ! =T: Verbose on root only
+                                                         ! =F: Verbose on all cores
     INTEGER,           INTENT(INOUT)  :: RC
 !
 ! !REVISION HISTORY:
@@ -751,7 +760,7 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
 
-    INTEGER :: Lun
+    INTEGER :: LUN
 
     !======================================================================
     ! HCO_ERROR_SET begins here
@@ -863,7 +872,9 @@ CONTAINS
 !
 ! !IROUTINE: HCO_IsVerb
 !
-! !DESCRIPTION: Returns true if the HEMCO verbose output is turned on.
+! !DESCRIPTION: Returns true if the HEMCO verbose output is turned on for this core.
+! Returns false if Err object is not associated.
+!
 !\\
 !\\
 ! !INTERFACE:
@@ -891,7 +902,9 @@ CONTAINS
     ! Return if the Err object is null
     IF ( .not. ASSOCIATED( Err ) ) RETURN
 
-    ! Check if "Verbose: 3" was set in the HEMCO_Config.rc file
+    ! Check if "Verbose: .true." was set in the HEMCO_Config.rc file.
+    ! If this is called from non-root then result will also reflect
+    ! setting of VerboseOnRoot in HEMCO_Config.rc.
     isVerb = Err%doVerbose
 
   END FUNCTION HCO_IsVerb
