@@ -864,6 +864,7 @@ CONTAINS
 !BOC
 
     INTEGER :: STAT
+    CHARACTER(LEN=255) :: MSG
 
     !======================================================================
     ! HCO_ERROR_FINAL begins here
@@ -1056,7 +1057,7 @@ CONTAINS
        LUN = Err%Lun                ! Log gets written to file
 
        ! Only write the version info if verbose output is requested
-       IF ( Err%DoVerbose ) ) THEN
+       IF ( Err%DoVerbose ) THEN
 
           ! Write header
           WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
@@ -1127,7 +1128,7 @@ CONTAINS
     CLOSE ( UNIT=Err%Lun, IOSTAT=IOS )
     IF ( IOS/= 0 ) THEN
        MSG = 'Cannot close logfile: ' // TRIM(Err%LogFile)
-       CALL HCO_MSG( MSG, RC )
+       CALL HCO_MSG( MSG )
     ENDIF
     Err%LogIsOpen = .FALSE.
 
