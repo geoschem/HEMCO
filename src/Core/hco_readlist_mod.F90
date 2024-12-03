@@ -223,7 +223,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE ReadList_Read( am_I_Root, HcoState, RC, ReadAll )
+  SUBROUTINE ReadList_Read( HcoState, RC, ReadAll )
 !
 ! !USES:
 !
@@ -236,7 +236,6 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    LOGICAL,           INTENT(IN   )  :: am_I_Root  ! root thread?
     LOGICAL, OPTIONAL, INTENT(IN   )  :: ReadAll    ! read all fields?
 !
 ! !INPUT/OUTPUT PARAMETERS:
@@ -286,7 +285,7 @@ CONTAINS
           WRITE(MSG,*) 'Now reading once list!'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
-       CALL ReadList_Fill( am_I_Root, HcoState, HcoState%ReadLists%Once, RC )
+       CALL ReadList_Fill( HcoState, HcoState%ReadLists%Once, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'Error in ReadList_Fill (1) called from HEMCO ReadList_Read'
           CALL HCO_ERROR( MSG, RC, THISLOC = LOC )
@@ -300,7 +299,7 @@ CONTAINS
           WRITE(MSG,*) 'Now reading year list!'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
-       CALL ReadList_Fill( am_I_Root, HcoState, HcoState%ReadLists%Year, RC )
+       CALL ReadList_Fill( HcoState, HcoState%ReadLists%Year, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'Error in ReadList_Fill (2) called from HEMCO ReadList_Read'
           CALL HCO_ERROR( MSG, RC, THISLOC = LOC )
@@ -314,7 +313,7 @@ CONTAINS
           WRITE(MSG,*) 'Now reading month list!'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
-       CALL ReadList_Fill( am_I_Root, HcoState, HcoState%ReadLists%Month, RC )
+       CALL ReadList_Fill( HcoState, HcoState%ReadLists%Month, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'Error in ReadList_Fill (3) called from HEMCO ReadList_Read'
           CALL HCO_ERROR( MSG, RC, THISLOC = LOC )
@@ -328,7 +327,7 @@ CONTAINS
           WRITE(MSG,*) 'Now reading day list!'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
-       CALL ReadList_Fill( am_I_Root, HcoState, HcoState%ReadLists%Day, RC )
+       CALL ReadList_Fill( HcoState, HcoState%ReadLists%Day, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'Error in ReadList_Fill (4) called from HEMCO ReadList_Read'
           CALL HCO_ERROR( MSG, RC, THISLOC = LOC )
@@ -342,7 +341,7 @@ CONTAINS
           WRITE(MSG,*) 'Now reading hour list!'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
-       CALL ReadList_Fill( am_I_Root, HcoState, HcoState%ReadLists%Hour, RC )
+       CALL ReadList_Fill( HcoState, HcoState%ReadLists%Hour, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'Error in ReadList_Fill (5) called from HEMCO ReadList_Read'
           CALL HCO_ERROR( MSG, RC, THISLOC = LOC )
@@ -356,7 +355,7 @@ CONTAINS
           WRITE(MSG,*) 'Now reading 3-hour list!'
           CALL HCO_MSG(HcoState%Config%Err,MSG)
        ENDIF
-       CALL ReadList_Fill( am_I_Root, HcoState, HcoState%ReadLists%Hour3, RC )
+       CALL ReadList_Fill( HcoState, HcoState%ReadLists%Hour3, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           MSG = 'Error in ReadList_Fill (6) called from HEMCO ReadList_Read'
           CALL HCO_ERROR( MSG, RC, THISLOC = LOC )
@@ -369,7 +368,7 @@ CONTAINS
        WRITE(MSG,*) 'Now reading always list!'
        CALL HCO_MSG(HcoState%Config%Err,MSG)
     ENDIF
-    CALL ReadList_Fill( am_I_Root, HcoState, HcoState%ReadLists%Always, RC )
+    CALL ReadList_Fill( HcoState, HcoState%ReadLists%Always, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error in called ReadList_Fill (7) from HEMCO ReadList_Read'
        CALL HCO_ERROR( MSG, RC, THISLOC = LOC )
@@ -408,7 +407,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE ReadList_Fill( am_I_Root, HcoState, ReadList, RC )
+  SUBROUTINE ReadList_Fill( HcoState, ReadList, RC )
 !
 ! !USES:
 !
@@ -423,7 +422,6 @@ CONTAINS
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    LOGICAL,         INTENT(IN)     :: am_I_Root  ! Root thread?    
     TYPE(HCO_State), POINTER        :: HcoState   ! HEMCO state object
     TYPE(ListCont),  POINTER        :: ReadList   ! Current reading list
     INTEGER,         INTENT(INOUT)  :: RC         ! Success or failure?
@@ -501,7 +499,7 @@ CONTAINS
           ELSE
 
              ! Read data
-             CALL HCOIO_DATAREAD( am_I_Root, HcoState, Lct, RC )
+             CALL HCOIO_DATAREAD( HcoState, Lct, RC )
              IF ( RC /= HCO_SUCCESS ) THEN
                 MSG = 'Error in HCOIO_DATAREAD called from HEMCO ReadList_Fill: ' // TRIM(Lct%Dct%cname)
                 CALL HCO_ERROR( MSG, RC, THISLOC = LOC )
