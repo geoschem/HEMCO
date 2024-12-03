@@ -467,7 +467,7 @@ CONTAINS
        ENDIF
 
        ! Also write to standard output
-       WRITE( 6, 100 ) TRIM( srcFile )
+       IF ( HcoState%Config%amIRoot ) WRITE( 6, 100 ) TRIM( srcFile )
  100   FORMAT( 'HEMCO: Opening ', a )
 
        ! This is now the file in archive
