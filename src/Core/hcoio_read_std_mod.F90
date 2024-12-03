@@ -115,7 +115,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOIO_Read( am_I_Root, HcoState, Lct, RC )
+  SUBROUTINE HCOIO_Read( HcoState, Lct, RC )
 !
 ! !USES:
 !
@@ -147,7 +147,6 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    LOGICAL,          INTENT(IN)     :: am_I_Root  ! Root thread?
     TYPE(HCO_State),  POINTER        :: HcoState   ! HEMCO state object
     TYPE(ListCont),   POINTER        :: Lct        ! HEMCO list container
 !
@@ -414,7 +413,7 @@ CONTAINS
        ELSE
 
           ! Write a message to stdout (HEMCO: Opening...)
-          IF ( am_I_Root ) WRITE( HcoState%Config%outLUN, 100 ) TRIM( srcFile )
+          IF ( HcoState%Config%amIRoot ) WRITE( HcoState%Config%outLUN, 100 ) TRIM( srcFile )
 
        ENDIF
 

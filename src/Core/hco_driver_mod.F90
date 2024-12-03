@@ -62,7 +62,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_Run( am_I_Root, HcoState, Phase, RC, IsEndStep )
+  SUBROUTINE HCO_Run( HcoState, Phase, RC, IsEndStep )
 !
 ! !USES:
 !
@@ -75,7 +75,6 @@ CONTAINS
 !
 ! !INPUT PARAMETERS:
 !
-    LOGICAL,         INTENT(IN   ) :: am_I_Root   ! Root thread?
     INTEGER,         INTENT(IN   ) :: Phase       ! Run phase (1 or 2)
     LOGICAL,         INTENT(IN   ), OPTIONAL :: IsEndStep ! Last timestep of simulation?
 !
@@ -163,7 +162,7 @@ CONTAINS
 
     ! Update data, as specified in ReadList.
     IF ( Phase /= 2 ) THEN
-       CALL ReadList_Read( am_I_Root, HcoState, RC )
+       CALL ReadList_Read( HcoState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           PRINT *, "Error in ReadList_Read called from hco_run"
           RETURN
