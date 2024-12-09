@@ -447,6 +447,7 @@ MODULE HCO_TYPES_MOD
      TYPE(ModSpc),       POINTER  :: ModelSpc(:)
      INTEGER                      :: nModelSpc
      INTEGER                      :: nModelAdv
+     INTEGER                      :: OutLUN
      CHARACTER(LEN=255)           :: MetField
      CHARACTER(LEN=255)           :: GridRes
      LOGICAL                      :: ConfigFileRead = .FALSE.

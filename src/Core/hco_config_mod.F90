@@ -107,9 +107,9 @@ CONTAINS
 !
 ! !DESCRIPTION: Subroutine CONFIG\_READFILE reads the HEMCO configuration file,
 ! archives all HEMCO options and settings (including traceback/error setup),
-! and creates a data container for every (used) emission field in the config.
+! and creates a data container for every (used) emission field in the config
 ! file. All containers become linked through the ConfigList linked list.
-! Note that lists EmisList and ReadList (created lateron)  will point to the
+! Note that lists EmisList and ReadList (created later on)  will point to the
 ! same containers, but will order the containers in a manner that is most
 ! efficient for the respective purpose.
 ! Argument HcoConfig represents the HEMCO configuration object. It contains
@@ -135,7 +135,8 @@ CONTAINS
     TYPE(ConfigObj),    POINTER                 :: HcoConfig  ! HEMCO config obj
     CHARACTER(LEN=*),   INTENT(IN)              :: ConfigFile ! Full file name
     INTEGER,            INTENT(IN)              :: Phase      ! 0: all
-                                                              ! 1: Settings and switches only
+                                                              ! 1: Settings and
+                                                              ! switches only
                                                               ! 2: fields only
     LOGICAL,            INTENT(IN),    OPTIONAL :: IsNest     ! Nested call?
     LOGICAL,            INTENT(IN),    OPTIONAL :: IsDryRun   ! Dry-run?
@@ -223,7 +224,7 @@ CONTAINS
           ENDIF
 
           ! Write message to stdout
-          WRITE( 6, 300 ) TRIM( FileMsg ), TRIM( ConfigFile )
+          WRITE( HcoConfig%outLUN, 300 ) TRIM( FileMsg ), TRIM( ConfigFile )
  300      FORMAT( a, ' ./', a )
 
        ELSE
@@ -232,17 +233,17 @@ CONTAINS
           ! For regular simulations, write a message containing
           ! the configuration file as well as the Phase value.
           !-----------------------------------------------------------------
-          WRITE(6,*) ' '
+          WRITE(HcoConfig%outLUN,*) ' '
           IF ( Phase == 1 ) THEN
-             WRITE( 6, 310 ) TRIM(ConfigFile)
+             WRITE( HcoConfig%outLUN, 310 ) TRIM(ConfigFile)
  310         FORMAT( 'Reading settings & switches of HEMCO configuration file: ', a )
 
           ELSEIF ( Phase == 2 ) THEN
-             WRITE( 6, 320 ) TRIM(ConfigFile)
+             WRITE( HcoConfig%outLUN, 320 ) TRIM(ConfigFile)
  320         FORMAT( 'Reading fields of HEMCO configuration file: ', a )
 
           ELSE
-             WRITE( 6, 330 ) TRIM(ConfigFile)
+             WRITE( HcoConfig%outLUN, 330 ) TRIM(ConfigFile)
  330         FORMAT( 'Reading entire HEMCO configuration file: ', a )
           ENDIF
        ENDIF
@@ -264,7 +265,7 @@ CONTAINS
     INQUIRE( FILE=TRIM(ConfigFile), EXIST=EXISTS )
     IF ( .NOT. EXISTS ) THEN
        IF ( HcoConfig%amIRoot ) THEN
-          WRITE(*,*) 'Cannot read file - it does not exist: ', TRIM(ConfigFile)
+          WRITE(HcoConfig%outLUN,*) 'Cannot read file - it does not exist: ', TRIM(ConfigFile)
        ENDIF
        RC = HCO_FAIL
        RETURN
@@ -274,7 +275,7 @@ CONTAINS
     OPEN ( IU_HCO, FILE=TRIM( ConfigFile ), STATUS='OLD', IOSTAT=IOS )
     IF ( IOS /= 0 ) THEN
        IF ( HcoConfig%amIRoot ) THEN
-          WRITE(*,*) 'Error reading ', TRIM(ConfigFile)
+          WRITE(HcoConfig%outLUN,*) 'Error reading ', TRIM(ConfigFile)
        ENDIF
        RC = HCO_FAIL
        RETURN
@@ -412,13 +413,13 @@ CONTAINS
     ! Check if we caught all sections. Do that only for phase 1.
     ! Sections SETTINGS and extension switches are needed.
     IF ( PHASE == 1 .AND. NN /= 2 .AND. .NOT. NEST ) THEN
-       WRITE(*,*) 'Expected 2 sections, found/read ', NN
-       WRITE(*,*) 'Should read SETTINGS and EXTENSION SWITCHES'
+       WRITE(HcoConfig%outLUN,*) 'Expected 2 sections, found/read ', NN
+       WRITE(HcoConfig%outLUN,*) 'Should read SETTINGS and EXTENSION SWITCHES'
        RC = HCO_FAIL
        RETURN
     ENDIF
 
-    ! Close file
+    ! Close configuration file
     CLOSE( UNIT=IU_HCO, IOSTAT=IOS )
     IF ( IOS /= 0 ) THEN
        msg = 'Error closing ' // TRIM(ConfigFile)
@@ -2199,9 +2200,11 @@ CONTAINS
        ELSE
           msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is OFF'
        ENDIF
-       IF ( HcoConfig%amIRoot ) CALL HCO_Msg( msg, verb=.TRUE. )
+       IF ( HcoConfig%amIRoot ) &
+            CALL HCO_Msg( msg, LUN=HcoConfig%outLUN )
 
        ! Logfile to write into
+#ifndef MODEL_CESM
        CALL GetExtOpt( HcoConfig, CoreNr, 'Logfile', &
                        OptValChar=Logfile, FOUND=FOUND, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -2209,10 +2212,19 @@ CONTAINS
           CALL HCO_Error( msg, RC, thisLoc=loc )
           RETURN
        ENDIF
+
        IF ( .NOT. FOUND ) THEN
           LogFile = 'HEMCO.log'
-          WRITE(*,*) 'Setting `Logfile` not found in HEMCO logfile - use `HEMCO.log`'
+          msg = 'Setting `Logfile` not found in HEMCO logfile - use '//trim(LogFile)
+          CALL HCO_MSG( msg )
        ENDIF
+#else
+       ! Always write to atm.log in CESM. LogFile entry in HEMCO_Config.rc
+       ! is omitted in CESM HEMCO_Config.rc. If it is found it will be ignored.
+       LogFile = 'atm.log'
+       msg = 'WARNING: HEMCO config entry for LogFile is ignored in CESM'
+       CALL HCO_MSG( msg, LUN=HcoConfig%outLUN)
+#endif
 
        ! Initialize (standard) HEMCO tokens
        CALL HCO_SetDefaultToken( HcoConfig, RC )
@@ -2222,15 +2234,23 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! If LogFile is equal to wildcard character, set LogFile to asterik
+       ! If LogFile is equal to wildcard character, set LogFile to asterisk
        ! character. This will ensure that all output is written to standard
        ! output!
        IF ( TRIM(LogFile) == HCO_GetOpt(HcoConfig%ExtList,'Wildcard') )      &
             LogFile = '*'
 
        ! We should now have everything to define the HEMCO error settings
+#ifndef MODEL_CESM
        CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err,   LogFile,      &
                            doVerbose,         doVerboseOnRoot, RC           )
+#else
+       ! Set Err%LUN to CAM atm.log LUN passed from HEMCO_CESM if HEMCO_Config.rc
+       ! entry for log is atm.log
+       CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err,   LogFile,      &
+                           doVerbose,         doVerboseOnRoot, RC,           &
+                           customLUN=HcoConfig%outLUN                       )
+#endif
        IF ( RC /= HCO_SUCCESS ) THEN
           msg = 'Error encountered in routine "Hco_Error_Set"!'
           CALL HCO_Error( msg, RC, thisLoc=loc )
@@ -4637,11 +4657,12 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE ConfigInit ( HcoConfig, RC, nModelSpecies )
+  SUBROUTINE ConfigInit ( HcoConfig, RC, nModelSpecies, outLUN )
 !
 ! !INPUT PARAMETERS:
 !
     INTEGER, INTENT(IN), OPTIONAL  :: nModelSpecies  ! # model species
+    INTEGER, INTENT(IN), OPTIONAL  :: outLUN         ! LUN for output log
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -4674,6 +4695,11 @@ CONTAINS
     HcoConfig%SpecNameList   => NULL()
     HcoConfig%ExtList        => NULL()
     HcoConfig%Err            => NULL()
+    IF ( PRESENT(outLUN) ) THEN
+       HcoConfig%OutLUN         = outLUN
+    ELSE
+       HcoConfig%OutLUN         = 6       ! Default is std out
+    ENDIF
 
     IF ( PRESENT( nModelSpecies ) ) THEN
 
