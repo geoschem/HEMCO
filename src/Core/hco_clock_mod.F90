@@ -358,7 +358,7 @@ CONTAINS
 ! !INTERFACE:
 !
   SUBROUTINE HcoClock_Set ( HcoState, cYr, cMt, cDy, cHr, &
-                            cMin, cSec, cDOY, IsEmisTime, RC    )
+                            cMin, cSec, cDOY, IsEmisTime, RC )
 !
 ! !USES:
 !
@@ -381,6 +381,7 @@ CONTAINS
 !
     TYPE(HCO_State), POINTER                 :: HcoState  ! HcoState object
     INTEGER,         INTENT(INOUT)           :: RC        ! Success or failure?
+    INTEGER, OPTIONAL, INTENT(OUT)           :: newStep   ! Is this a new timestep?
 !
 ! !REVISION HISTORY:
 !  29 Dec 2012 - C. Keller   - Initialization
