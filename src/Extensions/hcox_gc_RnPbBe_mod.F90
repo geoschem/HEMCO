@@ -604,18 +604,18 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: GC_RnPbBe (radionuclide emissions)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       IF ( HcoState%Config%doVerbose ) THEN
+          CALL HCO_Msg( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, LUN=HcoState%Config%outLUN ) ! w/o separator
+          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
        ENDIF
 
        ! Write all other messages as debug printout only
        MSG = 'Use the following species (Name: HcoID):'
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        DO N = 1, nSpc
           WRITE(MSG,*) TRIM(SpcNames(N)), ':', HcoIDs(N)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDDO
     ENDIF
 
@@ -639,19 +639,19 @@ CONTAINS
 
     ! WARNING: Rn tracer is not found!
     IF ( Inst%IDTRn222 <= 0 .AND. HcoState%amIRoot ) THEN
-       CALL HCO_WARNING( HcoState%Config%Err, &
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  &
                          'Cannot find Rn222 tracer in list of species!', RC )
     ENDIF
 
     ! WARNING: Be7 tracer is not found
     IF ( Inst%IDTBe7 <= 0 .AND. HcoState%amIRoot ) THEN
-       CALL HCO_WARNING( HcoState%Config%Err, &
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  &
                          'Cannot find Be7 tracer in list of species!', RC )
     ENDIF
 
     ! WARNING: Be10 tracer is not found
     IF ( Inst%IDTBe10 <= 0 .AND. HcoState%amIRoot ) THEN
-       CALL HCO_WARNING( HcoState%Config%Err, &
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  &
                         'Cannot find Be10 tracer in list of species!', RC )
     ENDIF
 

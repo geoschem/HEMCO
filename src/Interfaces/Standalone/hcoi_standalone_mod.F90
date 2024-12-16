@@ -568,7 +568,7 @@ CONTAINS
           WRITE( Msg, 100 ) YR, MT, DY, HR, MN, SC
 100       FORMAT( 'Calculate emissions at ', i4,  '-', i2.2 ,'-', i2.2,' ',  &
                                              i2.2,':', i2.2, ':', i2.2      )
-          CALL HCO_MSG(HcoState%Config%Err,Msg)
+          CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
           WRITE(*,*) TRIM( MSG )
        ENDIF
 
@@ -1546,18 +1546,18 @@ CONTAINS
 
     ! Write grid information to log-file
     WRITE(Msg,*) 'HEMCO grid definitions:'
-    CALL HCO_MSG(HcoState%Config%Err,MSG)
-
+    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
+    
     WRITE(MSG,*) ' --> Number of longitude cells: ', NX
-    CALL HCO_MSG(HcoState%Config%Err,MSG)
+    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
     WRITE(MSG,*) ' --> Number of latitude cells : ', NY
-    CALL HCO_MSG(HcoState%Config%Err,MSG)
+    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
     WRITE(MSG,*) ' --> Number of levels         : ', NZ
-    CALL HCO_MSG(HcoState%Config%Err,MSG)
+    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
     WRITE(MSG,*) ' --> Lon range [deg E]        : ', XMIN, XMAX
-    CALL HCO_MSG(HcoState%Config%Err,MSG)
+    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
     WRITE(MSG,*) ' --> Lat range [deg N]        : ', YMIN, YMAX
-    CALL HCO_MSG(HcoState%Config%Err,MSG)
+    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
 
     ! Cleanup
     IF ( ALLOCATED(AP) ) DEALLOCATE(AP)
@@ -1732,7 +1732,7 @@ CONTAINS
 
     ENDDO !I
 
-    CALL HCO_MSG(HcoState%Config%Err,SEP1='-')
+    CALL HCO_MSG(SEP1='-',LUN=HcoState%Config%stdLogLUN))
 
     ! Return w/ success
     RC = HCO_SUCCESS

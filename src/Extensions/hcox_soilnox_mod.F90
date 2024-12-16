@@ -605,7 +605,7 @@ CONTAINS
           Inst%GWET_PREV = 0.0_sp
           IF ( HcoState%amIRoot ) THEN
              ErrMsg = 'Cannot find GWET_PREV restart variable - initialized to 0.0!'
-             CALL HCO_WARNING( HcoState%Config%Err, ErrMsg, RC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  ErrMsg, RC )
           ENDIF
        ENDIF
 
@@ -621,7 +621,7 @@ CONTAINS
           Inst%PFACTOR = 1.0_sp
           IF ( HcoState%amIRoot ) THEN
              ErrMsg = 'Cannot find PFACTOR restart variable - initialized to 1.0!'
-             CALL HCO_WARNING( HcoState%Config%Err, ErrMsg, RC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  ErrMsg, RC )
           ENDIF
        ENDIF
 
@@ -637,7 +637,7 @@ CONTAINS
           Inst%DRYPERIOD = 0.0_sp
           IF ( HcoState%amIRoot ) THEN
              ErrMsg = 'Cannot find DRYPERIOD restart variable - initialized to 0.0!'
-             CALL HCO_WARNING( HcoState%Config%Err, ErrMsg, RC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  ErrMsg, RC )
           ENDIF
        ENDIF
 
@@ -924,25 +924,25 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: SoilNOx (soil NOx emissions)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+       IF ( HcoState%Config%doVerbose ) THEN
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, LUN=HcoState%Config%outLUN ) ! w/o separator
+          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
        ENDIF
 
        ! Write all other messages as debug printout only
        WRITE(MSG,*) '   - NOx species            : ', TRIM(SpcNames(1)), Inst%IDTNO
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) '   - NOx scale factor       : ', Inst%SpcScalVal(1)
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) '   - NOx scale field        : ', TRIM(Inst%SpcScalFldNme(1))
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) '   - Use soil temperature   : ', Inst%UseSoilTemp
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) '   - Use fertilizer NOx     : ', Inst%LFERTILIZERNOX
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) '   - Fertilizer scale factor: ', Inst%FERT_SCALE
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
+       CALL HCO_MSG(MSG,SEP2='-',LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! ----------------------------------------------------------------------

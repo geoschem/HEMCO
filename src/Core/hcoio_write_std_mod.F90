@@ -351,13 +351,13 @@ CONTAINS
     ENDIF
 
     ! verbose
-    IF ( HCO_IsVerb( HcoState%Config%Err ) .AND. PS==1 ) THEN
+    IF ( HcoState%Config%doVerbose .AND. PS==1 ) THEN
        MSG = 'Write diagnostics into file '//TRIM(ncFile)
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
-    IF ( HCO_IsVerb( HcoState%Config%Err ) .AND. PS==1 ) THEN
+    IF ( HcoState%Config%doVerbose .AND. PS==1 ) THEN
        WRITE(MSG,*) '--> write level dimension: ', .NOT.NoLevDim
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     ! Check if file already exists. If so, add new diagnostics to this file
@@ -614,7 +614,7 @@ CONTAINS
     ELSE
        MSG = 'Unrecognized output reference time, will ' // &
              'assume `days since`: '//TRIM(timeunit)
-       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Special case where we have an old file but it has the same time stamp: in
@@ -788,9 +788,9 @@ CONTAINS
           ENDIF
 
           ! verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err ) .AND. PS==1 ) THEN
+          IF ( HcoState%Config%doVerbose .AND. PS==1 ) THEN
              MSG = '--- Added diagnostics: '//TRIM(myName)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
     ENDDO

@@ -768,27 +768,27 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: GFED (biomass burning)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+       IF ( HcoState%Config%doVerbose ) THEN
+          CALL HCO_Msg( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, LUN=HcoState%Config%outLUN   ) ! w/o separator
+          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
        ENDIF
 
        ! Write all other messages as debug printout only
        WRITE(MSG,*) '   - Use GFED-4              : ', Inst%IsGFED4
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   - Use daily scale factors : ', Inst%DoDay
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   - Use hourly scale factors: ', Inst%Do3Hr
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   - Hydrophilic OC fraction : ', Inst%OCPIfrac
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   - Hydrophilic BC fraction : ', Inst%BCPIfrac
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   - POG1 fraction           : ', Inst%POG1frac
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   - SOAP fraction           : ', Inst%SOAPfrac
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     ! Get HEMCO species IDs of all species specified in configuration file
@@ -929,11 +929,11 @@ CONTAINS
              IF ( HcoState%amIRoot ) THEN
                 MSG = '   - Emit GFED species ' // TRIM(GFED_SPEC_NAME(M)) // &
                       '     as model species ' // TRIM(Inst%SpcNames(N))
-                CALL HCO_MSG(HcoState%Config%Err,MSG )
+                CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
                 WRITE(MSG,*) '     --> Will use scale factor: ', Inst%SpcScal(N)
-                CALL HCO_MSG(HcoState%Config%Err,MSG )
+                CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
                 WRITE(MSG,*) '     --> Will use scale field : ', TRIM(Inst%SpcScalFldNme(N))
-                CALL HCO_MSG(HcoState%Config%Err,MSG )
+                CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
              ENDIF
              EXIT ! go to next species
           ENDIF

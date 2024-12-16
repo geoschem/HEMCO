@@ -447,11 +447,13 @@ MODULE HCO_TYPES_MOD
      TYPE(ModSpc),       POINTER  :: ModelSpc(:)
      INTEGER                      :: nModelSpc
      INTEGER                      :: nModelAdv
-     INTEGER                      :: OutLUN
+     INTEGER                      :: hcoLogLUN  ! LUN for HEMCO_Config.rc LogFile
+     INTEGER                      :: stdLogLUN  ! Other LUN, e.g. stdout or parent log
      CHARACTER(LEN=255)           :: MetField
      CHARACTER(LEN=255)           :: GridRes
      LOGICAL                      :: ConfigFileRead = .FALSE.
-     LOGICAL                      :: amIRoot       ! Is this the root CPU?
+     LOGICAL                      :: amIRoot    ! Is this the root CPU?
+     LOGICAL                      :: doVerbose  ! Is this CPU verbose?
   END TYPE ConfigObj
 
   !------------------------------------------------------------------------

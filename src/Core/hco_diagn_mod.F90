@@ -384,7 +384,7 @@ CONTAINS
        ELSE
           WRITE(MSG,*) 'Unrecognized output time stamp location: ', &
              TRIM(OutTimeStampChar), ' - will use default (start)'
-          CALL HCO_WARNING(HcoState%Config%Err,MSG,RC,THISLOC=LOC)
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
           OutTimeStamp = HcoDiagnStart
        ENDIF
     ENDIF
@@ -495,7 +495,7 @@ CONTAINS
        ELSE
           WRITE(MSG,*) 'Unrecognized output time stamp location: ', &
              TRIM(OutTimeStampChar), ' - will use default (start)'
-          CALL HCO_WARNING(HcoState%Config%Err,MSG,RC,THISLOC=LOC)
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
           OutTimeStamp = HcoDiagnStart
        ENDIF 
     ENDIF
@@ -942,10 +942,10 @@ CONTAINS
 
           ! Exit if found
           IF ( FOUND ) THEN
-             IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+             IF ( HcoState%Config%doVerbose ) THEN
                 WRITE(MSG,*) 'Diagnostics already exists - ', &
                              'will not be added again: ', TRIM(cName)
-                CALL HCO_MSG ( HcoState%Config%Err, MSG )
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              ENDIF
              RC = HCO_SUCCESS
              RETURN
@@ -1106,11 +1106,11 @@ CONTAINS
              ThisDiagn%AreaScal = 1.0_hp / Scal
           ENDIF
 
-          IF ( HCO_IsVerb(HcoState%Config%Err) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG, *) '  ThisDiagn%AreaScal = ', ThisDiagn%AreaScal
-             CALL HCO_MSG( HcoState%Config%Err, MSG)
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              WRITE(MSG, *) '  ThisDiagn%MassScal = ', ThisDiagn%MassScal
-             CALL HCO_MSG( HcoState%Config%Err, MSG)
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           ENDIF
           !----------------------------------------------------------------
           ! Determine the normalization factors applied to the diagnostics
@@ -1169,7 +1169,7 @@ CONTAINS
 !       RETURN
        ThisDiagn%cName = trim(cName) // '_a'
        MSG = 'Changed Diagn name to ' // trim(ThisDiagn%cName)
-       CALL HCO_MSG ( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     !-----------------------------------------------------------------------
@@ -1213,10 +1213,10 @@ CONTAINS
     ThisColl%nnDiagn = ThisColl%nnDiagn + 1
 
     ! Verbose mode
-    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG,'(a, i4)') 'Successfully added diagnostic '// &
                              TRIM(ThisDiagn%cName) // ' to collection ', PS
-       CALL HCO_MSG ( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     ! Cleanup
@@ -1930,17 +1930,17 @@ CONTAINS
              MSG = 'You try to update a container that holds a '  // &
                   'pointer to data - this should never happen! ' // &
                   TRIM(ThisDiagn%cName)
-             CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
              CYCLE
           ENDIF
 
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'ThisDiagn%cName:    ', trim(ThisDiagn%cName)
-             CALL HCO_MSG(HcoState%Config%Err, MSG)
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              WRITE(MSG,*) 'ThisDiagn%AvgFlag:  ', ThisDiagn%AvgFlag
-             CALL HCO_MSG(HcoState%Config%Err, MSG)
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              WRITE(MSG,*) 'ThisDiagn%SpaceDim: ', ThisDiagn%SpaceDim
-             CALL HCO_MSG(HcoState%Config%Err, MSG)
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           ENDIF
 
           ! Increase counter
@@ -2232,10 +2232,10 @@ CONTAINS
           ThisDiagn%nnGetCalls  = 0
 
           ! Verbose mode
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,'(a,a,a,I3,a)') 'Successfully updated diagnostics: ', &
                 TRIM(ThisDiagn%cName), ' (counter:', ThisDiagn%Counter, ')'
-             CALL HCO_MSG ( HcoState%Config%Err, MSG )
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           ENDIF
        ENDDO ! loop over containers in collection
 
@@ -3134,10 +3134,10 @@ CONTAINS
           DgnCont%Arr3D%Val = 0.0_sp
        ENDIF
 
-       ! Prompt warning
+       ! Prompt warning. Only disply if verbose.
        MSG = 'Diagnostics counter is zero - return empty array: ' // &
              TRIM(DgnCont%cName)
-       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -3531,7 +3531,7 @@ CONTAINS
        MSG = 'Target diagnostics has AutoFill flag of 1 - reset to 0: ' &
            // TRIM(DgnCont%cName)
        IF ( PRESENT(HcoState) ) THEN
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
        ELSE
           WRITE(*,*) 'HEMCO WARNING: ', TRIM(MSG)
        ENDIF
@@ -3644,7 +3644,7 @@ CONTAINS
        MSG = 'Target diagnostics has autofill flag of 1 - reset to 0: ' &
            // TRIM(DgnCont%cName)
        IF ( PRESENT(HcoState) ) THEN
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
        ELSE
           WRITE(*,*) 'HEMCO WARNING: ', TRIM(MSG)
        ENDIF
@@ -3771,36 +3771,36 @@ CONTAINS
 
     ! Always print name
     MSG = 'Container ' // TRIM(Dgn%cName)
-    CALL HCO_MSG(HcoState%Config%Err,MSG)
+    CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 
     ! Eventually add details
-    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
 
        ! General information
        WRITE(MSG,*) '   --> Collection         : ', Dgn%CollectionID
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> Diagn ID           : ', Dgn%cID
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> Extension Nr       : ', Dgn%ExtNr
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> Category           : ', Dgn%Cat
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> Hierarchy          : ', Dgn%Hier
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> HEMCO species ID   : ', Dgn%HcoID
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> Autofill?            ', Dgn%AutoFill
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> Space dimension    : ', Dgn%SpaceDim
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> Used level index   : ', Dgn%LevIdx
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> Output unit        : ', TRIM(Dgn%OutUnit)
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> Uniform scaling    : ', Dgn%ScaleFact
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   --> Current array sum  : ', sm
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     ! Cleanup
@@ -3927,16 +3927,16 @@ CONTAINS
 
     ! verbose
     IF ( PRESENT(HcoState) ) THEN
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           MSG = 'Created diagnostics collection: '
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,'(a21,i2)') ' - Collection ID  : ', COL
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,'(a21,a)' ) ' - PREFIX         : ', TRIM(NewCollection%PREFIX)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,'(a21,i8,a1,i6)' ) ' - Output interval: ', NewCollection%DeltaYMD, &
                                        ' ',                    NewCollection%DeltaHMS
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ENDIF
 
@@ -4574,7 +4574,7 @@ CONTAINS
 
           ! Write message to stdout and then return
           IF ( HcoConfig%amIRoot ) THEN
-             WRITE( HcoConfig%outLUN, 300 ) TRIM( FileMsg ), TRIM( DiagnFile )
+             WRITE( HcoConfig%stdLogLUN, 300 ) TRIM( FileMsg ), TRIM( DiagnFile )
  300         FORMAT( a, ' ./', a )
           ENDIF
           RETURN

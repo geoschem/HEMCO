@@ -641,10 +641,10 @@ CONTAINS
        ! Write the name of the extension regardless of the verbose setting
        msg = &
         'Using HEMCO extension: TOMAS_Jeagle (sea salt emissions for TOMAS)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+       IF ( HcoState%Config%doVerbose ) THEN
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, LUN=HcoState%Config%outLUN ) ! w/o separator
+          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
        ENDIF
     ENDIF
 
@@ -716,22 +716,22 @@ CONTAINS
    ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
        MSG = 'Use sea salt aerosol emissions (extension module)'
-       CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+       CALL HCO_MSG( MSG, SEP1='-', LUN=HcoState%Config%hcoLogLUN )
        IF ( Inst%EmitSnowSS ) THEN
           WRITE(MSG,*) ' - Arctic Snow Salinity on FYI (psu): ', Inst%NSLNT_FYI
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Arctic Snow Salinity on MYI (psu): ', Inst%NSLNT_MYI
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Antarctic Snow Salinity on FYI (psu): ', Inst%SSLNT_FYI
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Antarctic Snow Salinity on FYI (psu): ', Inst%SSLNT_MYI
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Arctic Snow age (days): ', Inst%NAGE
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Antarctic Snow age(days): ', Inst%SAGE
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Number of particle per snowflake: ', Inst%NP
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ENDIF
 
@@ -749,10 +749,10 @@ CONTAINS
     ENDIF
     IF ( HcoState%amIRoot ) THEN
        MSG = 'Use the following species (Name: HcoID):'
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        DO N = 1, nSpc
           WRITE(MSG,*) TRIM(SpcNames(N)), ':', Inst%HcoIDs(N)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDDO
     ENDIF
 

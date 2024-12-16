@@ -256,20 +256,20 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: <yourname> (<your description>)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       IF ( HcoState%Config%doVerbose ) THEN
+          CALL HCO_Msg( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, LUN=HcoState%Config%outLUN ) ! w/o separator
+          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
        ENDIF
 
        ! Write all other messages as debug printout only
        MSG = ' - use the following species (Name, HcoID, Scaling):'
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        DO N = 1, Inst%nSpc
           WRITE(MSG,*) TRIM(Inst%SpcNames(N)), ', ', Inst%SpcIDs(N), ', ', Inst%SpcScl(N)
-          CALL HCO_MSG( HcoState%Config%Err, MSG)
+          CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
           WRITE(MSG,*) 'Apply scale field: ', TRIM(Inst%SpcScalFldNme(N))
-          CALL HCO_MSG( HcoState%Config%Err, MSG)
+          CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        ENDDO
     ENDIF
 

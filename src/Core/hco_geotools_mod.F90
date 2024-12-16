@@ -831,14 +831,14 @@ CONTAINS
 
     ! Verbose statements
     IF ( HcoState%amIRoot .AND. FIRST .AND. &
-         HCO_IsVerb(HcoState%Config%Err) ) THEN
+         HcoState%Config%doVerbose ) THEN
        Verb = .TRUE.
     ENDIF
     IF ( Verb ) THEN
        MSG = 'Details about vertical grid calculations (only shown on first time step):'
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='-')
+       CALL HCO_MSG(MSG,SEP1='-',LUN=HcoState%Config%hcoLogLUN)
        MSG = '1. Input data availability: '
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1=' ')
+       CALL HCO_MSG(MSG,SEP1=' ',LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! ------------------------------------------------------------------
@@ -866,7 +866,7 @@ CONTAINS
        ! Verbose
        IF ( Verb ) THEN
           WRITE(MSG,*) ' - Temperature field TK obtained from model interface (min,max): ', MINVAL(ThisTK), MAXVAL(ThisTK)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
     ELSEIF ( EVAL_TK ) THEN
@@ -893,10 +893,10 @@ CONTAINS
        IF ( Verb ) THEN
           IF ( FoundTK ) THEN
              WRITE(MSG,*) ' - Temperature field TK [K] obtained from configuration file (min,max): ', MINVAL(ThisTK), MAXVAL(ThisTK)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ELSE
              WRITE(MSG,*) ' - No temperature field TK found - some vertical grid calculations may not be performed...'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
     ENDIF
@@ -929,7 +929,7 @@ CONTAINS
        ! Verbose
        IF ( Verb ) THEN
           WRITE(MSG,*) ' - Surface pressure PSFC [Pa] obtained from model interface (min, max): ', MINVAL(HcoState%Grid%PSFC%Val), MAXVAL(HcoState%Grid%PSFC%VAL)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
     ! Otherwise, try to read from HEMCO configuration file
@@ -957,10 +957,10 @@ CONTAINS
        IF ( Verb ) THEN
           IF ( FoundPSFC ) THEN
              WRITE(MSG,*) ' - Surface pressure PSFC [Pa] obtained from configuration file (min, max): ', MINVAL(HcoState%Grid%PSFC%Val), MAXVAL(HcoState%Grid%PSFC%VAL)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ELSE
              MSG = ' - Surface pressure PSFC not found. Will attempt to calculate it.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
     ENDIF
@@ -993,7 +993,7 @@ CONTAINS
        ! Verbose
        IF ( Verb ) THEN
           WRITE(MSG,*) ' - Surface geopotential height ZSFC [m] obtained from model interface (min, max): ', MINVAL(HcoState%Grid%ZSFC%Val), MAXVAL(HcoState%Grid%ZSFC%VAL)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
     ! Otherwise, try to read from HEMCO configuration file
@@ -1009,10 +1009,10 @@ CONTAINS
        IF ( Verb ) THEN
           IF ( FoundZSFC ) THEN
              WRITE(MSG,*) ' - Surface geopotential height ZSFC [m] obtained from configuration file (min, max): ', MINVAL(HcoState%Grid%ZSFC%Val), MAXVAL(HcoState%Grid%ZSFC%VAL)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ELSE
              MSG = ' - Surface geopotential height ZSFC not found. Will attempt to calculate it.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
     ENDIF
@@ -1046,7 +1046,7 @@ CONTAINS
        ! Verbose
        IF ( Verb ) THEN
           WRITE(MSG,*) ' - Pressure edges PEDGE obtained from model interface (min, max): ', MINVAL(HcoState%Grid%PEDGE%Val), MAXVAL(HcoState%Grid%PEDGE%VAL)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
     ELSEIF ( EVAL_PEDGE ) THEN
@@ -1062,10 +1062,10 @@ CONTAINS
        IF ( Verb ) THEN
           IF ( FoundPEDGE ) THEN
              WRITE(MSG,*) ' - Pressure edges PEDGE obtained from configuration file (min, max): ', MINVAL(HcoState%Grid%PEDGE%Val), MAXVAL(HcoState%Grid%PEDGE%VAL)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ELSE
              MSG = ' - Pressure edges PEDGE not found. Will attempt to calculate it.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
     ENDIF
@@ -1099,7 +1099,7 @@ CONTAINS
        ! Verbose
        IF ( Verb ) THEN
           WRITE(MSG,*) ' - Boxheights BXHEIGHT_M obtained from model interface (min, max): ', MINVAL(HcoState%Grid%BXHEIGHT_M%Val), MAXVAL(HcoState%Grid%BXHEIGHT_M%VAL)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
     ! Otherwise, try to read from HEMCO configuration file
@@ -1116,10 +1116,10 @@ CONTAINS
        IF ( Verb ) THEN
           IF ( FoundBXHEIGHT ) THEN
              WRITE(MSG,*) ' - Boxheights BXHEIGHT_M obtained from configuration file (min, max): ', MINVAL(HcoState%Grid%BXHEIGHT_M%Val), MAXVAL(HcoState%Grid%BXHEIGHT_M%VAL)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ELSE
              MSG = ' - Boxheights BXHEIGHT_M not found. Will attempt to calculate it.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
     ENDIF
@@ -1147,7 +1147,7 @@ CONTAINS
     ! Verbose
     IF ( Verb ) THEN
        MSG = '2. Grid calculations: '
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1=' ')
+       CALL HCO_MSG(MSG,SEP1=' ',LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Set PSFC
@@ -1158,7 +1158,7 @@ CONTAINS
           ! Verbose
           IF ( Verb ) THEN
              MSG = ' - Surface pressure set to surface pressure edge.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ELSE
           HcoState%Grid%PSFC%Val(:,:) = 101325.0_hp
@@ -1167,13 +1167,13 @@ CONTAINS
                    'This may affect the accuracy of vertical grid '     // &
                    'quantities. It is recommended you provide PSFC via '// &
                    'the model-HEMCO interface or the HEMCO configuration file!'
-             CALL HCO_WARNING( HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
           ENDIF
 
           ! Verbose
           IF ( Verb ) THEN
              MSG = ' - Surface pressure uniformly set to 101325.0 Pa.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
        FoundPSFC = .TRUE.
@@ -1216,7 +1216,7 @@ CONTAINS
        IF ( Verb ) THEN
           WRITE(MSG,*) ' - PEDGE calculated from PSFC, Ap, and Bp (min, max): ', &
              MINVAL(HcoState%Grid%PEDGE%Val), MAXVAL(HcoState%Grid%PEDGE%Val)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ENDIF
 
@@ -1287,7 +1287,7 @@ CONTAINS
              IF ( Verb ) THEN
                 WRITE(MSG,*) ' - ZSFC calculated from PSFC and T (min, max): ', &
                    MINVAL(HcoState%Grid%ZSFC%Val), MAXVAL(HcoState%Grid%ZSFC%Val)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
           ENDIF
 
@@ -1305,7 +1305,7 @@ CONTAINS
              IF ( Verb ) THEN
                 WRITE(MSG,*) ' - Boxheights calculated from PEDGE and T (min, max): ', &
                    MINVAL(HcoState%Grid%BXHEIGHT_M%Val), MAXVAL(HcoState%Grid%BXHEIGHT_M%Val)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
           ENDIF
 
@@ -1316,14 +1316,14 @@ CONTAINS
                    'some extensions to fail. HEMCO tries to calculate '   // &
                    'ZSFC from surface pressure and air temperature, but ' // &
                    'at least one of these variables seem to be missing.'
-             CALL HCO_WARNING( HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
           ENDIF
           IF ( .NOT. FoundBXHEIGHT .AND. FIRST .AND. HcoState%amIRoot ) THEN
              MSG = 'Cannot set boxheights BXHEIGHT_M. This may cause '      // &
                    'some extensions to fail. HEMCO tries to calculate '     // &
                    'BXHEIGHT from pressure edges and air temperature, but ' // &
                    'at least one of these variables seem to be missing.'
-             CALL HCO_WARNING( HcoState%Config%Err,MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
           ENDIF
        ENDIF
     ENDIF
@@ -1335,7 +1335,7 @@ CONTAINS
     ! Verbose
     IF ( Verb ) THEN
        WRITE(MSG,*) 'Vertical grid calculations done.'
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
+       CALL HCO_MSG(MSG,SEP2='-',LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Cleanup
@@ -1423,10 +1423,10 @@ CONTAINS
        ENDIF
 
        ! Verbose
-       IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err ) ) THEN
+       IF ( HcoState%amIRoot .AND. HcoState%Config%doVerbose ) THEN
           IF ( FOUND ) THEN
              WRITE(MSG,*) 'HEMCO PBL heights obtained from field ',TRIM(FldName)
-             CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
+             CALL HCO_MSG(MSG,SEP2='-',LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
     ENDIF
@@ -1449,9 +1449,9 @@ CONTAINS
              FOUND                       = .TRUE.
 
              ! Verbose
-             IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err ) ) THEN
+             IF ( HcoState%amIRoot .AND. HcoState%Config%doVerbose ) THEN
                 WRITE(MSG,*) 'HEMCO PBL heights obtained from provided 2D field.'
-                CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
+                CALL HCO_MSG(MSG,SEP2='-',LUN=HcoState%Config%hcoLogLUN)
              ENDIF
           ENDIF
        ENDIF
@@ -1474,9 +1474,9 @@ CONTAINS
           FOUND                       = .TRUE.
 
           ! Verbose
-          IF ( HcoState%amIRoot .AND. HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%amIRoot .AND. HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'HEMCO PBL heights uniformly set to ', DefVal
-             CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
+             CALL HCO_MSG(MSG,SEP2='-',LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
     ENDIF

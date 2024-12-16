@@ -202,7 +202,7 @@ CONTAINS
 
     ! Check if already allocated
     IF ( ASSOCIATED(HcoState)) THEN
-       CALL HCO_WARNING( HcoConfig%Err,'HcoState already allocated!', RC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( 'HcoState already allocated!', RC )
        RETURN
     ENDIF
     ALLOCATE ( HcoState )
@@ -498,23 +498,23 @@ CONTAINS
     HcoState%AlltIDx   => NULL()
 
     ! Verbose mode
-    IF ( HCO_IsVerb( HcoConfig%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG,'(A68)') 'Initialized HEMCO state. Will use the following settings:'
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        WRITE(MSG,'(A33,I2)') 'Unit tolerance                 : ', UnitTolerance
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        WRITE(MSG,'(A33,I2)') 'Negative values                : ', HcoState%Options%NegFlag
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        WRITE(MSG,'(A33,L2)') 'Mask fractions                 : ', HcoState%Options%MaskFractions
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        WRITE(MSG,'(A33,L2)') 'Do drydep over entire PBL      : ', HcoState%Options%PBL_DRYDEP
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        WRITE(MSG,'(A33,F6.2)') 'Upper limit for deposition x ts: ', HcoState%Options%MaxDepExp
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        WRITE(MSG,'(A33,L2)') 'Scale emissions                : ', HcoState%Options%ScaleEmis
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        WRITE(MSG,'(A33,L2)') 'Cap time shift                 : ', HcoState%Options%TimeShiftCap
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
     ENDIF
 
     ! Leave w/ success

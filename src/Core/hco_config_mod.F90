@@ -203,7 +203,7 @@ CONTAINS
        DoDryRun = .FALSE.
     ENDIF
 
-    ! Prompt to standard output (only on the root core
+    ! Prompt to standard output (only on the root core)
     IF ( HcoConfig%amIRoot ) THEN
 
        IF ( DoDryRun ) THEN
@@ -224,7 +224,7 @@ CONTAINS
           ENDIF
 
           ! Write message to stdout
-          WRITE( HcoConfig%outLUN, 300 ) TRIM( FileMsg ), TRIM( ConfigFile )
+          WRITE( HcoConfig%stdLogLUN, 300 ) TRIM( FileMsg ), TRIM( ConfigFile )
  300      FORMAT( a, ' ./', a )
 
        ELSE
@@ -233,17 +233,17 @@ CONTAINS
           ! For regular simulations, write a message containing
           ! the configuration file as well as the Phase value.
           !-----------------------------------------------------------------
-          WRITE(HcoConfig%outLUN,*) ' '
+          WRITE(HcoConfig%stdLogLUN,*) ' '
           IF ( Phase == 1 ) THEN
-             WRITE( HcoConfig%outLUN, 310 ) TRIM(ConfigFile)
+             WRITE( HcoConfig%stdLogLUN, 310 ) TRIM(ConfigFile)
  310         FORMAT( 'Reading settings & switches of HEMCO configuration file: ', a )
 
           ELSEIF ( Phase == 2 ) THEN
-             WRITE( HcoConfig%outLUN, 320 ) TRIM(ConfigFile)
+             WRITE( HcoConfig%stdLogLUN, 320 ) TRIM(ConfigFile)
  320         FORMAT( 'Reading fields of HEMCO configuration file: ', a )
 
           ELSE
-             WRITE( HcoConfig%outLUN, 330 ) TRIM(ConfigFile)
+             WRITE( HcoConfig%stdLogLUN, 330 ) TRIM(ConfigFile)
  330         FORMAT( 'Reading entire HEMCO configuration file: ', a )
           ENDIF
        ENDIF
@@ -265,7 +265,7 @@ CONTAINS
     INQUIRE( FILE=TRIM(ConfigFile), EXIST=EXISTS )
     IF ( .NOT. EXISTS ) THEN
        IF ( HcoConfig%amIRoot ) THEN
-          WRITE(HcoConfig%outLUN,*) 'Cannot read file - it does not exist: ', TRIM(ConfigFile)
+          WRITE(HcoConfig%stdLogLUN,*) 'Cannot read file - it does not exist: ', TRIM(ConfigFile)
        ENDIF
        RC = HCO_FAIL
        RETURN
@@ -275,7 +275,7 @@ CONTAINS
     OPEN ( IU_HCO, FILE=TRIM( ConfigFile ), STATUS='OLD', IOSTAT=IOS )
     IF ( IOS /= 0 ) THEN
        IF ( HcoConfig%amIRoot ) THEN
-          WRITE(HcoConfig%outLUN,*) 'Error reading ', TRIM(ConfigFile)
+          WRITE(HcoConfig%stdLogLUN,*) 'Error reading ', TRIM(ConfigFile)
        ENDIF
        RC = HCO_FAIL
        RETURN
@@ -413,8 +413,8 @@ CONTAINS
     ! Check if we caught all sections. Do that only for phase 1.
     ! Sections SETTINGS and extension switches are needed.
     IF ( PHASE == 1 .AND. NN /= 2 .AND. .NOT. NEST ) THEN
-       WRITE(HcoConfig%outLUN,*) 'Expected 2 sections, found/read ', NN
-       WRITE(HcoConfig%outLUN,*) 'Should read SETTINGS and EXTENSION SWITCHES'
+       WRITE(HcoConfig%stdLogLUN,*) 'Expected 2 sections, found/read ', NN
+       WRITE(HcoConfig%stdLogLUN,*) 'Should read SETTINGS and EXTENSION SWITCHES'
        RC = HCO_FAIL
        RETURN
     ENDIF
@@ -559,7 +559,7 @@ CONTAINS
     HcoState%SetReadListCalled = .TRUE.
 
     ! Debug
-    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        CALL ReadList_Print( HcoState, HcoState%ReadLists )
     ENDIF
 
@@ -1371,7 +1371,6 @@ CONTAINS
     INTEGER                       :: IDX, STRLEN, ExtNr
     LOGICAL                       :: FOUND
     LOGICAL                       :: UseBracket, UseThis
-    LOGICAL                       :: verb
     LOGICAL                       :: REV
     INTEGER, SAVE                 :: NEST      = 0
     INTEGER, SAVE                 :: SKIPLEVEL = 0
@@ -1384,9 +1383,6 @@ CONTAINS
     !======================================================================
     ! BracketCheck begins here
     !======================================================================
-
-    ! Init
-    verb = HCO_IsVerb( HcoConfig%Err )
 
     ! Get name of this bracket
     IF ( STAT == 5 .OR. STAT == 6 ) THEN
@@ -1516,11 +1512,11 @@ CONTAINS
        ENDIF
 
        ! Verbose mode
-       IF ( verb ) THEN
+       IF ( HcoConfig%doVerbose ) THEN
           MSG = 'Opened shortcut bracket: '//TRIM(TmpBracket)
-          CALL HCO_MSG( HcoConfig%Err, msg )
+          CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
           WRITE(MSG,*) ' - Skip content of this bracket: ', SKIP
-          CALL HCO_MSG( HcoConfig%Err, msg )
+          CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        ENDIF
     ENDIF
 
@@ -1545,11 +1541,11 @@ CONTAINS
        NEST              = NEST - 1
 
        ! Verbose mode
-       IF ( verb ) THEN
+       IF ( HcoConfig%doVerbose ) THEN
           MSG = 'Closed shortcut bracket: '//TRIM(TmpBracket)
-          CALL HCO_MSG( HcoConfig%Err, msg )
+          CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
           WRITE(MSG,*) ' - Skip following lines: ', SKIP
-          CALL HCO_MSG( HcoConfig%Err, msg )
+          CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        ENDIF
     ENDIF
 
@@ -1600,7 +1596,6 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    LOGICAL                       :: verb
     INTEGER                       :: I, N
     TYPE(ListCont), POINTER       :: Shd
     CHARACTER(LEN=512)            :: msg
@@ -1619,9 +1614,7 @@ CONTAINS
     ENDIF
 
     ! Init
-    verb = HCO_IsVerb( HcoConfig%Err )
     Shd  => NULL()
-
 
 !    ! Get number of currently used scale factors
 !    N = 0
@@ -1675,9 +1668,9 @@ CONTAINS
        Shd%Dct%Dta     => Lct%Dct%Dta
 
        ! verbose mode
-       IF ( verb ) THEN
+       IF ( HcoConfig%doVerbose ) THEN
           MSG = 'Created shadow base emission field: ' // TRIM(Shd%Dct%cName)
-          CALL HCO_MSG( HcoConfig%Err, msg )
+          CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        ENDIF
 
        ! Cleanup
@@ -1782,12 +1775,12 @@ CONTAINS
        Lct%Dct%Dta => Dta
 
        ! verbose mode
-       IF ( HCO_IsVerb( HcoConfig%Err ) ) THEN
+       IF ( HcoConfig%doVerbose ) THEN
           MSG = 'Created a fake scale factor with zeros'
-          CALL HCO_MSG(HcoConfig%Err,MSG)
+          CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
           MSG = 'This field will be used to artificially expand ' // &
                 'over multiple emission categories'
-          CALL HCO_MSG(HcoConfig%Err,MSG)
+          CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        ENDIF
 
        ! Cleanup
@@ -2045,7 +2038,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
-    LOGICAL               :: doVerbose, doVerboseOnRoot, found
+    LOGICAL               :: isVerbose, isVerboseOnRoot, found
     INTEGER               :: I,         N,               POS
 
     ! Strings
@@ -2161,13 +2154,13 @@ CONTAINS
     IF ( .NOT. ASSOCIATED(HcoConfig%Err) ) THEN
 
        ! Initialize
-       doVerbose       = .FALSE.
-       doVerboseOnRoot = .FALSE.
+       isVerbose       = .FALSE.
+       isVerboseOnRoot = .FALSE.
        onCores         = ''
 
        ! First look for Verbose
        CALL GetExtOpt( HcoConfig,            CoreNr,      'Verbose',         &
-                       OptValBool=doVerbose, found=found,  RC=RC            )
+                       OptValBool=isVerbose, found=found,  RC=RC            )
        IF ( RC /= HCO_SUCCESS ) THEN
           msg = 'Error looking for "Verbose" in HEMCO_Config.rc!'
           CALL HCO_Error( msg, RC, thisLoc=loc )
@@ -2175,7 +2168,7 @@ CONTAINS
        ENDIF
 
        ! First look for Verbose (logical).  This is now the default
-       ! inthe HEMCO_Config.rc file for HEMCO 3.7.0 and later.
+       ! in the HEMCO_Config.rc file for HEMCO 3.7.0 and later.
        CALL GetExtOpt( HcoConfig,          CoreNr,      'VerboseOnCores',    &
                        OptValChar=onCores, found=found,  RC=RC              )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -2187,12 +2180,12 @@ CONTAINS
        ! Set a flag if Verbose output is to be done on the root core only
        ! (if false, it will be done on all cores)
        CALL TranLC( onCores )
-       doVerboseOnRoot = ( TRIM( onCores ) == "root" )
+       isVerboseOnRoot = ( TRIM( onCores ) == "root" )
 
        ! Print status message
-       IF ( doVerbose ) THEN
+       IF ( isVerbose ) THEN
           msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is ON '
-          IF ( doVerboseOnRoot ) THEN
+          IF ( isVerboseOnRoot ) THEN
              msg = TRIM( msg ) // ' (root core only)'
           ELSE
              msg = TRIM( msg ) // ' (all cores)'
@@ -2201,7 +2194,7 @@ CONTAINS
           msg = NEW_LINE( 'A' ) // 'HEMCO verbose output is OFF'
        ENDIF
        IF ( HcoConfig%amIRoot ) &
-            CALL HCO_Msg( msg, LUN=HcoConfig%outLUN )
+            CALL HCO_Msg( msg, LUN=HcoConfig%stdLogLUN )
 
        ! Logfile to write into
 #ifndef MODEL_CESM
@@ -2216,14 +2209,14 @@ CONTAINS
        IF ( .NOT. FOUND ) THEN
           LogFile = 'HEMCO.log'
           msg = 'Setting `Logfile` not found in HEMCO logfile - use '//trim(LogFile)
-          CALL HCO_MSG( msg )
+          CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        ENDIF
 #else
        ! Always write to atm.log in CESM. LogFile entry in HEMCO_Config.rc
        ! is omitted in CESM HEMCO_Config.rc. If it is found it will be ignored.
        LogFile = 'atm.log'
        msg = 'WARNING: HEMCO config entry for LogFile is ignored in CESM'
-       CALL HCO_MSG( msg, LUN=HcoConfig%outLUN)
+       CALL HCO_MSG( msg, LUN=HcoConfig%stdLogLUN)
 #endif
 
        ! Initialize (standard) HEMCO tokens
@@ -2243,13 +2236,14 @@ CONTAINS
        ! We should now have everything to define the HEMCO error settings
 #ifndef MODEL_CESM
        CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err,   LogFile,      &
-                           doVerbose,         doVerboseOnRoot, RC           )
+                           isVerbose,         isVerboseOnRoot, RC           )
 #else
-       ! Set Err%LUN to CAM atm.log LUN passed from HEMCO_CESM if HEMCO_Config.rc
-       ! entry for log is atm.log
+       ! Set Err%LUN to stdLogLUN if using CESM, which is CAM atm.log LUN
+       ! rather than stdout. If omitted here then CESM will output to
+       ! the cesm.log file which is LUN=6 in CESM.
        CALL HCO_ERROR_SET( HcoConfig%amIRoot, HcoConfig%Err,   LogFile,      &
-                           doVerbose,         doVerboseOnRoot, RC,           &
-                           customLUN=HcoConfig%outLUN                       )
+                           isVerbose,         isVerboseOnRoot, RC,           &
+                           LUN=HcoConfig%stdLogLUN                          )
 #endif
        IF ( RC /= HCO_SUCCESS ) THEN
           msg = 'Error encountered in routine "Hco_Error_Set"!'
@@ -2257,6 +2251,10 @@ CONTAINS
           RETURN
        ENDIF
 
+       ! Also set verbose in HcoConfig
+       IF ( isVerbose .AND. ( HcoConfig%amIRoot .OR. .NOT. isVerboseOnRoot ) )   &
+            HcoConfig%doVerbose = .TRUE.
+       
     ENDIF
 
     ! Leave w/ success
@@ -2350,13 +2348,13 @@ CONTAINS
     IF ( cpux2 >= 180 ) cpux2 = cpux2 - 360
 
     ! verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG,*) 'Start to prepare fields for registering!'
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) 'This CPU x-range: ', cpux1, cpux2
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) 'This CPU y-range: ', cpuy1, cpuy2
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Get next (first) line of ConfigList
@@ -2372,9 +2370,9 @@ CONTAINS
        ENDIF
 
        ! verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) 'Prepare ', TRIM(Lct%Dct%cName)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        ! For base fields or data fields used in one of the HEMCO
@@ -2390,9 +2388,9 @@ CONTAINS
              Lct%Dct%HcoID = ThisHcoID
 
              ! verbose
-             IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+             IF ( HcoState%Config%doVerbose ) THEN
                 WRITE(MSG,*) 'Assigned HEMCO species ID: ', Lct%Dct%HcoID
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
 
           ! Else: assign default value. These containers will be
@@ -2485,9 +2483,9 @@ CONTAINS
           Lct%Dct%Dta%ncYrs(:) = -999
           Lct%Dct%Dta%ncMts(:) = -999
 
-          IF ( HCO_IsVerb(HcoSTate%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Coverage: ', Lct%Dct%Dta%Cover
-             CALL HCO_MSG( HcoState%Config%Err, msg )
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           ENDIF
        ENDIF
 
@@ -2605,11 +2603,11 @@ CONTAINS
        ENDIF
 
        IF ( Ignore ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) &
                   'Register_Base: Ignore (and remove) base field ', &
                   TRIM(Lct%Dct%cName)
-             CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='-')
+             CALL HCO_MSG(MSG,SEP1='-',LUN=HcoState%Config%hcoLogLUN)
           ENDIF
 
           ! Remove data container from list.
@@ -2620,9 +2618,9 @@ CONTAINS
        ENDIF
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) 'Register_Base: Checking ', TRIM(Lct%Dct%cName)
-          CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='-')
+          CALL HCO_MSG(MSG,SEP1='-',LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        ! -------------------------------------------------------------
@@ -2655,11 +2653,11 @@ CONTAINS
        ENDIF
 
        ! verbose
-       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) 'Container ID     : ', Lct%Dct%cID
-          CALL HCO_MSG( HcoState%Config%Err, msg )
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           WRITE(MSG,*) 'Assigned targetID: ', targetID
-          CALL HCO_MSG( HcoState%Config%Err, msg )
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        ENDIF
 
        ! Negative targetID is assigned to base data that doesn't need
@@ -2688,9 +2686,9 @@ CONTAINS
        ENDIF
 
        ! Print some information if verbose mode is on
-       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) 'Base field registered: ', TRIM(Lct%Dct%cName)
-          CALL HCO_MSG( HcoState%Config%Err, msg )
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        ENDIF
 
        ! Advance to next line
@@ -2832,9 +2830,9 @@ CONTAINS
        ENDIF
 
        ! Print some information if verbose mode is on
-       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) 'Scale field registered: ', TRIM(Lct%Dct%cName)
-          CALL HCO_MSG( HcoState%Config%Err, msg )
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        ENDIF
 
        ! Advance
@@ -3001,10 +2999,10 @@ CONTAINS
           IF ( (mskLct%Dct%DctType  == HCO_DCTTYPE_MASK ) .AND. &
                (mskLct%Dct%Dta%Cover == 0 )        ) THEN
              targetID = -999
-             IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+             IF ( HcoState%Config%doVerbose ) THEN
                 WRITE(MSG,*) 'Data not defined over this CPU, skip ' // &
                      TRIM(Lct%Dct%cName)
-                CALL HCO_MSG( HcoState%Config%Err, msg )
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              ENDIF
 
              ! Return
@@ -3140,10 +3138,10 @@ CONTAINS
          ! replace all values of Lct. Hence, set targetID to -999
          ! (= ignore container) and return here.
        IF ( (tmpLct%Dct%Hier > Hier) .AND. (tmpCov==1) ) THEN
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Skip container ', TRIM(Lct%Dct%cName), &
                           ' because of ', TRIM(tmpLct%Dct%cName)
-             CALL HCO_MSG( HcoState%Config%Err, msg )
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           ENDIF
 
           ! Return
@@ -4631,11 +4629,11 @@ CONTAINS
        ENDIF
 
        ! Verbose
-       IF ( HcoConfig%amIRoot .AND. HCO_IsVerb(HcoConfig%Err ) ) THEN
+       IF ( HcoConfig%amIRoot .AND. HcoConfig%doVerbose ) THEN
           WRITE(MSG,*) 'Will use additional dimension on file ', &
              TRIM(Dta%ncFile), ': ', TRIM(Dta%ArbDimName), ' = ', &
              TRIM(Dta%ArbDimVal)
-          CALL HCO_Msg( HcoConfig%Err, msg )
+          CALL HCO_Msg( msg, LUN=HcoConfig%hcoLogLUN )
        ENDIF
     ENDIF
 
@@ -4657,12 +4655,13 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE ConfigInit ( HcoConfig, RC, nModelSpecies, outLUN )
+  SUBROUTINE ConfigInit ( HcoConfig, RC, nModelSpecies, stdLogLUN )
 !
 ! !INPUT PARAMETERS:
 !
-    INTEGER, INTENT(IN), OPTIONAL  :: nModelSpecies  ! # model species
-    INTEGER, INTENT(IN), OPTIONAL  :: outLUN         ! LUN for output log
+    INTEGER, INTENT(IN), OPTIONAL  :: nModelSpecies ! # model species
+    INTEGER, INTENT(IN), OPTIONAL  :: stdLogLUN     ! LUN for alternative
+                                        ! to LogFile set in HEMCO_Config.rc
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -4690,16 +4689,25 @@ CONTAINS
     HcoConfig%ConfigFileName = ''
     HcoConfig%ROOT           = ''
     HcoConfig%ConfigFileRead = .FALSE.
+    HcoConfig%doVerbose      = .FALSE.
     HcoConfig%ConfigList     => NULL()
     HcoConfig%ScalIDList     => NULL()
     HcoConfig%SpecNameList   => NULL()
     HcoConfig%ExtList        => NULL()
     HcoConfig%Err            => NULL()
-    IF ( PRESENT(outLUN) ) THEN
-       HcoConfig%OutLUN         = outLUN
+    IF ( PRESENT(stdLogLUN) ) THEN
+       HcoConfig%stdLogLUN = stdLogLUN
     ELSE
-       HcoConfig%OutLUN         = 6       ! Default is std out
+       HcoConfig%stdLogLUN = 6  ! Default is stdout if not passed
     ENDIF
+
+    ! Initialize HEMCO log LUN to be same as standard log LUN.
+    ! This will get updated later if the HEMCO_Config.rc entry for
+    ! LogFile specifies a dedicated log for HEMCO. If that is the
+    ! case then it will get updated when the file is opened (to new
+    ! LUN) and again when it is closed (back to stdLogLUN). hcoLogLUN
+    ! will therefore always be valid.
+    HcoConfig%hcoLogLUN = HcoConfig%stdLogLUN
 
     IF ( PRESENT( nModelSpecies ) ) THEN
 

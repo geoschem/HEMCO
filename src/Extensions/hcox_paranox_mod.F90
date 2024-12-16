@@ -1018,7 +1018,7 @@ CONTAINS
       IF ( Inst%IDTO3 <= 0 ) THEN
          tmpID = HCO_GetHcoID('O3', HcoState )
          MSG = 'O3 not produced/removed in PARANOX'
-         CALL HCO_WARNING(HcoState%Config%Err, MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
       ELSE
          tmpID = Inst%IDTO3
       ENDIF
@@ -1026,7 +1026,7 @@ CONTAINS
          Inst%MW_O3 = HcoState%Spc(tmpID)%MW_g
       ELSE
          MSG = 'Use default O3 molecular weight of 48g/mol'
-         CALL HCO_WARNING(HcoState%Config%Err, MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
          Inst%MW_O3 = 48.0_dp
       ENDIF
 
@@ -1034,7 +1034,7 @@ CONTAINS
       IF ( Inst%IDTNO <= 0 ) THEN
          tmpID = HCO_GetHcoID('NO', HcoState )
          MSG = 'NO not produced in PARANOX'
-         CALL HCO_WARNING(HcoState%Config%Err, MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
       ELSE
          tmpID = Inst%IDTNO
       ENDIF
@@ -1042,7 +1042,7 @@ CONTAINS
          Inst%MW_NO = HcoState%Spc(tmpID)%MW_g
       ELSE
          MSG = 'Use default NO molecular weight of 30g/mol'
-         CALL HCO_WARNING(HcoState%Config%Err, MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
          Inst%MW_NO = 30.0_dp
       ENDIF
 
@@ -1050,7 +1050,7 @@ CONTAINS
       IF ( Inst%IDTNO2 <= 0 ) THEN
          tmpID = HCO_GetHcoID('NO2', HcoState )
          MSG = 'NO2 not produced in PARANOX'
-         CALL HCO_WARNING(HcoState%Config%Err, MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
       ELSE
          tmpID = Inst%IDTNO2
       ENDIF
@@ -1058,7 +1058,7 @@ CONTAINS
          Inst%MW_NO2 = HcoState%Spc(tmpID)%MW_g
       ELSE
          MSG = 'Use default NO2 molecular weight of 46g/mol'
-         CALL HCO_WARNING(HcoState%Config%Err, MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
          Inst%MW_NO2 = 46.0_dp
       ENDIF
 
@@ -1066,7 +1066,7 @@ CONTAINS
       IF ( Inst%IDTHNO3 <= 0 ) THEN
          tmpID = HCO_GetHcoID('HNO3', HcoState )
          MSG = 'HNO3 not produced/removed in PARANOX'
-         CALL HCO_WARNING(HcoState%Config%Err, MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
       ELSE
          tmpID = Inst%IDTHNO3
       ENDIF
@@ -1074,7 +1074,7 @@ CONTAINS
          Inst%MW_HNO3 = HcoState%Spc(tmpID)%MW_g
       ELSE
          MSG = 'Use default HNO3 molecular weight of 63g/mol'
-         CALL HCO_WARNING(HcoState%Config%Err, MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
          Inst%MW_HNO3 = 63.0_dp
       ENDIF
 
@@ -1083,23 +1083,23 @@ CONTAINS
 
          ! Write the name of the extension regardless of the verbose setting
          msg = 'Using HEMCO extension: ParaNOx (ship emission plumes)'
-         IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-            CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
+         IF ( HcoState%Config%doVerbose ) THEN
+            CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
          ELSE
-            CALL HCO_Msg( msg, LUN=HcoState%Config%outLUN    ) ! w/o separator
+            CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN    ) ! w/o separator
          ENDIF
 
          ! Write the rest of the information only when verbose is set
          MSG = '    - Use the following species: (MW, emitted as HEMCO ID) '
-         CALL HCO_MSG(HcoState%Config%Err,MSG )
+         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
          WRITE(MSG,"(a,F5.2,I5)") '     NO  : ', Inst%MW_NO, Inst%IDTNO
-         CALL HCO_MSG(HcoState%Config%Err,MSG)
+         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
          WRITE(MSG,"(a,F5.2,I5)") '     NO2 : ', Inst%MW_NO2, Inst%IDTNO2
-         CALL HCO_MSG(HcoState%Config%Err,MSG)
+         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
          WRITE(MSG,"(a,F5.2,I5)") '     O3  : ', Inst%MW_O3, Inst%IDTO3
-         CALL HCO_MSG(HcoState%Config%Err,MSG)
+         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
          WRITE(MSG,"(a,F5.2,I5)") '     HNO3: ', Inst%MW_HNO3, Inst%IDTHNO3
-         CALL HCO_MSG(HcoState%Config%Err,MSG)
+         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
       ENDIF
 
       !--------------------------------
@@ -1367,7 +1367,7 @@ CONTAINS
       IF ( HcoState%amIRoot ) THEN
          MSG = ' Cannot properly store SUNCOS values ' // &
                ' because chemistry time step is more than 60 mins!'
-         CALL HCO_WARNING(HcoState%Config%Err, MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
       ENDIF
    ENDIF
 
@@ -1693,7 +1693,7 @@ CONTAINS
    IF ( HcoState%amIRoot ) THEN
       WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( FileName )
       WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( FileName )
-      CALL HCO_MSG( HcoState%Config%Err, MSG )
+      CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
  300  FORMAT( a, ' ', a )
    ENDIF
 
@@ -2006,7 +2006,7 @@ CONTAINS
    IF ( HcoState%amIRoot ) THEN
       WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( FileName )
       WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( FileName )
-      CALL HCO_MSG(HcoState%Config%Err,MSG)
+      CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
  300  FORMAT( a, ' ', a )
    ENDIF
 
@@ -2225,7 +2225,7 @@ CONTAINS
    ! Echo info
    IF ( Hcostate%amIRoot ) THEN
       WRITE( MSG, 100 ) TRIM( FILENAME )
-      CALL HCO_MSG(HcoState%Config%Err,MSG)
+      CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
 100   FORMAT( 'WRITE_LUT_TXTFILE: Writing ', a )
    ENDIF
 

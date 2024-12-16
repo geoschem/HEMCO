@@ -319,7 +319,7 @@ CONTAINS
 
     ! Make sure HcoClock obj. is associated
     IF ( .NOT. ASSOCIATED(HcoState%Clock) ) THEN
-       CALL HCO_WARNING( HcoState%Config%Err, &
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( &
         'CANNOT SET TIMEZONES - HEMCO CLOCK IS NOT DEFINED', &
         RC, THISLOC='HcoClock_InitTzPtr (hco_clock_mod.F90)' )
         RETURN
@@ -332,11 +332,13 @@ CONTAINS
     ! Print a message
     IF ( HcoState%amIRoot ) THEN
        IF ( FOUND ) THEN
-          CALL HCO_MSG( HcoState%Config%Err, &
-           'TIMEZONES (i.e. OFFSETS FROM UTC) WERE READ FROM A FILE' )
+          CALL HCO_MSG(  &
+               'TIMEZONES (i.e. OFFSETS FROM UTC) WERE READ FROM A FILE', &
+               LUN=HcoState%Config%hcoLogLUN )
        ELSE
-          CALL HCO_MSG( HcoState%Config%Err, &
-           'TIMEZONES (i.e. OFFSETS FROM UTC) WERE COMPUTED FROM LONGITUDE' )
+          CALL HCO_MSG(  &
+               'TIMEZONES (i.e. OFFSETS FROM UTC) WERE COMPUTED FROM LONGITUDE', &
+               LUN=HcoState%Config%hcoLogLUN )
        ENDIF
     ENDIF
 
@@ -425,7 +427,7 @@ CONTAINS
        IF ( FND ) THEN
           Clock%FixYY = DUM
           WRITE(MSG,*) 'Emission year will be fixed to day ', Clock%FixYY
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        CALL GetExtOpt( CF, CoreNr, 'Emission month', OptValInt=DUM, &
@@ -439,7 +441,7 @@ CONTAINS
        IF ( FND ) THEN
           Clock%FixMM = DUM
           WRITE(MSG,*) 'Emission month will be fixed to day ', Clock%FixMM
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        CALL GetExtOpt( CF, CoreNr, 'Emission day', OptValInt=DUM, &
@@ -453,7 +455,7 @@ CONTAINS
        IF ( FND ) THEN
           Clock%Fixdd = DUM
           WRITE(MSG,*) 'Emission day will be fixed to day ', Clock%Fixdd
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        CALL GetExtOpt( CF, CoreNr, 'Emission hour', OptValInt=DUM, &
@@ -467,7 +469,7 @@ CONTAINS
        IF ( FND ) THEN
           Clock%Fixhh = DUM
           WRITE(MSG,*) 'Emission hour will be fixed to day ', Clock%Fixhh
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ENDIF
 
@@ -608,21 +610,21 @@ CONTAINS
     ! ----------------------------------------------------------------
     ! Verbose mode
     ! ----------------------------------------------------------------
-    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        IF ( NewStep ) THEN
           WRITE(MSG,110) Clock%ThisYear, Clock%ThisMonth, &
                          Clock%ThisDay,  Clock%ThisHour,  &
                          Clock%ThisMin,  Clock%ThisSec
-          CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='=')
+          CALL HCO_MSG( msg, SEP1='=', LUN=HcoState%Config%hcoLogLUN )
           WRITE(MSG,120) Clock%ThisWD
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,130) EmisTime
-          CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2=' ')
+          CALL HCO_MSG(MSG,SEP2=' ',LUN=HcoState%Config%hcoLogLUN)
        ELSEIF ( EmisTime ) THEN
           WRITE(MSG,140) Clock%ThisYear, Clock%ThisMonth, &
                          Clock%ThisDay,  Clock%ThisHour,  &
                          Clock%ThisMin,  Clock%ThisSec
-          CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1=' ', SEP2=' ')
+          CALL HCO_MSG(MSG,SEP1=' ', SEP2=' ',LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ENDIF
 
