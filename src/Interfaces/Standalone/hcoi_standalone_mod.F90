@@ -287,7 +287,8 @@ CONTAINS
     ! Open logfile
     !======================================================================
     IF ( am_I_Root ) THEN
-       CALL HCO_LogFile_Open( HcoConfig%Err, RC=RC )
+       CALL HCO_LogFile_Open( HcoConfig%Err, HcoConfig%doVerbose, RC=RC, &
+            HcoConfig%hcoLogLUN=logLUN )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in routine "HCO_Logfile_Open_Readfile!"'
           CALL HCO_Error( ErrMsg, RC, ThisLoc )

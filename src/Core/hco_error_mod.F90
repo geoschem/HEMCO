@@ -950,7 +950,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_LogFile_Open( Err, RC )
+  SUBROUTINE HCO_LogFile_Open( Err, doVerbose, RC, logLUN )
 !
 ! !USES:
 !
@@ -959,7 +959,9 @@ CONTAINS
 ! !INPUT/OUTPUT PARAMETERS:
 !
     TYPE(HcoErr),  POINTER    :: Err            ! Error object
+    LOGICAL,   INTENT(IN)     :: doVerbose
     INTEGER,   INTENT(INOUT)  :: RC
+    INTEGER,   INTENT(OUT)    :: logLUN
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller   - Initialization
@@ -969,7 +971,7 @@ CONTAINS
 !BOC
     CHARACTER(LEN=255) :: MSG
     INTEGER            :: IOS, LUN, FREELUN
-    LOGICAL            :: isopen, exists
+    LOGICAL            :: isopen, exists, verbose
 
     !======================================================================
     ! HCO_LOGFILE_OPEN begins here
@@ -1057,7 +1059,7 @@ CONTAINS
        LUN = Err%Lun                ! Log gets written to file
 
        ! Only write the version info if verbose output is requested
-       IF ( Err%DoVerbose ) THEN
+       IF ( doVerbose ) THEN
 
           ! Write header
           WRITE( LUN, '(a)'      ) REPEAT( '-', 79)
@@ -1075,6 +1077,8 @@ CONTAINS
 
        Err%FirstOpen = .FALSE.
     ENDIF
+
+    logLUN = Err%Lun
 
     ! Return w/ success
     RC = HCO_SUCCESS
