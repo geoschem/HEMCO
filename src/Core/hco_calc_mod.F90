@@ -604,7 +604,7 @@ CONTAINS
              IF ( HcoState%Options%NegFlag == 1 ) THEN
                 WHERE ( TmpFlx < 0.0_hp ) TmpFlx = 0.0_hp
                 MSG = 'Negative emissions set to zero: '// TRIM(Dct%cName)
-                IF ( HcoState%Config%doVerbose ) IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+                IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
 
              ! Return with error
              ELSE
@@ -1390,7 +1390,7 @@ CONTAINS
           IF ( ERROR == -1 ) THEN
              msg = 'Negative scale factor found (ignored): '              // &
                     TRIM( ScalDct%cName )
-             IF ( HcoState%Config%doVerbose ) IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( msg, RC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( msg, RC )
           ENDIF
 
           ! Free pointer
@@ -1923,7 +1923,7 @@ CONTAINS
     UseLL = MIN( MAX(useLL,1), SIZE(Arr3D,3) )
     IF ( UseLL /= 1 ) THEN
        WRITE(MSG,*) "2D data was emitted above surface - this information might be lost: " , TRIM(cName), UseLL
-       IF ( HcoState%Config%doVerbose ) IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
     ENDIF
 
     ! Pass 3D data to 2D array

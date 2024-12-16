@@ -628,9 +628,8 @@ CONTAINS
           FileMsg = 'HEMCO (VOLCANO): REQUIRED FILE NOT FOUND'
        ENDIF
 
-       ! Write file status to stdout and the HEMCO log
+       ! Write file status to log
        IF ( Hcostate%amIRoot ) THEN
-          WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( ThisFile )
           WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
           CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
  300      FORMAT( a, ' ', a )
