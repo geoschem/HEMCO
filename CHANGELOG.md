@@ -18,8 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed HCO_MSG, HCO_WARNING, and HCO_ERROR to be independent of verbose and cores
 - Updated calls to HCO_MSG to send output to HcoState%Config%hcoLogLUN
 - Updated calls to HCO_WARNING to print to stdout unless related to units
-- Replaced usage of HCO_Is_Verb with HcoState_Config%doVerbose
-- Changed documentation in HCO_Error_Mod.F90 to reflect changes in this version
+- Replaced usage of HCO_IsVerb with HcoState_Config%doVerbose
+- Changed documentation in HCO_Error_Mod.F90 to summarize error and log handling in HEMCO
 
 ### Fixed
 - Fixed excessive prints when using MPI
