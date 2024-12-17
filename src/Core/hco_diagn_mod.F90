@@ -1169,7 +1169,7 @@ CONTAINS
 !       RETURN
        ThisDiagn%cName = trim(cName) // '_a'
        MSG = 'Diagnostic name found more than once. Changed from ' // trim(cname) // ' to ' // trim(ThisDiagn%cName)
-       IF ( HcoState%Config%amIRoot ) CALL HCO_WARNING( MSG, LUN=HcoState%Config%hcoLogLUN )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
     ENDIF
 
     !-----------------------------------------------------------------------
