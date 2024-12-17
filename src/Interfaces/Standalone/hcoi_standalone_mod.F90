@@ -288,7 +288,7 @@ CONTAINS
     !======================================================================
     IF ( am_I_Root ) THEN
        CALL HCO_LogFile_Open( HcoConfig%Err, HcoConfig%doVerbose, RC=RC, &
-            HcoConfig%hcoLogLUN=logLUN )
+            logLUN=HcoConfig%hcoLogLUN )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in routine "HCO_Logfile_Open_Readfile!"'
           CALL HCO_Error( ErrMsg, RC, ThisLoc )
@@ -566,10 +566,9 @@ CONTAINS
        ! Write to logfile and standard output (skip for dry-run)
        IF ( notDryRun ) THEN
           WRITE( Msg, 100 ) YR, MT, DY, HR, MN, SC
-100       FORMAT( 'Calculate emissions at ', i4,  '-', i2.2 ,'-', i2.2,' ',  &
+100       FORMAT( 'Calculating emissions at ', i4,  '-', i2.2 ,'-', i2.2,' ',  &
                                              i2.2,':', i2.2, ':', i2.2      )
-          CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
-          WRITE(*,*) TRIM( MSG )
+          CALL HCO_MSG(Msg)
        ENDIF
 
        ! ================================================================
@@ -1546,18 +1545,18 @@ CONTAINS
 
     ! Write grid information to log-file
     WRITE(Msg,*) 'HEMCO grid definitions:'
-    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
+    CALL HCO_MSG(Msg)
     
     WRITE(MSG,*) ' --> Number of longitude cells: ', NX
-    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
+    CALL HCO_MSG(Msg)
     WRITE(MSG,*) ' --> Number of latitude cells : ', NY
-    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
+    CALL HCO_MSG(Msg)
     WRITE(MSG,*) ' --> Number of levels         : ', NZ
-    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
+    CALL HCO_MSG(Msg)
     WRITE(MSG,*) ' --> Lon range [deg E]        : ', XMIN, XMAX
-    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
+    CALL HCO_MSG(Msg)
     WRITE(MSG,*) ' --> Lat range [deg N]        : ', YMIN, YMAX
-    CALL HCO_MSG(Msg,LUN=HcoState%Config%stdLogLUN)
+    CALL HCO_MSG(Msg)
 
     ! Cleanup
     IF ( ALLOCATED(AP) ) DEALLOCATE(AP)
@@ -1732,7 +1731,7 @@ CONTAINS
 
     ENDDO !I
 
-    CALL HCO_MSG(SEP1='-',LUN=HcoState%Config%stdLogLUN))
+    CALL HCO_MSG('',SEP1='-')
 
     ! Return w/ success
     RC = HCO_SUCCESS
