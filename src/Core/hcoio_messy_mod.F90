@@ -326,7 +326,7 @@ MODULE HCOIO_MESSY_MOD
     IF ( SameGrid ) THEN
        MSG = 'Input grid seems to match output grid. ' // &
              'No regridding is performed: ' // TRIM(Lct%Dct%cName)
-       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
 
        ! For every time slice...
        DO I = 1, NTIME

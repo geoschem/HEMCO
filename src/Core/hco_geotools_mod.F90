@@ -1167,7 +1167,7 @@ CONTAINS
                    'This may affect the accuracy of vertical grid '     // &
                    'quantities. It is recommended you provide PSFC via '// &
                    'the model-HEMCO interface or the HEMCO configuration file!'
-             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
           ENDIF
 
           ! Verbose
@@ -1316,14 +1316,14 @@ CONTAINS
                    'some extensions to fail. HEMCO tries to calculate '   // &
                    'ZSFC from surface pressure and air temperature, but ' // &
                    'at least one of these variables seem to be missing.'
-             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
           ENDIF
           IF ( .NOT. FoundBXHEIGHT .AND. FIRST .AND. HcoState%amIRoot ) THEN
              MSG = 'Cannot set boxheights BXHEIGHT_M. This may cause '      // &
                    'some extensions to fail. HEMCO tries to calculate '     // &
                    'BXHEIGHT from pressure edges and air temperature, but ' // &
                    'at least one of these variables seem to be missing.'
-             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
           ENDIF
        ENDIF
     ENDIF

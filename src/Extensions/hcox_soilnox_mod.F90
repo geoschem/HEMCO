@@ -605,7 +605,7 @@ CONTAINS
           Inst%GWET_PREV = 0.0_sp
           IF ( HcoState%amIRoot ) THEN
              ErrMsg = 'Cannot find GWET_PREV restart variable - initialized to 0.0!'
-             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  ErrMsg, RC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( ErrMsg )
           ENDIF
        ENDIF
 
@@ -621,7 +621,7 @@ CONTAINS
           Inst%PFACTOR = 1.0_sp
           IF ( HcoState%amIRoot ) THEN
              ErrMsg = 'Cannot find PFACTOR restart variable - initialized to 1.0!'
-             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  ErrMsg, RC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( ErrMsg )
           ENDIF
        ENDIF
 
@@ -637,7 +637,7 @@ CONTAINS
           Inst%DRYPERIOD = 0.0_sp
           IF ( HcoState%amIRoot ) THEN
              ErrMsg = 'Cannot find DRYPERIOD restart variable - initialized to 0.0!'
-             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  ErrMsg, RC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( ErrMsg )
           ENDIF
        ENDIF
 

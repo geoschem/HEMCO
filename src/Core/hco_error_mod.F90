@@ -255,26 +255,21 @@ CONTAINS
 ! !IROUTINE: HCO_Warning
 !
 ! !DESCRIPTION: Subroutine HCO_Warning prompts a warning message without
-! forcing HEMCO to stop, i.e. return code is set to HCO_SUCCESS. Default
-! destination is stdout unless optional LUN argument is passed.
-! This subroutine is independent of verbose settings and will print from
-! all threads unless called within an if block limiting it to verbose
-! and/or root.
+! forcing HEMCO to stop. Default destination is stdout unless optional LUN
+! argument is passed. This subroutine is independent of verbose settings and
+! will print from all threads unless called within an if block limiting it
+! to verbose and/or root.
 !\\
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_Warning( ErrMsg, RC, THISLOC, LUN )
+  SUBROUTINE HCO_Warning( ErrMsg, THISLOC, LUN )
 !
 ! !INPUT PARAMETERS"
 !
     CHARACTER(LEN=*), INTENT(IN   )            :: ErrMsg
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: THISLOC
     INTEGER,          INTENT(IN   ), OPTIONAL  :: LUN
-!
-! !INPUT/OUTPUT PARAMETERS:
-!
-    INTEGER,          INTENT(INOUT)            :: RC
 !
 ! !REVISION HISTORY:
 !  23 Sep 2013 - C. Keller - Initialization
@@ -305,9 +300,6 @@ CONTAINS
        MSG = '--> LOCATION: ' // TRIM(THISLOC)
        WRITE( hcoLogLUN, '(a)' ) TRIM(MSG)
     ENDIF
-
-    ! Return w/ success
-    RC = HCO_SUCCESS
 
   END SUBROUTINE HCO_Warning
 !EOC

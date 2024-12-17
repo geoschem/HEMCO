@@ -640,25 +640,24 @@ CONTAINS
     ! WARNING: Rn tracer is not found!
     IF ( Inst%IDTRn222 <= 0 .AND. HcoState%amIRoot ) THEN
        IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  &
-                         'Cannot find Rn222 tracer in list of species!', RC )
+                         'Cannot find Rn222 tracer in list of species!' )
     ENDIF
 
     ! WARNING: Be7 tracer is not found
     IF ( Inst%IDTBe7 <= 0 .AND. HcoState%amIRoot ) THEN
        IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  &
-                         'Cannot find Be7 tracer in list of species!', RC )
+                         'Cannot find Be7 tracer in list of species!' )
     ENDIF
 
     ! WARNING: Be10 tracer is not found
     IF ( Inst%IDTBe10 <= 0 .AND. HcoState%amIRoot ) THEN
        IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  &
-                        'Cannot find Be10 tracer in list of species!', RC )
+                        'Cannot find Be10 tracer in list of species!' )
     ENDIF
 
     ! ERROR: No tracer defined
     IF ( Inst%IDTRn222 <= 0 .AND. Inst%IDTBe7 <= 0 .AND. Inst%IDTBe10 <= 0) THEN
-       CALL HCO_ERROR( &
-                       'Cannot use RnPbBe extension: no valid species!', RC )
+       CALL HCO_ERROR( 'Cannot use RnPbBe extension: no valid species!', RC )
     ENDIF
 
     ! Activate met fields required by this extension

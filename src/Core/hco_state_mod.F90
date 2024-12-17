@@ -202,7 +202,7 @@ CONTAINS
 
     ! Check if already allocated
     IF ( ASSOCIATED(HcoState)) THEN
-       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( 'HcoState already allocated!', RC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( 'HcoState already allocated!' )
        RETURN
     ENDIF
     ALLOCATE ( HcoState )

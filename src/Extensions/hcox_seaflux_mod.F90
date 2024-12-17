@@ -564,7 +564,7 @@ CONTAINS
     ! Warning?
     IF ( WARN /= OLDWARN ) THEN
        WRITE(MSG,*) 'Temperature limited to ', TMAX, 'K'
-       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  MSG, RC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
     ENDIF
 
     ! Leave w/ success

@@ -384,7 +384,7 @@ CONTAINS
        ELSE
           WRITE(MSG,*) 'Unrecognized output time stamp location: ', &
              TRIM(OutTimeStampChar), ' - will use default (start)'
-          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
           OutTimeStamp = HcoDiagnStart
        ENDIF
     ENDIF
@@ -495,7 +495,7 @@ CONTAINS
        ELSE
           WRITE(MSG,*) 'Unrecognized output time stamp location: ', &
              TRIM(OutTimeStampChar), ' - will use default (start)'
-          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
           OutTimeStamp = HcoDiagnStart
        ENDIF 
     ENDIF
@@ -1169,7 +1169,7 @@ CONTAINS
 !       RETURN
        ThisDiagn%cName = trim(cName) // '_a'
        MSG = 'Diagnostic name found more than once. Changed from ' // trim(cname) // ' to ' // trim(ThisDiagn%cName)
-       IF ( HcoState%Config%amIRoot ) CALL HCO_WARNING( msg, LUN=HcoState%Config%hcoLogLUN )
+       IF ( HcoState%Config%amIRoot ) CALL HCO_WARNING( MSG, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     !-----------------------------------------------------------------------
@@ -1930,7 +1930,7 @@ CONTAINS
              MSG = 'You try to update a container that holds a '  // &
                   'pointer to data - this should never happen! ' // &
                   TRIM(ThisDiagn%cName)
-             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
              CYCLE
           ENDIF
 
@@ -3137,7 +3137,7 @@ CONTAINS
        ! Prompt warning. Only disply if verbose.
        MSG = 'Diagnostics counter is zero - return empty array: ' // &
              TRIM(DgnCont%cName)
-       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -3531,7 +3531,7 @@ CONTAINS
        MSG = 'Target diagnostics has AutoFill flag of 1 - reset to 0: ' &
            // TRIM(DgnCont%cName)
        IF ( PRESENT(HcoState) ) THEN
-          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
        ELSE
           WRITE(*,*) 'HEMCO WARNING: ', TRIM(MSG)
        ENDIF
@@ -3644,7 +3644,7 @@ CONTAINS
        MSG = 'Target diagnostics has autofill flag of 1 - reset to 0: ' &
            // TRIM(DgnCont%cName)
        IF ( PRESENT(HcoState) ) THEN
-          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
        ELSE
           WRITE(*,*) 'HEMCO WARNING: ', TRIM(MSG)
        ENDIF

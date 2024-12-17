@@ -214,7 +214,7 @@ CONTAINS
              WHERE ( Arr3D < 0.0_hp ) Arr3D = 0.0_hp
              IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( &
                 'Negative values found - set to zero!', &
-                RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
+                THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
 
           ! Negative flag is 0: return w/ error
           ELSE
@@ -318,7 +318,7 @@ CONTAINS
              WHERE ( Arr3D < 0.0_sp ) Arr3D = 0.0_sp
              IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( &
                'Negative values found - set to zero!', &
-                RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
+                THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
 
           ! Negative flag is 0: return w/ error
           ELSE
@@ -420,7 +420,7 @@ CONTAINS
              WHERE ( Arr2D < 0.0_hp ) Arr2D = 0.0_hp
              IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( &
                'Negative values found - set to zero!', &
-                RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
+                THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
 
           ! Negative flag is 0: return w/ error
           ELSE
@@ -523,7 +523,7 @@ CONTAINS
              WHERE ( Arr2D < 0.0_sp ) Arr2D = 0.0_sp
              IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( &
                'Negative values found - set to zero!', &
-                RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
+                THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
 
           ! Negative flag is 0: return w/ error
           ELSE
@@ -634,7 +634,7 @@ CONTAINS
              iVal = 0.0_hp
              IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( &
                'Negative values found - set to zero!', &
-                RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
+                THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
 
           ! Negative flag is 0: return w/ error
           ELSE
@@ -736,7 +736,7 @@ CONTAINS
              iVal = 0.0_sp
              IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( &
                'Negative values found - set to zero!', &
-                RC, THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
+                THISLOC = 'HCO_EmisAdd (HCO_FLUXARR_MOD.F90)' )
 
           ! Negative flag is 0: return w/ error
           ELSE

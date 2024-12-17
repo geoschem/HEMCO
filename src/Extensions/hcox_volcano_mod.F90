@@ -756,7 +756,7 @@ CONTAINS
 
        ELSE
           WRITE(MSG,*) 'No volcano data found for year/mm/dd: ', YYYY, MM, DD
-          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  MSG, THISLOC=LOC )
        ENDIF
 
        ! Now read records

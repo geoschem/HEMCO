@@ -1018,7 +1018,7 @@ CONTAINS
       IF ( Inst%IDTO3 <= 0 ) THEN
          tmpID = HCO_GetHcoID('O3', HcoState )
          MSG = 'O3 not produced/removed in PARANOX'
-         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
       ELSE
          tmpID = Inst%IDTO3
       ENDIF
@@ -1026,7 +1026,7 @@ CONTAINS
          Inst%MW_O3 = HcoState%Spc(tmpID)%MW_g
       ELSE
          MSG = 'Use default O3 molecular weight of 48g/mol'
-         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
          Inst%MW_O3 = 48.0_dp
       ENDIF
 
@@ -1034,7 +1034,7 @@ CONTAINS
       IF ( Inst%IDTNO <= 0 ) THEN
          tmpID = HCO_GetHcoID('NO', HcoState )
          MSG = 'NO not produced in PARANOX'
-         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
       ELSE
          tmpID = Inst%IDTNO
       ENDIF
@@ -1042,7 +1042,7 @@ CONTAINS
          Inst%MW_NO = HcoState%Spc(tmpID)%MW_g
       ELSE
          MSG = 'Use default NO molecular weight of 30g/mol'
-         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
          Inst%MW_NO = 30.0_dp
       ENDIF
 
@@ -1050,7 +1050,7 @@ CONTAINS
       IF ( Inst%IDTNO2 <= 0 ) THEN
          tmpID = HCO_GetHcoID('NO2', HcoState )
          MSG = 'NO2 not produced in PARANOX'
-         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
       ELSE
          tmpID = Inst%IDTNO2
       ENDIF
@@ -1058,7 +1058,7 @@ CONTAINS
          Inst%MW_NO2 = HcoState%Spc(tmpID)%MW_g
       ELSE
          MSG = 'Use default NO2 molecular weight of 46g/mol'
-         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
          Inst%MW_NO2 = 46.0_dp
       ENDIF
 
@@ -1066,7 +1066,7 @@ CONTAINS
       IF ( Inst%IDTHNO3 <= 0 ) THEN
          tmpID = HCO_GetHcoID('HNO3', HcoState )
          MSG = 'HNO3 not produced/removed in PARANOX'
-         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
       ELSE
          tmpID = Inst%IDTHNO3
       ENDIF
@@ -1074,7 +1074,7 @@ CONTAINS
          Inst%MW_HNO3 = HcoState%Spc(tmpID)%MW_g
       ELSE
          MSG = 'Use default HNO3 molecular weight of 63g/mol'
-         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
          Inst%MW_HNO3 = 63.0_dp
       ENDIF
 
@@ -1367,7 +1367,7 @@ CONTAINS
       IF ( HcoState%amIRoot ) THEN
          MSG = ' Cannot properly store SUNCOS values ' // &
                ' because chemistry time step is more than 60 mins!'
-         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, RC )
+         IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
       ENDIF
    ENDIF
 
