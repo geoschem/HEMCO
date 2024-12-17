@@ -6,92 +6,72 @@
 ! !MODULE: hco_error_mod.F90
 !
 ! !DESCRIPTION: Module HCO\_Error\_Mod contains routines and variables
-! for error handling and logfile messages in HEMCO. It acontains
+! for error handling and logfile messages in HEMCO. It alse contains
 ! definitions of some globally used parameters, such as single/double
-! precision as well as the HEMCO precision which can be either. The HEMCO
-! precision is used for almost all HEMCO internal data arrays and can be
-! changed if required.
+! precision as well as the HEMCO precision which can be either single or
+! couble. The HEMCO precision is used for almost all HEMCO internal data
+! arrays and can be changed if required.
 !\\
 !\\
-! All HEMCO error variables are organized in an object of derived type
+! HEMCO error variables are organized in an object of derived type
 ! HcoErr. The HcoErr object is generally referred to as Err throughout
-! HEMCO. The Err object is a component of the HEMCO configuration object
-! which it type ConfigObj (see module hco_types_mod.F90), and is referenced
-! as HcoState%Config%Err. This design allows the invocation of multiple
-! independent HEMCO instances at the same time which may have different
-! HEMCO error settings.
+! HEMCO and this submodule. The Err object is a component of the HEMCO
+! configuration object which is type ConfigObj (see module
+! hco_types_mod.F90), and is referenced as HcoState%Config%Err. This
+! design allows the invocation of multiple independent HEMCO instances
+! at the same time which may have different HEMCO error settings.
 !
 ! The Err object is initialized via subroutine HCO_ERROR_SET, called
 ! when reading section 'SETTINGS' of the HEMCO configuration file
 ! (subroutine Config_ReadFile in hco_config_mod.F90). If writing to
 ! a dedicated log file then it is further updated upon opening the file
-! in HCO_LOGFILE_OPEN Once instantiated, the Err object is stored in
+! in HCO_LOGFILE_OPEN. Once instantiated, the Err object is stored in
 ! HcoState%Config%Err. Configurable run-time error settings set in
 ! HEMCO_Config.rc are stored in the Err object. Look for the following
 ! three settings in HEMCO_Config.rc:
 !
 ! 1. LogFile:
 !     Use the LogFile setting in HEMCO_Config.rc to specify where most HEMCO
-!     log prints will go. The LogFile setting is stored in
-!     Err%LogFile. If set to an asterisk (*) then HEMCO will
+!     log prints will go. If set to an asterisk (*) then HEMCO will
 !     print to stdout. If a filename is provided then HEMCO will open and
 !     write to that file. If using CESM then LogFile is ignored and it is
 !     set to CAM log atm.log.
 !
-!     The logical unit number (LUN) for Err%LogFile is stored
-!     in the Err object as Err%Lun. It is set to 6 if printing to
-!     stdout, is set to a free LUN if using a file specified in
-!     HEMCO_Config.rc, or is set to a passed LUN retrieved from a
-!     parent model, e.g. CESM.
-!
-!     Note that HEMCO can still print to log prior the initialization of
-!     the Err object. The LUN for prints that do not rely on the Err
-!     object is stored in HcoState%Config%hcoLogLUN outside of this module.
-!     Having an alternative LUN for prints allows error handling at all times
-!     within HEMCO. For this reason, all of the error, message, and warning
-!     subroutines are implemented as Fortran procedures, with two
-!     implementations for each: one passing the Err object as an
-!     argument, and the other omitting it. Prints for the former go to
-!     HcoState%Config%Err%LUN. Prints for the latter go to stdout unless an
-!     LUN is passed as an optional argument, e.g. HcoState%Config%hcoLogLUN.
+!     The logical unit number (LUN) is stored in Err%LogFile as well as
+!     in HcoState%Config%hcoLogLUN. Generally Err%LogFile is used for
+!     when a dedicated log file is specified in HEMCO_Config.rc, e.g.
+!     HEMCO.log, such as when opening and closing the file. If opening
+!     a new file then the new LUN is passed back from HCO_LOGFILE_OPEN
+!     to update HcoState%Config%hcoLogLUN for use anywhere in HEMCO.
+!     That variable can then be passed to all HEMCO message and error
+!     handling subroutines in this module to direct messages to that file.
+!     If not passed then messages are sent to stdout.
 !
 ! 2. Verbose:
-!     Logical for whether to print to log. If False then some prints will
-!     be suppressed.
+!     Logical for whether to print to log.
 !
 ! 3. VerboseOnCores:
-  !     Logical for whether to update verbose to be true for all cores or
-!     only root. This setting has not impact on GC-Classic prints and
+!     Logical for whether to update verbose to be true for all cores or
+!     only root. This setting has no impact on GC-Classic prints and
 !     only is relevant for models using MPI, e.g. GCHP. Set to 'root'
 !     in HEMCO_Config.rc for verbose only on the root thread. Set to
 !     'all' to be verbose on all cores.
 !
 ! Settings for Verbose and VerboseOnCores are used to set
-! HcoState%Config%Err%doVerbose when the Err object is initialized.
-! The verbose setting can be checked anywhere in HEMCO using submodule
-! HCO_IsVerb. That subroutine will return false if Err does not exist.
+! HcoState%Config%Err%doVerbose (for use locally within this module)
+! as well as HcoState%Config%doVerbose for global use in HEMCO.
 !
-! Note that there are different rules for whether to print based on
-! whether you call HCO_ERROR, HCO_WARNING, or HCO_MSG. The behavior
-! is as follows:
-!
-! 1. HCO_ERROR
-!     - Prints to stdout unless LUN is passed
-!     - Always prints from all cores
-!
-! 2. HCO_WARNING
-!     - Prints to stdout unless LUN is passed
-!     - Always prints if root
-!
-! 4. HCO_MSG with Err passed
-!     - Prints to HcoState%Config%Err%LUN, or stdout if not valid
-!     - Prints only if root and verbose
-! ewl proposal: print based on verbose
-!
-! 5. HCO_MSG without Err passed
-!     - Prints to stdout unless LUN is passed
-!     - Always prints from all cores
-! ewl proposal: print based on verbose
+! There are three message subroutines in this module: HCO_ERROR,
+! HCO_WARNING, and HCO_MSG. All will print regardless of verbose
+! settings unless called with an if HcoState%Config%doVerbose block.
+! If using MPI then all messages will be printed by all cores unless
+! enclosed in an HcoState%Config%doVerbose and/or
+! HcoState%Config%amIRoot block. When using these subroutines
+! we recommend the following:
+!  1) Never limit HCO_ERROR prints to root thread or if verbose.
+!  2) Limit HCO_WARNING and HCO_MSG messages to root unless debugging.
+!  3) Decide whether to limit HCO_WARNING and HCO_MSG messages to verbose
+!     on a case-by-case basis.
 !
 ! !INTERFACE:
 !
@@ -150,7 +130,7 @@ MODULE HCO_Error_Mod
 #endif
 
   ! HEMCO version number.
-  CHARACTER(LEN=12), PARAMETER, PUBLIC :: HCO_VERSION = '3.10.0'
+  CHARACTER(LEN=12), PARAMETER, PUBLIC :: HCO_VERSION = '3.9.1'
 
 !
 ! !REVISION HISTORY:
@@ -167,7 +147,6 @@ MODULE HCO_Error_Mod
      LOGICAL                     :: IsRoot     ! Is this root?
      LOGICAL                     :: LogIsOpen  ! Is log open?
      LOGICAL                     :: doVerbose  ! Verbose print?
-     INTEGER                     :: nWarnings  ! Warning counter
      INTEGER                     :: CurrLoc    ! Call depth used for traceback
      CHARACTER(LEN=255), POINTER :: Loc(:)     ! Location array used for traceback
      CHARACTER(LEN=255)          :: LogFile    ! Log file string (*=stdout)
@@ -188,11 +167,13 @@ CONTAINS
 !
 ! !IROUTINE: HCO_Error
 !
-! !DESCRIPTION: Subroutine HCO\_Error prompts an error message and sets RC to
-! HCO\_FAIL. Note that this routine does not stop a run, but it will cause a
-! stop at higher level (when RC gets evaluated). Error messages are
-! printed by every core regardless of verbose settings. Messages are printed
-! to stdout unless optional argument LUN is passed.
+! !DESCRIPTION: Subroutine HCO_Error prompts an error message and sets RC to
+! HCO_FAIL. Note that this routine does not stop a run, but it will cause a
+! stop at a higher level when RC gets evaluated. Messages are printed
+! to stdout unless optional argument LUN is passed. This subroutine is
+! independent of verbose settings and will print from all threads
+! unless called within an if block limiting it to verbose and/or root.
+! Limiting error prints to verbose and/or root is not recommended.
 !\\
 !\\
 ! !INTERFACE:
@@ -273,10 +254,12 @@ CONTAINS
 !
 ! !IROUTINE: HCO_Warning
 !
-! !DESCRIPTION: Subroutine HCO\_Warning prompts a warning message without
-! forcing HEMCO to stop, i.e. return code is set to HCO\_SUCCESS. It only
-! prints from root thread. Default destination is stdout unless optional
-! LUN argument is passed.
+! !DESCRIPTION: Subroutine HCO_Warning prompts a warning message without
+! forcing HEMCO to stop, i.e. return code is set to HCO_SUCCESS. Default
+! destination is stdout unless optional LUN argument is passed.
+! This subroutine is independent of verbose settings and will print from
+! all threads unless called within an if block limiting it to verbose
+! and/or root.
 !\\
 !\\
 ! !INTERFACE:
@@ -335,11 +318,13 @@ CONTAINS
 !
 ! !IROUTINE: HCO_MSG
 !
-! !DESCRIPTION: Subroutine HCO\_MSG prints message to log. Optional
+! !DESCRIPTION: Subroutine HCO_MSG prints message to log. Optional
 ! Sep1 and Sep2 denote line delimiters before and after the message,
-! respectively. if optional argument logLUN is passed then message
-! is printed there. Otherwise message is printed to stdout. If the
-! This subroutine is independent of verbose settings.
+! respectively. If optional argument logLUN is passed then message
+! is printed to that file. Otherwise message is printed to stdout.
+! This subroutine is independent of verbose settings and will print from
+! all threads unless called within an if block limiting it to verbose
+! and/or root.
 !\\
 !\\
 ! !INTERFACE:
@@ -377,7 +362,7 @@ CONTAINS
        WRITE( hcoLogLUN,'(a)' ) REPEAT( SEP2, 79 )
     ENDIF
 
-  END SUBROUTINE HCO_Msg
+  END SUBROUTINE HCO_MSG
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -386,13 +371,13 @@ CONTAINS
 !
 ! !IROUTINE: HCO_Enter
 !
-! !DESCRIPTION: Subroutine HCO\_Enter is called upon entering a routine.
+! !DESCRIPTION: Subroutine HCO_Enter is called upon entering a routine.
 ! It organizes the traceback handling. It is recommended to call this
 ! routine for 'big' routines but NOT for routines/functions that are
 ! frequently called, e.g. inside of loops!
 !\\
 !\\
-! Note that all subroutines calling HCO\_Enter must also call HCO\_Leave!
+! Note that all subroutines calling HCO_Enter must also call HCO_Leave!
 !\\
 !\\
 ! !INTERFACE:
@@ -460,13 +445,13 @@ CONTAINS
 !
 ! !IROUTINE: HCO_Leave
 !
-! !DESCRIPTION: Subroutine HCO\_Leave is called upon leaving a routine.
+! !DESCRIPTION: Subroutine HCO_Leave is called upon leaving a routine.
 ! It organizes the traceback handling. It is recommended to call this
 ! routine for 'big' routines but NOT for routines/functions that are
 ! frequently called, e.g. inside of loops!
 !\\
 !\\
-! Note that all subroutines calling HCO\_Leave must also call HCO\_Enter!
+! Note that all subroutines calling HCO_Leave must also call HCO_Enter!
 !\\
 !\\
 ! !INTERFACE:
@@ -525,9 +510,9 @@ CONTAINS
 !
 ! !IROUTINE: HCO_Error_Set
 !
-! !DESCRIPTION: Subroutine HCO\_Error\_Set defines the HEMCO error
+! !DESCRIPTION: Subroutine HCO_Error_Set defines the HEMCO error
 ! settings. This routine is called at the beginning of a HEMCO
-! simulation. Its input parameter are directly taken from the
+! simulation. Its input parameters are directly derived from the
 ! HEMCO configuration file.
 !\\
 !\\
@@ -587,7 +572,6 @@ CONTAINS
     ! Init misc. values
     Err%FirstOpen = .TRUE.
     Err%CurrLoc   = 0
-    Err%nWarnings = 0
 
     ! If Logfile is set to '*', set hcoLogLUN to 6 (writes to default, i.e. stdout)
     ! If optional LUN is passed, set hcoLogLUN to this (assume log is open).
@@ -616,7 +600,8 @@ CONTAINS
 !
 ! !IROUTINE: HCO_Error_Final
 !
-! !DESCRIPTION: Subroutine HCO\_Error\_Final finalizes the error type.
+! !DESCRIPTION: Subroutine HCO_Error_Final finalizes the error object including
+! closing a dedicated HEMCO log file if using one.
 !\\
 !\\
 ! !INTERFACE:
@@ -641,15 +626,15 @@ CONTAINS
     ! HCO_ERROR_FINAL begins here
     !======================================================================
 
-    ! Print summary
-    MSG = ' '
-    CALL HCO_MSG ( MSG, LUN=Err%LUN )
-    MSG = 'HEMCO ' // TRIM(HCO_VERSION) // ' FINISHED.'
-    CALL HCO_MSG ( MSG, SEP1='-', LUN=Err%LUN )
-
-    WRITE(MSG,'(A16,I1,A12,I6)') &
-       'Warnings: ', Err%nWarnings
-    CALL HCO_MSG ( MSG, SEP2='-', LUN=Err%LUN )
+    ! Print message if verbose and the Err object still exists
+    IF ( ASSOCIATED(Err) ) THEN
+       IF ( Err%doVerbose ) THEN
+          MSG = ' '
+          CALL HCO_MSG ( MSG, LUN=Err%LUN )
+          MSG = 'HEMCO ' // TRIM(HCO_VERSION) // ' FINISHED.'
+          CALL HCO_MSG ( MSG, SEP1='-', LUN=Err%LUN )
+       ENDIF
+    ENDIF
 
 #ifndef MODEL_CESM
     ! Close the log file
@@ -819,7 +804,8 @@ CONTAINS
 !
 ! !IROUTINE: HCO_LogFile_Close
 !
-! !DESCRIPTION: Subroutine HCO\_LOGFILE\_CLOSE closes the HEMCO logfile.
+! !DESCRIPTION: Subroutine HCO_LOGFILE_CLOSE closes the HEMCO logfile if
+! a dedicated HEMCO log file is used.
 !\\
 !\\
 ! !INTERFACE:
