@@ -728,7 +728,7 @@
 
          WRITE(MSG,*) 'Global mass flux tuning factor: ',
      &                 Inst%FLX_MSS_FDG_FCT
-         CALL HCO_MSG(MSG,SEP2='-',HcoState%Config%HcoLogLUN )
+         CALL HCO_MSG(MSG,SEP2='-',LUN=HcoState%Config%HcoLogLUN )
 
       ENDIF
 
