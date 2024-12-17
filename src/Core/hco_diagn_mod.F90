@@ -1168,8 +1168,8 @@ CONTAINS
 !       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
 !       RETURN
        ThisDiagn%cName = trim(cName) // '_a'
-       MSG = 'Changed Diagn name to ' // trim(ThisDiagn%cName)
-       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+       MSG = 'Diagnostic name found more than once. Changed from ' // trim(cname) // ' to ' // trim(ThisDiagn%cName)
+       IF ( HcoState%Config%amIRoot ) CALL HCO_WARNING( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     !-----------------------------------------------------------------------
