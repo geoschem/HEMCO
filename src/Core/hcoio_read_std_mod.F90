@@ -1135,7 +1135,9 @@ CONTAINS
 
        ! Prompt a warning if thisUnit is not recognized as unitless.
        ! Only do this if verbose since unitless is used to force bypass of unit conversion,
-       ! such as for reading non-emissions data, .e.g. restart file concentrations
+       ! such as for reading non-emissions data, .e.g. restart file concentrations.
+       ! Print this message to HEMCO log (if using) rather than standard out to avoid
+       ! cluttering the regular log file.
        IF ( Flag /= 0 .AND. HcoState%Config%doVerbose ) THEN
           MSG = 'Data is treated as unitless, but file attribute suggests ' // &
                'it is not: ' // TRIM(thisUnit) // '. File: ' // TRIM(srcFile)
@@ -1156,6 +1158,8 @@ CONTAINS
        ! with unit set in configuration file. For higher unit
        ! tolerances, prompt a level 3 warning. Only print the warning
        ! if verbose since most instances of unit mismatches are normal,
+       ! Print this message to HEMCO log (if using) rather than standard out to avoid
+       ! cluttering the regular log file.
        IF ( TRIM(Lct%Dct%Dta%OrigUnit) /= TRIM(thisUnit) ) THEN
           MSG = 'File units do not match: ' // TRIM(thisUnit) // &
                ' vs. ' // TRIM(Lct%Dct%Dta%OrigUnit)    // &

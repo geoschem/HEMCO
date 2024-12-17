@@ -72,6 +72,7 @@
 !  2) Limit HCO_WARNING and HCO_MSG messages to root unless debugging.
 !  3) Decide whether to limit HCO_WARNING and HCO_MSG messages to verbose
 !     on a case-by-case basis.
+!  4) Print warnings to standard output (do not pass log LUN)
 !
 ! !INTERFACE:
 !
