@@ -924,11 +924,7 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: SoilNOx (soil NOx emissions)'
-       IF ( HcoState%Config%doVerbose ) THEN
-          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
-       ENDIF
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
 
        ! Write all other messages as debug printout only
        WRITE(MSG,*) '   - NOx species            : ', TRIM(SpcNames(1)), Inst%IDTNO
@@ -942,7 +938,7 @@ CONTAINS
        WRITE(MSG,*) '   - Use fertilizer NOx     : ', Inst%LFERTILIZERNOX
        CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) '   - Fertilizer scale factor: ', Inst%FERT_SCALE
-       CALL HCO_MSG(MSG,SEP2='-',LUN=HcoState%Config%hcoLogLUN)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! ----------------------------------------------------------------------

@@ -374,11 +374,7 @@ CONTAINS
     ! Write the name of the extension regardless of the verbose settings
     IF ( HcoState%amIRoot ) THEN
        msg = 'Using HEMCO extension: Volcano (volcanic SO2 emissions)'
-       IF ( HcoState%Config%doVerbose ) THEN
-          CALL HCO_MSG( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
-       ENDIF
+       CALL HCO_MSG( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
     ENDIF
 
     ! Get species IDs.

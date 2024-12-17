@@ -641,11 +641,7 @@ CONTAINS
        ! Write the name of the extension regardless of the verbose setting
        msg = &
         'Using HEMCO extension: TOMAS_Jeagle (sea salt emissions for TOMAS)'
-       IF ( HcoState%Config%doVerbose ) THEN
-          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
-       ENDIF
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
     ENDIF
 
     ! Create Instance

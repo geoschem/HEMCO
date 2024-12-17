@@ -719,11 +719,7 @@
 
          ! Write the name of the extension regardless of the verbose setting
          msg = 'Using HEMCO extension: DustDead (dust mobilization)'
-         IF ( HcoState%Config%doVerbose ) THEN
-            CALL HCO_MSG( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
-         ELSE
-            CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN    ) ! w/o separator
-         ENDIF
+         CALL HCO_MSG( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
 
          ! Write all other messages as debug printout only
          IF ( Inst%ExtNrAlk > 0 ) THEN

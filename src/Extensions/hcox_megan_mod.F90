@@ -3551,11 +3551,7 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: MEGAN (biogenic emissions)'
-       IF ( HcoState%Config%doVerbose ) THEN
-          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN    ) ! w/o separator
-       ENDIF
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
 
        ! Write all other messages as debug printout only
        WRITE(MSG,*) '- Use offline biogenic VOCs? ', Inst%OFFLINE_BIOGENICVOC
