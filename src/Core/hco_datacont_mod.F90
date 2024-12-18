@@ -382,7 +382,6 @@ CONTAINS
 !
     INTEGER                   :: II
     TYPE(ListCont), POINTER   :: TmpLct
-    LOGICAL                   :: verbose
     CHARACTER(LEN=255)        :: MSG, LOC
 
     !======================================================================
@@ -400,9 +399,6 @@ CONTAINS
         RETURN
     ENDIF
 
-    ! Set verbose flag
-    verbose = HCO_IsVerb ( HcoState%Config%Err )
-
     ! Set # of data container in list
     HcoState%nnDataCont = ListCont_Length( List )
 
@@ -416,18 +412,18 @@ CONTAINS
 
     ! Leave if no emission fields defined
     IF ( HcoState%nnDataCont == 0 ) THEN
-       IF ( verbose ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) 'No emission fields defined!'
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
        RC = HCO_SUCCESS
        RETURN
     ENDIF
 
     ! verbose
-    IF ( verbose ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG,*) 'Create cID list: # of fields: ', HcoState%nnDataCont
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Allocate IDList

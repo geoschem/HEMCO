@@ -1000,78 +1000,74 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: SeaSalt (sea salt aerosol emissions)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
-       ENDIF
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
      
        ! Write all other messages as debug printout only
        IF ( HcoState%MarinePOA ) THEN
           MSG = 'Use marine organic aerosols option'
-          CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+          CALL HCO_MSG(MSG, SEP1='-', LUN=HcoState%Config%hcoLogLUN )
        ENDIF
 
        WRITE(MSG,*) 'Accumulation aerosol: ', TRIM(SpcNamesSS(1)),  &
                     ':', Inst%IDTSALA
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) ' - size range       : ', SALA_REDGE_um
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) 'Coarse aerosol      : ', TRIM(SpcNamesSS(2)),  &
                      ':', Inst%IDTSALC
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) ' - size range       : ', SALA_REDGE_um
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) ' - wind scale factor: ', Inst%WindScale
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 
        IF ( Inst%EmitSnowSS ) THEN
           WRITE(MSG,*) ' - Arctic Snow Salinity on FYI (psu): ', Inst%NSLNT_FYI
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Arctic Snow Salinity on MYI (psu): ', Inst%NSLNT_MYI
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Antarctic Snow Salinity on FYI (psu): ', Inst%SSLNT_FYI
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Antarctic Snow Salinity on FYI (psu): ', Inst%SSLNT_MYI
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Arctic Snow age (days): ', Inst%NAGE
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Antarctic Snow age(days): ', Inst%SAGE
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) ' - Number of particle per snowflake: ', Inst%NumP
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        WRITE(MSG,*) 'Accumulation Chloride: ', TRIM(SpcNamesSS(3)),  &
                     ':', Inst%IDTSALACL
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) 'Coarse Chloride: ', TRIM(SpcNamesSS(4)),  &
                     ':', Inst%IDTSALCCL
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) 'Accumulation Alkalinity: ', TRIM(SpcNamesSS(5)),  &
                     ':', Inst%IDTSALAAL
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) 'Coarse Alkalinity: ', TRIM(SpcNamesSS(6)),  &
                     ':', Inst%IDTSALCAL
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 
        IF ( Inst%CalcBrSalt ) THEN
           WRITE(MSG,*) 'BrSALA: ', TRIM(SpcNamesSS(7)), Inst%IDTBrSALA
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) 'BrSALC: ', TRIM(SpcNamesSS(8)), Inst%IDTBrSALC
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) 'Br- mass content: ', Inst%BrContent
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        IF ( HcoState%MarinePOA ) THEN
           WRITE(MSG,*) 'Hydrophobic marine organic aerosol: ',        &
                        TRIM(SpcNamesSS(9)), ':', Inst%IDTMOPO
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 
           WRITE(MSG,*) 'Hydrophilic marine organic aerosol: ',        &
                        TRIM(SpcNamesSS(10)), ':', Inst%IDTMOPI
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ENDIF
 

@@ -520,7 +520,7 @@ CONTAINS
        ELSE
           MSG = 'Cannot determine unit conversion factor for mass - ' // &
                 'species molecular weight is not defined!'
-          CALL HCO_MSG(HcoConfig%Err,MSG)
+          CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
           RETURN
        ENDIF
     ENDIF

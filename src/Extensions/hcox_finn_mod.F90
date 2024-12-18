@@ -345,7 +345,7 @@ CONTAINS
                                 cYYYY=cYYYY, cMM=cMM, cDD=cDD, RC=RC )
              IF ( RC/=HCO_SUCCESS ) RETURN
              WRITE(MSG, 100) cYYYY, cMM, cDD
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 100          FORMAT( 'FINN daily emissions for year, month, day: ', &
                       i4, '/', i2.2, '/', i2.2 )
           ENDIF
@@ -355,7 +355,7 @@ CONTAINS
                                 cYYYY=cYYYY, cMM=cMM, LMD=NDAYS, RC=RC)
              IF ( RC/=HCO_SUCCESS ) RETURN
              WRITE(MSG, 110) cYYYY, cMM
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 110          FORMAT( 'FINN monthly emissions for year, month: ', &
                       i4, '/', i2.2 )
           ENDIF
@@ -531,7 +531,7 @@ CONTAINS
                 TOTAL = SUM(SpcArr(:,:)*HcoState%Grid%AREA_M2%Val(:,:))
                 TOTAL = TOTAL * 86400.0_hp * 1e-9_hp
                 WRITE(MSG, 120) HcoState%Spc(HcoID)%SpcName, TOTAL
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 120             FORMAT( 'SUM biomass ', a4,1x,': ', f11.4,1x,'[Tg]' )
              ENDIF
           ELSE
@@ -539,7 +539,7 @@ CONTAINS
                 TOTAL = SUM(SpcArr(:,:)*HcoState%Grid%AREA_M2%Val(:,:))
                 TOTAL = TOTAL * NDAYS * 86400.0_hp * 1e-9_hp
                 WRITE(MSG, 130) HcoState%Spc(HcoID)%SpcName, TOTAL
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 130             FORMAT( 'SUM biomass ', a4,1x,': ', f11.4,1x,'[Tg]' )
              ENDIF
           ENDIF
@@ -877,15 +877,11 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: FINN (biomass burning)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
-       ENDIF
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
 
        ! Other print statements will only be written as debug output
        WRITE(MSG,*) '   - Use daily data          : ', Inst%UseDay
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     ! Get HEMCO species IDs of all species specified in configuration file
@@ -1016,11 +1012,11 @@ CONTAINS
                 IF ( HcoState%amIRoot ) THEN
                    MSG = '   - FINN species ' // TRIM(Inst%FINN_SPEC_NAME(N)) // &
                          '     will be emitted as ' // TRIM(Inst%SpcNames(Inst%nSpc))
-                   CALL HCO_MSG(HcoState%Config%Err,MSG )
+                   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 WRITE(MSG,*) '     --> Uniform scale factor : ', Inst%SpcScal(Inst%nSpc)
-                CALL HCO_MSG(HcoState%Config%Err,MSG )
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 WRITE(MSG,*) '     --> Scale field          : ', TRIM(Inst%SpcScalFldNme(Inst%nSpc))
-                CALL HCO_MSG(HcoState%Config%Err,MSG )
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 ENDIF
 
                 ! Reset variables
@@ -1060,7 +1056,7 @@ CONTAINS
                       Inst%FINN_EMFAC(N,:) = AdjFact / EMFAC_IN(M,:)
                       IF ( HcoState%amIRoot ) THEN
                          WRITE( MSG, 200 ) TRIM( Inst%FINN_SPEC_NAME(N))
-                         CALL HCO_MSG(HcoState%Config%Err,MSG )
+                         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                       ENDIF
                       EXIT
 
@@ -1082,7 +1078,7 @@ CONTAINS
                       IS_NMOC = .TRUE.
                       IF ( HcoState%amIRoot ) THEN
                          WRITE( MSG, 201 ) TRIM( Inst%FINN_SPEC_NAME(N) )
-                         CALL HCO_MSG(HcoState%Config%Err,MSG )
+                         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                       ENDIF
                       EXIT
                    ENDIF

@@ -157,7 +157,7 @@ CONTAINS
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
     ENDIF
-    verb = HCO_IsVerb( HcoState%Config%Err )
+    verb = HcoState%Config%doVerbose
 
     ! Initialize local variables for safety's sake
     nTime      =  0
@@ -197,17 +197,17 @@ CONTAINS
     IF ( (refYear <= 1900) .AND. (nTime > 0) ) THEN
        MSG = 'ncdf reference year is prior to 1901 - ' // &
             'time stamps may be wrong!'
-       CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
     ENDIF
 
     ! verbose mode
     IF ( verb ) THEN
        write(MSG,*) 'Number of time slices found: ', nTime
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        IF ( nTime > 0 ) THEN
           write(MSG,*) 'Time slice range : ', &
                        availYMDhm(1), availYMDhm(nTime)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ENDIF
 
@@ -279,7 +279,7 @@ CONTAINS
     ! verbose mode
     IF ( verb ) THEN
        write(MSG,'(A30,f14.0)') 'preferred datetime: ', prefYMDhm
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! ================================================================
@@ -373,7 +373,7 @@ CONTAINS
              IF ( verb ) THEN
                 write(MSG,'(A30,f14.0)') 'adjusted preferred datetime: ', &
                      prefYMDhm
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
 
              ! check for time stamp with updated date/time
@@ -411,7 +411,7 @@ CONTAINS
           ! verbose mode
           IF ( verb ) THEN
              WRITE(MSG,*) 'Data is 3-hourly. Entire day will be read.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
        IF ( Lct%Dct%Dta%ncHrs(1) == -1 .AND. nTime == 24 ) THEN
@@ -421,7 +421,7 @@ CONTAINS
           ! verbose mode
           IF ( verb ) THEN
              WRITE(MSG,*) 'Data is hourly. Entire day will be read.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
 
@@ -608,33 +608,33 @@ CONTAINS
     ! verbose mode
     IF ( verb ) THEN
        WRITE(MSG,'(A30,I14)') 'selected tidx1: ', tidx1
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        IF ( tidx1 > 0 ) THEN
           WRITE(MSG,'(A30,f14.0)') 'corresponding datetime 1: ', &
                availYMDhm(tidx1)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           IF ( wgt1 >= 0.0_sp ) THEN
              WRITE(MSG,*) 'weight1: ', wgt1
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
 
        IF ( (tidx2 /= tidx1) ) THEN
           WRITE(MSG,'(A30,I14)') 'selected tidx2: ', tidx2
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,'(A30,f14.0)') 'corresponding datetime 2: ', &
                availYMDhm(tidx2)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           IF ( wgt1 >= 0.0_sp ) THEN
              WRITE(MSG,*) 'weight2: ', wgt2
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
 
        WRITE(MSG,'(A30,I14)') 'assigned delta t [h]: ', Lct%Dct%Dta%DeltaT
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) 'local time? ', Lct%Dct%Dta%IsLocTime
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! ----------------------------------------------------------------
@@ -1118,7 +1118,7 @@ CONTAINS
     !=================================================================
 
     ! Verbose mode?
-    verb = HCO_IsVerb( HcoState%Config%Err )
+    verb = HcoState%Config%doVerbose
 
     ! If the originally wanted datetime was below the available data
     ! range, set all weights to the first index.
@@ -1214,7 +1214,7 @@ CONTAINS
                 'slice. Interpolation will be performed from ',           &
                 availYMDhm(tidx1), ' to ', availYMDhm(tidx2), '. Data ',    &
                 'container: ', TRIM(Lct%Dct%cName)
-          CALL HCO_WARNING(HcoState%Config%Err, MSG, RC, THISLOC=LOC)
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC)
        ENDIF
 
        ! Calculate weights wgt1 and wgt2 to be given to slice 1 and
@@ -1462,7 +1462,7 @@ CONTAINS
 
     ! Prompt a warning
     WRITE(MSG,*) 'No area unit found in ' // TRIM(FN) // ' - convert to m-2!'
-    CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+    IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
 
     ! Leave w/ success
     RC = HCO_SUCCESS
@@ -1552,9 +1552,9 @@ CONTAINS
     srcFile = Lct%Dct%Dta%ncFile
 
     ! verbose mode
-    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG,*) 'Parsing source file and replacing tokens'
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Get preferred dates (to be passed to parser)
@@ -2084,11 +2084,11 @@ CONTAINS
     ENDIF
 
     ! Verbose
-    IF ( HcoState%amIRoot .AND. HCO_IsVerb( HcoState%Config%Err ) ) THEN
+    IF ( HcoState%amIRoot .AND. HcoState%Config%doVerbose ) THEN
        WRITE(MSG,*) 'Additional dimension ', TRIM(Lct%Dct%Dta%ArbDimName), &
                     ' in ', TRIM(Lct%Dct%Dta%ncFile), ': use index ',      &
                     ArbIdx, ' (set: ', Lct%Dct%Dta%ArbDimVal, ')'
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Return w/ success
@@ -2234,14 +2234,14 @@ CONTAINS
     Vals => NULL()
 
     ! verbose mode?
-    Verb = HCO_IsVerb( HcoState%Config%Err )
+    Verb = HcoState%Config%doVerbose
 
     ! Verbose
     IF ( Verb ) THEN
        MSG = 'Use country-specific values for ' // TRIM(Lct%Dct%cName)
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        MSG = '- Source file: ' // TRIM(Lct%Dct%Dta%ncFile)
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Open file
@@ -2292,9 +2292,9 @@ CONTAINS
           CIDS = NINT(CNTR)
 
           ! Verbose
-          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              MSG = '- Use ID mask ' // TRIM(LINE)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
 
           ! Go to next line
@@ -2358,9 +2358,9 @@ CONTAINS
        ENDDO
 
        ! Verbose
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) '- Obtained values for ',TRIM(CNT),' ==> ID:', CID
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        ! Cleanup
@@ -2382,7 +2382,7 @@ CONTAINS
        Lct%Dct%Dta%IsLocTime = .TRUE.
        MSG = 'Data assigned to mask regions will be treated in local time: '//&
               TRIM(Lct%Dct%cName)
-       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
     ENDIF
 
     ! Cleanup
@@ -2457,9 +2457,9 @@ CONTAINS
     Vals => NULL()
 
     ! Verbose
-    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG, *) 'Read from config file: ', TRIM(Lct%Dct%cName)
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     !-------------------------------------------------------------------
@@ -2542,7 +2542,7 @@ CONTAINS
           Lct%Dct%Dta%IsLocTime = .TRUE.
           MSG = 'Scale factors read from file are treated as local time: '// &
                  TRIM(Lct%Dct%cName)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
        ENDIF
 
     ENDIF
@@ -2948,19 +2948,19 @@ CONTAINS
              FileArr(1,1,1,:) = 0.0_hp
              MSG = 'Base field outside of range - set to zero: ' // &
                    TRIM(Lct%Dct%cName)
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
 #if defined( MODEL_GEOS )
           ELSEIF ( Lct%Dct%DctType == HCO_DCTTYPE_MASK ) THEN
              FileArr(1,1,1,:) = 0.0_hp
              MSG = 'Mask outside of range - set to zero: ' // &
                    TRIM(Lct%Dct%cName)
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
 #endif
           ELSE
              FileArr(1,1,1,:) = 1.0_hp
              MSG = 'Scale factor outside of range - set to one: ' // &
                    TRIM(Lct%Dct%cName)
-             CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
           ENDIF
        ELSE
           FileArr(1,1,1,:) = FileVals(IDX1:IDX2)
@@ -2986,17 +2986,17 @@ CONTAINS
 
        ! Verbose mode
        IF ( UnitFactor /= 1.0_hp ) THEN
-          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Data was in units of ', TRIM(Lct%Dct%Dta%OrigUnit), &
                           ' - converted to HEMCO units by applying ', &
                           'scale factor ', UnitFactor
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ELSE
-          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Data was in units of ', TRIM(Lct%Dct%Dta%OrigUnit), &
                           ' - unit conversion factor is ', UnitFactor
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
 
@@ -3010,7 +3010,7 @@ CONTAINS
           FileArr = FileArr * HcoState%TS_EMIS
           MSG = 'Data converted from kg/m3/s to kg/m3: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(Lct%Dct%Dta%OrigUnit)
-          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
 
        ! ... emissions or unitless ...
        ELSEIF ( (AreaFlag == -1 .AND. TimeFlag == -1) .OR. &
@@ -3428,9 +3428,9 @@ CONTAINS
           Vals(I) = Val
 
           ! Verbose
-          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Evaluated function: ',TRIM(func),' --> ', Val
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDDO
     ELSE

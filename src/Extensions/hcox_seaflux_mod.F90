@@ -190,7 +190,7 @@ CONTAINS
     IF ( ExtState%SeaFlux <= 0 ) RETURN
 
     ! Verbose?
-    verbose = HCO_IsVerb( HcoState%Config%Err )
+    verbose = HcoState%Config%doVerbose
 
     ! Nullify
     Arr2D => NULL()
@@ -222,10 +222,10 @@ CONTAINS
        IF ( verbose ) THEN
           WRITE(MSG,'(A40,I5)') &
                'Calculate air-sea flux for HEMCO species', HcoID
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) 'Module species name: ', &
                         TRIM(Inst%OcSpecs(OcID)%OcSpcName)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        ! Get seawater concentration of given compound (from HEMCO core).
@@ -564,7 +564,7 @@ CONTAINS
     ! Warning?
     IF ( WARN /= OLDWARN ) THEN
        WRITE(MSG,*) 'Temperature limited to ', TMAX, 'K'
-       CALL HCO_WARNING(HcoState%Config%Err, MSG, RC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
     ENDIF
 
     ! Leave w/ success
@@ -704,15 +704,15 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: SeaFlux (air-sea flux emissions)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! With separator
+       IF ( HcoState%Config%doVerbose ) THEN
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! With separator
        ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! W/o separator
+          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! W/o separator
        ENDIF
 
        ! Write all other messages as debug printout only
        MSG = '   - Use species:'
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     ! ----------------------------------------------------------------------
@@ -875,7 +875,7 @@ CONTAINS
        IF ( Inst%OcSpecs(I)%HcoID > 0 .AND. HcoState%amIRoot ) THEN
           WRITE(MSG,*) '   - ', &
                TRIM(Inst%OcSpecs(I)%OcSpcName), Inst%OcSpecs(I)%HcoID
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ENDDO !I
 

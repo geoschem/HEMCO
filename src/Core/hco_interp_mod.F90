@@ -178,7 +178,7 @@ CONTAINS
     REGR_4D => NULL()
 
     ! Check for verbose mode
-    verb = HCO_IsVerb( HcoState%Config%Err )
+    verb = HcoState%Config%doVerbose
 
     ! get longitude / latitude sizes
     nLonEdge = SIZE(LonE,1)
@@ -285,9 +285,9 @@ CONTAINS
        ! Verbose mode
        IF ( verb ) THEN
           MSG = 'Do index based regridding for field ' // TRIM(Lct%Dct%cName)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) '   - Number of indeces: ', NINDEX
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
     ELSE
@@ -606,10 +606,10 @@ CONTAINS
     ENDIF
 
     ! Check for verbose mode
-    verb = HCO_IsVerb( HcoState%Config%Err )
+    verb = HcoState%Config%doVerbose
     IF ( verb ) THEN
        MSG = 'Vertically interpolate model levels: '//TRIM(Lct%Dct%cName)
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Get HEMCO grid dimensions
@@ -669,9 +669,9 @@ CONTAINS
        ENDDO
 
        ! Verbose
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           MSG = '# of input levels = # of output levels - passed as is.'
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        ! Done!
@@ -768,14 +768,14 @@ CONTAINS
           ENDDO ! T
 
           ! Verbose
-          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GEOS-5 levels.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              IF ( nlev == 3 .OR. nlev == 11 .OR. nlev == 36 ) THEN
                WRITE(MSG,*) 'The input variable has ', nlev, 'L, which were written to be L 1-', nlev, ' on the output 47 L grid (remaining values set to 0).'
              ELSE
                WRITE(MSG,*) 'Pressure-weighted vertical regridding was done - consider if this is appropriate for the variable units.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
           ENDIF
 
@@ -850,11 +850,11 @@ CONTAINS
           ENDDO ! T
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto reduced GISS levels.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              WRITE(MSG,*) 'Pressure-weighted vertical regridding was done - consider if this is appropriate for the variable units.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
 
           ! Done!
@@ -964,15 +964,15 @@ CONTAINS
           ENDDO ! T
 
           ! Verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Mapped ', nlev, ' levels onto native GEOS-5 levels.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              IF ( nlev == 3 .OR. nlev == 11 .OR. nlev == 36 ) THEN
                WRITE(MSG,*) 'The input variable has ', nlev, 'L, which were written to be L 1-', nlev, ' on the output 72 L grid (remaining values set to 0).'
              ELSE
                WRITE(MSG,*) 'Inflating from 47/48 to 72/73 levels is not recommended and is likely not mass-conserving.'
              ENDIF
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
 
           ! Done!
@@ -986,13 +986,13 @@ CONTAINS
     ! Error check / verbose mode
     !===================================================================
     IF ( DONE ) THEN
-      IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+      IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) 'Did vertical regridding for ',TRIM(Lct%Dct%cName),':'
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) 'Number of original levels: ', nlev
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(MSG,*) 'Number of output levels: ', SIZE(Lct%Dct%Dta%V3(1)%Val,3)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ELSE
        WRITE(MSG,*) 'Vertical regridding failed: ',TRIM(Lct%Dct%cName)

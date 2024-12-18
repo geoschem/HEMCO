@@ -116,9 +116,9 @@ CONTAINS
     Ptr2D => NULL()
 
     ! Verbose?
-    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        MSG = 'Reading from ExtData: ' // TRIM(Lct%Dct%Dta%ncFile)
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     !-----------------------------------------------------------------

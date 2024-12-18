@@ -823,7 +823,8 @@ CONTAINS
     ! ------------------------------------------------------------------
 
     IF ( MAPL_Am_I_Root() ) THEN
-       CALL HCO_LogFile_Open( Inst%HcoConfig%Err, RC = HCRC )
+       CALL HCO_LogFile_Open( Inst%HcoConfig%Err, Inst%HcoConfig%doVerbose, &
+            RC = HCRC, Inst%HcoConfig%hcoLogLUN=logLUN )
        _ASSERT(HCRC==HCO_SUCCESS,'needs informative message')
     ENDIF
 

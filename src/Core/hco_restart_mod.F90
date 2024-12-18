@@ -340,10 +340,10 @@ CONTAINS
     ENDIF
 
     ! Log output
-    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        IF ( HcoState%amIRoot .AND. FLD ) THEN
           MSG = 'Obtained restart variable from ESMF internal state: '//TRIM(Name)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ENDIF
 #endif
@@ -365,10 +365,10 @@ CONTAINS
           Arr3D = Ptr3D
 
           ! Log output
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              IF ( HcoState%amIRoot ) THEN
                 MSG = 'Obtained restart variable from HEMCO config: '//TRIM(Name)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
           ENDIF
        ENDIF
@@ -384,19 +384,19 @@ CONTAINS
        IF ( PRESENT(Def3D) ) THEN
           Arr3D = Def3D
           FLD   = .TRUE.
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              IF ( HcoState%amIRoot ) THEN
                 MSG = 'Filled restart variable with default 3D field: '//TRIM(Name)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
           ENDIF
        ELSEIF( PRESENT(DefVal) ) THEN
           Arr3D = DefVal
           FLD   = .TRUE.
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              IF ( HcoState%amIRoot ) THEN
                 MSG = 'Filled restart variable with default scalar: '//TRIM(Name)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
           ENDIF
        ENDIF
@@ -505,10 +505,10 @@ CONTAINS
     ENDIF
 
     ! Log output
-    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        IF ( HcoState%amIRoot .AND. FLD ) THEN
           MSG = 'Obtained restart variable from ESMF internal state: '//TRIM(Name)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(*,*) TRIM(MSG)
        ENDIF
     ENDIF
@@ -531,10 +531,10 @@ CONTAINS
           Arr2D = Ptr2D
 
           ! Log output
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              IF ( HcoState%amIRoot ) THEN
                 MSG = 'Obtained restart variable from HEMCO config: '//TRIM(Name)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
                 WRITE(*,*) TRIM(MSG)
              ENDIF
           ENDIF
@@ -551,20 +551,20 @@ CONTAINS
        IF ( PRESENT(Def2D) ) THEN
           Arr2D = Def2D
           FLD   = .TRUE.
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              IF ( HcoState%amIRoot ) THEN
                 MSG = 'Filled restart variable with default 2D field: '//TRIM(Name)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
                 WRITE(*,*) TRIM(MSG)
              ENDIF
           ENDIF
        ELSEIF( PRESENT(DefVal) ) THEN
           Arr2D = DefVal
           FLD   = .TRUE.
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              IF ( HcoState%amIRoot ) THEN
                 MSG = 'Filled restart variable with default scalar: '//TRIM(Name)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
                 WRITE(*,*) TRIM(MSG)
              ENDIF
           ENDIF
@@ -577,10 +577,10 @@ CONTAINS
     IF ( PRESENT(FILLED) ) FILLED = FLD
 
     ! Verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        IF ( HcoState%amIRoot .AND. .NOT. FLD ) THEN
           MSG = 'No restart field found (2D): '//TRIM(Name)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           WRITE(*,*) TRIM(MSG)
        ENDIF
     ENDIF
