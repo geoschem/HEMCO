@@ -9,7 +9,7 @@
 ! for error handling and logfile messages in HEMCO. It alse contains
 ! definitions of some globally used parameters, such as single/double
 ! precision as well as the HEMCO precision which can be either single or
-! couble. The HEMCO precision is used for almost all HEMCO internal data
+! double. The HEMCO precision is used for almost all HEMCO internal data
 ! arrays and can be changed if required.
 !\\
 !\\

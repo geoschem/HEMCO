@@ -3134,7 +3134,7 @@ CONTAINS
           DgnCont%Arr3D%Val = 0.0_sp
        ENDIF
 
-       ! Prompt warning. Only disply if verbose.
+       ! Prompt warning. Only display if verbose.
        MSG = 'Diagnostics counter is zero - return empty array: ' // &
              TRIM(DgnCont%cName)
        IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )

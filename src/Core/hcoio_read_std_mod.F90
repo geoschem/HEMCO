@@ -1156,7 +1156,7 @@ CONTAINS
 
        ! For zero unit tolerance, make sure that thisUnit matches
        ! with unit set in configuration file. For higher unit
-       ! tolerances, prompt a level 3 warning. Only print the warning
+       ! tolerances, prompt a warning. Only print the warning
        ! if verbose since most instances of unit mismatches are normal,
        ! Print this message to HEMCO log (if using) rather than standard out to avoid
        ! cluttering the regular log file.
