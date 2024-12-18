@@ -62,13 +62,22 @@ set(HEMCO_Fortran_FLAGS_DEBUG_Intel
    -g -O0 "SHELL:-check arg_temp_created" "SHELL:-debug all" -fpe0 -ftrapuv -check,bounds -DDEBUG
    CACHE STRING "HEMCO compiler flags for build type debug with Intel compilers"
 )
-
-set(HEMCO_Fortran_FLAGS_GNU
-   -cpp -w -std=legacy -fautomatic -fno-align-commons -fconvert=big-endian
-   -fno-range-check -mcmodel=medium -fbacktrace -g -DLINUX_GFORTRAN
-   -ffree-line-length-none
-   CACHE STRING "HEMCO compiler flags for all build types with GNU compilers"
-)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+    # arm based processors only support mcmodels of large small tiny
+    set(HEMCO_Fortran_FLAGS_GNU
+    -cpp -w -std=legacy -fautomatic -fno-align-commons -fconvert=big-endian
+    -fno-range-check -mcmodel=small -fbacktrace -g -DLINUX_GFORTRAN
+    -ffree-line-length-none
+    CACHE STRING "HEMCO compiler flags for all build types with GNU compilers"
+    )
+else()
+    set(HEMCO_Fortran_FLAGS_GNU
+    -cpp -w -std=legacy -fautomatic -fno-align-commons -fconvert=big-endian
+    -fno-range-check -mcmodel=medium -fbacktrace -g -DLINUX_GFORTRAN
+    -ffree-line-length-none
+    CACHE STRING "HEMCO compiler flags for all build types with GNU compilers"
+    )
+endif()
 set(HEMCO_Fortran_FLAGS_RELEASE_GNU
    -O3 -funroll-loops
    CACHE STRING "HEMCO compiler flags for build type release with GNU compilers"

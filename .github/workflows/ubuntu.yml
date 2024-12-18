@@ -1,0 +1,42 @@
+name: Ubuntu
+
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  gnu:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        gcc_version: [12, 13, 14]
+        build_type: [Debug, Release]
+    env:
+      FC: gfortran-${{ matrix.gcc_version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnetcdf-dev netcdf-bin libnetcdff-dev
+
+      - name: Run Cmake
+        run: cmake -S . -B build -D CMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+      - name: Build
+        run: cmake --build build  --verbose
+
+      - name: Run tests
+        run: ctest -C ${{ matrix.build_type }} --rerun-failed --output-on-failure . --verbose
+        working-directory: build
