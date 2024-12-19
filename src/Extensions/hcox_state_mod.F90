@@ -1290,9 +1290,9 @@ CONTAINS
              ENDIF
 
              ! Verbose
-             IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+             IF ( HcoState%Config%doVerbose ) THEN
                 MSG = 'Will fill extension field from HEMCO data list field ' // TRIM(FldName)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              ENDIF
 
           ! Target to data
@@ -1335,9 +1335,9 @@ CONTAINS
                 IF ( PRESENT(Filled) ) Filled = .TRUE.
 
                 ! Verbose
-                IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+                IF ( HcoState%Config%doVerbose ) THEN
                    MSG = 'Set extension field pointer to external data: ' // TRIM(FldName)
-                   CALL HCO_MSG(HcoState%Config%Err,MSG)
+                   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 ENDIF
              ENDIF
 
@@ -1489,9 +1489,9 @@ CONTAINS
              ENDIF
 
              ! Verbose
-             IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+             IF ( HcoState%Config%doVerbose ) THEN
                 MSG = 'Will fill extension field from HEMCO data list field ' // TRIM(FldName)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              ENDIF
 
           ! Target to data
@@ -1534,9 +1534,9 @@ CONTAINS
                 IF ( PRESENT(Filled) ) Filled = .TRUE.
 
                 ! Verbose
-                IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+                IF ( HcoState%Config%doVerbose ) THEN
                    MSG = 'Set extension field pointer to external data: ' // TRIM(FldName)
-                   CALL HCO_MSG(HcoState%Config%Err,MSG)
+                   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 ENDIF
              ENDIF
 
@@ -1688,9 +1688,9 @@ CONTAINS
              ENDIF
 
              ! Verbose
-             IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+             IF ( HcoState%Config%doVerbose ) THEN
                 MSG = 'Will fill extension field from HEMCO data list field ' // TRIM(FldName)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              ENDIF
 
           ! Target to data
@@ -1733,9 +1733,9 @@ CONTAINS
                 IF ( PRESENT(Filled) ) Filled = .TRUE.
 
                 ! Verbose
-                IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+                IF ( HcoState%Config%doVerbose ) THEN
                    MSG = 'Set extension field pointer to external data: ' // TRIM(FldName)
-                   CALL HCO_MSG(HcoState%Config%Err,MSG)
+                   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 ENDIF
              ENDIF
 
@@ -1901,9 +1901,9 @@ CONTAINS
              ENDIF
 
              ! Verbose
-             IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+             IF ( HcoState%Config%doVerbose ) THEN
                 MSG = 'Will fill extension field from HEMCO data list field ' // TRIM(FldName)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              ENDIF
 
           ! Target to data
@@ -1947,9 +1947,9 @@ CONTAINS
                 IF ( PRESENT(Filled) ) Filled = .TRUE.
 
                 ! Verbose
-                IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+                IF ( HcoState%Config%doVerbose ) THEN
                    MSG = 'Set extension field pointer to external data: ' // TRIM(FldName)
-                   CALL HCO_MSG(HcoState%Config%Err,MSG)
+                   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 ENDIF
              ENDIF
 
@@ -2118,9 +2118,9 @@ CONTAINS
              ENDIF
 
              ! Verbose
-             IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+             IF ( HcoState%Config%doVerbose ) THEN
                 MSG = 'Will fill extension field from HEMCO data list field ' // TRIM(FldName)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              ENDIF
 
           ! Target to data
@@ -2164,9 +2164,9 @@ CONTAINS
                 IF ( PRESENT(Filled) ) Filled = .TRUE.
 
                 ! Verbose
-                IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+                IF ( HcoState%Config%doVerbose ) THEN
                    MSG = 'Set extension field pointer to external data: ' // TRIM(FldName)
-                   CALL HCO_MSG(HcoState%Config%Err,MSG)
+                   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 ENDIF
              ENDIF
 

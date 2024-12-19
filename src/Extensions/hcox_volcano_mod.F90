@@ -374,11 +374,7 @@ CONTAINS
     ! Write the name of the extension regardless of the verbose settings
     IF ( HcoState%amIRoot ) THEN
        msg = 'Using HEMCO extension: Volcano (volcanic SO2 emissions)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
-       ENDIF
+       CALL HCO_MSG( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
     ENDIF
 
     ! Get species IDs.
@@ -441,7 +437,7 @@ CONTAINS
        MSG = 'Cannot read Volcano climatology file name. Please provide ' // &
              'the Volcano climatology as a setting to the Volcano extension. ' // &
              'The name of this setting must be `Volcano_Climatology`.'
-       CALL HCO_Error( HcoState%Config%Err, MSG, RC )
+       CALL HCO_Error( MSG, RC )
        RETURN
     ENDIF
 
@@ -477,22 +473,22 @@ CONTAINS
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
        MSG = ' - use the following species (Name, HcoID, Scaling relative to kgS):'
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        DO N = 1, Inst%nSpc
           WRITE(MSG,*) TRIM(SpcNames(N)), ', ', Inst%SpcIDs(N), ', ', Inst%SpcScl(N)
-          CALL HCO_MSG( HcoState%Config%Err, MSG)
+          CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
           WRITE(MSG,*) 'Apply scale field: ', TRIM(Inst%SpcScalFldNme(N))
-          CALL HCO_MSG( HcoState%Config%Err, MSG)
+          CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        ENDDO
        WRITE(MSG,*) ' - Emissions data source is ', TRIM(Inst%VolcSource)
-       CALL HCO_MSG( HcoState%Config%Err,  MSG )
+       CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' - Emit eruptive emissions as category ', Inst%CatErupt
-       CALL HCO_MSG( HcoState%Config%Err,  MSG )
+       CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' - Emit degassing emissions as category ', Inst%CatDegas
-       CALL HCO_MSG( HcoState%Config%Err,  MSG )
+       CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
-    ! Cleanup
+    ! Cleanup 
     Inst => NULL()
     IF ( ALLOCATED(SpcNames) ) DEALLOCATE(SpcNames)
 
@@ -628,11 +624,10 @@ CONTAINS
           FileMsg = 'HEMCO (VOLCANO): REQUIRED FILE NOT FOUND'
        ENDIF
 
-       ! Write file status to stdout and the HEMCO log
+       ! Write file status to log
        IF ( Hcostate%amIRoot ) THEN
-          WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( ThisFile )
           WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
-          CALL HCO_MSG( HcoState%Config%Err, MSG )
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
  300      FORMAT( a, ' ', a )
        ENDIF
 
@@ -654,7 +649,7 @@ CONTAINS
           IF ( Hcostate%amIRoot ) THEN
              MSG = 'Attempting to read volcano climatology file'
              WRITE( 6,   300 ) TRIM( MSG )             
-             CALL HCO_MSG( HcoState%Config%Err, MSG )
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           ENDIF
 
           ! Create a display string based on whether or not the file is found
@@ -668,7 +663,7 @@ CONTAINS
           IF ( Hcostate%amIRoot ) THEN
              WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( ThisFile )
              WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( ThisFile )
-             CALL HCO_MSG( HcoState%Config%Err, MSG )
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           ENDIF
 
        ENDIF
@@ -716,9 +711,9 @@ CONTAINS
        ENDDO
 
        ! Verbose
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) 'Number of volcanoes: ', nVolc
-          CALL HCO_MSG( HcoState%Config%Err, MSG)
+          CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        ENDIF
 
        ! Allocate arrays
@@ -757,7 +752,7 @@ CONTAINS
 
        ELSE
           WRITE(MSG,*) 'No volcano data found for year/mm/dd: ', YYYY, MM, DD
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  MSG, THISLOC=LOC )
        ENDIF
 
        ! Now read records
@@ -1043,11 +1038,11 @@ CONTAINS
           ENDDO
 
           ! testing
-          !IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          !IF ( HcoState%Config%doVerbose ) THEN
           !   WRITE(MSG,*) 'Total eruptive  emissions of volcano ', N, ' [kgS/s]: ', volcE
-          !   CALL HCO_MSG(HcoState%Config%Err,MSG)
+          !   CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           !   WRITE(MSG,*) 'Total degassing emissions of volcano ', N, ' [kgS/s]: ', volcD
-          !   CALL HCO_MSG(HcoState%Config%Err,MSG)
+          !   CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           !ENDIF
 
           ! total
@@ -1058,11 +1053,11 @@ CONTAINS
     ENDIF
 
     ! verbose
-    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG,*) 'Total eruptive  emissions [kgS/s]: ', totE
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) 'Total degassing emissions [kgS/s]: ', totD
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Return w/ success

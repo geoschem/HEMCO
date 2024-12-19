@@ -180,10 +180,10 @@ CONTAINS
     ENDIF
 
     ! verbose mode
-    IF ( HCO_IsVerb( HcoConfig%Err ) ) THEN
+    IF ( HcoConfig%doVerbose ) THEN
        WRITE(MSG,*) 'Will shift time stamp of field ', TRIM(Dta%ncPara), &
                     ': ', TRIM(tShift)
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
     ENDIF
 
     RC = HCO_SUCCESS
@@ -378,9 +378,9 @@ CONTAINS
           nDy = oDy
           nHr = 0
           nMn = 0
-          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              MSG = 'Options set to cap time shift - set to low bound'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ELSEIF ( nYr > oYr .OR. nMt > oMt .OR. nDy > oDy ) THEN
           nYr = oYr
@@ -388,21 +388,21 @@ CONTAINS
           nDy = oDy
           nHr = 23
           nMn = 59
-          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              MSG = 'Options set to cap time shift - set to high bound'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
        ENDIF
     ENDIF
 
     ! verbose mode
-    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG,*) 'Adjusted time stamp of field ', TRIM(Lct%Dct%cName)
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) 'Time shift (YMDhms): ', Lct%Dct%Dta%tShift
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,'(a27,i4.4,a1,i2.2,a1,i2.2,a1,i2.2,a1,i2.2)') 'Original Yr/Mt/Dy-Hr:Mn = ',oYr,'/',oMt,'/',oDy,'-',oHr,':',oMn
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Add back to output values
@@ -413,9 +413,9 @@ CONTAINS
     Mn = nMn
 
     ! verbose mode
-    IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG,'(a27,i4.4,a1,i2.2,a1,i2.2,a1,i2.2,a1,i2.2)') 'Adjusted Yr/Mt/Dy-Hr:Mn = ',Yr,'/',Mt,'/',Dy,'-',Hr,':',Mn
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Return w/ success
