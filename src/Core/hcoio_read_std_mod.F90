@@ -194,7 +194,6 @@ CONTAINS
     LOGICAL                       :: FOUND
     LOGICAL                       :: IsModelLevel
     LOGICAL                       :: DoReturn
-    LOGICAL                       :: IGNORE
     INTEGER                       :: UnitTolerance
     INTEGER                       :: AreaFlag, TimeFlag
     REAL(dp)                      :: YMDhma,  YMDhmb, YMDhm1
