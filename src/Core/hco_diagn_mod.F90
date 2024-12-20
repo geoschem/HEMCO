@@ -1109,8 +1109,6 @@ CONTAINS
           IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG, *) '  ThisDiagn%AreaScal = ', ThisDiagn%AreaScal
              CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
-             WRITE(MSG, *) '  ThisDiagn%MassScal = ', ThisDiagn%MassScal
-             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           ENDIF
           !----------------------------------------------------------------
           ! Determine the normalization factors applied to the diagnostics

@@ -23,11 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed excessive prints when using MPI
+- Fixed F77 formating in hcox_dustdead_mod.F
 
 ### Removed
 - Removed warnings count in HcoState%Config%Err
 - Removed RC argument in HCO_WARNING
 - Deleted subroutine HCO_IsVerb
+- Remove print of HcoDiagn%MassScal since never set in the model
 
 ## [3.10.0] - 2024-11-07
 ### Added
