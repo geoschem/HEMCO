@@ -604,18 +604,14 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: GC_RnPbBe (radionuclide emissions)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
-       ENDIF
+       CALL HCO_Msg( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
 
        ! Write all other messages as debug printout only
        MSG = 'Use the following species (Name: HcoID):'
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        DO N = 1, nSpc
           WRITE(MSG,*) TRIM(SpcNames(N)), ':', HcoIDs(N)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDDO
     ENDIF
 
@@ -639,26 +635,25 @@ CONTAINS
 
     ! WARNING: Rn tracer is not found!
     IF ( Inst%IDTRn222 <= 0 .AND. HcoState%amIRoot ) THEN
-       CALL HCO_WARNING( HcoState%Config%Err, &
-                         'Cannot find Rn222 tracer in list of species!', RC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  &
+                         'Cannot find Rn222 tracer in list of species!' )
     ENDIF
 
     ! WARNING: Be7 tracer is not found
     IF ( Inst%IDTBe7 <= 0 .AND. HcoState%amIRoot ) THEN
-       CALL HCO_WARNING( HcoState%Config%Err, &
-                         'Cannot find Be7 tracer in list of species!', RC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  &
+                         'Cannot find Be7 tracer in list of species!' )
     ENDIF
 
     ! WARNING: Be10 tracer is not found
     IF ( Inst%IDTBe10 <= 0 .AND. HcoState%amIRoot ) THEN
-       CALL HCO_WARNING( HcoState%Config%Err, &
-                        'Cannot find Be10 tracer in list of species!', RC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING(  &
+                        'Cannot find Be10 tracer in list of species!' )
     ENDIF
 
     ! ERROR: No tracer defined
     IF ( Inst%IDTRn222 <= 0 .AND. Inst%IDTBe7 <= 0 .AND. Inst%IDTBe10 <= 0) THEN
-       CALL HCO_ERROR( &
-                       'Cannot use RnPbBe extension: no valid species!', RC )
+       CALL HCO_ERROR( 'Cannot use RnPbBe extension: no valid species!', RC )
     ENDIF
 
     ! Activate met fields required by this extension

@@ -106,7 +106,7 @@ CONTAINS
     IF(RC /= HCO_SUCCESS) RETURN
 
     ! Set verbose flag
-    VERBOSE = HCO_IsVerb( HcoState%Config%Err )
+    VERBOSE = HcoState%Config%doVerbose
 
     ! Init
     Lct => NULL()
@@ -147,7 +147,7 @@ CONTAINS
     ! ----------------------------------------------------------------
     IF ( VERBOSE ) THEN
        MSG = 'Container added to EmisList:'
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        CALL HCO_PrintDataCont( HcoState, Lct%Dct )
     ENDIF
 
@@ -472,7 +472,7 @@ CONTAINS
     TargetLct => NULL()
 
     ! Verbose mode
-    verb = HCO_IsVerb( HcoState%Config%Err )
+    verb = HcoState%Config%doVerbose
 
     ! Initialize Add flag. This fill only be set to FALSE
     ! if the data of the current container is added to the data of
@@ -520,7 +520,7 @@ CONTAINS
              WRITE(MSG,*) 'Do not add data of ', TRIM(Lct%Dct%cName), &
                   ' to ', TRIM(TargetLct%Dct%cName), ' because this', &
                   ' is not the file data home container!'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
 
        ! Similarly, do not add data to target container if the target
@@ -532,7 +532,7 @@ CONTAINS
              WRITE(MSG,*) 'Do not add data of ', TRIM(Lct%Dct%cName), &
                   ' to ', TRIM(TargetLct%Dct%cName), ' because the', &
                   ' target is being shared with other fields!'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
 
        ELSE
@@ -577,7 +577,7 @@ CONTAINS
                                      Lct%Dct%Dta%nt, RC )
              IF ( RC /= 0 ) THEN
                 MSG = 'Wrong 2D array: ' // TRIM(Lct%Dct%cName)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
                 RETURN
              ENDIF
           ELSE
@@ -589,7 +589,7 @@ CONTAINS
                                      Lct%Dct%Dta%nt, RC )
              IF ( RC /= 0 ) THEN
                 MSG = 'Wrong 3D array: ' // TRIM(Lct%Dct%cName)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
                 RETURN
              ENDIF
           ENDIF
@@ -638,7 +638,7 @@ CONTAINS
           IF ( verb ) THEN
              WRITE(MSG,*) 'Added data of ',   TRIM(Lct%Dct%cName), &
                   ' to ', TRIM(TargetLct%Dct%cName)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
 
           ! This container does not need to be added to the emissions
