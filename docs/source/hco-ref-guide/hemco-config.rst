@@ -292,10 +292,20 @@ description file.  This is usually named :file:`HEMCO_sa_Grid.rc`.
 LogFile
 -------
 
-Path and name of the output log file (which is typically named
-:file:`HEMCO.log`).  If set to the
-:ref:`hco-cfg-set-wildcard` character, all HEMCO
-output is written to **stdout** (i.e. the screen).
+Path and name of the output log file.
+
++------------------------------------+--------------------------------------------+
+| Value                              | What it does                               |
++====================================+============================================+
+| ``*``                              | HEMCO will write to stdout (screen output) |
++------------------------------------+--------------------------------------------+
+| A file path (e.g. ``./HEMCO.log``) | HEMCO will open and write to that file     |
++------------------------------------+--------------------------------------------+
+
+.. note::
+
+   If you are using HEMCO within CESM, then :literal:`LogFile` will be
+   ignored and HEMCO will write to the CAM log file :file:`atm.log`.
 
 .. _hco-cfg-set-mask-fractions:
 
@@ -416,7 +426,7 @@ the units set in the :ref:`HEMCO configuration file <hco-cfg>`
 and the netCDF :literal:`units` attribute found in the source file.
 
 +---------+-----------------------------------------------------------+
-| Setting | What it does                                              |
+| Value   | What it does                                              |
 +=========+===========================================================+
 | ``0``   | **No tolerance**.  A units mismatch will halt a HEMCO     |
 |         | simulation.                                               |

@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated calls to HCO_WARNING to print to stdout unless related to units
 - Replaced usage of HCO_IsVerb with HcoState_Config%doVerbose
 - Changed documentation in HCO_Error_Mod.F90 to summarize error and log handling in HEMCO
+- Updated ReadTheDocs "Understand what error messages mean" supplemental guide
 
 ### Fixed
 - Fixed excessive prints when using MPI
@@ -30,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed RC argument in HCO_WARNING
 - Deleted subroutine HCO_IsVerb
 - Remove print of HcoDiagn%MassScal since never set in the model
+- Added ReadTheDocs documentation for the HEMCO `LogFile` setting
 
 ## [3.10.0] - 2024-11-07
 ### Added
