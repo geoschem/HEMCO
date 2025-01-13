@@ -259,13 +259,13 @@ CONTAINS
     ENDIF
 
     ! Verbose
-    IF ( HcoConfig%amIRoot .AND. HCO_IsVerb( HcoConfig%Err ) ) THEN
+    IF ( HcoConfig%amIRoot .AND. HcoConfig%doVerbose ) THEN
        WRITE(MSG,*) ' HEMCO vertical sigma-hybrid coordinates: '
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        WRITE(MSG,*) 'Ap [Pa]       (first and last): ', zGrid%Ap(1), zGrid%Ap(nz+1)
-       CALL HCO_MSG(HcoConfig%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        WRITE(MSG,*) 'Bp [unitless] (first and last): ', zGrid%Bp(1), zGrid%Bp(nz+1)
-       CALL HCO_MSG(HcoConfig%Err,MSG,SEP2='-')
+       CALL HCO_MSG( msg, SEP2='-', LUN=HcoConfig%hcoLogLUN )
     ENDIF
 
     ! Return w/ success

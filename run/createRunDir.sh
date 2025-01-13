@@ -306,6 +306,7 @@ cp ./HEMCO_sa_Spec.rc               ${rundir}
 cp ./${grid_file}                   ${rundir}
 cp ./runHEMCO.sh                    ${rundir}
 cp ./README                         ${rundir}
+cp ./download_data*                 ${rundir}
 cp ${hco_config_dir}/HEMCO_Config.* ${rundir}
 if  [[ -f ${hco_config_dir}/HEMCO_Diagn.rc ]]; then
     cp ${hco_config_dir}/HEMCO_Diagn.rc ${rundir}

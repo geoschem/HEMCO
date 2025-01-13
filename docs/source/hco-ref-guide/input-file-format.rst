@@ -95,8 +95,8 @@ It is recommended to store data in one of the HEMCO standard units:
   (for instance, land types represented as integer values).
 
 HEMCO will attempt to convert all data to one of those units, unless
-otherwise via the :option:`SrcUnit` attribute (see the :ref:`Base
-Emissions <hco-cfg-base>`) section.
+otherwise via the :ref:`hco-cfg-base-srcunit` attribute (see the
+:ref:`hco-cfg-base` section).
 
 Mass conversion (e.g. from molecules to kg) is performed based on the
 properties (e.g. molecular weight) of the species assigned to the
@@ -125,57 +125,66 @@ Arbitrary additional netCDF dimension
 HEMCO can read netCDF files with an additional, arbitrary
 dimension. The dimension name and dimension index to be read must be
 given explicitly in the HEMCO configuration file as part of the
-:option:`SrcDim` file attribute). This feature is currently not
-available in an ESMF environment.
+:ref:`hco-cfg-base-srcdim` file attribute). This feature is currently
+not available in an ESMF environment.
 
-.. _hco-filefmt-regrid:
-
-==========
-Regridding
-==========
 
 .. _hco-filefmt-regrid-vert:
 
+===================
 Vertical regridding
--------------------
+===================
 
-HEMCO is able to perform some limited vertical interpolation. 
-
-.. warning::
-
-   **HEMCO assumes that the input data is on the same grid as the model grid if it has the same number (nz) of, or plus one (nz+1) vertical levels than the model.**
-   In the case of the same number of vertical levels, HEMCO assumes that the input data is already on the model grid 
-   and no interpolation is performed. In the case of input data having nz+1 levels,
-   the data is interpreted as being on grid edges instead of grid midpoints.
-
-**Collapsing into various GEOS grids.** Additional vertical
-regridding options are available for the various GEOS grids (e.g. to
-regrid native GEOS-5 levels to reduced GEOS-5 levels, or to remap GEOS-5
-data onto the vertical GEOS-4 grid). These options are only available if
-the corresponding compiler flags are set (this is the default case for
-GEOS-Chem users).
-
-**Conservative vertical interpolation using MESSy.** If input data is
-specified with vertical coordinates in :literal:`lev` attribute of the
-netCDF file with units :literal:`atmosphere_hybrid_sigma_pressure_coordinate`,
-HEMCO can perform vertical interpolation using MESSy to the model grid.
-
-**Regridding GEOS-Chem 3-D input data in other models.** In other models
-where HEMCO is used for emissions, but do not necessarily use the GEOS
-vertical grids (e.g., WRF-GC, GEOS-Chem within CESM, CAM-chem with HEMCO),
-input data from GEOS-Chem files which have 72 levels will automatically
-be regridded to the model levels, for compatibility.
+HEMCO is able to perform some limited vertical interpolation.
 
 By default, HEMCO assumes that the vertical coordinate direction is
 upwards, i.e. the first level index corresponds to the surface layer.
 The vertical axis can be reversed by setting the srcDim attribute in
-the HEMCO configuration file accordingly (e.g. xy-72 if the input
-data has 72 levels on a reversed vertical axis).
+the HEMCO configuration file accordingly (e.g. :literal:`xy-72` if the 
+input data has 72 levels on a reversed vertical axis).
+
+.. warning::
+
+   HEMCO assumes that the input data is on the same grid as the
+   model grid if it has the same number** (:literal:`NZ`) of, or plus
+   one (:literal:`NZ+1`) vertical levels than the model.   
+
+   In the case of the same number of vertical levels, HEMCO assumes
+   that the input data is already on the model grid and no
+   interpolation is performed. 
+
+   In the case of input data having :literal:`NZ+1` levels, the data is
+   interpreted as being on grid edges instead of grid midpoints. 
+
+Collapsing into various GEOS grids
+----------------------------------
+
+Additional vertical regridding options are available for the various
+GEOS grids.  These options are only available if the corresponding
+compiler flags are set (this is the default case for GEOS-Chem users).
+
+Conservative vertical interpolation using MESSy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If input data is specified with vertical coordinates in :literal:`lev`
+attribute of the netCDF file with units
+:literal:`atmosphere_hybrid_sigma_pressure_coordinate`, HEMCO can
+perform vertical interpolation using MESSy to the model grid. 
+
+Regridding GEOS-Chem 3-D input data in other models
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In other models where HEMCO is used for emissions, but do not
+necessarily use the GEOS vertical grids (e.g., WRF-GC, GEOS-Chem
+within CESM, CAM-chem with HEMCO), input data from GEOS-Chem files
+which have 72 levels will automatically be regridded to the model
+levels, for compatibility. 
 
 .. _hco-filefmt-regrid-horz:
 
+=====================
 Horizontal regridding
----------------------
+=====================
 
 In a non-ESMF environment, HEMCO can only regrid between rectilinear
 grids (e.g. lat-lon).

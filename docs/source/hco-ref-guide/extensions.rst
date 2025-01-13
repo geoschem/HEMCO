@@ -28,143 +28,187 @@ selected individually in the :ref:`Extension Switches
 <hco-cfg-ext-switches>` section of the :ref:`hco-cfg`, as can the species to
 be considered.
 
-.. option:: DustAlk
+.. _hco-ext-list-dustalk:
 
-   - **Species**: DSTAL1, DSTAL2, DSTAL3, DSTAL4
-   - **Reference**: Fairlie et al (check)
+DustAlk
+-------
 
-.. option:: DustDead
+- **Species**: DSTAL1, DSTAL2, DSTAL3, DSTAL4
+- **Reference**: Fairlie et al (check)
 
-   Emissions of mineral dust from the DEAD dust mobilization model.
+.. _hco-ext-list-dustdead:
 
-   - **Species**: DST1, DST2, DST3, DST4
-   - **Reference**: :cite:t:`Zender_et_al._2003`
+DustDead
+--------
 
-.. option:: DustGinoux
+Emissions of mineral dust from the DEAD dust mobilization model.
 
-   Emissions of mineral dust from the P. Ginoux dust mobilization model.
+- **Species**: DST1, DST2, DST3, DST4
+- **Reference**: :cite:t:`Zender_et_al._2003`
 
-   - **Species**: DST1, DST2, DST3, DST4
-   - **Reference**: :cite:t:`Ginoux_et_al._2001`
+.. _hco-ext-list-dustginoux:
 
-**Species**: DST1, DST2, DST3, DST4
-   - **Reference**: :cite:t:`Ginoux_et_al._2001`
+DustGinoux
+----------
 
-.. option:: GC_Rn-Pb-Be
+Emissions of mineral dust from the P. Ginoux dust mobilization model.
 
-   Emissions of radionuclide species as used in the `GEOS-Chem
-   <https://geos-chem.readthedocs.io>`_ model.
+- **Species**: DST1, DST2, DST3, DST4
+- **Reference**: :cite:t:`Ginoux_et_al._2001`
 
-   - **Species**: Rn222, Be7, Be7Strat, Be10, Be10Strat
+.. _hco-ext-list-gcrnpbbe:
 
-   .. option:: ZHANG_Rn222
+GC_Rn-Pb-Be
+-----------
 
-      If :option:`ZHANG_Rn222` is :literal:`on`, then Rn222 emissions
-      will be computed according to :cite:t:`Zhang_et_al._2021`.
+Emissions of radionuclide species as used in the `GEOS-Chem
+<https://geos-chem.readthedocs.io>`_ model.
 
-      If :option:`ZHANG_Rn222` is :literal:`off`, then Rn222 emissions
-      will be computed according to :cite:t:`Jacob_et_al._1997`.
+- **Species**: Rn222, Be7, Be7Strat, Be10, Be10Strat
 
-.. option:: GFED
+If :literal:`ZHANG_Rn222` is :literal:`on`, then Rn222 emissions
+   will be computed according to :cite:t:`Zhang_et_al._2021`.
 
-   Biomass burning emissions from the GFED model.
+If :literal:`ZHANG_Rn222` is :literal:`off`, then Rn222 emissions
+will be computed according to :cite:t:`Jacob_et_al._1997`.
 
-   - **Version**: GFED3 and GFED4 are available.
-   - **Species**: NO, CO, ALK4, ACET, MEK, ALD2, PRPE, C2H2, C2H4, C3H8, CH2O
-     C2H6, SO2, NH3, BCPO, BCPI, OCPO, OCPI, POG1, POG2, MTPA, BENZ, TOLU, XYLE
-     NAP, EOH, MOH, SOAP, and others
-   - :literal:`GFED_daily` option: Applies a daily scale factor to
-     emissions computed by GFED.
-   - :literal:`GFED_3hourly` option: Applies a consistent diurnal profile
-     for a given month (in 3-hr increments) to emissions computed by
-     GFED.  This is the default setting.
-   - **Reference**: :cite:t:`van_der_Werf_et_al._2010`
+.. _hco-ext-list-gfed:
 
-.. option:: Inorg_Iodine
+GFED
+----
 
-   - **Species**:  HOI, I2
-   - **Reference**:  TBD
+Biomass burning emissions from the GFED model.
 
-.. option:: LightNOx
+- **Version**: GFED3 and GFED4 are available.
+- **Species**: NO, CO, ALK4, ACET, MEK, ALD2, PRPE, C2H2, C2H4, C3H8, CH2O
+  C2H6, SO2, NH3, BCPO, BCPI, OCPO, OCPI, POG1, POG2, MTPA, BENZ, TOLU, XYLE
+  NAP, EOH, MOH, SOAP, and others
+- :literal:`GFED_daily` option: Applies a daily scale factor to
+  emissions computed by GFED.
+- :literal:`GFED_3hourly` option: Applies a consistent diurnal profile
+  for a given month (in 3-hr increments) to emissions computed by
+  GFED.  This is the default setting.
+- **Reference**: :cite:t:`van_der_Werf_et_al._2010`
 
-   Emissions of NOx from lightning.
+.. _hco-ext-list-finn:
 
-   - **Species**: NO
-   - **Species**: :cite:`Murray_et_al._2012`
+FINN
+----
 
-.. option:: MEGAN
+Biomass burning from the FINN model (experimental).
 
-   Biogenic VOC emissions.
+.. _hco-ext-list-inorg-iodine:
 
-   - **Version**: 2.1
-   - **Species:** ISOP, ACET, PRPE, C2H4, ALD2, CO, OCPI, MONX, MTPA, MTPO,
-     LIMO, SESQ
-   - **Reference:** :cite:t:`Guenther_et_al._2012`
+Inorg_Iodine
+------------
 
-.. option:: PARANOx
+- **Species**:  HOI, I2
+- **Reference**:  TBD
 
-   Plume model for ship emissions.
+.. _hco-ext-list-lightnox:
 
-   - **Species**: NO, NO2, O3, HNO3
-   - **Reference**: :cite:t:`Vinken_et_al._2011`
+LightNOx
+--------
 
-.. option:: SeaFlux
+Emissions of NOx from lightning.
 
-   Air-sea exchange.
+- **Species**: NO
+- **Species**: :cite:`Murray_et_al._2012`
 
-   - Species: DMS, ACET, ALD2, MENO3, ETNO3, MOH
-   - References: :cite:t:`Johnson_2010`, :cite:t:`Nightingale_et_al._2000`
+.. _hco-ext-list-megan:
 
-.. option:: SeaSalt
+MEGAN
+-----
 
-   Sea salt aerosol emission.
+Biogenic VOC emissions.
 
-   - **Species**: SALA, SALC, SALACL, SALCCL, SALAAL, SALCAL, BrSALA,
-     BrSALC, MOPO, MOPI
-   - **References**: :cite:t:`Jaegle_et_al._2011`, :cite:t:`Gong_2003`
+- **Version**: 2.1
+- **Species:** ISOP, ACET, PRPE, C2H4, ALD2, CO, OCPI, MONX, MTPA, MTPO,
+  LIMO, SESQ
+- **Reference:** :cite:t:`Guenther_et_al._2012`
 
-.. option:: SoilNOx
+.. _hco-ext-list-paranox:
 
-   Emissons of NOx from soils and fertilizers.
+PARANOx
+-------
 
-   - **Species**: NO
-   - **Reference**: :cite:t:`Hudman_et_al._2012`
+Plume model for ship emissions.
 
+- **Species**: NO, NO2, O3, HNO3
+- **Reference**: :cite:t:`Vinken_et_al._2011`
 
-.. option:: Volcano
+.. _hco-ext-list-seaflux:
 
-   Emissions of volcanic SO2 from AEROCOM.
+SeaFlux
+-------
 
-   - **Species**: SO2
-   - **Reference**:
+Air-sea exchange.
 
+- Species: DMS, ACET, ALD2, MENO3, ETNO3, MOH
+- References: :cite:t:`Johnson_2010`, :cite:t:`Nightingale_et_al._2000`
 
-.. option:: TOMAS_Jeagle
+.. _hco-ext-list-seasalt:
 
-   Size-resolved sea salt emissions for `TOMAS aerosol microphysics
-   <http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`_
-   simulations.
+SeaSalt
+-------
 
-   - **Species**: SS1, SS2, SS3, SS4, SS5, SS6, SS7, SS8, SS9, SS10,
-     SS11, SS12, SS13, SS14, SS15, SS16, SS17, SS18, SS19, SS20, SS21,
-     SS22, SS23, SS24, SS25, SS26, SS27, SS28, SS29, SS30, SS31, SS32,
-     SS33, SS34, SS35, SS36, SS37, SS38, SS39, SS40
-   - **Reference**: :cite:t:`Jaegle_et_al._2011`
+Sea salt aerosol emission.
 
-.. option:: TOMAS_DustDead
+- **Species**: SALA, SALC, SALACL, SALCCL, SALAAL, SALCAL, BrSALA,
+  BrSALC, MOPO, MOPI
+- **References**: :cite:t:`Jaegle_et_al._2011`, :cite:t:`Gong_2003`
 
-   Size-resolved dust emissions for `TOMAS aerosol microphysics
-   <http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`_
-   simulations.
+.. _hco-ext-list-soilnox:
 
-   - **Species**: DUST1, DUST2, DUST3, DUST4, DUST5, DUST6, DUST7,
-     DUST8, DUST9, DUST10, DUST11, DUST12, DUST13, DUST14, DUST15,
-     DUST16, DUST17, DUST18, DUST19, DUST20, DUST21, DUST22, DUST23,
-     DUST24, DUST25, DUST26, DUST27, DUST28, DUST29, DUST30, DUST31,
-     DUST32, DUST33, DUST34, DUST35, DUST36, DUST37, DUST38, DUST39,
-     DUST40
-   - **Reference**: :cite:t:`Zender_et_al._2003`
+SoilNOx
+-------
 
+Emissons of NOx from soils and fertilizers.
+
+- **Species**: NO
+- **Reference**: :cite:t:`Hudman_et_al._2012`
+
+.. _hco-ext-list-tomas-jeagle:
+
+TOMAS_Jeagle
+------------
+
+Size-resolved sea salt emissions for `TOMAS aerosol microphysics
+<http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`_
+simulations.
+
+- **Species**: SS1, SS2, SS3, SS4, SS5, SS6, SS7, SS8, SS9, SS10,
+  SS11, SS12, SS13, SS14, SS15, SS16, SS17, SS18, SS19, SS20, SS21,
+  SS22, SS23, SS24, SS25, SS26, SS27, SS28, SS29, SS30, SS31, SS32,
+  SS33, SS34, SS35, SS36, SS37, SS38, SS39, SS40
+- **Reference**: :cite:t:`Jaegle_et_al._2011`
+
+.. _hco-ext-list-tomas-dustdead:
+
+TOMAS_DustDead
+--------------
+
+Size-resolved dust emissions for `TOMAS aerosol microphysics
+<http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`_
+simulations.
+
+- **Species**: DUST1, DUST2, DUST3, DUST4, DUST5, DUST6, DUST7,
+  DUST8, DUST9, DUST10, DUST11, DUST12, DUST13, DUST14, DUST15,
+  DUST16, DUST17, DUST18, DUST19, DUST20, DUST21, DUST22, DUST23,
+  DUST24, DUST25, DUST26, DUST27, DUST28, DUST29, DUST30, DUST31,
+  DUST32, DUST33, DUST34, DUST35, DUST36, DUST37, DUST38, DUST39,
+  DUST40
+- **Reference**: :cite:t:`Zender_et_al._2003`
+
+.. _hco-ext-list-volcano:
+
+Volcano
+-------
+
+Emissions of volcanic SO2 from AEROCOM.
+
+- **Species**: SO2
+- **Reference**:
 
 .. _hco-ext-gridded-data:
 
@@ -242,7 +286,7 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: kg
-   - **Used by**: :option:`GC_Rn-Pb-Be`, :option:`PARANOx`
+   - **Used by**: :ref:`hco-ext-list-gcrnpbbe`, :ref:`hco-ext-list-paranox`
 
 .. option:: AIRVOL
 
@@ -250,7 +294,7 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: kg
-   - **Used by**: :option:`PARANOx`
+   - **Used by**: :ref:`hco-ext-list-paranox`
 
 .. option:: ALBD
 
@@ -258,7 +302,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: unitless
-   - **Used by**: :option:`SoilNOx`, :option:`SeaFlux`
+   - **Used by**: :ref:`hco-ext-list-soilnox`, :ref:`hco-ext-list-seaflux`
 
 .. option:: CLDFRC
 
@@ -266,7 +310,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: unitless
-   - **Used by**: :option:`MEGAN`
+   - **Used by**: :ref:`hco-ext-list-megan`
 
 .. option:: CNV_MFC
 
@@ -274,7 +318,7 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: kg/m2/s
-   - **Used by**: :option:`LightNOx`
+   - **Used by**: :ref:`hco-ext-list-lightnox`
 
 .. option:: FRAC_OF_PBL
 
@@ -282,7 +326,7 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: unitless
-   - **Used by**: :option:`PARANOx`, :option:`SeaFlux`
+   - **Used by**: :ref:`hco-ext-list-paranox`, :ref:`hco-ext-list-seaflux`
 
 .. option:: FRCLND
 
@@ -290,7 +334,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: unitless
-   - **Used by**: :option:`GC_Rn-Pb-Be`, :option:`SeaFlux`
+   - **Used by**: :ref:`hco-ext-list-gcrnpbbe`, :ref:`hco-ext-list-seaflux`
 
 .. option:: GWETROOT
 
@@ -299,7 +343,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: unitless
-   - **Used by**: :option:`MEGAN`
+   - **Used by**: :ref:`hco-ext-list-megan`
 
 .. option:: GWETTOP
 
@@ -307,7 +351,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: unitless
-   - **Used by**: :option:`MEGAN`
+   - **Used by**: :ref:`hco-ext-list-megan`
 
 .. option:: HNO3
 
@@ -315,7 +359,7 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: kg
-   - **Used by**: :option:`PARANOx`
+   - **Used by**: :ref:`hco-ext-list-paranox`
 
 .. option:: JO1D
 
@@ -323,7 +367,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: 1/s
-   - **Used by**: :option:`PARANOx`
+   - **Used by**: :ref:`hco-ext-list-paranox`
 
 .. option:: JNO2
 
@@ -331,7 +375,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: 1/s
-   - **Used by**: :option:`PARANOx`
+   - **Used by**: :ref:`hco-ext-list-paranox`
 
 .. option:: LAI
 
@@ -339,7 +383,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: cm2 leaf/cm2 grid box
-   - **Used by**: :option:`MEGAN`
+   - **Used by**: :ref:`hco-ext-list-megan`
 
 .. option:: NO
 
@@ -347,7 +391,7 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: kg
-   - **Used by**: :option:`PARANOx`
+   - **Used by**: :ref:`hco-ext-list-paranox`
 
 .. option:: NO2
 
@@ -355,7 +399,7 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: kg
-   - **Used by**: :option:`PARANOx`
+   - **Used by**: :ref:`hco-ext-list-paranox`
 
 .. option:: O3
 
@@ -363,7 +407,7 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: kg
-   - **Used by**: :option:`PARANOx`
+   - **Used by**: :ref:`hco-ext-list-paranox`
 
 .. option:: PARDF
 
@@ -371,7 +415,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: W/m2
-   - **Used by**: :option:`MEGAN`
+   - **Used by**: :ref:`hco-ext-list-megan`
 
 .. option:: PARDR
 
@@ -379,7 +423,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: W/m2
-   - **Used by**: :option:`MEGAN`
+   - **Used by**: :ref:`hco-ext-list-megan`
 
 .. option:: RADSWG
 
@@ -387,7 +431,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: W/m2
-   - **Used by**: :option:`SoilNOx`
+   - **Used by**: :ref:`hco-ext-list-soilnox`
 
 .. option:: SNOWHGT
 
@@ -395,7 +439,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: kg H2O/m2
-   - **Used by**: :option:`DustDead`, :option:`TOMAS_DustDead`
+   - **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-tomas-dustdead`
 
 .. option:: SPHU
 
@@ -403,8 +447,8 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: kg H2O/kg air
-   - **Used by**: :option:`DustDead`, :option:`PARANOx`,
-     :option:`TOMAS_DustDead`
+   - **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-paranox`,
+     :ref:`hco-ext-list-tomas-dustdead`
 
 .. option:: SZAFACT
 
@@ -412,7 +456,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: unitless
-   - **Used by**: :option:`MEGAN`
+   - **Used by**: :ref:`hco-ext-list-megan`
 
 .. option:: TK
 
@@ -420,8 +464,8 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: K
-   - **Used by**: :option:`DustDead`, :option:`LightNOx`,
-     :option:`TOMAS_DustDead`
+   - **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-lightnox`,
+     :ref:`hco-ext-list-tomas-dustdead`
 
 .. option:: TROPP
 
@@ -429,7 +473,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: Pa
-   - **Used by**: :option:`GC_Rn-Pb-Be`, :option:`LightNOx`
+   - **Used by**: :ref:`hco-ext-list-gcrnpbbe`, :ref:`hco-ext-list-lightnox`
 
 .. option:: TSKIN
 
@@ -437,7 +481,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: K
-   - **Used by**: :option:`SeaFlux`, :option:`SeaSalt`
+   - **Used by**: :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`
 
 .. option:: U10M
 
@@ -445,10 +489,11 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: m/s
-   - **Used by**:  :option:`DustAlk`,  :option:`DustDead`,
-     :option:`DustGinoux`, :option:`PARANOx`, :option:`SeaFlux`,
-     :option:`SeaSalt`, :option:`SoilNOx`, :option:`TOMAS_DustDead`,
-     :option:`TOMAS_Jeagle`
+   - **Used by**:  :ref:`hco-ext-list-dustalk`,  :ref:`hco-ext-list-dustdead`,
+     :ref:`hco-ext-list-dustginoux`, :ref:`hco-ext-list-paranox`,
+     :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`,
+     :ref:`hco-ext-list-soilnox`, :ref:`hco-ext-list-tomas-dustdead`,
+     :ref:`hco-ext-list-tomas-jeagle`
 
 .. option:: USTAR
 
@@ -456,7 +501,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: m/s
-   - **Used by**: :option:`DustDead`, :option:`TOMAS_DustDead`
+   - **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-tomas-dustdead`
 
 .. option:: V10M
 
@@ -464,10 +509,11 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: m/s
-   - **Used by**:  :option:`DustAlk`,  :option:`DustDead`,
-     :option:`DustGinoux`, :option:`PARANOx`, :option:`SeaFlux`,
-     :option:`SeaSalt`, :option:`SoilNOx`, :option:`TOMAS_DustDead`,
-     :option:`TOMAS_Jeagle`
+   - **Used by**:  :ref:`hco-ext-list-dustalk`,
+     :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-dustginoux`,
+     :ref:`hco-ext-list-paranox`,  :ref:`hco-ext-list-seaflux`,
+     :ref:`hco-ext-list-seasalt`, :ref:`hco-ext-list-soilnox`,
+     :ref:`hco-ext-list-tomas-dustdead`, :ref:`hco-ext-list-tomas-jeagle`
 
 .. option:: WLI
 
@@ -484,7 +530,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: m
-   - **Used by**: :option:`DustDead`, :option:`TOMAS_DustDead`
+   - **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-tomas-dustdead`
 
 .. _hco-ext-rst-vars:
 
@@ -585,7 +631,8 @@ Extensions supporting built-in scaling/masking
 ==============================================
 
 The following extensions currently support the built-in scaling/masking
-tools: :option:`SoilNOx`, :option:`GFED`, :option:`FINN`.
+tools: :ref:`hco-ext-list-soilnox`, :ref:`hco-ext-list-gfed`,
+:ref:`hco-ext-list-finn`.
 
 ===========================
 Adding new HEMCO extensions

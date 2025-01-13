@@ -247,17 +247,17 @@ CONTAINS
     DoDiagn = HcoState%Options%AutoFillDiagn !Write AutoFill diagnostics?
 
     ! Verbose mode
-    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE (MSG, *) 'Run HEMCO calculation w/ following options:'
-       CALL HCO_MSG ( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE (MSG, "(A20,I5)")    'Extension number:', ExtNr
-       CALL HCO_MSG ( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE (MSG, "(A20,I5,I5)") 'Tracer range:', SpcMin, SpcMax
-       CALL HCO_MSG ( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE (MSG, "(A20,I5,I5)") 'Category range:', CatMin, CatMax
-       CALL HCO_MSG ( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE (MSG, *) 'Auto diagnostics: ', DoDiagn
-       CALL HCO_MSG ( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     !=================================================================
@@ -391,17 +391,17 @@ CONTAINS
           SpcFlx(:,:,:) = SpcFlx(:,:,:) + CatFlx(:,:,:)
 
           ! verbose
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Added category emissions to species array: '
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              WRITE(MSG,*) 'Species       : ', PrevSpc
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              WRITE(MSG,*) 'Category      : ', PrevCat
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              WRITE(MSG,*) 'Cat. emissions: ', SUM(CatFlx)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              WRITE(MSG,*) 'Spc. emissions: ', SUM(SpcFlx)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
 
           ! Add category emissions to diagnostics at category level
@@ -452,15 +452,15 @@ CONTAINS
           OutArr(:,:,:) = OutArr(:,:,:) + SpcFlx(:,:,:)
 
           ! testing only
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Added total emissions to output array: '
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              WRITE(MSG,*) 'Species: ', PrevSpc
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              WRITE(MSG,*) 'SpcFlx : ', SUM(SpcFlx)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              WRITE(MSG,*) 'OutArr : ', SUM(OutArr)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
 
           ! Add to diagnostics at extension number level.
@@ -568,10 +568,10 @@ CONTAINS
           ENDIF
 
           ! verbose mode
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Calculating emissions for species ', &
                            TRIM(HcoState%Spc(ThisSpc)%SpcName)
-             CALL HCO_MSG( HcoState%Config%Err, MSG, SEP1='-', SEP2='-' )
+             CALL HCO_MSG( MSG, SEP1='-', SEP2='-', LUN=HcoState%Config%hcoLogLUN )
           ENDIF
        ENDIF
 
@@ -604,7 +604,7 @@ CONTAINS
              IF ( HcoState%Options%NegFlag == 1 ) THEN
                 WHERE ( TmpFlx < 0.0_hp ) TmpFlx = 0.0_hp
                 MSG = 'Negative emissions set to zero: '// TRIM(Dct%cName)
-                CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
+                IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
 
              ! Return with error
              ELSE
@@ -701,9 +701,9 @@ CONTAINS
     OutArr => NULL()
 
     ! verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE (MSG, *) 'HEMCO emissions successfully calculated!'
-       CALL HCO_MSG ( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     ! Leave w/ success
@@ -879,9 +879,9 @@ CONTAINS
     MaskFractions = HcoState%Options%MaskFractions
 
     ! Verbose output
-    IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(msg,*) 'Evaluate field ', TRIM(BaseDct%cName)
-       CALL HCO_Msg( HcoState%Config%Err, msg, sep1=' ' )
+       CALL HCO_Msg( msg, sep1=' ', LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
 #if !defined ( ESMF_ )
@@ -1114,18 +1114,18 @@ CONTAINS
           ! the simulation datetime is outside of this range.
           !------------------------------------------------------------------
           IF ( .not. FileData_ArrIsDefined( ScalDct%Dta ) ) THEN
-             IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+             IF ( HcoState%Config%doVerbose ) THEN
                 msg = 'Skip scale factor ' // TRIM( ScalDct%cName )       // &
                      ' because it is not defined for this datetime.'
-                CALL HCO_MSG( HcoState%Config%Err, msg )
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
              ENDIF
              CYCLE
           ENDIF
 
           ! Verbose printout
-          IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              MSG = 'Applying scale factor ' // TRIM(ScalDct%cName)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
 
           !------------------------------------------------------------------
@@ -1241,11 +1241,11 @@ CONTAINS
                 mask(I,J,:) = mask(I,J,:) * TMPVAL
 
                 ! Verbose printout
-                IF ( HCO_IsVerb(HcoState%Config%Err) .and.                   &
+                IF ( HcoState%Config%doVerbose .and.                   &
                      I==1 .AND. J==1                       ) THEN
                    msg = 'Mask field ' // TRIM( ScalDct%cName )           // &
                          ' found and added to temporary mask.'
-                   CALL HCO_Msg( HcoState%Config%Err, msg )
+                   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 ENDIF
 
                 ! Advance to next grid box
@@ -1310,7 +1310,7 @@ CONTAINS
                       error = -1
                       CYCLE
                    ELSE
-                      WRITE( 6, * ) 'Negative scale factor at ',             &
+                      WRITE(HcoState%Config%stdLogLUN,*) 'Negative scale factor at ', &
                                      I, J, TmpLL, tidx, ': ',                &
                                      TRIM(ScalDct%cName), TMPVAL
                       error = 1
@@ -1340,18 +1340,18 @@ CONTAINS
              !---------------------------------------------------------------
              ! Verbose printout
              !----------------------------------------------------------------
-             IF ( HCO_IsVerb(HcoState%Config%Err)  .and.                     &
+             IF ( HcoState%Config%doVerbose  .and.                     &
                   I == ix .and. J == iy           ) THEN
                 write(MSG,*) 'Scale field ', TRIM(ScalDct%cName)
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
                 write(MSG,*) 'Time slice: ', tIdx
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
                 write(MSG,*) 'IX, IY: ', IX, IY
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
                 write(MSG,*) 'Scale factor (IX,IY,L1): ', TMPVAL
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
                 write(MSG,*) 'Mathematical operation : ', ScalDct%Oper
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
 
           ENDDO !I
@@ -1390,7 +1390,7 @@ CONTAINS
           IF ( ERROR == -1 ) THEN
              msg = 'Negative scale factor found (ignored): '              // &
                     TRIM( ScalDct%cName )
-             CALL HCO_WARNING( HcoState%Config%Err, msg, RC )
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
           ENDIF
 
           ! Free pointer
@@ -1923,7 +1923,7 @@ CONTAINS
     UseLL = MIN( MAX(useLL,1), SIZE(Arr3D,3) )
     IF ( UseLL /= 1 ) THEN
        WRITE(MSG,*) "2D data was emitted above surface - this information might be lost: " , TRIM(cName), UseLL
-       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
     ENDIF
 
     ! Pass 3D data to 2D array
@@ -2087,13 +2087,13 @@ CONTAINS
 
     IF ( .NOT. FND .AND. .NOT. PRESENT(FOUND) ) THEN
        MSG = 'Cannot find mask field ' // TRIM(MaskName)
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1='!')
+       CALL HCO_MSG(MSG,SEP1='!',LUN=HcoState%Config%hcoLogLUN)
        MSG = 'Make sure this field is listed in the mask section '  // &
            'of the HEMCO configuration file. You may also need to ' // &
            'set the optional attribute `ReadAlways` to `yes`, e.g.'
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        MSG = '5000 TESTMASK     -140/10/-40/90 - - - xy 1 1 -140/10/-40/90 yes'
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        CALL HCO_ERROR ( &
                         'Error reading mask '//TRIM(MaskName), RC, THISLOC=LOC )
        RETURN
@@ -2510,7 +2510,7 @@ END FUNCTION GetEmisLUnit
           lidx = HcoState%NZ
           WRITE(MSG,*)                                                       &
                'Level is above max. grid box level - use top level ', alt
-          CALL HCO_WARNING ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
           RETURN
        ENDIF
 
@@ -2651,7 +2651,7 @@ END FUNCTION GetEmisLUnit
              DilFact = dh / ( h2 - h1 )
           ELSE
              MSG = 'GetDilFact h2 not greater than h1'
-             CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+             CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
 
@@ -2828,9 +2828,9 @@ END FUNCTION GetEmisLUnit
     MaskFractions = HcoState%Options%MaskFractions
 
     ! Verbose
-    IF ( HCO_IsVerb(HcoState%Config%Err) ) THEN
+    IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG,*) 'Evaluate field ', TRIM(BaseDct%cName)
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP1=' ')
+       CALL HCO_MSG(SEP1=' ',LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! ----------------------------------------------------------------
@@ -2873,7 +2873,7 @@ END FUNCTION GetEmisLUnit
        LevDct1_Unit = GetEmisLUnit( HcoState, LevDct1 )
        IF ( LevDct1_Unit < 0 ) THEN
           MSG = 'LevDct1 units are not defined!'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RC = HCO_FAIL
           RETURN
        ENDIF
@@ -2886,7 +2886,7 @@ END FUNCTION GetEmisLUnit
        LevDct2_Unit = GetEmisLUnit( HcoState, LevDct2 )
        IF ( LevDct2_Unit < 0 ) THEN
           MSG = 'LevDct2_Units are not defined!'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ELSE
@@ -2898,7 +2898,7 @@ END FUNCTION GetEmisLUnit
          LevDct2_Unit == HCO_EMISL_M ) THEN
        IF ( .NOT. ASSOCIATED(HcoState%Grid%BXHEIGHT_M%Val) ) THEN
           MSG = 'Boxheight (in meters) is missing in HEMCO state'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF
@@ -2908,7 +2908,7 @@ END FUNCTION GetEmisLUnit
          LevDct2_Unit == HCO_EMISL_PBL ) THEN
        IF ( .NOT. ASSOCIATED(HcoState%Grid%PBLHEIGHT%Val) ) THEN
           MSG = 'Boundary layer height is missing in HEMCO state'
-          CALL HCO_ERROR ( HcoState%Config%Err, MSG, RC, THISLOC=LOC )
+          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
     ENDIF
@@ -3038,18 +3038,18 @@ END FUNCTION GetEmisLUnit
        ! if scale factors are only defined for a given time range and
        ! the simulation datetime is outside of this range.
        IF ( .NOT. FileData_ArrIsDefined(ScalDct%Dta) ) THEN
-          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              MSG = 'Skip scale factor '//TRIM(ScalDct%cName)// &
                    ' because it is not defined for this datetime.'
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
           ENDIF
           CYCLE
        ENDIF
 
        ! Verbose mode
-       IF ( HCO_IsVerb(HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           MSG = 'Applying scale factor ' // TRIM(ScalDct%cName)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
        ! Get vertical extension of this scale factor array.
@@ -3146,10 +3146,10 @@ END FUNCTION GetEmisLUnit
              MASK(I,J,:) = MASK(I,J,:) * TMPVAL
 
              ! testing only
-             IF ( HCO_IsVerb(HcoState%Config%Err) .AND. I==1 .AND. J==1 ) THEN
+             IF ( HcoState%Config%doVerbose .AND. I==1 .AND. J==1 ) THEN
                 write(MSG,*) 'Mask field ', TRIM(ScalDct%cName),   &
                      ' found and added to temporary mask.'
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
 
              ! Advance to next grid box
@@ -3251,17 +3251,17 @@ END FUNCTION GetEmisLUnit
           ENDDO !LL
 
           ! Verbose mode
-          if ( HCO_IsVerb(HcoState%Config%Err) .and. i == ix .and. j == iy ) then
+          if ( HcoState%Config%doVerbose .and. i == ix .and. j == iy ) then
              write(MSG,*) 'Scale field ', TRIM(ScalDct%cName)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              write(MSG,*) 'Time slice: ', tIdx
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              write(MSG,*) 'IX, IY: ', IX, IY
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              write(MSG,*) 'Scale factor (IX,IY,L1): ', TMPVAL
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              write(MSG,*) 'Mathematical operation : ', ScalDct%Oper
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 !             write(lun,*) 'Updt (IX,IY,L1): ', OUTARR_3D(IX,IY,1)
           endif
 
@@ -3290,7 +3290,7 @@ END FUNCTION GetEmisLUnit
        ! eventually prompt warning for negative values
        IF ( ERROR == -1 ) THEN
           MSG = 'Negative scale factor found (ignored): ' // TRIM(ScalDct%cName)
-          CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
+          IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
        ENDIF
 
        ! Free pointer

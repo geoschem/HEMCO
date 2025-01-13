@@ -1,3 +1,7 @@
+.. |br| raw:: html
+
+   <br />
+
 .. _hco-sa-hard:
 
 ############################
@@ -17,9 +21,8 @@ Computer system requirements
 Before you can run HEMCO standalone, you will need to have
 one the following items.
 
-#. A Unix/Linux based computer system, OR:
-#. An account on the `Amazon Web Services cloud computing platform
-   <http://geos-chem-cloud.readthedocs.io/>`_.
+#. A Linux based computer system, OR:
+#. An account on the Amazon Web Services cloud computing platform.
 
 If your institution has computational resources (e.g. a shared
 computer cluster with many cores, sufficient disk storage and memory),
@@ -32,16 +35,27 @@ should consider signing up for access to the Amazon Web Services
 cloud. Using the cloud has the following advantages:
 
 #. You can run HEMCO standalone without having to invest in
-   local hardware and maintenance personnel.
+   local hardware and maintenance personnel. |br|
+   |br|
+
 #. You won't have to download any meteorological fields or emissions
    data. All of the necessary data input for HEMCO standalone
-   will be available on the cloud.
+   will be available on the cloud. |br|
+   |br|
+
 #. You can initialize your computational environment with all of the
-   required software (e.g. compilers,libraries, utilities) that you
-   need for HEMCO standalone.
+   required software (e.g. compilers, libraries, utilities) that you
+   need for HEMCO standalone. |br|
+   |br|
+
 #. Your runs will be 100% reproducible, because you will initialize
-   your computational environment the same way every time.
-#. You will avoid compilation errors due to library incompatibilities.
+   your computational environment the same way every time. |br|
+   |br|
+
+#. You will avoid compilation errors due to library
+   incompatibilities. |br|
+   |br|
+
 #. You will be charged for the computational time that you use, and if
    you download data off the cloud.
 
