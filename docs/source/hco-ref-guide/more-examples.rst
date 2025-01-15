@@ -90,53 +90,6 @@ These steps can also be used to scale emissions for different regions
 (e.g. provinces, states) by providing HEMCO with a mask file
 containing the regions to be scaled.
 
-
-.. _cfg-ex-scl-rec-mask:
-
-Scale (or zero) emissions with a rectangular mask
--------------------------------------------------
-
-.. important::
-
-   If you are using HEMCO versions prior to 3.5.0, you may encounter a
-   bug when trying to follow this example. See Github issue:
-   https://github.com/geoschem/HEMCO/issues/153 for a workaround.
-
-Another way to scale all emissions over a country (or set them to
-zero) is to apply a rectangular mask.
-
-For example, to set all emissions over Australia and surrounding
-islands to zero, add this line to the :ref:`hco-cfg-masks` section of
-:ref:`the HEMCO configuration file <hco-cfg>`:
-
-.. code-block:: kconfig
-
-    1010 AUS_MASK 105.0/-46.0/160.0/-10.0 - 2000/1/1/0 C xy 1 1 105/-46/160/–10
-
-Here you directly provide the lower left and upper right corner of the
-mask region mask instead of a netCDF file:
-:literal:`lon1/lat1/lon2/lat2` You can then combine this mask with
-a scale factor of zero to eliminate any emissions over that area.
-
-In :ref:`Base emissions <hco-cfg-base>`
-
-.. code-block:: kconfig
-
-    0 HTAP_NO_IND /path/to/HTAP_NO_INDUSTRY.generic.01x01.nc emi_no 2008-2010/1-12/1/0 C xy kg/m2/s NO 1/27/25/501 1/2 4
-
-In :ref:`Scale Factors <hco-cfg-scalefac>`:
-
-.. code-block:: kconfig
-
-   501 SCALE_AUS 0.0 - - - xy unitless 1 1010
-
-In :ref:`hco-cfg-masks`:
-
-.. code-block:: kconfig
-
-   # Defines a rectangular region that should cover AUS + surrounding islands
-   1010 AUS_MASK 105.0/-46.0/160.0/-10.0 – 2000/1/1/0 C xy 1 1 105.0/-46.0/160.0/-10.0
-
 .. _cfg-ex-scl-spc:
 
 Scale emissions by species
@@ -144,14 +97,14 @@ Scale emissions by species
 
 You may define uniform scale factors for single species that
 apply across all emission inventories, sectors and extensions. These
-scale factors can be set in the :ref:`Settings <hco-cfg-settings>`
+scale factors can be set in the :ref:`Settings <hco-cfg-set>`
 section of :ref:`the HEMCO configuration file <hco-cfg>`, using the
 :literal:`EmissScale_<species-name>`, where :literal:`<species-name>`
 denotes the name of a HEMCO species such as :literal:`CO`,
 :literal:`CH4`, :literal:`NO`, etc.
 
 For instance, to scale all NO emissions by 50% add the line
-:literal:`EmisScale_NO` to the :ref:`Settings <hco-cfg-settings>`
+:literal:`EmisScale_NO` to the :ref:`Settings <hco-cfg-set>`
 section of the :ref:`the HEMCO configuration file <hco-cfg>`:
 
 .. code-block:: kconfig
@@ -205,7 +158,7 @@ Scale extension emissions globally by species
 
 You may pass a global scale factor to the :ref:`hco-ext`.  For
 example, to double soil NO emissions everywhere, add the
-:literal:`Scaling_NO` to the section for the :option:`SoilNOx`
+:literal:`Scaling_NO` to the section for the :ref:`hco-ext-list-soilnox`
 extension.  This is located in the :ref:`Extension Switches
 <hco-cfg-ext-switches>` section of :ref:`the HEMCO configuration file
 <hco-cfg>`, as shown below:
@@ -222,13 +175,13 @@ Scale summertime soil NOx emisions over the US
 ----------------------------------------------
 
 It is possible to pass uniform and/or spatiotemporal scale factors to
-some of the extensions, including :option:`SoilNOx`.
+some of the extensions, including :ref:`hco-ext-list-soilnox`.
 
 For instance, suppose you want to halve summertime soil NOx emissions
 over the continental US. You can do this by defining a scale field
-(here, :literal:`SOILNOX_SCALE`) to the :option:`SoilNOx` emission
-field in the :ref:`Extension Switches <hco-cfg-ext-switches>` section
-of :ref:`the HEMCO configuration file <hco-cfg>`:
+(here, :literal:`SOILNOX_SCALE`) to the :ref:`hco-ext-list-soilnox`
+emission field in the :ref:`Extension Switches <hco-cfg-ext-switches>`
+section of :ref:`the HEMCO configuration file <hco-cfg>`:
 
 .. code-block:: kconfig
 
@@ -239,8 +192,8 @@ of :ref:`the HEMCO configuration file <hco-cfg>`:
 :literal:`SOILNOX_SCALE` is just a dummy scale factor with a global
 uniform value of 1.0.   The actual temporal scaling over
 the US is done via scale factor :literal:`333` assigned to this
-field. This approach ensures that all :option:`SoilNOx` emissions
-outside of the US remain intact.
+field. This approach ensures that all :ref:`hco-ext-list-soilnox`
+emissions outside of the US remain intact.
 
 The next step is to define scale factor :literal:`333` (named
 :literal:`SOILNOX\_SCALE`) in the :ref:`Scale Factors
@@ -286,8 +239,8 @@ Exercise care in defining mask regions
 
 In an effort to reduce I/O HEMCO ignores any emission entries that are
 deemed "irrelevant" because there is another (global) emission entry
-for the same species and emission category (:option:`Cat`), but higher
-hierarchy (:option:`Hier`).
+for the same species and emission category (:ref:`hco-cfg-base-cat`),
+but higher hierarchy (:ref:`hco-cfg-base-hier`).
 
 For instance, suppose you have the following two fields defined under
 :ref:`Base Emissions <hco-cfg-base>`:
@@ -471,15 +424,15 @@ Fix MEGAN extension emissions to a specified year
 
 Question submitted by a HEMCO user:
 
-   Is it possible to fix :option:`MEGAN` emissions to a given year? I know
-   this works for many other :ref:`base emissions <hco-cfg-base>`
-   inventories, but MEGAN emissions are dependent on environmental
-   variables.
+   Is it possible to fix :ref:`hco-ext-list-megan` emissions to a
+   given year? I know this works for many other :ref:`base emissions
+   <hco-cfg-base>` inventories, but MEGAN emissions are dependent on
+   environmental variables.
 
 Your best option may be to run the HEMCO standalone and save out
 MEGAN emissions for the desired year.  Then, in a subsequent run, you
 can read in the :ref:`HEMCO diagnostic output <hco-diag>` files
-containing the archived :option:`MEGAN` emissions.
+containing the archived :ref:`hco-ext-list-megan` emissions.
 
 #. Run the HEMCO standalone model. Make sure the following entries
    to your :file:`HEMCO_Diagn.rc` file:
@@ -492,11 +445,12 @@ containing the archived :option:`MEGAN` emissions.
       # ... etc for other MEGAN species ...
 
    In the above entries, :literal:`108` tells HEMCO to get the
-   emissions from the :option:`MEGAN` extension, which is listed in
-   the :ref:`Extension Switches <hco-cfg-ext-switches>` section of the
-   :ref:`configuration file <hco-cfg>` with :option:`ExtNr` 108.
+   emissions from the :ref:`hco-ext-list` extension, which is listed
+   in the :ref:`Extension Switches <hco-cfg-ext-switches>` section of
+   the :ref:`configuration file <hco-cfg>` with
+   :ref:`hco-cfg-ext-switches-extnr` 108.
 
-#. Add the following lines in the :ref:`Settings <hco-cfg-settings>`
+#. Add the following lines in the :ref:`Settings <hco-cfg-set>`
    section of :ref:`the HEMCO configuration file <hco-cfg>`:
 
    .. code-block:: kconfig
@@ -505,11 +459,12 @@ containing the archived :option:`MEGAN` emissions.
       DiagnPrefix:                 HEMCO_diagnostics
       DiagnFreq:                   Monthly
 
-   For more information, see the sections on :option:`DiagnFile`,
-   :option:`DiagnPrefix`, :option:`DiagnFreq`.
+   For more information, see the sections on :ref:`hco-cfg-set-diagnfile`,
+   :ref:`hco-cfg-set-diagnprefix`, and :ref:`hco-cfg-set-diagnfreq`.
 
-#. Turn off the MEGAN extension in the :ref:`Extension Switches
-   <hco-cfg-ext-switches>` section of the configuration file.
+#. Turn off the :ref:`hco-ext-list-megan` extension in the
+   :ref:`Extension Switches <hco-cfg-ext-switches>` section of the
+   configuration file.
 
    .. code-block:: kconfig
 
@@ -666,10 +621,10 @@ Mathematical expressions examples
 
 You may define mathematical expressions in :ref:`the HEMCO
 configuration file <hco-cfg>`.  Similar to uniform values, these must
-be placed in in the :option:`sourceFile` column.  All expressions are
-evaluated during run-time. They can be used e.g. to model an
-oscillating emission source. All mathematical expressions must contain
-at least one time-dependent variable that is evaluated
+be placed in in the :ref:`hco-cfg-base-sourcefile` column.  All
+expressions are evaluated during run-time. They can be used e.g. to
+model an oscillating emission source. All mathematical expressions
+must contain at least one time-dependent variable that is evaluated
 on-the-fly. Mathematical expressions are specified by using the prefix
 :literal:`MATH:`, followed by the mathematical expression. The
 expression is a combination of variables, mathematical operations, and
@@ -685,18 +640,32 @@ supported:
 
 **Variable names**
 
-- :literal:`YYYY` (current year)
-- :literal:`MM` (current month)
-- :literal:`DD` (current day)
-- :literal:`HH` (current hour)
-- :literal:`NN` (current minute)
-- :literal:`SS` (current second)
-- :literal:`SS` (current second)
-- :literal:`DOY` (day of year)
-- :literal:`DOM` (days in current month)
-- :literal:`WD` (Weekday: 0=Sun, 1=Mon .. 7=Sat)
-- :literal:`LH` (hour in local time)
-- :literal:`PI` (the constant PI)
++----------+-----------------------------------+
+| Variable | Description                       |
++==========+===================================+
+| ``YYYY`` | Current year                      |
++----------+-----------------------------------+
+| ``MM``   | Current month (1-12)              |
++----------+-----------------------------------+
+| ``DD``   | Current day (1-31)                |
++----------+-----------------------------------+
+| ``HH``   | Current hour (0-23)               |
++----------+-----------------------------------+
+| ``NN``   | Current minute (0-59)             |
++----------+-----------------------------------+
+| ``SS``   | Current second (0-59)             |
++----------+-----------------------------------+
+| ``DOY``  | Current day of year (0-365) or    |
+|          | (0-366 in leap years)             |
++----------+-----------------------------------+
+| ``DOM``  | Days in current month             |
++----------+-----------------------------------+
+| ``WD``   | Weekday: (1=Sun, 2=Mon, .. 7=Sat) |
++----------+-----------------------------------+
+| ``LH``   | Hour in local time                |
++----------+-----------------------------------+
+| ``PI``   | The constant PI                   |
++----------+-----------------------------------+
 
 **Basic mathematical operators:** + - / * ^ ( )
 
@@ -709,11 +678,11 @@ the equivalent Fortran functions.
 .. important::
 
    When using mathematical expressions, we recommend setting the
-   :option:`sourceTime` attribute to :literal:`*`, especially if you
-   are using the short-term variables (:literal:`HH`, :literal:`NN`,
-   :literal:`SS`, :literal:`LH`).  This will ensure that your
-   expression will get evaluated on every emission time step.
-
+   :ref:`hco-cfg-base-sourcetime` attribute to :literal:`*`,
+   especially if you are using the short-term variables
+   (:literal:`HH`, :literal:`NN`, :literal:`SS`, :literal:`LH`).  This
+   will ensure that your expression will get evaluated on every
+   emission time step.
 
 .. _cfg-ex-other-math-sine:
 
@@ -724,22 +693,22 @@ To define a sine-wave emission source of NO with an oscillation
 frequency of 24 hours, add the following line to section :ref:`Base
 Emissions <hco-cfg-base>` in :ref:`the HEMCO configuration file
 <hco-cfg>`.  Place the mathematical expression under the
-:option:`sourceFile` column (i.e. the 3rd column):
+:ref:`hco-cfg-base-sourcefile` column (i.e. the 3rd column):
 
 .. code-block:: kconfig
 
    0 SINE_NO  MATH:sin(HH/12*PI) - * C xy kg/m2/s NO - 1 500
 
-This defines an emission category (:option:`Cat`) of :literal:`1` and
-hierarchy (:option:`Hier`) of :literal:`500`.  No scale factors are
-applied.
+This defines an emission category (:ref:`hco-cfg-base-cat`) of
+:literal:`1` and hierarchy (:ref:`hco-cfg-base-hier`) of
+:literal:`500`.  No scale factors are applied.
 
 .. important::
 
    Mathematical expressions can produce negative emissions, which by
    default cause HEMCO to stop with an error. Negative emissions can
    be enabled by setting :literal:`Negative values: 2` in the
-   :ref:`Settings <hco-cfg-settings>` section of :ref:`the HEMCO
+   :ref:`Settings <hco-cfg-set>` section of :ref:`the HEMCO
    configuration file <hco-cfg>`.
 
 In order to avoid negative values, you may specify an offset, as is
@@ -808,17 +777,17 @@ in the :ref:`diagnostics configuration file <hco-diag-configfile>` (aka
    # ... etc for additional species ...
 
 To activate these diagnostics, you must specify values for
-:option:`DiagnFile` and :option:`DiagnFreq` in the :ref:`Settings
-<hco-cfg-settings>` section of :ref:`the HEMCO configuration file
-<hco-cfg>`:
+:ref:`hco-cfg-set-diagnfile` and :ref:`hco-cfg-set-diagnfreq` in the
+:ref:`Settings <hco-cfg-set>` section of :ref:`the HEMCO
+configuration file <hco-cfg>`:
 
 .. code-block:: kconfig
 
    DiagnFile:                 HEMCO_Diagn.rc
    DiagnFreq:                 00000000 003000
 
-The :option:`DiagnFile` option tells HEMCO to read the diagnostic
-definitions in the file that you specify (the default is
-:file:`HEMCO_Diagn.rc`).  Use :option:`DiagnFreq` to specify the
-diagnostic frequency (i.e. the interval at which diagnostics
+The :ref:`hco-cfg-set-diagnfile` option tells HEMCO to read the
+diagnostic definitions in the file that you specify (the default is
+:file:`HEMCO_Diagn.rc`).  Use :ref:`hco-cfg-set-diagnfreq` to specify
+the diagnostic frequency (i.e. the interval at which diagnostics
 output will be created).

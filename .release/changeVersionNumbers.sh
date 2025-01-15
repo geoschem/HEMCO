@@ -88,7 +88,8 @@ function main() {
     pattern='\[.*Unreleased.*\].*'
     date=$(date -Idate)
     replace "${pattern}" "\[${version}\] - ${date}" "CHANGELOG.md"
-    
+    echo "HEMCO version updated to ${version} in CHANGELOG.md"
+
     # Return to the starting directory
     cd "${thisDir}"
 }

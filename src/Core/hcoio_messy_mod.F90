@@ -178,7 +178,7 @@ MODULE HCOIO_MESSY_MOD
     ArrOut   => NULL()
 
     ! verbose?
-    verb = HCO_IsVerb( HcoState%Config%Err )
+    verb = HcoState%Config%doVerbose
 
     ! Horizontal dimension of input data
     NXIN = SIZE(NcArr,1)
@@ -292,11 +292,11 @@ MODULE HCOIO_MESSY_MOD
     ! verbose mode
     IF ( verb ) THEN
        MSG = 'Do MESSy regridding: ' // TRIM(Lct%Dct%cName)
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) ' - SameGrid     ? ', SameGrid
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) ' - Model levels ? ', IsModelLev
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     !-----------------------------------------------------------------
@@ -326,7 +326,7 @@ MODULE HCOIO_MESSY_MOD
     IF ( SameGrid ) THEN
        MSG = 'Input grid seems to match output grid. ' // &
              'No regridding is performed: ' // TRIM(Lct%Dct%cName)
-       CALL HCO_WARNING( HcoState%Config%Err, MSG, RC )
+       IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
 
        ! For every time slice...
        DO I = 1, NTIME
@@ -408,13 +408,13 @@ MODULE HCOIO_MESSY_MOD
        rg_type(:) = RG_IDX
        IF ( verb ) THEN
           MSG = ' - Remap as index data.'
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ELSE
        rg_type(:) = RG_INT
        IF ( verb ) THEN
           MSG = ' - Remap as concentration data.'
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
     ENDIF
 

@@ -5,8 +5,77 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
 ### Changed
 - Use USTAR from meteorology instead of calculating from reference 10m wind in DustDead extension
+
+## [3.10.1] - 2025-01-10
+### Added
+- Added optional LUN argument to ConfigInit to allow external models to pass LUN of existing log file
+- Added two log LUN variables (stdLogLUN and hcoLogLUN) to HcoState%Config for stdout and HEMCO log and initialize both in ConfigInit to stdout or optional LUN (if passed)
+- Added output argument LUN to HCO_LOGFILE_OPEN to update HcoState%Config%hcoLogLun to LUN of new log (if using)
+- Added optional LUN argument to HCO_MSG, HCO_WARNING, and HCO_ERROR to specify log to print to
+- Added special log handling for CESM to ignore LogFile entry in HEMCO_Config.rc (will get passed CAM log LUN to use instead)
+
+### Changed
+- Changed interfaces HCO_MSG, HCO_WARNING, and HCO_ERROR to each be a single subroutine that does not use HcoState%Config%Err
+- Changed HCO_MSG, HCO_WARNING, and HCO_ERROR to be independent of verbose and cores
+- Updated calls to HCO_MSG to send output to HcoState%Config%hcoLogLUN
+- Updated calls to HCO_WARNING to print to stdout unless related to units
+- Replaced usage of HCO_IsVerb with HcoState_Config%doVerbose
+- Changed documentation in HCO_Error_Mod.F90 to summarize error and log handling in HEMCO
+- Updated ReadTheDocs "Understand what error messages mean" supplemental guide
+
+### Fixed
+- Fixed excessive prints when using MPI
+- Fixed F77 formating in hcox_dustdead_mod.F
+
+### Removed
+- Removed warnings count in HcoState%Config%Err
+- Removed RC argument in HCO_WARNING
+- Deleted subroutine HCO_IsVerb
+- Remove print of HcoDiagn%MassScal since never set in the model
+- Added ReadTheDocs documentation for the HEMCO `LogFile` setting
+
+## [3.10.0] - 2024-11-07
+### Added
+- Added TSOIL1 field to `ExtState`
+- Added `download_data.py` and `download_data.yml` to the `run` folder.  These will be copied into HEMCO standalone rundirs
+- Added `run/cleanRunDir.sh` script to remove old output files & log files
+- Added documentation for the HEMCO 3.10.0 release, including HEMCO standalone dry-run documentation
+
+### Changed
+- Added emission factors for ALK6, C4H6, EBZ, STYR, TMB for GFED and FINN biomass burning extensions
+- Updated soil NOx extention to include the option to use soil temperature and parameterization based on Yi Wang et al. (ERL, 2021) instead of the temperature at 2 meters.
+- Updated HEMCO standalone to print the dry-run header to the HEMCO log file unit `HcoState%Config%Err%Lun` only if the file is opened
+- ReadTheDocs update: Now use GNU 12.2.0 compilers in environment file examples
+- Updated `runHEMCO.sh` standalone script: Change partitions, and pipe output to log file
+
+### Fixed
+- Fixed formatting error in `.github/workflows/stale.yml` that caused the Mark Stale Issues action not to run
+- Updated to `jinja2==3.1.4` in `docs/requirements.txt` (fixes a security issue)
+
+### Removed
+- Example "Scale (or zero) emissions with a rectangular mask" from ReadTheDocs. This is currently not working.
+
+## [3.9.3] - 2024-08-13
+### Fixed
+- Added brackets around `exempt-issue-labels` list in `.github/workflows/stale.yml`
+- Fixed incorrect pressure handling in HEMCO standalone (see issue #277)
+
+## [3.9.2] - 2024-07-24
+### Changed
+- RTD updates: Converted several `:option:` tags to subsections and updated references accordingly
+
+### Fixed
+- Typos in RTD doc file `docs/source/hco_ref_guide/hemco-config.rst`
+
+### Removed
+- Manual `InvMEGAN` diagnostics from `src/Extensions/hcox_megan_mod.F90`; Activate these with `HEMCO_Diagn.rc` instead
+
+## [3.9.1] - 2024-06-28
+### Fixed
+- Fixed formatting error in `.github/workflows/stale.yml` that caused the Mark Stale Issues action not to run
 
 ## [3.9.0] - 2024-05-30
 ### Added

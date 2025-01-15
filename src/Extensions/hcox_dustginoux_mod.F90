@@ -563,33 +563,29 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: DustGinoux (dust mobilization)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
-       ENDIF
+       CALL HCO_Msg( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
      
        ! Write all other messages as debug printout only
        IF ( Inst%ExtNrAlk > 0 ) THEN
           MSG = 'Use dust alkalinity option'
-          CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+          CALL HCO_MSG(MSG, SEP1='-', LUN=HcoState%Config%hcoLogLUN )
        ENDIF
 
        MSG = 'Use the following species (Name: HcoID):'
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        DO N = 1, nSpc
           WRITE(MSG,*) TRIM(SpcNames(N)), ':', Inst%HcoIDs(N)
-          CALL HCO_MSG(HcoState%Config%Err,MSG)
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        ENDDO
        IF ( Inst%ExtNrAlk > 0 ) THEN
           DO N = 1, nSpcAlk
              WRITE(MSG,*) TRIM(SpcNamesAlk(N)), ':', Inst%HcoIDsAlk(N)
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           ENDDO
        ENDIF
 
        WRITE(MSG,*) 'Global mass flux tuning factor: ', Inst%CH_DUST
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
+       CALL HCO_MSG(MSG,SEP2='-',LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! Allocate vectors holding bin-specific informations

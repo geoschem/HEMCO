@@ -68,9 +68,9 @@ HEMCO is given in :cite:t:`Keller_et_al._2014` and
 
    geos-chem-shared-docs/supplemental-guides/load-libraries-guide.rst
    geos-chem-shared-docs/supplemental-guides/spack-guide.rst
-   geos-chem-shared-docs/supplemental-guides/customize-guide.rst
    geos-chem-shared-docs/supplemental-guides/error-guide.rst
    geos-chem-shared-docs/supplemental-guides/debug-guide.rst
+   geos-chem-shared-docs/doc/gcid-portal-overview.rst
    geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
    geos-chem-shared-docs/supplemental-guides/parallel-guide.rst
    geos-chem-shared-docs/supplemental-guides/netcdf-guide.rst

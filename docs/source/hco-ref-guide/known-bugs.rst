@@ -4,18 +4,15 @@
 Known bugs and issues
 #####################
 
-Please see our `HEMCO issue tracker on Github
-<https://github.com/geoschem/HEMCO/issues>`_ for a list of recent
-HEMCO bugs and fixes.
+Please see our HEMCO issue tracker on Github for a list of recent
+HEMCO bugs and fixes:
 
-===================
-Current bug reports
-===================
+- `Bugs and issues that have not yet been resolved
+  <https://github.com/geoschem/HEMCO/issues?q=is%3Aissue+is%3Aopen+bug+label%3A%22category%3A+Bug%22>`_
+- `Bugs that have been resolved
+  <https://github.com/geoschem/HEMCO/issues?q=is%3Aissue+bug+is%3Aclosed+label%3A%22category%3A+Bug%22>`_
 
-These `bug reports (listed on the  HEMCO issue tracker)
-<https://github.com/geoschem/HEMCO/issues?q=is%3Aissue+is%3Aopen+label%3Abug>`_
-are currently unresolved.  We hope to fix these in
-future HEMCO releases.
+Other known issues are listed below:
 
 =====================================
 Masks cannot be applied to extensions
@@ -31,9 +28,9 @@ HEMCO may not recognize alternate spellings of units
 ====================================================
 
 If a unit string (e.g. :literal:`kg/m2/s`) read from a netCDF
-file matches the unit string listed under the :option:`SrcUnit` column
-of :ref:`the HEMCO configuration file <hco-cfg>`, then no unit
-conversion will happen.
+file matches the unit string listed under the
+:ref:`hco-cfg-base-srcunit` column of :ref:`the HEMCO configuration
+file <hco-cfg>`, then no unit conversion will happen.
 
 But if the unit string in the file is e.g. :literal:`kg m-2 s-1` and
 the unit in the configuration file is :literal:`kg/m2/s`, then HEMCO
