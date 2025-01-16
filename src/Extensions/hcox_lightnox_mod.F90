@@ -872,7 +872,7 @@ CONTAINS
     IF ( HcoState%amIRoot ) THEN
        WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( FileName )
        WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( FileName )
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
  300   FORMAT( a, ' ', a )
     ENDIF
 
@@ -955,21 +955,21 @@ CONTAINS
 
        ! Print the name of the module regardless of verbose
        msg = 'Using HEMCO extension: LightNOx (lightning NOx emissions'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       IF ( HcoState%Config%doVerbose ) THEN
+          CALL HCO_Msg( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
        ENDIF
 
        ! Other information will be printed only when verbose is true
        WRITE(MSG,*) ' - Use species ', TRIM(SpcNames(1)), '->', Inst%IDTNO
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' - Use GEOS-5 flash rates: ', Inst%LLFR
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' - Use scalar scale factor: ', Inst%SpcScalVal(1)
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' - Use gridded scale field: ', TRIM(Inst%SpcScalFldNme(1))
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     !=======================================================================

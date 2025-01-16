@@ -84,9 +84,9 @@ the intended purpose:
   |br|
 
 - Similarly, :code:`EmisList` sorts the data containers by model
-  species, emission category (:option:`Cat`) and hierarchy
-  (:option:`Hier`) . This allows an efficient emission calculation
-  since the EmisList has to be scanned only once.
+  species, emission category (:ref:`hco-cfg-base-cat`) and hierarchy
+  (:ref:`hco-cfg-base-hier`) . This allows an efficient emission
+  calculation since the EmisList has to be scanned only once.
 
 List containers and generic linked list routines are defined  in
 :file:`src/Core/hco_datacont_mod.F90`. Specific routines for
@@ -242,11 +242,11 @@ These subroutines invoke the corresponding calls of all (enabled)
 Extension settings (as specified in the configuration file, see also
 :ref:`hco-cfg-ext-switches`) areautomatically read by HEMCO. For any
 given extension, routines :code:`GetExtNr` and :code:`GetExtOpt` can
-be used to obtain the extension number (:option:`ExtNr`) and desired
-setting value, respectively (see
-:file:`src/Core/HCO_ExtList_Mod.F90`). Routine :code:`HCO_GetExtHcoID`
-should be used to extract the HEMCO species IDs of all species
-registered for this extension.
+be used to obtain the extension number
+(:ref:`hco-cfg-ext-switches-ExtNr`) and desired setting value,
+respectively (see :file:`src/Core/HCO_ExtList_Mod.F90`). Routine
+:code:`HCO_GetExtHcoID` should be used to extract the HEMCO species
+IDs of all species registered for this extension.
 
 Gridded data associated to an extension (i.e. listed in section
 extension data of the configuration file) is automatically added to
@@ -305,8 +305,8 @@ Initialization:
    horizontal mid points and edges (all 2D fields), the hybrid sigma
    coordinate edges (3D), the grid box areas (2D), and the grid box
    heights. The latter is only used by some extensions
-   (:option:`DustDead`, :option:`LightNOx`') and may be left undefined
-   if those are not used. |br|
+   (:ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-lightnox`) and
+   may be left undefined if those are not used. |br|
    |br|
 
 -  Define emission species. Species definitions are stored in vector

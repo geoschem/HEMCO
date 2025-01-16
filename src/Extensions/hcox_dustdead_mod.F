@@ -712,34 +712,30 @@
 
          ! Write the name of the extension regardless of the verbose setting
          msg = 'Using HEMCO extension: DustDead (dust mobilization)'
-         IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-            CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
-         ELSE
-            CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
-         ENDIF
+         CALL HCO_MSG( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
 
          ! Write all other messages as debug printout only
          IF ( Inst%ExtNrAlk > 0 ) THEN
             MSG = 'Use dust alkalinity option'
-            CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+            CALL HCO_MSG(MSG, SEP1='-',LUN=HcoState%Config%hcoLogLUN )
          ENDIF
 
          MSG = 'Use the following species (Name: HcoID):'
-         CALL HCO_MSG(HcoState%Config%Err,MSG)
+         CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
          DO N = 1, nSpc
             WRITE(MSG,*) TRIM(SpcNames(N)), ':', Inst%HcoIDs(N)
-            CALL HCO_MSG(HcoState%Config%Err,MSG)
+            CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
          ENDDO
          IF ( Inst%ExtNrAlk > 0 ) THEN
             DO N = 1, nSpcAlk
                WRITE(MSG,*) TRIM(SpcNamesAlk(N)), ':', Inst%HcoIDsAlk(N)
-               CALL HCO_MSG(HcoState%Config%Err,MSG)
+               CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
             ENDDO
          ENDIF
 
          WRITE(MSG,*) 'Global mass flux tuning factor: ',
      &                 Inst%FLX_MSS_FDG_FCT
-         CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
+         CALL HCO_MSG(MSG,SEP2='-',LUN=HcoState%Config%hcoLogLUN)
 
       ENDIF
 
@@ -5796,7 +5792,9 @@ c Fix up for negative argument, erf, etc.
       FNDLABEL = TRIM(CSLABEL) 
       IF ( .NOT. HcoState%Grid%AREA_M2%Alloc ) THEN
          MSG = 'Warning: AREA_M2 not found, will use default number'
-         CALL HCO_WARNING( MSG, RC, .TRUE., LOC )
+         IF ( HcoState%Config%doVerbose ) THEN
+            CALL HCO_WARNING(  MSG, THISLOC=LOC )
+         ENDIF
       ELSE
          AM2 = SUM(HcoState%Grid%AREA_M2%Val)/(HcoState%NX*HcoState%NY)
          RES = SQRT(AM2)
@@ -5852,13 +5850,13 @@ c Fix up for negative argument, erf, etc.
       ! Verbose
       IF ( HcoState%amIRoot ) THEN
          MSG = 'Read dust tuning factor from '//TRIM(TuningTable)
-         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+         CALL HCO_MSG(MSG, SEP1='-',LUN=HcoState%Config%hcoLogLUN )
          MSG = 'Model resolution: '//TRIM(CSLABEL)
-         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+         CALL HCO_MSG(MSG, SEP1='-',LUN=HcoState%Config%hcoLogLUN )
          MSG = 'Resolution label in file: '//TRIM(FNDLABEL)
-         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+         CALL HCO_MSG(MSG, SEP1='-',LUN=HcoState%Config%hcoLogLUN )
          WRITE(MSG,*) 'Scale factor: ',FCT
-         CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+         CALL HCO_MSG(MSG, SEP1='-',LUN=HcoState%Config%hcoLogLUN )
       ENDIF
 
       ! Leave

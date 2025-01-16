@@ -332,7 +332,7 @@ CONTAINS
                                 cYYYY=cYYYY, cMM=cMM, cDD=cDD, RC=RC )
              IF ( RC/=HCO_SUCCESS ) RETURN
              WRITE(MSG, 100) cYYYY, cMM, cDD
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
 100          FORMAT( 'FINN daily emissions for year, month, day: ', &
                       i4, '/', i2.2, '/', i2.2 )
           ENDIF
@@ -342,7 +342,7 @@ CONTAINS
                                 cYYYY=cYYYY, cMM=cMM, LMD=NDAYS, RC=RC)
              IF ( RC/=HCO_SUCCESS ) RETURN
              WRITE(MSG, 110) cYYYY, cMM
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
 110          FORMAT( 'FINN monthly emissions for year, month: ', &
                       i4, '/', i2.2 )
           ENDIF
@@ -520,7 +520,7 @@ CONTAINS
                 TOTAL = SUM(SpcArr(:,:)*HcoState%Grid%AREA_M2%Val(:,:))
                 TOTAL = TOTAL * 86400.0_hp * 1e-9_hp
                 WRITE(MSG, 120) HcoState%Spc(HcoID)%SpcName, TOTAL
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
 120             FORMAT( 'SUM biomass ', a4,1x,': ', f11.4,1x,'[Tg]' )
              ENDIF
           ELSE
@@ -528,7 +528,7 @@ CONTAINS
                 TOTAL = SUM(SpcArr(:,:)*HcoState%Grid%AREA_M2%Val(:,:))
                 TOTAL = TOTAL * NDAYS * 86400.0_hp * 1e-9_hp
                 WRITE(MSG, 130) HcoState%Spc(HcoID)%SpcName, TOTAL
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
 130             FORMAT( 'SUM biomass ', a4,1x,': ', f11.4,1x,'[Tg]' )
              ENDIF
           ENDIF
@@ -852,9 +852,9 @@ CONTAINS
     ! Write to log file
     IF ( HcoState%amIRoot ) THEN
        MSG = 'Use FINN extension'
-       CALL HCO_MSG(HcoState%Config%Err,MSG, SEP1='-' )
+       CALL HCO_MSG( MSG, SEP1='-', LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   - Use daily data          : ', UseDay
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     ! Get HEMCO species IDs of all species specified in configuration file
@@ -983,11 +983,11 @@ CONTAINS
                 IF ( HcoState%amIRoot ) THEN
                    MSG = '   - FINN species ' // TRIM(FINN_SPEC_NAME(N)) // &
                          '     will be emitted as ' // TRIM(SpcNames(nSpc))
-                   CALL HCO_MSG(HcoState%Config%Err,MSG )
+                   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 WRITE(MSG,*) '     --> Uniform scale factor : ', SpcScal(nSpc)
-                CALL HCO_MSG(HcoState%Config%Err,MSG )
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 WRITE(MSG,*) '     --> Scale field          : ', TRIM(SpcScalFldNme(nSpc))
-                CALL HCO_MSG(HcoState%Config%Err,MSG )
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 ENDIF
 
                 ! Reset variables
@@ -1027,7 +1027,7 @@ CONTAINS
                       FINN_EMFAC(N,:) = AdjFact / EMFAC_IN(M,:)
                       IF ( Hcostate%amIRoot ) THEN
                          WRITE( MSG, 200 ) TRIM( FINN_SPEC_NAME(N))
-                         CALL HCO_MSG(HcoState%Config%Err,MSG )
+                         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                       ENDIF
                       EXIT
 
@@ -1049,7 +1049,7 @@ CONTAINS
                       IS_NMOC = .TRUE.
                       IF ( HcoState%amIRoot ) THEN
                          WRITE( MSG, 201 ) TRIM( FINN_SPEC_NAME(N) )
-                         CALL HCO_MSG(HcoState%Config%Err,MSG )
+                         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                       ENDIF
                       EXIT
                    ENDIF

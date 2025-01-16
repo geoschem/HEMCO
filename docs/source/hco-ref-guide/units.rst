@@ -24,13 +24,13 @@ emitted species/m3]` for concentrations. No unit conversion is
 performed on unitless data.
 
 The classification of a data field depends on the units attribute in the
-netCDF file, the :option:`SrcUnit` attribute in :ref:`the HEMCO
+netCDF file, the :ref:`hco-cfg-base-srcunit` attribute in :ref:`the HEMCO
 configuration file <hco-cfg>`, and the unit tolerance setting in the
 HEMCO configuration file (see below). In general, the original units
 of the input data is determined based on the units attribute on the
 netCDF file, and data is converted to HEMCO units accordingly. The
 mass conversion factor is determined based on the species assigned to
-the given field throuh attribute :option:`Species` in the HEMCO
+the given field throuh attribute :ref:`hco-cfg-base-species` in the HEMCO
 configuration file. It depends on the species molecular weight (MW),
 the MW of the emitted species, and the molecular ratio (molecules of
 emitted species per molecules of species). If the input data is found
@@ -46,16 +46,17 @@ input data in standard units wherever possible.
 SrcUnit attribute
 =================
 
-The :option:`SrcUnit` attribute in :ref:`the HEMCO configuration file
-<hco-cfg>` gives the user some control on unit conversion.
+The :ref:`hco-cfg-base-srcunit` attribute in :ref:`the HEMCO
+configuration file <hco-cfg>` gives the user some control on unit
+conversion.
 
-If :option:`SrcUnit` is set to :literal:`1`, data are treated as
+If :ref:`hco-cfg-base-srcunit` is set to :literal:`1`, data are treated as
 unitless irrespective of the units attribute on the file. This option
 works on all fields only if unit tolerance is relaxed to :literal:`2`
 (for unit tolerance of :literal:`1`, the input data must be in one of
 the units recognized by  HEMCO as :literal:`unitless`).
 
-If :option:`SrcUnit` is set to :literal:`count`, the input data is
+If :ref:`hco-cfg-base-srcunit` is set to :literal:`count`, the input data is
 assumed to represent index-based scalar fields (e.g. land types). No
 unit conversion is performed on these data and regridding will
 preserve the absolute values.
@@ -70,11 +71,11 @@ data to kg emitted species. If a species is emitted as
 adjusted based on the emitted MW, species MW, and the ratio
 emitted MW / species MW. Only input data that is already in
 :literal:`kgC/m2/s` will not be converted. This behavior can be
-avoided by explicitly set the :option:`SrcUnit` to the same unit as on
-the input file. In this case, HEMCO will not convert between species MW
-and emitted MW. This is useful for cases where the input data does not
-contain data of the actual species, e.g. if VOC emissions are calculated
-by scaling CO emissions (see examples below).
+avoided by explicitly set the :ref:`hco-cfg-base-srcunit` to the same
+unit as on the input file. In this case, HEMCO will not convert
+between species MW and emitted MW. This is useful for cases where the
+input data does not contain data of the actual species, e.g. if VOC
+emissions are calculated by scaling CO emissions (see examples below).
 
 .. _hco-units-unit-tolerance:
 
@@ -82,20 +83,23 @@ by scaling CO emissions (see examples below).
 Unit tolerance setting
 ======================
 
-The unit tolerance setting (see the :ref:`Settings <hco-cfg-settings>`
-section of :ref:`the HEMCO configuration file <hco-cfg>` indicates the
-tolerance of HEMCO if discrepancies are found between the units found in
-the input file and attribute :option:`SrcUnit` of the configuration
-file.
+:ref:`hco-cfg-set-unit-tolerance` determines how HEMCO will handle
+discrepancies between the :literal:`units` variable attribute
+(as read from the netCDF input data file) and the :ref:`hco-cfg-base-srcunit`
+setting specified in :ref:`the HEMCO configuration file <hco-cfg>`.
 
-- If the unit tolerance is set to :literal:`0`, HEMCO stops with an
-  error if the :option:`SrcUnit` attribute does not exactly match with the units
-  attribute found in the input data.
-
-- Unit tolerance of :literal:`1` enables the default behavior.
-
-- Unit tolerance of :literal:`2` will take the :option:`SrcUnit`
-  attribute as the data input unit, regardless netCDF units attribute.
++---------+-----------------------------------------------------------+
+| Value   | What it does                                              |
++=========+===========================================================+
+| ``0``   | **No tolerance**.  A units mismatch will halt a HEMCO     |
+|         | simulation.                                               |
++---------+-----------------------------------------------------------+
+| ``1``   | **Medium tolerance**.  A units mismatch will print a      |
+|         | warning message, but will not halt a HEMCO simulation.    |
+|         | **(Default setting)**                                     |
++---------+-----------------------------------------------------------+
+| ``2``   | **High tolerance**.  A units mismatch will be ignored.    |
++---------+-----------------------------------------------------------+
 
 .. _hco-units-unitless:
 
@@ -200,4 +204,4 @@ Tips for testing
 ================
 
 The unit factor applied by HEMCO is written into the HEMCO log file if
-:option:`Verbose` is set to 2 or higher.
+:ref:`hco-cfg-set-verbose` is set to :literal:`true`.

@@ -379,6 +379,9 @@ CONTAINS
     ! Close the logfile and cleanup error object.
     CALL HCO_Error_Final  ( HcoState%Config%Err )
 
+    ! Update HEMCO log LUN to be standard log LUN
+    HcoState%Config%hcoLogLUN = HcoState%Config%stdLogLUN
+    
     ! Return w/ success
     RC = HCO_SUCCESS
 
