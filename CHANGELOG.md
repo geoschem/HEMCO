@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Added
+- Added `.zenodo.json` for auto-DOI generation upon version releases
+
+### Changed
+- Bumped `jinja2` to version 3.1.5 in `docs/requirements.txt` to fix a security issue
+
 ## [3.10.1] - 2025-01-10
 ### Added
 - Added optional LUN argument to ConfigInit to allow external models to pass LUN of existing log file
