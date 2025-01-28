@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.11.0] - TBD
+
+### Added
+- Added GitHub Actions tests to build and test HEMCO on Windows, macOS, and Ubuntu automatically with each submitted PR
+
 ## [3.10.1] - 2025-01-10
 ### Added
 - Added optional LUN argument to ConfigInit to allow external models to pass LUN of existing log file
