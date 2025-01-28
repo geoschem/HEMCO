@@ -129,10 +129,10 @@ CONTAINS
           SpcScal(N) = ScalFactor
 
           ! Verbose mode
-          IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+          IF ( HcoState%Config%doVerbose ) THEN
              WRITE (MSG,*) 'Will use universal emission scale factor for ', &
                 TRIM(HcoState%Spc(N)%SpcName),': ',SpcScal(N)
-             CALL HCO_MSG ( HcoState%Config%Err, MSG )
+             CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
           ENDIF
        ENDIF
     ENDDO
@@ -243,9 +243,9 @@ CONTAINS
     IF ( ScalFact /= 1.0_hp ) THEN
        Arr3D = Arr3D * ScalFact
        ! Verbose mode
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) '3D field scaled by factor of ',ScalFact
-          CALL HCO_MSG ( HcoState%Config%Err, MSG )
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        ENDIF
     ENDIF
 
@@ -307,9 +307,9 @@ CONTAINS
     IF ( ScalFact /= 1.0_hp ) THEN
        Arr3D = Arr3D * ScalFact
        ! Verbose mode
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) '3D field scaled by factor of ',ScalFact
-          CALL HCO_MSG ( HcoState%Config%Err, MSG )
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        ENDIF
     ENDIF
 
@@ -370,9 +370,9 @@ CONTAINS
     IF ( ScalFact /= 1.0_hp ) THEN
        Arr2D = Arr2D * ScalFact
        ! Verbose mode
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) '2D field scaled by factor of ',ScalFact
-          CALL HCO_MSG ( HcoState%Config%Err, MSG )
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        ENDIF
     ENDIF
 
@@ -433,9 +433,9 @@ CONTAINS
     IF ( ScalFact /= 1.0_hp ) THEN
        Arr2D = Arr2D * ScalFact
        ! Verbose mode
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       IF ( HcoState%Config%doVerbose ) THEN
           WRITE(MSG,*) '2D field scaled by factor of ',ScalFact
-          CALL HCO_MSG ( HcoState%Config%Err, MSG )
+          CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        ENDIF
     ENDIF
 
@@ -495,9 +495,9 @@ CONTAINS
     IF ( ScalFact /= 1.0_hp ) THEN
        Arr1D = Arr1D * ScalFact
        ! Verbose mode
-       !IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       !IF ( HcoState%Config%doVerbose ) THEN
        !   WRITE(MSG,*) '1D field scaled by factor of ',ScalFact
-       !   CALL HCO_MSG ( HcoState%Config%Err, MSG )
+       !   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        !ENDIF
     ENDIF
 
@@ -557,9 +557,9 @@ CONTAINS
     IF ( ScalFact /= 1.0_hp ) THEN
        Arr1D = Arr1D * ScalFact
        ! Verbose mode
-       !IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
+       !IF ( HcoState%Config%doVerbose ) THEN
        !   WRITE(MSG,*) '1D field scaled by factor of ',ScalFact
-       !   CALL HCO_MSG ( HcoState%Config%Err, MSG )
+       !   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        !ENDIF
     ENDIF
 

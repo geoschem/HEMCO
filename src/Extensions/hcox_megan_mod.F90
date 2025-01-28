@@ -3551,15 +3551,11 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: MEGAN (biogenic emissions)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
-       ENDIF
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
 
        ! Write all other messages as debug printout only
        WRITE(MSG,*) '- Use offline biogenic VOCs? ', Inst%OFFLINE_BIOGENICVOC
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     !-----------------------------------------------------------------
@@ -3710,7 +3706,7 @@ CONTAINS
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
        MSG = ' - Use the following species:'
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     ! Get species IDs
@@ -3849,46 +3845,46 @@ CONTAINS
        END SELECT
 
        ! Verbose
-       IF ( HcoState%amIRoot ) CALL HCO_MSG( HcoState%Config%Err, MSG )
+       IF ( HcoState%amIRoot ) CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDDO
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
        WRITE(MSG,*) ' --> Isoprene scale factor is ',Inst%ISOP_SCALING
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Use CO2 inhibition on isoprene option ', &
                     Inst%LISOPCO2
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Global atmospheric CO2 concentration : ', &
                     Inst%GLOBCO2, ' ppmv'
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Normalize LAI by PFT: ', &
                     Inst%NORMLAI
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Isoprene to SOA-Precursor', &
                     !convert back to direct mass basis just for show
                     Inst%ISOPTOSOAP / 1.134
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Isoprene direct to SOA (Simple)', &
                     !convert back to direct mass basis just for show
                     Inst%ISOPTOSOAS / 1.134
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Monoterpene to SOA-Precursor', &
                     !convert back to direct mass basis just for show
                     Inst%MONOTOSOAP / 1.134
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Monoterpene direct to SOA (Simple)', &
                     !convert back to direct mass basis just for show
                     Inst%MONOTOSOAS / 1.134
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Othrterpene to SOA-Precursor', &
                     !convert back to direct mass basis just for show
                     Inst%OTHRTOSOAP / 1.134
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Othrterpene direct to SOA (Simple)', &
                     !convert back to direct mass basis just for show
                     Inst%OTHRTOSOAS / 1.134
-       CALL HCO_MSG( HcoState%Config%Err, MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     CALL GetExtOpt( HcoState%Config, ExtNr, 'MEGAN_SUFFIX', &

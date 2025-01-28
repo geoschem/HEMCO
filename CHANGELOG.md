@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.1] - 2025-01-10
+### Added
+- Added optional LUN argument to ConfigInit to allow external models to pass LUN of existing log file
+- Added two log LUN variables (stdLogLUN and hcoLogLUN) to HcoState%Config for stdout and HEMCO log and initialize both in ConfigInit to stdout or optional LUN (if passed)
+- Added output argument LUN to HCO_LOGFILE_OPEN to update HcoState%Config%hcoLogLun to LUN of new log (if using)
+- Added optional LUN argument to HCO_MSG, HCO_WARNING, and HCO_ERROR to specify log to print to
+- Added special log handling for CESM to ignore LogFile entry in HEMCO_Config.rc (will get passed CAM log LUN to use instead)
+
+### Changed
+- Changed interfaces HCO_MSG, HCO_WARNING, and HCO_ERROR to each be a single subroutine that does not use HcoState%Config%Err
+- Changed HCO_MSG, HCO_WARNING, and HCO_ERROR to be independent of verbose and cores
+- Updated calls to HCO_MSG to send output to HcoState%Config%hcoLogLUN
+- Updated calls to HCO_WARNING to print to stdout unless related to units
+- Replaced usage of HCO_IsVerb with HcoState_Config%doVerbose
+- Changed documentation in HCO_Error_Mod.F90 to summarize error and log handling in HEMCO
+- Updated ReadTheDocs "Understand what error messages mean" supplemental guide
+
+### Fixed
+- Fixed excessive prints when using MPI
+- Fixed F77 formating in hcox_dustdead_mod.F
+
+### Removed
+- Removed warnings count in HcoState%Config%Err
+- Removed RC argument in HCO_WARNING
+- Deleted subroutine HCO_IsVerb
+- Remove print of HcoDiagn%MassScal since never set in the model
+- Added ReadTheDocs documentation for the HEMCO `LogFile` setting
+
 ## [3.10.0] - 2024-11-07
 ### Added
 - Added TSOIL1 field to `ExtState`
