@@ -2212,11 +2212,8 @@ CONTAINS
           CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        ENDIF
 #else
-       ! Always write to atm.log in CESM. LogFile entry in HEMCO_Config.rc
-       ! is omitted in CESM HEMCO_Config.rc. If it is found it will be ignored.
+       ! Always write to atm.log in CESM
        LogFile = 'atm.log'
-       msg = 'WARNING: HEMCO config entry for LogFile is ignored in CESM'
-       CALL HCO_MSG( msg, LUN=HcoConfig%stdLogLUN)
 #endif
 
        ! Initialize (standard) HEMCO tokens
