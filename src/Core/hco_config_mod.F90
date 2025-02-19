@@ -1512,7 +1512,7 @@ CONTAINS
        ENDIF
 
        ! Verbose mode
-       IF ( HcoConfig%doVerbose ) THEN
+       IF ( HcoConfig%doVerbose .AND. HcoConfig%amIRoot ) THEN
           MSG = 'Opened shortcut bracket: '//TRIM(TmpBracket)
           CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
           WRITE(MSG,*) ' - Skip content of this bracket: ', SKIP
@@ -1541,7 +1541,7 @@ CONTAINS
        NEST              = NEST - 1
 
        ! Verbose mode
-       IF ( HcoConfig%doVerbose ) THEN
+       IF ( HcoConfig%doVerbose .AND. HcoConfig%amIRoot ) THEN
           MSG = 'Closed shortcut bracket: '//TRIM(TmpBracket)
           CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
           WRITE(MSG,*) ' - Skip following lines: ', SKIP
