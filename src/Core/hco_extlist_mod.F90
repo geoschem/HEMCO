@@ -1579,6 +1579,8 @@ CONTAINS
        DEF_RES = '05x0625'
     ELSE IF ( TRIM(CF%GridRes) == '0.25x0.3125' ) THEN
        DEF_RES = '025x03125'
+    ELSE IF ( TRIM(CF%GridRes) == '0.125x0.15625' ) THEN
+       DEF_RES = '0125x015625'
     ENDIF
 
     ! Wildcard character

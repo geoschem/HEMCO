@@ -124,7 +124,8 @@ else
     printf "  2. 2.0 x 2.5\n"
     printf "  3. 0.5 x 0.625\n"
     printf "  4. 0.25 x 0.3125\n"
-    printf "  5. Custom\n"
+    printf "  5. 0.125 x 0.15625\n"
+    printf "  6. Custom\n"
 fi
 
 valid_res=0
@@ -152,6 +153,11 @@ while [ "${valid_res}" -eq 0 ]; do
 	grid_dir=$grid_res_long
 	grid_file='HEMCO_sa_Grid.025x03125.rc'
     elif [[ ${res_num} = "5" ]]; then
+        grid_res='0125x015625'
+        grid_res_long='0.125x0.15625'
+        grid_dir=$grid_res_long
+        grid_file='HEMCO_sa_Grid.0125x015625.rc'
+    elif [[ ${res_num} = "6" ]]; then
 	printf "You will need to provide your own HEMCO_sa_Grid.rc file.\n"
 	printf "See the HEMCO standalone guide for more information:\n"
 	printf "http://wiki.seas.harvard.edu/geos-chem/index.php/HEMCO_standalone\n"
