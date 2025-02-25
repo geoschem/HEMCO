@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Bumped `jinja2` to version 3.1.5 in `docs/requirements.txt` to fix a security issue
+- Turned off map_a2a pole averaging when using CESM to avoid core-dependency in 2D emissions
+
+### Fixed
+- Updated several prints to limit to root thread to reduce log redundancy when using MPI
 
 ## [3.10.1] - 2025-01-10
 ### Added
