@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Added
 - Added `.zenodo.json` for auto-DOI generation upon version releases
+- Added GitHub Actions tests to build and test HEMCO on Windows, macOS, and Ubuntu automatically with each submitted PR
 
 ### Changed
 - Bumped `jinja2` to version 3.1.5 in `docs/requirements.txt` to fix a security issue

@@ -9,6 +9,9 @@
   <a href="https://github.com/geoschem/hemco/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
   <a href="https://hemco.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/geos-chem?label=ReadTheDocs"></a>
 </p>
+[![Ubuntu](https://github.com/geoschem/hemco/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/geoschem/hemco/actions/workflows/ubuntu.yml)
+[![Mac](https://github.com/geoschem/hemco/actions/workflows/mac.yml/badge.svg)](https://github.com/geoschem/hemco/actions/workflows/mac.yml)
+[![Windows](https://github.com/geoschem/hemco/actions/workflows/windows.yml/badge.svg)](https://github.com/geoschem/hemco/actions/workflows/windows.yml)
 
 ## Description
 
