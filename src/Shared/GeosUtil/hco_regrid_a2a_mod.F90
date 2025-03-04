@@ -776,6 +776,7 @@ CONTAINS
 1000 continue
      !$OMP END PARALLEL DO
 
+#ifndef MODEL_CESM
      !===================================================================
      ! Final processing for poles
      !===================================================================
@@ -816,6 +817,7 @@ CONTAINS
         endif
 
      endif
+#endif
 
    END SUBROUTINE ymap_r8r8
 !EOC
@@ -973,6 +975,7 @@ CONTAINS
 1000 continue
      !$OMP END PARALLEL DO
 
+#ifndef MODEL_CESM
      !===================================================================
      ! Final processing for poles
      !===================================================================
@@ -1013,6 +1016,7 @@ CONTAINS
         endif
 
      endif
+#endif
 
    END SUBROUTINE ymap_r4r8
 !EOC
@@ -1171,6 +1175,7 @@ CONTAINS
 1000 continue
      !$OMP END PARALLEL DO
 
+#ifndef MODEL_CESM          
      !===================================================================
      ! Final processing for poles
      !===================================================================
@@ -1211,6 +1216,7 @@ CONTAINS
         endif
 
      endif
+#endif
 
    END SUBROUTINE ymap_r8r4
 !EOC
@@ -1369,6 +1375,7 @@ CONTAINS
 1000 continue
      !$OMP END PARALLEL DO
 
+#ifndef MODEL_CESM          
      !===================================================================
      ! Final processing for poles
      !===================================================================
@@ -1410,6 +1417,7 @@ CONTAINS
           enddo
         endif
      endif
+#endif
 
    END SUBROUTINE ymap_r4r4
 !EOC
