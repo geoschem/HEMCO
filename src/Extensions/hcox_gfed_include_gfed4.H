@@ -470,4 +470,40 @@ Inst%GFED4_EMFAC(45,4)=3.9E-04_hp !DEFO - Tropical
 Inst%GFED4_EMFAC(45,5)=5.7E-05_hp !PET -  Peatland
 Inst%GFED4_EMFAC(45,6)=4.8E-04_hp !AGW - Crop residue
 
+! LEVO
+GFED4_SPEC_NAME(46)="LEVO"
+Inst%GFED4_EMFAC(46,1)=2.00E-04_hp !SAV - Savannah
+Inst%GFED4_EMFAC(46,2)=1.87E-03_hp !BORF - Boreal
+Inst%GFED4_EMFAC(46,3)=1.33E-03_hp !TEMP - Temperate
+Inst%GFED4_EMFAC(46,4)=5.20E-04_hp !DEFO - Tropical
+Inst%GFED4_EMFAC(46,5)=1.42E-03_hp !PET -  Peatland
+Inst%GFED4_EMFAC(46,6)=8.20E-04_hp !AGW - Crop residue
+
+! K+
+GFED4_SPEC_NAME(47)="K+"
+Inst%GFED4_EMFAC(47,1)=4.20E-04_hp !SAV - Savannah
+Inst%GFED4_EMFAC(47,2)=1.70E-04_hp !BORF - Boreal
+Inst%GFED4_EMFAC(47,3)=1.70E-04_hp !TEMP - Temperate
+Inst%GFED4_EMFAC(47,4)=3.40E-04_hp !DEFO - Tropical
+Inst%GFED4_EMFAC(47,4)=0.04E-04_hp !PET -  Peatland
+Inst%GFED4_EMFAC(47,6)=5.03E-04_hp !AGW - Crop residue
+
+! MANNOSAN
+GFED4_SPEC_NAME(48)="MANN"
+Inst%GFED4_EMFAC(48,1)=2.00E-04_hp*0.042_hp !SAV - Savannah
+Inst%GFED4_EMFAC(48,2)=1.87E-03_hp*0.031_hp !BORF - Boreal
+Inst%GFED4_EMFAC(48,3)=1.33E-03_hp*0.157_hp !TEMP - Temperate
+Inst%GFED4_EMFAC(48,4)=5.20E-04_hp*0.056_hp !DEFO - Tropical
+Inst%GFED4_EMFAC(48,5)=1.42E-03_hp*0.407_hp !PET -  Peatland
+Inst%GFED4_EMFAC(48,6)=8.20E-04_hp*0.049_hp !AGW - Crop residue
+
+! GALACTOSAN
+GFED4_SPEC_NAME(49)="GALA"
+Inst%GFED4_EMFAC(49,1)=2.00E-04_hp*0.036_hp !SAV - Savannah
+Inst%GFED4_EMFAC(49,2)=1.87E-03_hp*0.017_hp !BORF - Boreal
+Inst%GFED4_EMFAC(49,3)=1.33E-03_hp*0.216_hp !TEMP - Temperate
+Inst%GFED4_EMFAC(49,4)=5.20E-04_hp*0.028_hp !DEFO - Tropical
+Inst%GFED4_EMFAC(49,5)=1.42E-03_hp*0.100_hp !PET -  Peatland
+Inst%GFED4_EMFAC(49,6)=8.20E-04_hp*0.078_hp !AGW - Crop residue
+
 !EOC
