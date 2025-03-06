@@ -372,6 +372,8 @@ MODULE HCO_TYPES_MOD
      LOGICAL                     :: DoShare   ! shared object?
      LOGICAL                     :: IsInList  ! is in emissions list?
      LOGICAL                     :: IsTouched ! Has container been touched yet?
+     INTEGER                     :: Lats(2)   ! Latitude  range (masks only)
+     INTEGER                     :: Lons(2)   ! Longitude range (masks only)
   END TYPE FileData
 
   !-------------------------------------------------------------------------
