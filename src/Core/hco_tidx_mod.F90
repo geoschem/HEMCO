@@ -285,6 +285,7 @@ CONTAINS
     ! tIDx_Cleanup begins here!
     !======================================================================
 
+    ! Deallocate fields
     IF ( ASSOCIATED( AlltIDx ) ) THEN
 
        IF ( ASSOCIATED(AlltIDx%CONSTANT) ) THEN
@@ -307,9 +308,18 @@ CONTAINS
           DEALLOCATE(AlltIDx%MONTHLY)
        ENDIF
 
-       ! Also deallocate AlltIDx pointer
+       ! Nullify fields
+       AlltIDx%CONSTANT    => NULL()
+       AlltIDx%HOURLY      => NULL()
+       AlltIDx%HOURLY_GRID => NULL()
+       AlltIDx%WEEKDAY     => NULL()
+       AlltIDx%MONTHLY     => NULL()
+
+       ! Deallocate container
        DEALLOCATE( AlltIDx )
     ENDIF
+
+    ! Make sure we return a null pointer
     AlltIDx => NULL()
 
   END SUBROUTINE tIDx_Cleanup
