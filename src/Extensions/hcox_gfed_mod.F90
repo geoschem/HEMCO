@@ -41,7 +41,7 @@ MODULE HCOX_GFED_MOD
 ! factor of 1.05 and restrict them to North America, as well as to scale NO
 ! emissions by a factor of 1.5:
 !
-!111     GFED              : on  NO/CO/ALK4/ACET/MEK/ALD2/PRPE/C3H8/CH2O/C2H6/SO2/NH3/BC/OC/GLYC/MGLY/BENZ/TOLU/XYLE/C2H4/C2H2/GLYC/CO2/CH4/HCOOH/DMS/ISOP/LIMO/MOH/EOH/ACTA/GLYX/HAC
+!111     GFED              : on  NO/CO/ALK4/ACET/MEK/ALD2/PRPE/C3H8/CH2O/C2H6/SO2/NH3/BC/OC/GLYC/MGLY/BENZ/TOLU/XYLE/C2H4/C2H2/GLYC/CO2/CH4/HCOOH/DMS/ISOP/LIMO/MOH/EOH/ACTA/GLYX/HAC/LEVO/MANN/GALA
 !    --> GFED4             :       true
 !    --> GFED_daily        :       false
 !    --> GFED_3hourly      :       false
@@ -74,7 +74,7 @@ MODULE HCOX_GFED_MOD
 !       Mu, M., Kasibhatla, P. S., Morton, D. C., DeFries, R. S., Jin, Y.,
 !       and van Leeuwen, T. T.: Global fire emissions and the contribution of
 !       deforestation, savanna, forest, agricultural, and peat fires
-!       (1997â~@~S2009), Atmos. Chem. Phys., 10, 11707-11735,
+!       (1997ï¿½~@~S2009), Atmos. Chem. Phys., 10, 11707-11735,
 !       doi:10.5194/acp-10-11707-2010, 2010.
 !
 ! !REVISION HISTORY:
@@ -92,7 +92,7 @@ MODULE HCOX_GFED_MOD
   ! N_SPEC  : Max. number of species
   !=================================================================
   INTEGER,           PARAMETER :: N_EMFAC = 6
-  INTEGER,           PARAMETER :: N_SPEC  = 45
+  INTEGER,           PARAMETER :: N_SPEC  = 49
 !
 ! !PRIVATE TYPES:
 !
@@ -147,6 +147,7 @@ MODULE HCOX_GFED_MOD
    REAL(sp)                       :: BCPIfrac
    REAL(sp)                       :: POG1frac
    REAL(sp)                       :: SOAPfrac
+   REAL(sp)                       :: LEVOGfrac
 
    !=================================================================
    ! DATA ARRAY POINTERS
@@ -409,6 +410,10 @@ CONTAINS
              SpcArr = SpcArr * (1.0_sp - Inst%POG1frac)
           CASE ( 'SOAP' )
              SpcArr = SpcArr * Inst%SOAPfrac
+          CASE('LEVO')
+             SpcArr=SpcArr * (1.0_sp - Inst%LEVOGfrac)
+          CASE ( 'LEVOG' )
+             SpcArr = SpcArr * Inst%LEVOGfrac
 !==============================================================================
 ! This code is required for partitioning NOx emissions directly to PAN and HNO3.
 ! We will keep it here as an option for users focusing on North American fires.
@@ -677,6 +682,15 @@ CONTAINS
     ELSE
        Inst%POG1frac = ValSp
     ENDIF
+    ! Try to read gas fractions of LEVO. Defaults to 0.1.
+    CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'Gas phase LEVO', &
+                     OptValSp=ValSp, FOUND=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+    IF ( .NOT. FOUND ) THEN
+       Inst%LEVOGfrac = 0.1
+    ELSE
+       Inst%LEVOGfrac = ValSp
+    ENDIF
 
     CALL GetExtOpt( HcoState%Config, ExtNr, 'CO to SOAP', &
                      OptValSp=ValSp, FOUND=FOUND, RC=RC )
@@ -694,9 +708,10 @@ CONTAINS
     IF ( Inst%OCPIfrac < 0.0_sp .OR. Inst%OCPIfrac > 1.0_sp .OR. &
          Inst%BCPIfrac < 0.0_sp .OR. Inst%BCPIfrac > 1.0_sp .OR. &
          Inst%SOAPfrac < 0.0_sp .OR. Inst%SOAPfrac > 1.0_sp .OR. &
-         Inst%POG1frac < 0.0_sp .OR. Inst%POG1frac > 1.0_sp     ) THEN
+         Inst%POG1frac < 0.0_sp .OR. Inst%POG1frac > 1.0_sp .OR. &
+         Inst%LEVOGfrac< 0.0_sp .OR. Inst%LEVOGfrac> 1.0_sp    ) THEN
        WRITE(MSG,*) 'fractions must be between 0-1: ', &
-          Inst%OCPIfrac, Inst%BCPIfrac, Inst%POG1frac, Inst%SOAPfrac
+          Inst%OCPIfrac, Inst%BCPIfrac, Inst%POG1frac,Inst%SOAPfrac,Inst%LEVOGfrac
        CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
@@ -784,6 +799,8 @@ CONTAINS
        WRITE(MSG,*) '   - POG1 fraction           : ', Inst%POG1frac
        CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) '   - SOAP fraction           : ', Inst%SOAPfrac
+       CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
+       WRITE(MSG,*) '   - Gas phase LEVO fraction : ', Inst%LEVOGfrac
        CALL HCO_MSG(MSG, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
@@ -900,6 +917,10 @@ CONTAINS
        IF ( TRIM(SpcName) == 'POG1' ) SpcName = 'OC'
        IF ( TRIM(SpcName) == 'POG2' ) SpcName = 'OC'
        IF ( TRIM(SpcName) == 'NAP'  ) SpcName = 'CO'
+       IF ( TRIM(SpcName) == 'LEVO'  ) SpcName = 'LEVO'
+       IF ( TRIM(SpcName) == 'LEVOG'  ) SpcName = 'LEVO'
+       IF ( TRIM(SpcName) == 'LEVO_B'  ) SpcName = 'LEVO'
+       IF ( TRIM(SpcName) == 'LEVO_BAQ'  ) SpcName = 'LEVO'
 !==============================================================================
 ! This code is required for partitioning NOx emissions directly to PAN and HNO3.
 ! We will keep it here as an option for users focusing on North American fires.
