@@ -237,6 +237,12 @@ CONTAINS
         RETURN
     ENDIF
 
+    CALL HCO_EvalFld( HcoState, 'DustL23M_Soil_BD', Inst%bulk_den, RC)
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
     CALL HCO_EvalFld( HcoState, 'DustL23M_Soil_poros', Inst%poros, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
@@ -736,7 +742,7 @@ CONTAINS
     Inst%C_sah           => NULL()
     Inst%XLAI_t          => NULL()
     Inst%f_clay          => NULL()
-    Inst%bulk_Den        => NULL()
+    Inst%bulk_den        => NULL()
     Inst%poros           => NULL()
     Inst%roughness_r     => NULL()
 
