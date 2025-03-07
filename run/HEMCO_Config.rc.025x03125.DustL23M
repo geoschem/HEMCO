@@ -34,8 +34,8 @@
 #-----------------------------------------------------
 # Settings for HEMCO standalone input and output
 #-----------------------------------------------------
-ROOT:                {DATA_ROOT}/HEMCO
-GridFile:            {GRID_FILE}
+ROOT:                /ExtData/HEMCO
+GridFile:            /ExtData/GEOS_0.25x0.3125/GEOS_FP
 SpecFile:            HEMCO_sa_Spec.rc
 TimeFile:            HEMCO_sa_Time.rc
 DiagnFile:           HEMCO_Diagn.rc
@@ -43,8 +43,8 @@ Logfile:             HEMCO.log
 #-----------------------------------------------------
 # Settings for HEMCO grid
 #-----------------------------------------------------
-MET:                 {MET_NAME}
-RES:                 {GRID_RES}
+MET:                 GEOSFP
+RES:                 025x03125
 #-----------------------------------------------------
 # Settings for HEMCO standalone diagnostics
 #-----------------------------------------------------
