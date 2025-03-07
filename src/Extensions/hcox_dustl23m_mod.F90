@@ -63,6 +63,7 @@ MODULE HCOX_DustL23M_mod
    INTEGER, ALLOCATABLE            :: HcoIDs(:)        ! tracer IDs for DustDead
    INTEGER, ALLOCATABLE            :: HcoIDsAlk(:)     ! tracer IDs for DustAlk
    INTEGER                         :: nSpc             ! # of species
+   INTEGER,  ALLOCATABLE           :: SpcIDs(:)        ! HEMCO species IDs
    REAL(sp), ALLOCATABLE           :: SpcScl(:)        ! Species scale factors
    CHARACTER(LEN=31), ALLOCATABLE  :: SpcNames(:)
    INTEGER                         :: nSpcAlk          ! # of species
