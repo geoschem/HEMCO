@@ -2308,9 +2308,9 @@ CONTAINS
     ENDIF
 
     !%%%%% Snow fields %%%%%
-    IF ( ExtState%SNOMAS%DoUse ) THEN
-       Name = 'SNOMAS'
-       CALL ExtDat_Set( HcoState,     ExtState%SNOMAS,                      &
+    IF ( ExtState%SNOWHGT%DoUse ) THEN
+       Name = 'SNOWHGT'
+       CALL ExtDat_Set( HcoState,     ExtState%SNOWHGT,                      &
                         TRIM( Name ), RC,       FIRST=FIRST                 )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
