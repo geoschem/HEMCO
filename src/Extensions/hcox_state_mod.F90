@@ -136,7 +136,7 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: TSOIL1      ! Soil temperature, layer 1 [K]
      TYPE(ExtDat_2R),  POINTER :: GWETROOT    ! Root soil wetness [1]
      TYPE(ExtDat_2R),  POINTER :: GWETTOP     ! Top soil moisture [-]
-     TYPE(ExtDat_2R),  POINTER :: SNOMAS      ! Snow mass [mm H2O = kg H2O/m2]
+     TYPE(ExtDat_2R),  POINTER :: SNOWHGT     ! Snow mass [mm H2O = kg H2O/m2]
      TYPE(ExtDat_2R),  POINTER :: SNODP       ! Snow depth [m ]
      TYPE(ExtDat_2R),  POINTER :: SNICE       ! Fraction of snow/ice [1]
      TYPE(ExtDat_2R),  POINTER :: USTAR       ! Friction velocity [m/s]
@@ -380,9 +380,9 @@ CONTAINS
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%SNOMAS, RC )
+    CALL ExtDat_Init ( ExtState%SNOWHGT, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR SNOMAS', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR SNOWHGT', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -717,7 +717,7 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%TSOIL1     )
        CALL ExtDat_Cleanup( ExtState%GWETROOT   )
        CALL ExtDat_Cleanup( ExtState%GWETTOP    )
-       CALL ExtDat_Cleanup( ExtState%SNOMAS     )
+       CALL ExtDat_Cleanup( ExtState%SNOWHGT    )
        CALL ExtDat_Cleanup( ExtState%SNODP      )
        CALL ExtDat_Cleanup( ExtState%SNICE      )
        CALL ExtDat_Cleanup( ExtState%USTAR      )

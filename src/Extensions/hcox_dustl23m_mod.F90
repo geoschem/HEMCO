@@ -92,7 +92,7 @@ MODULE HCOX_DustL23M_mod
    REAL(hp), POINTER          :: bulk_den  (:,:) => NULL() ! The bulk density of topmost soil [kg m-3]
    
    ! Soil porosity taken from the constant field from MERRA2 M2C0NXLND collection [unitless]
-   REAL(hp), POINTER          :: poros     (:,:) => NULL
+   REAL(hp), POINTER          :: poros     (:,:) => NULL()
 
    ! Surface roughness length due to rocks [m]
    REAL(hp), POINTER          :: roughness_r    (:,:) => NULL()
@@ -188,7 +188,7 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -433,7 +433,7 @@ CONTAINS
     CALL GetExtSpcVal( HcoState%Config, Inst%ExtNr, Inst%nSpc, &
                        Inst%SpcNames, 'Scaling', 1.0_sp, Inst%SpcScl, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -441,7 +441,7 @@ CONTAINS
     CALL GetExtSpcVal( HcoState%Config, Inst%ExtNr, Inst%nSpc, &
                        Inst%SpcNames, 'ScaleField', HCOX_NOSCALE, Inst%SpcScalFldNme, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -450,20 +450,20 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: DustL23M (dust emission scheme)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+       IF ( HcoState%Config%doVerbose ) THEN
+          CALL HCO_Msg( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
        ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
-       ENDIF
+          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
+       ENDIF 
 
        ! Write all other messages as debug printout only
        MSG = ' - use the following species (Name, HcoID, Scaling):'
-       CALL HCO_MSG( HcoState%Config%Err, MSG)
+       CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        DO N = 1, Inst%nSpc
-          WRITE(MSG,*) TRIM(Inst%SpcNames(N)), ', ', Inst%HcoIDs(N), ', ', Inst%SpcScl(N)
-          CALL HCO_MSG( HcoState%Config%Err, MSG)
+          WRITE(MSG,*) TRIM(Inst%SpcNames(N)), ', ', Inst%SpcIDs(N), ', ', Inst%SpcScl(N)
+          CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
           WRITE(MSG,*) 'Apply scale field: ', TRIM(Inst%SpcScalFldNme(N))
-          CALL HCO_MSG( HcoState%Config%Err, MSG)
+          CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        ENDDO
     ENDIF
 
@@ -567,7 +567,7 @@ CONTAINS
     ExtState%TS%DoUse       = .TRUE.
     ExtState%PS%DoUse       = .TRUE.
     ExtState%GWETTOP%DoUse  = .TRUE.
-    ExtState%SNOMAS%DoUse   = .TRUE.
+    ExtState%SNOWHGT%DoUse  = .TRUE.
     ExtState%USTAR%DoUse    = .TRUE.
     ExtState%PBLH%DoUse     = .TRUE.
     ExtState%HFLUX%DoUse    = .TRUE.
@@ -1113,7 +1113,8 @@ CONTAINS
     REAL(hp),  PARAMETER    :: u_star_st0     = 0.16_hp  ! [m s-1]
     
     REAL(hp)        :: rho_a(HcoState%NX, HcoState%NY) ! surface air density [kg m-3]
-    REAL(hp)        :: T2M(HcoState%NX, HcoState%NY)    ! Surface temperature [K]
+    REAL(hp)        :: T2M(HcoState%NX, HcoState%NY)   ! 2-m temperature [K]
+    REAL(hp)        :: TS(HcoState%NX, HcoState%NY)    ! Surface temperature [K]
     REAL(hp)        :: PS(HcoState%NX, HcoState%NY)    ! Surface pressure [Pa]
     
     REAL(hp)        :: C_d(HcoState%NX, HcoState%NY)            ! Soil erodibility coefficient [unitless]
@@ -1127,7 +1128,7 @@ CONTAINS
     PS = ExtState%PS%Arr%Val * 100.0_hp ! convert hPa to Pa
     rho_a = PS * (HcoState%Phys%AIRMW * 1.0e-3_hp) / (HcoState%Phys%RSTARG * TS)
 
-    snowdep = ExtState%SNOMAS%Arr%Val / 1000 * (1000 / 100) ! convert kg H2O / m2 to m
+    snowdep = ExtState%SNOWHGT%Arr%Val / 1000 * (1000 / 100) ! convert kg H2O / m2 to m
     A_snow = snowdep / snowdep_thr
     WHERE ((A_snow > 1.0_hp) .or. (TS < T0))
       A_snow = 1.0_hp
