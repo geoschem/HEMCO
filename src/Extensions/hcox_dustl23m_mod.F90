@@ -208,49 +208,49 @@ CONTAINS
     !=================================================================
     ! Module code comes below
     !=================================================================
-    CALL HCO_EvalFld( HcoState, 'DustL23M_LandCover_bare', Inst%A_bare, RC)
+    CALL HCO_EvalFld( HcoState, 'L23M_A_bare', Inst%A_bare, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL HCO_EvalFld( HcoState, 'DustL23M_LandCover_veg', Inst%A_veg, RC)
+    CALL HCO_EvalFld( HcoState, 'L23M_A_veg', Inst%A_veg, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL HCO_EvalFld( HcoState, 'DustL23M_Scale_sah', Inst%C_sah, RC)
+    CALL HCO_EvalFld( HcoState, 'L23M_Csah', Inst%C_sah, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL HCO_EvalFld( HcoState, 'DustL23M_LAI', Inst%XLAI_t, RC)
+    CALL HCO_EvalFld( HcoState, 'L23M_LAI', Inst%XLAI_t, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL HCO_EvalFld( HcoState, 'DustL23M_Soil_clay', Inst%f_clay, RC)
+    CALL HCO_EvalFld( HcoState, 'L23M_fclay', Inst%f_clay, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL HCO_EvalFld( HcoState, 'DustL23M_Soil_BD', Inst%bulk_den, RC)
+    CALL HCO_EvalFld( HcoState, 'L23M_BD', Inst%bulk_den, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL HCO_EvalFld( HcoState, 'DustL23M_Soil_poros', Inst%poros, RC)
+    CALL HCO_EvalFld( HcoState, 'L23M_poros', Inst%poros, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL HCO_EvalFld( HcoState, 'DustL23M_roughness_r', Inst%roughness_r, RC)
+    CALL HCO_EvalFld( HcoState, 'L23M_roughness_r', Inst%roughness_r, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
         RETURN

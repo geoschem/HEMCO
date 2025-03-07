@@ -79,7 +79,7 @@ PBL dry deposition:  False
 ### certain data fields for the extentions that usually are obtained directly
 ### from GEOS-Chem.
 ###############################################################################
-# ExtNr ExtName           on/off  Species
+# ExtNr ExtName                on/off Species
 0       Base                   : on   *
 # ----- MAIN SWITCHES ---------------------------------------------------------
     --> EMISSIONS              :       true
