@@ -1174,7 +1174,7 @@ CONTAINS
     ENDWHERE
     
     u_star_t = u_star_it  
-    DUST_EMIS_FLUX_Tmp = eta * C_tune * C_d * f_bare * \
+    DUST_EMIS_FLUX_Tmp = eta * C_tune * Inst%C_sah * C_d * f_bare * \
         rho_a * ((u_star_s ** 2.0_hp) - (u_star_t ** 2.0_hp)) / u_star_st * \
         ((u_star_s / u_star_t) ** kappa)
     WHERE ((DUST_EMIS_FLUX_Tmp < 0.0_hp) .or. (u_star_s .LE. u_star_t))
