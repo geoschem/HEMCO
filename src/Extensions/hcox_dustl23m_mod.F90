@@ -63,7 +63,6 @@ MODULE HCOX_DustL23M_mod
    INTEGER, ALLOCATABLE            :: HcoIDs(:)        ! tracer IDs for DustDead
    INTEGER, ALLOCATABLE            :: HcoIDsAlk(:)     ! tracer IDs for DustAlk
    INTEGER                         :: nSpc             ! # of species
-   INTEGER,  ALLOCATABLE           :: SpcIDs(:)        ! HEMCO species IDs
    REAL(sp), ALLOCATABLE           :: SpcScl(:)        ! Species scale factors
    CHARACTER(LEN=31), ALLOCATABLE  :: SpcNames(:)
    INTEGER                         :: nSpcAlk          ! # of species
@@ -461,7 +460,7 @@ CONTAINS
        MSG = ' - use the following species (Name, HcoID, Scaling):'
        CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        DO N = 1, Inst%nSpc
-          WRITE(MSG,*) TRIM(Inst%SpcNames(N)), ', ', Inst%SpcIDs(N), ', ', Inst%SpcScl(N)
+          WRITE(MSG,*) TRIM(Inst%SpcNames(N)), ', ', Inst%HcoIDs(N), ', ', Inst%SpcScl(N)
           CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
           WRITE(MSG,*) 'Apply scale field: ', TRIM(Inst%SpcScalFldNme(N))
           CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
