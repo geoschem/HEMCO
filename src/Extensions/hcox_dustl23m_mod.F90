@@ -926,9 +926,9 @@ CONTAINS
     w_t = 0.01_hp * (17.0_hp * f_clay + 14.0_hp * (f_clay ** 2))
 
     ! calculate f_m [unitless]
-    WHERE ( w <= w_t )
-      f_m = 1.0_hp
-    ELSEWHERE
+    ! initialize f_m
+    f_m = 1.0_hp
+    WHERE ( w > w_t )
       f_m = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w - w_t) ** 0.68_hp)))
     ENDWHERE
 
@@ -988,6 +988,8 @@ CONTAINS
 
     ! Calculate drag partioning effects due to rocks:
     ! f_eff_r = 1 - ln(z_0a / z_0s) / ln(b1 * (X / z_0s) ** b2)
+    ! initialize
+    f_eff_r = 1.0d0
     f_eff_r = 1.0d0 - LOG(z_0a / z_0s) / LOG(b1 * (X / z_0s) ** b2)
     WHERE (f_eff_r < 0.0d0)
       f_eff_r = 0.0d0
@@ -997,11 +999,25 @@ CONTAINS
     
     ! calculate drag partioning effects due to vegetation:
     ! f_eff_v = (K + f0 * c) / (K + c)
+    ! initialize
+    f_eff_v = 1.0d0
     f_eff_v = (K + f0 * c) / (K + c)
+    WHERE (f_eff_v < 0.0d0)
+      f_eff_v = 0.0d0
+    ELSEWHERE (f_eff_v > 1.0d0)
+      f_eff_v = 1.0d0
+    ENDWHERE
 
     ! calculate the weighted-mean drag partioning effects due to rocks and vegetation
+    ! initialize
+    F_eff = 1.0d0
     F_eff = (A_r * (f_eff_r ** 3.0_hp) + A_v * (f_eff_v ** 3.0_hp)) ** (1.0_hp/3.0_hp)
-    
+    WHERE (F_eff < 0.0d0)
+      F_eff = 0.0d0
+    ELSEWHERE (F_eff > 1.0d0)
+      F_eff = 1.0d0
+    ENDWHERE
+
     ! Return w/ success
     RC = HCO_SUCCESS
 
@@ -1066,6 +1082,8 @@ CONTAINS
     P_it = 0.5_hp * (1.0_hp + ERF((u_it - u_s) / (SQRT(2.0_hp) * sigma)))
 
     ! calculate intermittency factor: eta = 1 - P_ft + alpha * (P_ft - P_it)
+    ! initialize
+    eta = 1.0_hp
     eta = 1.0_hp - P_ft + alpha * (P_ft - P_it)
     ! if eta is out of range of [0,1], then skip eta multipling by making the value as 1
     WHERE ((eta < 0.0_hp) .or. (eta > 1.0_hp) .or. (sigma < 0))
@@ -1126,9 +1144,11 @@ CONTAINS
     TS = ExtState%TS%Arr%Val
     T2M = ExtState%T2M%Arr%Val
     PS = ExtState%PS%Arr%Val * 100.0_hp ! convert hPa to Pa
-    rho_a = PS * (HcoState%Phys%AIRMW * 1.0e-3_hp) / (HcoState%Phys%RSTARG * TS)
+    rho_a = PS * (HcoState%Phys%AIRMW * 1.0e-3_hp) / (HcoState%Phys%RSTARG * T2M)
 
     snowdep = ExtState%SNOWHGT%Arr%Val / 1000 * (1000 / 100) ! convert kg H2O / m2 to m
+    ! initialize
+    A_snow = 0.0_hp
     A_snow = snowdep / snowdep_thr
     WHERE ((A_snow > 1.0_hp) .or. (TS < T0))
       A_snow = 1.0_hp
@@ -1164,6 +1184,8 @@ CONTAINS
     C_d = C_d0 * EXP (- C_e * (u_star_st - u_star_st0) / u_star_st0)
 
     ! calculate f_bare = A_bare * (1 - A_snow) * (1 - LAI / LAI_thr) for LAI <= LAI_thr, and f_bare = 0 for LAI > LAI_thr
+    ! initialize
+    f_bare = 0.0_hp
     f_bare = Inst%A_bare * (1.0_hp - A_snow) * (1.0_hp - Inst%XLAI_t / LAI_thr)
     WHERE (Inst%XLAI_t > LAI_thr)
       f_bare = 0.0_hp
@@ -1174,7 +1196,9 @@ CONTAINS
       kappa = 3.0_hp
     ENDWHERE
     
-    u_star_t = u_star_it  
+    u_star_t = u_star_it
+    ! initialize
+    DUST_EMIS_FLUX_Tmp = 0.0_hp
     DUST_EMIS_FLUX_Tmp = eta * C_tune * Inst%C_sah * C_d * f_bare * \
         rho_a * ((u_star_s ** 2.0_hp) - (u_star_t ** 2.0_hp)) / u_star_st * \
         ((u_star_s / u_star_t) ** kappa)
@@ -1182,6 +1206,8 @@ CONTAINS
       DUST_EMIS_FLUX_Tmp = 0.0_hp
     ENDWHERE
 
+    ! initialize
+    DUST_EMIS_FLUX = 0.0_hp
     WHERE (DUST_EMIS_FLUX_Tmp > 0.0_hp)
       DUST_EMIS_FLUX = DUST_EMIS_FLUX_Tmp 
     ELSEWHERE
