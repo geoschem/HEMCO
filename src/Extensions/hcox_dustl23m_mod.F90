@@ -896,6 +896,7 @@ CONTAINS
     !-----------------
     ! Local variables
     !-----------------
+    INTEGER                :: I, J
     REAL(hp),  PARAMETER   :: A         = 0.0123_hp
     REAL(hp),  PARAMETER   :: gamma     = 1.65e-4_hp ! [kg s-2]
     REAL(hp),  PARAMETER   :: B_it      = 0.82_hp
@@ -922,22 +923,35 @@ CONTAINS
     w_t        = 0.0_hp
     f_m        = 1.0_hp ! f_m >= 1
 
-    ! Dry fluid threshold velocity [m s-1]: 
-    ! calculate u_star_ft0 = sqrt(A * (rho_p * g * D_p + gamma / D_p) / rho_a)
-    u_star_ft0(:,:) =  SQRT(A * (rho_p * HcoState%Phys%g0 * D_p + gamma / D_p) / rho_a(:,:)) ! [m s-1]
+    DO J = 1, HcoState%NY
+      DO I = 1, HcoState%NX
+        ! Dry fluid threshold velocity [m s-1]: 
+        ! calculate u_star_ft0 = sqrt(A * (rho_p * g * D_p + gamma / D_p) / rho_a)
+        u_star_ft0(I,J) =  SQRT(A * (rho_p * HcoState%Phys%g0 * D_p + gamma / D_p) / rho_a(I,J)) ! [m s-1]
 
-    ! Factor by which soil wetness enhancing threhold friction velocity
-    ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
-    !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
-    w = rho_w / bulk_density * theta * 0.5
-    
-    !! calculate w_t = 0.01 * a * (17 * f_clay + 14 * f_clay ** 2) where a is a tuning factor and was set to be 1.0
-    w_t = 0.01_hp * (17.0_hp * f_clay + 14.0_hp * (f_clay ** 2))
+        ! Factor by which soil wetness enhancing threhold friction velocity
+        ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
+        !! calculate w = rho_w / rho_b * theta = rho_w / (rho_p * ( 1 - phi)) * theta with additional 0.5 scaling 
+        w(I,J) = rho_w / (rho_p * ( 1 - poros(I,J))) * theta(I,J) * 0.5_hp
+        ! disable values over oceans where poros is undefined but will have value of 0 due to initialization
+        IF ((poros(I,J) .LE. 0.0_hp)) THEN
+          w(I,J) = 0.0_hp
+        ENDIF
 
-    ! calculate f_m [unitless]
-    WHERE ( w > w_t )
-      f_m = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w - w_t) ** 0.68_hp)))
-    ENDWHERE
+        !! calculate w_t = 0.01 * a * (17 * f_clay + 14 * f_clay ** 2) where a is a tuning factor and was set to be 1.0
+        w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
+
+        ! calculate f_m [unitless]
+        IF ( w(I,J) > w_t(I,J)) THEN
+          f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J)) ** 0.68_hp)))
+        ENDIF
+        
+        ! make f_m = 1.0 for very dry soil with clay content of 0
+        IF ((bulk_density(I,J) .LE. 0.0_hp) .or. (f_clay(I,J) .LE. 0.0_hp)) THEN
+          f_m(I,J) = 1.0_hp
+        ENDIF
+      ENDDO
+    ENDDO
 
     ! Wet threshold friction velocity [m s-1]
     u_star_ft = u_star_ft0 * f_m
@@ -948,7 +962,7 @@ CONTAINS
 
     ! Standardized wet fluid thershold friction velocity [m s-1]
     u_star_st = u_star_ft * SQRT(rho_a / rho_a0)
-    
+
     ! Return w/ success
     RC = HCO_SUCCESS
 
@@ -974,6 +988,7 @@ CONTAINS
     !-----------------
     ! Local variables
     !-----------------
+    INTEGER                :: I, J
     ! parameters
     REAL(hp),  PARAMETER   :: b1        = 0.7_hp
     REAL(hp),  PARAMETER   :: b2        = 0.8_hp
@@ -994,37 +1009,39 @@ CONTAINS
     F_eff   = 1.0_hp
     K       = 0.0_hp
 
-    ! calculate K = pi/2 * (1 / f_v - 1) = pi/2 * (LAI_thr / LAI - 1)
-    K = HcoState%Phys%PI / 2.0_hp * (LAI_thr / LAI - 1.0_hp)
-    WHERE (K < 0.0_hp)
-      K = 0.0_hp
-    ENDWHERE
+    DO J = 1, HcoState%NY
+      DO I = 1, HcoState%NX
 
-    ! Calculate drag partioning effects due to rocks:
-    ! f_eff_r = 1 - ln(z_0a / z_0s) / ln(b1 * (X / z_0s) ** b2)
-    f_eff_r = 1.0d0 - LOG(z_0a / z_0s) / LOG(b1 * (X / z_0s) ** b2)
-    WHERE (f_eff_r < 0.0d0)
-      f_eff_r = 0.0d0
-    ELSEWHERE (f_eff_r > 1.0d0)
-      f_eff_r = 1.0d0
-    ENDWHERE
-    
-    ! calculate drag partioning effects due to vegetation:
-    ! f_eff_v = (K + f0 * c) / (K + c)
-    f_eff_v = (K + f0 * c) / (K + c)
-    WHERE (f_eff_v < 0.0d0)
-      f_eff_v = 0.0d0
-    ELSEWHERE (f_eff_v > 1.0d0)
-      f_eff_v = 1.0d0
-    ENDWHERE
+        ! calculate K = pi/2 * (1 / f_v - 1) = pi/2 * (LAI_thr / LAI - 1)
+        K(I,J) = HcoState%Phys%PI / 2.0_hp * (LAI_thr / LAI(I,J) - 1.0_hp)
 
-    ! calculate the weighted-mean drag partioning effects due to rocks and vegetation
-    F_eff = (A_r * (f_eff_r ** 3.0_hp) + A_v * (f_eff_v ** 3.0_hp)) ** (1.0_hp/3.0_hp)
-    WHERE (F_eff < 0.0d0)
-      F_eff = 0.0d0
-    ELSEWHERE (F_eff > 1.0d0)
-      F_eff = 1.0d0
-    ENDWHERE
+        ! Calculate drag partioning effects due to rocks:
+        ! f_eff_r = 1 - ln(z_0a / z_0s) / ln(b1 * (X / z_0s) ** b2)
+        f_eff_r(I,J) = 1.0d0 - LOG(z_0a(I,J) / z_0s) / LOG(b1 * (X / z_0s) ** b2)
+        IF ((f_eff_r(I,J) < 0.0_hp)) THEN
+          f_eff_r(I,J) = 0.0_hp
+        ELSEIF (f_eff_r(I,J) > 1.0_hp) THEN
+          f_eff_r(I,J) = 1.0_hp
+        ENDIF
+        
+        ! calculate drag partioning effects due to vegetation:
+        ! f_eff_v = (K + f0 * c) / (K + c)
+        f_eff_v(I,J) = (K(I,J) + f0 * c) / (K(I,J) + c)
+        IF ((f_eff_v(I,J) < 0.0_hp)) THEN
+          f_eff_v(I,J) = 0.0_hp
+        ELSEIF ((f_eff_v(I,J) > 1.0_hp) .or. (LAI(I,J) < 1.0e-15_hp)) THEN
+          f_eff_v(I,J) = 1.0_hp
+        ENDIF
+
+        ! calculate the weighted-mean drag partioning effects due to rocks and vegetation
+        F_eff(I,J) = (A_r(I,J) * (f_eff_r(I,J) ** 3.0_hp) + A_v(I,J) * (f_eff_v(I,J) ** 3.0_hp)) ** (1.0_hp/3.0_hp)
+        IF ((F_eff(I,J) < 0.0_hp)) THEN
+          F_eff(I,J) = 0.0_hp
+        ELSEIF (F_eff(I,J) > 1.0_hp) THEN
+          F_eff(I,J) = 1.0_hp
+        ENDIF
+      ENDDO
+    ENDDO
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -1053,6 +1070,7 @@ CONTAINS
     !-----------------
     ! Local variables
     !-----------------
+    INTEGER                :: I, J
     ! parameters
     REAL(hp),  PARAMETER   :: z_sal        = 0.1_hp  ! Saltation height [m]
     REAL(hp),  PARAMETER   :: z_0a_c       = 1.0e-4_hp ! take as constant for simplicity [m]
@@ -1080,32 +1098,37 @@ CONTAINS
     P_ft  = 0.0_hp
     P_it  = 0.0_hp
 
-    u_ft = u_star_ft / CST_VON_KRM * LOG(z_sal / z_0a_c)
-    u_it = u_star_it / CST_VON_KRM * LOG(z_sal / z_0a_c)
-    u_s = u_star_s / CST_VON_KRM * LOG(z_sal / z_0a_c)
-    
-    ! calculate sigma for instantaneous soil friction velocity:
-    ! sigma = u_star_s * (12 - 0.5 * PBLH / L) ** (1/3) for (12 - 0.5 * PBLH / L)>=0
-    !! calculate the Monin-bukhov length L = - rho_a * cp * T * u_star ** 3 / (k * g * H)
-    L = - rho_a * SPC_HEAT_DRY_AIR * T2M * u_star ** 3.0_hp / (CST_VON_KRM * HcoState%Phys%g0 * HFLUX)
-    sigma = u_star_s * ((12.0_hp - 0.5_hp * PBLH / L) ** (1.0_hp/3.0_hp))
-    
-    ! calculate the fluid thresholf crossing fraction: 
-    ! alpha = (exp ((u_ft ** 2 - u_it ** 2 - 2 * u_s * (u_ft - u_it)) / (2 * sigma ** 2)) + 1) ** (-1)
-    alpha = (EXP (((u_ft ** 2.0_hp) - (u_it ** 2.0_hp) - 2.0_hp * u_s * (u_ft - u_it)) / (2.0_hp * (sigma ** 2.0_hp))) + 1.0_hp) ** (-1.0_hp)
+    DO J = 1, HcoState%NY
+      DO I = 1, HcoState%NX
 
-    ! calculate the cumulative probability that instananeous soil friction velocity does not exceed 
-    ! the wet fluid threshold u_ft or the impact threshold u_it of P_ft or P_it
-    ! P_ft = 0.5 * (1 + erf((u_ft - u_s) / (sqrt(2) * sigma))); P_it = 0.5 * (1 + erf((u_it - u_s) / (sqrt(2) * sigma)))
-    P_ft = 0.5_hp * (1.0_hp + ERF((u_ft - u_s) / (SQRT(2.0_hp) * sigma)))
-    P_it = 0.5_hp * (1.0_hp + ERF((u_it - u_s) / (SQRT(2.0_hp) * sigma)))
+        u_ft(I,J) = u_star_ft(I,J) / CST_VON_KRM * LOG(z_sal / z_0a_c)
+        u_it(I,J) = u_star_it(I,J) / CST_VON_KRM * LOG(z_sal / z_0a_c)
+        u_s(I,J) = u_star_s(I,J) / CST_VON_KRM * LOG(z_sal / z_0a_c)
+        
+        ! calculate sigma for instantaneous soil friction velocity:
+        ! sigma = u_star_s * (12 - 0.5 * PBLH / L) ** (1/3) for (12 - 0.5 * PBLH / L)>=0
+        !! calculate the Monin-bukhov length L = - rho_a * cp * T * u_star ** 3 / (k * g * H)
+        L(I,J) = - rho_a(I,J) * SPC_HEAT_DRY_AIR * T2M(I,J) * u_star(I,J) ** 3.0_hp / (CST_VON_KRM * HcoState%Phys%g0 * HFLUX(I,J))
+        sigma(I,J) = u_star_s(I,J) * ((12.0_hp - 0.5_hp * PBLH(I,J) / L(I,J)) ** (1.0_hp/3.0_hp))
+        
+        ! calculate the fluid thresholf crossing fraction: 
+        ! alpha = (exp ((u_ft ** 2 - u_it ** 2 - 2 * u_s * (u_ft - u_it)) / (2 * sigma ** 2)) + 1) ** (-1)
+        alpha(I,J) = (EXP (((u_ft(I,J) ** 2.0_hp) - (u_it(I,J) ** 2.0_hp) - 2.0_hp * u_s(I,J) * (u_ft(I,J) - u_it(I,J))) / (2.0_hp * (sigma(I,J) ** 2.0_hp))) + 1.0_hp) ** (-1.0_hp)
 
-    ! calculate intermittency factor: eta = 1 - P_ft + alpha * (P_ft - P_it)
-    eta = 1.0_hp - P_ft + alpha * (P_ft - P_it)
-    ! if eta is out of range of [0,1], then skip eta multipling by making the value as 1
-    WHERE ((eta < 0.0_hp) .or. (eta > 1.0_hp) .or. (sigma < 0))
-      eta = 1.0_hp
-    ENDWHERE
+        ! calculate the cumulative probability that instananeous soil friction velocity does not exceed 
+        ! the wet fluid threshold u_ft or the impact threshold u_it of P_ft or P_it
+        ! P_ft = 0.5 * (1 + erf((u_ft - u_s) / (sqrt(2) * sigma))); P_it = 0.5 * (1 + erf((u_it - u_s) / (sqrt(2) * sigma)))
+        P_ft(I,J) = 0.5_hp * (1.0_hp + ERF((u_ft(I,J) - u_s(I,J)) / (SQRT(2.0_hp) * sigma(I,J))))
+        P_it(I,J) = 0.5_hp * (1.0_hp + ERF((u_it(I,J) - u_s(I,J)) / (SQRT(2.0_hp) * sigma(I,J))))
+
+        ! calculate intermittency factor: eta = 1 - P_ft + alpha * (P_ft - P_it)
+        eta(I,J) = 1.0_hp - P_ft(I,J) + alpha(I,J) * (P_ft(I,J) - P_it(I,J))
+        ! if eta is out of range of [0,1], then skip eta multipling by making the value as 1
+        IF ((eta(I,J) .LE. 0.0_hp) .or. (eta(I,J) .GE. 1.0_hp) .or. (sigma(I,J) .LE. 0)) THEN
+          eta(I,J) = 1.0_hp
+        ENDIF
+      ENDDO
+    ENDDO
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -1123,6 +1146,7 @@ CONTAINS
     INTEGER, INTENT(INOUT)        :: RC
 
     ! Local variables
+    INTEGER                :: I, J
     REAL(hp)                :: snowdep(HcoState%NX, HcoState%NY)    ! Snow depth [m]
     REAL(hp)                :: A_snow(HcoState%NX, HcoState%NY)     ! Fraction of snow cover [unitless]
     REAL(hp)                :: u_star_ft0(HcoState%NX, HcoState%NY) ! Dry fluid thershold friction velocity [m s-1]
@@ -1152,6 +1176,7 @@ CONTAINS
     REAL(hp)        :: TS(HcoState%NX, HcoState%NY)    ! Surface temperature [K]
     REAL(hp)        :: PS(HcoState%NX, HcoState%NY)    ! Surface pressure [Pa]
     
+    REAL(hp)        :: theta(HcoState%NX, HcoState%NY)          ! Volumetric soil moisture [unitless]
     REAL(hp)        :: C_d(HcoState%NX, HcoState%NY)            ! Soil erodibility coefficient [unitless]
     REAL(hp)        :: f_bare(HcoState%NX, HcoState%NY)         ! [unitless]
     REAL(hp)        :: u_star_s(HcoState%NX, HcoState%NY)       ! Soil surface friction velocity [m s-1]
@@ -1181,19 +1206,24 @@ CONTAINS
     kappa = 0.0_hp
     u_star_t = 0.0_hp
 
-    TS = ExtState%TS%Arr%Val
-    T2M = ExtState%T2M%Arr%Val
-    PS = ExtState%PS%Arr%Val * 100.0_hp ! convert hPa to Pa
-    rho_a = PS * (HcoState%Phys%AIRMW * 1.0e-3_hp) / (HcoState%Phys%RSTARG * T2M)
+    DO J = 1, HcoState%NY
+      DO I = 1, HcoState%NX
+        TS(I,J) = ExtState%TS%Arr%Val(I,J)
+        T2M(I,J) = ExtState%T2M%Arr%Val(I,J)
+        PS(I,J) = ExtState%PS%Arr%Val(I,J) * 100.0_hp ! convert hPa to Pa
+        rho_a(I,J) = PS(I,J) * (HcoState%Phys%AIRMW * 1.0e-3_hp) / (HcoState%Phys%RSTARG * T2M(I,J))
 
-    snowdep = ExtState%SNOWHGT%Arr%Val / 1000 * (1000 / 100) ! convert kg H2O / m2 to m
-    A_snow = snowdep / snowdep_thr
-    WHERE ((A_snow > 1.0_hp) .or. (TS < T0))
-      A_snow = 1.0_hp
-    ENDWHERE
+        snowdep(I,J) = ExtState%SNOWHGT%Arr%Val(I,J) / 1000 * (1000 / 100) ! convert kg H2O / m2 to m
+        A_snow(I,J) = snowdep(I,J) / snowdep_thr
+        IF ((A_snow(I,J) > 1.0_hp) .or. (TS(I,J) < T0)) THEN
+          A_snow(I,J) = 1.0_hp
+        ENDIF
+      ENDDO
+    ENDDO
 
+    theta = ExtState%GWETTOP%Arr%Val * Inst%poros
     SUBLOC = 'CAL_THR_FRIC_VEL'
-    CALL CAL_THR_FRIC_VEL(HcoState, rho_a, Inst%f_clay, Inst%poros, ExtState%GWETTOP%Arr%Val, Inst%bulk_den, &
+    CALL CAL_THR_FRIC_VEL(HcoState, rho_a, Inst%f_clay, Inst%poros, theta, Inst%bulk_den, &
                           u_star_ft0, u_star_ft, u_star_it, u_star_st, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
       CALL HCO_ERROR( 'ERROR', RC, THISLOC=SUBLOC )
@@ -1202,49 +1232,51 @@ CONTAINS
 
     SUBLOC = 'CAL_DRAG_PART'
     CALL CAL_DRAG_PART(HcoState, Inst%roughness_r, Inst%XLAI_t, Inst%A_bare, Inst%A_veg, &
-                       f_eff_r, f_eff_v, F_eff, RC)
+                      f_eff_r, f_eff_v, F_eff, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
       CALL HCO_ERROR( 'ERROR', RC, THISLOC=SUBLOC )
       RETURN
     ENDIF
-    
+        
     u_star_s = ExtState%USTAR%Arr%Val * F_eff
 
     SUBLOC = 'CAL_INTERM_FACTOR'
     CALL CAL_INTERM_FACTOR(HcoState, u_star_ft, u_star_it, u_star_s, &
-                           ExtState%PBLH%Arr%Val, rho_a, T2M, ExtState%USTAR%Arr%Val, ExtState%HFLUX%Arr%Val, eta, RC)
+                          ExtState%PBLH%Arr%Val, rho_a, T2M, ExtState%USTAR%Arr%Val, ExtState%HFLUX%Arr%Val, eta, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
       CALL HCO_ERROR( 'ERROR', RC, THISLOC=SUBLOC )
       RETURN
     ENDIF
 
-    ! calculate C_d = C_d0 * exp (- C_e * (u_star_st - u_star_st0) / u_star_st0)
-    C_d = C_d0 * EXP (- C_e * (u_star_st - u_star_st0) / u_star_st0)
+    DO J = 1, HcoState%NY
+      DO I = 1, HcoState%NX
+        ! calculate C_d = C_d0 * exp (- C_e * (u_star_st - u_star_st0) / u_star_st0)
+        C_d(I,J) = C_d0 * EXP (- C_e * (u_star_st(I,J) - u_star_st0) / u_star_st0)
 
-    ! calculate f_bare = A_bare * (1 - A_snow) * (1 - LAI / LAI_thr) for LAI <= LAI_thr, and f_bare = 0 for LAI > LAI_thr
-    f_bare = Inst%A_bare * (1.0_hp - A_snow) * (1.0_hp - Inst%XLAI_t / LAI_thr)
-    WHERE (Inst%XLAI_t > LAI_thr)
-      f_bare = 0.0_hp
-    ENDWHERE
+        ! calculate f_bare = A_bare * (1 - A_snow) * (1 - LAI / LAI_thr) for LAI <= LAI_thr, and f_bare = 0 for LAI > LAI_thr
+        f_bare(I,J) = Inst%A_bare(I,J) * (1.0_hp - A_snow(I,J)) * (1.0_hp - Inst%XLAI_t(I,J) / LAI_thr)
+        IF (Inst%XLAI_t(I,J) > LAI_thr) THEN
+          f_bare(I,J) = 0.0_hp
+        ENDIF
 
-    kappa = C_kappa * (u_star_st - u_star_st0) / u_star_st0
-    WHERE (kappa>3.0_hp)
-      kappa = 3.0_hp
-    ENDWHERE
-    
-    u_star_t = u_star_it
-    DUST_EMIS_FLUX_Tmp = eta * C_tune * Inst%C_sah * C_d * f_bare * \
-        rho_a * ((u_star_s ** 2.0_hp) - (u_star_t ** 2.0_hp)) / u_star_st * \
-        ((u_star_s / u_star_t) ** kappa)
-    WHERE ((DUST_EMIS_FLUX_Tmp < 0.0_hp) .or. (u_star_s .LE. u_star_t))
-      DUST_EMIS_FLUX_Tmp = 0.0_hp
-    ENDWHERE
+        kappa(I,J) = C_kappa * (u_star_st(I,J) - u_star_st0) / u_star_st0
+        IF (kappa(I,J)>3.0_hp) THEN
+          kappa(I,J) = 3.0_hp
+        ENDIF
+        
+        u_star_t(I,J) = u_star_it(I,J)
+        DUST_EMIS_FLUX_Tmp(I,J) = eta(I,J) * C_tune * Inst%C_sah(I,J) * C_d(I,J) * f_bare(I,J) * \
+            rho_a(I,J) * ((u_star_s(I,J) ** 2.0_hp) - (u_star_t(I,J) ** 2.0_hp)) / u_star_st(I,J) * \
+            ((u_star_s(I,J) / u_star_t(I,J)) ** kappa(I,J))
+        IF ((DUST_EMIS_FLUX_Tmp(I,J) < 0.0_hp) .or. (u_star_s(I,J) .LE. u_star_t(I,J))) THEN
+          DUST_EMIS_FLUX_Tmp(I,J) = 0.0_hp
+        ENDIF
 
-    WHERE (DUST_EMIS_FLUX_Tmp > 0.0_hp)
-      DUST_EMIS_FLUX = DUST_EMIS_FLUX_Tmp 
-    ELSEWHERE
-      DUST_EMIS_FLUX = 0.0_hp
-    ENDWHERE
+        IF (DUST_EMIS_FLUX_Tmp(I,J) > 0.0_hp) THEN
+          DUST_EMIS_FLUX(I,J) = DUST_EMIS_FLUX_Tmp (I,J)
+        ENDIF
+      ENDDO
+    ENDDO
 
     ! Return w/ success
     RC = HCO_SUCCESS

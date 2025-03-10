@@ -40,7 +40,7 @@ GridFile:            HEMCO_sa_Grid.025x03125.rc
 SpecFile:            HEMCO_sa_Spec.rc
 TimeFile:            HEMCO_sa_Time.rc
 DiagnFile:           HEMCO_Diagn.rc
-Logfile:             HEMCO.log
+Logfile:             *
 #-----------------------------------------------------
 # Settings for HEMCO grid
 #-----------------------------------------------------
