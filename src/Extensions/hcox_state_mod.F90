@@ -135,7 +135,7 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: TSKIN       ! Surface skin temperature [K]
      TYPE(ExtDat_2R),  POINTER :: TSOIL1      ! Soil temperature, layer 1 [K]
      TYPE(ExtDat_2R),  POINTER :: GWETROOT    ! Root soil wetness [1]
-     TYPE(ExtDat_2R),  POINTER :: GWETTOP     ! Top soil moisture [-]
+     TYPE(ExtDat_2R),  POINTER :: GWETTOP     ! Top soil moisture [1]
      TYPE(ExtDat_2R),  POINTER :: SNOWHGT     ! Snow mass [mm H2O = kg H2O/m2]
      TYPE(ExtDat_2R),  POINTER :: SNODP       ! Snow depth [m ]
      TYPE(ExtDat_2R),  POINTER :: SNICE       ! Fraction of snow/ice [1]
