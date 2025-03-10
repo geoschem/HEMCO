@@ -89,7 +89,6 @@ MODULE HCOX_DustL23M_mod
 
    ! Soil textture map
    REAL(hp), POINTER          :: f_clay    (:,:) => NULL() ! The fraction of clay content in topmost soil [unitless]
-   REAL(hp), POINTER          :: bulk_den  (:,:) => NULL() ! The bulk density of topmost soil [kg m-3]
    
    ! Soil porosity taken from the constant field from MERRA2 M2C0NXLND collection [unitless]
    REAL(hp), POINTER          :: poros     (:,:) => NULL()
@@ -232,12 +231,6 @@ CONTAINS
     ENDIF
 
     CALL HCO_EvalFld( HcoState, 'L23M_fclay', Inst%f_clay, RC)
-    IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
-        RETURN
-    ENDIF
-
-    CALL HCO_EvalFld( HcoState, 'L23M_BD', Inst%bulk_den, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR', RC, THISLOC=LOC )
         RETURN
@@ -510,14 +503,6 @@ CONTAINS
     ENDIF
     Inst%f_clay = 0.0_hp
 
-    ALLOCATE( Inst%bulk_den( HcoState%NX, HcoState%NY), STAT=AS )
-    IF ( AS /= 0 ) THEN
-        msg = 'Could not allocate Inst%bulk_den!'
-        CALL HCO_ERROR( msg, RC, thisLoc=loc )
-        RETURN
-    ENDIF
-    Inst%bulk_den = 0.0_hp
-
     ALLOCATE( Inst%poros( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS /= 0 ) THEN
         msg = 'Could not allocate Inst%poros!'
@@ -742,7 +727,6 @@ CONTAINS
     Inst%C_sah           => NULL()
     Inst%XLAI_t          => NULL()
     Inst%f_clay          => NULL()
-    Inst%bulk_den        => NULL()
     Inst%poros           => NULL()
     Inst%roughness_r     => NULL()
 
@@ -842,11 +826,6 @@ CONTAINS
        ENDIF
        Inst%f_clay => NULL()
 
-       IF ( ASSOCIATED( Inst%bulk_den ) ) THEN
-        DEALLOCATE(Inst%bulk_den )
-       ENDIF
-       Inst%bulk_den => NULL()
-
        IF ( ASSOCIATED( Inst%poros ) ) THEN
         DEALLOCATE(Inst%poros )
        ENDIF
@@ -874,7 +853,7 @@ CONTAINS
 
    END SUBROUTINE InstRemove
   
-  SUBROUTINE CAL_THR_FRIC_VEL(HcoState, rho_a, f_clay, poros, theta, bulk_density, &
+  SUBROUTINE CAL_THR_FRIC_VEL(HcoState, rho_a, f_clay, poros, theta, &
                              u_star_ft0, u_star_ft, u_star_it, u_star_st, RC)
     ! Description: calculate threshold friction velocities
 
@@ -886,7 +865,6 @@ CONTAINS
     REAL(hp),  INTENT(IN)  :: f_clay(HcoState%NX, HcoState%NY) ! Soil clay fraction [unitless]
     REAL(hp),  INTENT(IN)  :: poros(HcoState%NX, HcoState%NY)  ! Soil porosity [unitless]
     REAL(hp),  INTENT(IN)  :: theta(HcoState%NX, HcoState%NY) ! Volumetric soil water content [unitless]
-    REAL(hp),  INTENT(IN)  :: bulk_density(HcoState%NX, HcoState%NY) ! Bulk density of topmost soil [kg m-3]
     REAL(hp),  INTENT(OUT) :: u_star_ft0(HcoState%NX, HcoState%NY) ! Dry fluid thershold friction velocity [m s-1]
     REAL(hp),  INTENT(OUT) :: u_star_ft(HcoState%NX, HcoState%NY) ! Wet fluid thershold friction velocity [m s-1]
     REAL(hp),  INTENT(OUT) :: u_star_it(HcoState%NX, HcoState%NY) ! Dynamic fluid thershold friction velocity [m s-1]
@@ -947,7 +925,7 @@ CONTAINS
         ENDIF
         
         ! make f_m = 1.0 for very dry soil with clay content of 0
-        IF ((bulk_density(I,J) .LE. 0.0_hp) .or. (f_clay(I,J) .LE. 0.0_hp)) THEN
+        IF ((f_clay(I,J) .LE. 0.0_hp)) THEN
           f_m(I,J) = 1.0_hp
         ENDIF
       ENDDO
@@ -1223,7 +1201,7 @@ CONTAINS
 
     theta = ExtState%GWETTOP%Arr%Val * Inst%poros
     SUBLOC = 'CAL_THR_FRIC_VEL'
-    CALL CAL_THR_FRIC_VEL(HcoState, rho_a, Inst%f_clay, Inst%poros, theta, Inst%bulk_den, &
+    CALL CAL_THR_FRIC_VEL(HcoState, rho_a, Inst%f_clay, Inst%poros, theta, &
                           u_star_ft0, u_star_ft, u_star_it, u_star_st, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
       CALL HCO_ERROR( 'ERROR', RC, THISLOC=SUBLOC )
