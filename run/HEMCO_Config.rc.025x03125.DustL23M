@@ -112,7 +112,7 @@ PBL dry deposition:  False
 * PBLH      $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     PBLH     1980-2021/1-12/1-31/*/+30minute EFY xy  m     * -  1 1
 * GWETTOP   $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     GWETTOP  1980-2021/1-12/1-31/*/+30minute EFY xy  1     * -  1 1
 * HFLUX     $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     HFLUX    1980-2021/1-12/1-31/*/+30minute EFY xy  W/m2  * -  1 1
-* SNOWHGT   $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     SNOMAS   1980-2021/1-12/1-31/*/+30minute EFY xy  kg/m2  * -  1 1
+* SNOWHGT   $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     SNOMAS   1980-2021/1-12/1-31/*/+30minute EFY xy  kg/m2 * -  1 1
 
 * PS           $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.I3.$RES.nc  PS        1980-2021/1-12/1-31/*           EFY xy  hPa  * -  1 1
 * TMPU         $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.I3.$RES.nc  T         1980-2021/1-12/1-31/*           EFY xyz K    * -  1 1
