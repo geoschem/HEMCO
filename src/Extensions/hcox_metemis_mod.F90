@@ -11,60 +11,55 @@
 ! This code is adapted from the MetEmis codes in U.S. EPA CMAQ Version 5.3.1.
 !\\
 !\\
-! This module calculates production rates of NO, NO2, HNO3, and O3, as well
-! as loss rates of O3 and HNO3. All fluxes are in kg species/m2/s. The
-! O3 and HNO3 loss fluxes are not converted to a deposition velocity, but
-! rather saved out as mass fluxes (kg/m2/s) into diagnostics
-! 'PARANOX\_O3\_DEPOSITION\_FLUX' and 'PARANOX\_HNO3\_DEPOSITION\_FLUX',
-! respectively. In order to use them, they must be imported explicitly via
-! routine Diagn\_Get (from module hco\_diagn\_mod.F90). This approach avoids
-! problems with uncrealistically high loss rates for loss ambient air
-! concentrations of O3 or HNO3.
+!Mobile emissions from the on-road and off-network (e.g., vehicle start-up, 
+! running exhaust, brake–tire wear, hot soak, and extended idling) are sensitive 
+! to temperature and humidity due to various factors, including (1) cold engine 
+! starts that enhance emissions at lower ambient temperatures due to incomplete 
+! fuel combustion, (2) evaporative losses of volatile organic compounds (VOCs) 
+! due to expansion and contraction caused by ambient diurnal temperature variations, 
+! (3) enhanced running emissions at higher ambient temperatures, (4) atmospheric 
+! moisture suppression of high combustion temperatures that lower nitrogen oxide 
+! emissions at higher humidity, and (5) indirect increased emissions from air 
+! conditioning at higher ambient temperatures (Choi et al., 2010; Iodice and 
+! Senatore, 2014; Lindhjem et al., 2004; Mellios et al., 2019; U.S. EPA, 2015). 
+! McDonald et al. (2018) found that NOx emissions from the National Emissions 
+! Inventory (NEI) estimated from the U.S. EPA's MOVES are underestimated, 
+! leading to a failure regarding the prediction of high ozone days (8 h max ozone >70 ppb; McDonald et al., 2018).
+
+! The dependency of mobile emissions on local meteorology can vary by vehicle type 
+! (light duty, heavy duty, truck and bus), fuel type (gasoline, diesel, hybrid, and electric), 
+! road type (interstate, freeway, and local roads), process (vehicle start-up, running exhaust, 
+! brake–tire wear, hot soak, and extended idling), vehicle speed for on-road vehicles, 
+! and hour of the day for off-network vehicles, as well as by pollutants such as CO, 
+! NOX, SO2, NH3, VOCs, and particulate matter (PM). Figure 1 shows the dependency of the 
+! MOVES emission factors of CO, NOx, VOCs, and PM2.5 from gasoline-fueled vehicles on 
+! ambient temperature from the on-road and off-network vehicles, respectively. All 
+! pollutant emissions vary with the temperature, particularly under lower speeds. 
+! The CO, VOCs, and NOx emissions increase with temperature, while the opposite 
+! relationship is suggested between PM2.5 emissions and temperature, implying the complexity 
+! of meteorology impacts on different pollutant emissions. For off-network emissions from 
+! gasoline-fueled vehicles, CO, NOx, and PM2.5 show negative correlations with temperature, 
+! while the VOCs exhibit a nonlinear response to the temperature variation. The largest 
+! meteorology dependency occurs in the daytime when emissions are the greatest. 
+! A further, detailed meteorology dependency of MOVES emission factors on local meteorology can be found in Choi et al. (2010).
+
+! This module can dynamically estimate meteorology-induced hourly gridded 
+! on-road mobile emissions within the CMAQ, using simulated meteorology 
+! without any computational burden to the modeling system.
 !\\
 !\\
-! The PARANOx look-up-table can be provided in netCDF or ASCII (txt) format.
-! The latter is particularly useful for running PARANOx in an ESMF environment,
-! where 7-dimensional netCDF files are currently not supported. The input data
-! format can be specified in the HEMCO configuration file (in the PARANOx
-! extensions section).
-! The txt-files can be generated from the previously read netCDF data using
-! subroutine WRITE\_LUT\_TXTFILE.
-!\\
+! The MetEmis onroad look-up-table (LUT) can be provided in netCDF format.
+
 !\\
 ! References:
 ! \begin{itemize}
-! \item Vinken, G. C. M., Boersma, K. F., Jacob, D. J., and Meijer, E. W.:
-! Accounting for non-linear chemistry of ship plumes in the
-! GEOS-Chem global chemistry transport model, Atmos. Chem. Phys., 11,
-! 11707-11722, doi:10.5194/acp-11-11707-2011, 2011.
+! Baek, B. H., Coats, C., Ma, S., Wang, C.-T., Li, Y., Xing, J., Tong, D., 
+! Kim, S., and Woo, J.-H.: Dynamic Meteorology-induced Emissions Coupler (MetEmis) 
+! development in the Community Multiscale Air Quality (CMAQ): CMAQ-MetEmis, 
+! Geosci. Model Dev., 16, 4659–4676, https://doi.org/10.5194/gmd-16-4659-2023, 2023.
 ! \end{itemize}
+
 !
-! The initial look up tables (LUT) distributed with GEOS-Chem v9-01-03
-! used 7 input variables: Temperature, J(NO2), J(O1D), solar elevation angles
-! at emission time and 5 hours later, and ambient concentrations of NOx
-! and O3. This version was documented by  Vinken et al. (2011). Subsequently,
-! we added wind speed as an input variable. We also use J(OH) rather than J(O1D)
-! to index the LUT (C. Holmes,  6 May 2013)
-!
-! The LUTs contain 3 quantities:
-!     FracNOx : The fraction of NOx emitted from ships that remains as NOx
-!               after 5 hours of plume aging. mol/mol
-!     OPE     : Ozone production efficiency, mol(O3)/mol(HNO3)
-!               The net production of O3 per mole of ship NOx oxidized over
-!               5 hours of plume aging. Can be negative!
-!               Defined as OPE = [ P(O3) - L(O3) ] / P(HNO3), where each P
-!               and L term is an integral over 5 hours. Net O3 production
-!               in the plume is E(NOx) * (1-FracNOx) * OPE, where E(NOx) is
-!               the emission rate of NOx from the ship (e.g. units: mol/s).
-!     MOE     : Methane oxidation efficiency, mol(CH4)/mol(NOx)
-!               The net oxidation of CH4 per mole of NOx emitted from ships
-!               over 5 hours of plume aging.
-!               Defined as MOE = L(CH4) / E(NOx).
-!\\
-!\\
-! The solar elevation angles 5 hours ago are calculated using HEMCO subroutine
-! HCO\_GetSUNCOS. This is the same routine that is used to calculate the solar
-! zenith angles for the current time.
 !\\
 !\\
 ! !INTERFACE:
@@ -83,19 +78,18 @@ MODULE HCOX_MetEmis_MOD
 !
 ! !PUBLIC MEMBER FUNCTIONS:
 !
-  PUBLIC  :: HCOX_ParaNOx_Run
-  PUBLIC  :: HCOX_ParaNOx_Init
-  PUBLIC  :: HCOX_ParaNOx_Final
+  PUBLIC  :: HCOX_MetEmis_Run
+  PUBLIC  :: HCOX_MetEmis_Init
+  PUBLIC  :: HCOX_MetEmis_Final
 !
 ! !PRIVATE MEMBER FUNCTIONS:
 !
 !
 ! !REMARKS:
-!  Adapted from the code in GeosCore/paranox_mod.F prior to GEOS-Chem v10-01.
+!  Adapted from the code in CMAQv5.3.1
 !
 ! !REVISION HISTORY:
-!  06 Aug 2013 - C. Keller   - Initial version
-!  See https://github.com/geoschem/hemco for complete history
+!  11 Mar 2025 - P.C. Campbell   - Initial NO only version
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -103,7 +97,7 @@ MODULE HCOX_MetEmis_MOD
 ! !MODULE VARIABLES:
 
   ! Number of values for each variable in the look-up table
-  INTEGER, PARAMETER ::  nT=4, nJ=4, nO3=4, nNOx=5, nSEA=12, nWS=5
+  INTEGER, PARAMETER ::  nT=25  !25 Temperature Bins
 
   ! Now place all module variables in a lderived type object (for a linked
   ! list) so that we can have one instance per node in an MPI environment.
@@ -113,61 +107,44 @@ MODULE HCOX_MetEmis_MOD
      INTEGER               :: Instance
      INTEGER               :: ExtNr
      INTEGER               :: IDTNO
-     INTEGER               :: IDTNO2
-     INTEGER               :: IDTHNO3
-     INTEGER               :: IDTO3
-     REAL*8                :: MW_O3
-
-     REAL*8                :: MW_NO
-     REAL*8                :: MW_NO2
-     REAL*8                :: MW_HNO3
-     REAL*8                :: MW_AIR
 
      ! Arrays
-     REAL(hp), POINTER     :: ShipNO(:,:,:)
+     REAL(hp), POINTER     :: MetNO(:,:,:)
 
-     ! For SunCosMid 5hrs ago
-     REAL(hp), POINTER     :: SC5(:,:)
-
-     ! Deposition fluxes in kg/m2/s
-     REAL(sp), POINTER     :: DEPO3  (:,:)
-     REAL(sp), POINTER     :: DEPHNO3(:,:)
-
-     ! Reference values of variables in the look-up tables
+     ! Reference values of variables in the MetEmis look-up tables
      REAL*4                :: Tlev(nT)
-     REAL*4                :: JNO2lev(nJ)
-     REAL*4                :: O3lev(nO3)
-     REAL*4                :: SEA0lev(nSEA)
-     REAL*4                :: SEA5lev(nSEA)
-     REAL*4                :: JRATIOlev(nJ)
-     REAL*4                :: NOXlev(nNOx)
-     REAL*4                :: WSlev(nWS)
 
-     ! Look-up tables currently used in GEOS-Chem (likely in v10-01)
-     ! Described by Holmes et al. (2014), now includes effects of wind speed
-     ! Last two digits in LUT names indicate wind speed in m/s
-     REAL(sp), POINTER     :: FRACNOX_LUT02(:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: FRACNOX_LUT06(:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: FRACNOX_LUT10(:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: FRACNOX_LUT14(:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: FRACNOX_LUT18(:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: OPE_LUT02    (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: OPE_LUT06    (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: OPE_LUT10    (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: OPE_LUT14    (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: OPE_LUT18    (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: MOE_LUT02    (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: MOE_LUT06    (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: MOE_LUT10    (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: MOE_LUT14    (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: MOE_LUT18    (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: DNOX_LUT02   (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: DNOX_LUT06   (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: DNOX_LUT10   (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: DNOX_LUT14   (:,:,:,:,:,:,:)
-     REAL(sp), POINTER     :: DNOX_LUT18   (:,:,:,:,:,:,:)
+     ! Look-up tables currently used in CMAQv5.3.1
+     ! Described by Baek et al. 2023, now includes effects of temperature
+     ! Last three digits in LUT names indicate temperature in Fahrenheit
+     REAL(sp), POINTER     :: NO_TEMP000(:,:,:,:)   !Temp=0. F
+     REAL(sp), POINTER     :: NO_TEMP005(:,:,:,:)   !Temp=5. F
+     REAL(sp), POINTER     :: NO_TEMP010(:,:,:,:)   !Temp=10. F
+     REAL(sp), POINTER     :: NO_TEMP015(:,:,:,:)   !Temp=15. F
+     REAL(sp), POINTER     :: NO_TEMP020(:,:,:,:)   !Temp=20. F
+     REAL(sp), POINTER     :: NO_TEMP025(:,:,:,:)   !Temp=25. F
+     REAL(sp), POINTER     :: NO_TEMP030(:,:,:,:)   !Temp=30. F
+     REAL(sp), POINTER     :: NO_TEMP035(:,:,:,:)   !Temp=35. F
+     REAL(sp), POINTER     :: NO_TEMP040(:,:,:,:)   !Temp=40. F
+     REAL(sp), POINTER     :: NO_TEMP045(:,:,:,:)   !Temp=45. F
+     REAL(sp), POINTER     :: NO_TEMP050(:,:,:,:)   !Temp=50. F
+     REAL(sp), POINTER     :: NO_TEMP055(:,:,:,:)   !Temp=55. F
+     REAL(sp), POINTER     :: NO_TEMP060(:,:,:,:)   !Temp=60. F
+     REAL(sp), POINTER     :: NO_TEMP065(:,:,:,:)   !Temp=65. F
+     REAL(sp), POINTER     :: NO_TEMP070(:,:,:,:)   !Temp=70. F
+     REAL(sp), POINTER     :: NO_TEMP075(:,:,:,:)   !Temp=75. F
+     REAL(sp), POINTER     :: NO_TEMP080(:,:,:,:)   !Temp=80. F
+     REAL(sp), POINTER     :: NO_TEMP085(:,:,:,:)   !Temp=85. F
+     REAL(sp), POINTER     :: NO_TEMP090(:,:,:,:)   !Temp=90. F
+     REAL(sp), POINTER     :: NO_TEMP095(:,:,:,:)   !Temp=95. F
+     REAL(sp), POINTER     :: NO_TEMP100(:,:,:,:)   !Temp=100. F
+     REAL(sp), POINTER     :: NO_TEMP105(:,:,:,:)   !Temp=105. F
+     REAL(sp), POINTER     :: NO_TEMP110(:,:,:,:)   !Temp=110. F
+     REAL(sp), POINTER     :: NO_TEMP115(:,:,:,:)   !Temp=115. F
+     REAL(sp), POINTER     :: NO_TEMP120(:,:,:,:)   !Temp=120. F
+     REAL(sp), POINTER     :: NO_TEMP125(:,:,:,:)   !Temp=125. F
 
-     ! Location and type of look up table data
+     ! Location and type of MetEmis look up table data
      CHARACTER(LEN=255)    :: LutDir
      LOGICAL               :: IsNc
 
@@ -184,16 +161,16 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: HCOX_ParaNOx_Run
+! !IROUTINE: HCOX_MetEmis_Run
 !
-! !DESCRIPTION: Subroutine HCOX\_ParaNOx\_Run is the driver routine to
-! calculate ship NOx emissions for the current time step. Emissions in
+! !DESCRIPTION: Subroutine HCOX\_MetEmis\_Run is the driver routine to
+! calculate MetEmis emissions for the current time step. Emissions in
 ! [kg/m2/s] are added to the emissions array of the passed
 !\\
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCOX_ParaNOx_Run( ExtState, HcoState, RC )
+  SUBROUTINE HCOX_MetEmis_Run( ExtState, HcoState, RC )
 !
 ! !USES:
 !
@@ -209,7 +186,7 @@ CONTAINS
     INTEGER,         INTENT(INOUT) :: RC          ! Success or failure?
 
 ! !REVISION HISTORY:
-!  06 Aug 2013 - C. Keller   - Initial Version
+!  11 Mar 2025 - P. C. Campbell   - Initial Version
 !  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
@@ -222,12 +199,12 @@ CONTAINS
     TYPE(MyInst), POINTER :: Inst
 
     !=================================================================
-    ! HCOX_PARANOX_RUN begins here!
+    ! HCOX_METEMIS_RUN begins here!
     !=================================================================
-    LOC = 'HCOX_PARANOX_RUN (HCOX_PARANOX_MOD.F90)'
+    LOC = 'HCOX_METEMIS_RUN (HCOX_METEMIS_MOD.F90)'
 
     ! Return if extension disabled
-    IF ( ExtState%ParaNOx <= 0 ) RETURN
+    IF ( ExtState%MetEmis <= 0 ) RETURN
 
     ! Enter
     CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
@@ -238,22 +215,22 @@ CONTAINS
 
     ! Get local instance
     Inst => NULL()
-    CALL InstGet ( ExtState%ParaNOx, Inst, RC )
+    CALL InstGet ( ExtState%MetEmis, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       WRITE(MSG,*) 'Cannot find ParaNOx instance Nr. ', ExtState%ParaNOx
+       WRITE(MSG,*) 'Cannot find MetEmis instance Nr. ', ExtState%MetEmis
        CALL HCO_ERROR(MSG,RC)
        RETURN
     ENDIF
 
     ! ----------------------------------------------------------------
-    ! Use HEMCO core routines to get ship NO emissions
+    ! Use HEMCO core routines to get MetEmis emissions table
     ! ----------------------------------------------------------------
 
     ! Prepare HEMCO core run (Hco_CalcEmis):
     ! --> Set tracer and category range + extension number.
     ! Note: Set species min and max to the full range of species.
-    ! For the ParaNox extension, emission fields of only one species
-    ! should be defined. Hco_CalcEmis will exit w/ error if this is
+    ! For the MetEmis extension, emission fields of only one species
+    ! should be defined currently. Hco_CalcEmis will exit w/ error if this is
     ! not the case.
     HcoState%Options%SpcMin =  1
     HcoState%Options%SpcMax = -1
@@ -262,13 +239,13 @@ CONTAINS
     HcoState%Options%ExtNr  = Inst%ExtNr
 
     ! --> Define array to write emissions into.
-    Inst%ShipNO                    = 0.0d0
-    HcoState%Options%AutoFillDiagn = .FALSE.
-    HcoState%Options%FillBuffer    =  .TRUE.
-    HcoState%Buffer3D%Val          => Inst%ShipNO
+    Inst%MetEmisNO                    = 0.0d0
+    HcoState%Options%AutoFillDiagn    = .FALSE.
+    HcoState%Options%FillBuffer       =  .TRUE.
+    HcoState%Buffer3D%Val             => Inst%MetEmisNO
 
-    ! Calculate ship NO emissions and write them into the ShipNO
-    ! array [kg/m2/s].
+    ! Get MetEmis NO emissions from table as core emissions and 
+    ! write them into the MetEmisNO array [kg/m2/s].
     CALL HCO_CalcEmis( HcoState, .FALSE., RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
@@ -281,13 +258,10 @@ CONTAINS
     HcoState%Options%ExtNr         = 0
     HcoState%Options%AutoFillDiagn = .TRUE.
 
-    ! Calculate production rates of NO, HNO3 and O3 based upon ship NO
-    ! emissions and add these values to the respective emission
+    ! Calculate MetEmis interpolation based on NO emissions lookup table and 
+    ! model 2-m temperature and add these values to the respective emission
     ! arrays.
-    ! Note: For O3, it is possible to get negative emissions (i.e.
-    ! deposition), in which case these values will be added to the
-    ! drydep array.
-    CALL Evolve_Plume( ExtState, Inst%ShipNO, HcoState, Inst, RC )
+    CALL Calc_MetEmis( ExtState, Inst%MetEmisNO, HcoState, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
         RETURN
@@ -297,32 +271,33 @@ CONTAINS
     Inst => NULL()
     CALL HCO_Leave( HcoState%Config%Err, RC )
 
-  END SUBROUTINE HCOX_ParaNOx_Run
+  END SUBROUTINE HCOX_MetEmis_Run
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: Evolve_Plume
+! !IROUTINE: Calc_MetEmis
 !
-! !DESCRIPTION: Subroutine EVOLVE\_PLUME performs plume dilution and chemistry
-!  of ship NO emissions for every grid box and writes the resulting NO, HNO3
-!  and O3 emission (production) rates into State\_Chm%NomixS.
+! !DESCRIPTION: Subroutine Calc_MetEmis performs linear interpolation of 
+! temperature binned onroad NO emissions for every grid box based on 
+! HEMCO model state near-surface temperature (e.g., 2-meter temperature)
+! and writes the resulting NO emission rates into State\_Chm%NomixS.
 !\\
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE Evolve_Plume( ExtState, ShipNoEmis, HcoState, Inst, RC )
+  SUBROUTINE Calc_MetEmis( ExtState, MetNOEmis, HcoState, Inst, RC )
 !
 ! !USES:
 !
     USE HCO_Types_Mod,    ONLY : DiagnCont
     USE HCO_FluxArr_mod,  ONLY : HCO_EmisAdd
-    USE HCO_FluxArr_mod,  ONLY : HCO_DepvAdd
+!    USE HCO_FluxArr_mod,  ONLY : HCO_DepvAdd
     USE HCO_Clock_Mod,    ONLY : HcoClock_First
-    USE HCO_Calc_Mod,     ONLY : HCO_CheckDepv
-    USE HCO_GeoTools_Mod, ONLY : HCO_GetSUNCOS
+!    USE HCO_Calc_Mod,     ONLY : HCO_CheckDepv
+!    USE HCO_GeoTools_Mod, ONLY : HCO_GetSUNCOS
 !
 ! !INPUT PARAMETERS:
 !
