@@ -933,10 +933,6 @@ CONTAINS
         ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
         !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
         w(I,J) = rho_w / (bulk_den(I,J)) * theta(I,J) * 0.5_hp
-        ! disable values over oceans where poros is undefined but will have value of 0 due to initialization
-        IF ((poros(I,J) .LE. 0.0_hp)) THEN
-          w(I,J) = 0.0_hp
-        ENDIF
 
         !! calculate w_t = 0.01 * a * (17 * f_clay + 14 * f_clay ** 2) where a is a tuning factor and was set to be 1.0
         w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
@@ -946,10 +942,6 @@ CONTAINS
           f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J)) ** 0.68_hp)))
         ENDIF
         
-        ! make f_m = 1.0 for very dry soil with clay content of 0
-        IF ((f_clay(I,J) .LE. 0.0_hp)) THEN
-          f_m(I,J) = 1.0_hp
-        ENDIF
       ENDDO
     ENDDO
 
