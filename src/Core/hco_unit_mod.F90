@@ -76,6 +76,7 @@ MODULE HCO_Unit_Mod
                                                'm2/m2      ',   &
                                                'm2m-2      ',   &
                                                'kg/kg      ',   &
+                                               'kg-soil/m3 ',   &
                                                'kgkg-1     ',   &
                                                'mg/m3      ',   &
                                                'mg/m2/d    ',   &
