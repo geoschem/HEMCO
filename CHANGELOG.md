@@ -5,6 +5,116 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.2] - 2025-03-04
+### Added
+- Added `.zenodo.json` for auto-DOI generation upon version releases
+- Added GitHub Actions tests to build and test HEMCO on Windows, macOS, and Ubuntu automatically with each submitted PR
+
+### Changed
+- Bumped `jinja2` to version 3.1.5 in `docs/requirements.txt` to fix a security issue
+- Turned off map_a2a pole averaging when using CESM to avoid core-dependency in 2D emissions
+- Updated ReadTheDocs documentation for AWS CLI
+
+### Fixed
+- Updated several prints to limit to root thread to reduce log redundancy when using MPI
+
+## [3.10.1] - 2025-01-10
+### Added
+- Added optional LUN argument to ConfigInit to allow external models to pass LUN of existing log file
+- Added two log LUN variables (stdLogLUN and hcoLogLUN) to HcoState%Config for stdout and HEMCO log and initialize both in ConfigInit to stdout or optional LUN (if passed)
+- Added output argument LUN to HCO_LOGFILE_OPEN to update HcoState%Config%hcoLogLun to LUN of new log (if using)
+- Added optional LUN argument to HCO_MSG, HCO_WARNING, and HCO_ERROR to specify log to print to
+- Added special log handling for CESM to ignore LogFile entry in HEMCO_Config.rc (will get passed CAM log LUN to use instead)
+
+### Changed
+- Changed interfaces HCO_MSG, HCO_WARNING, and HCO_ERROR to each be a single subroutine that does not use HcoState%Config%Err
+- Changed HCO_MSG, HCO_WARNING, and HCO_ERROR to be independent of verbose and cores
+- Updated calls to HCO_MSG to send output to HcoState%Config%hcoLogLUN
+- Updated calls to HCO_WARNING to print to stdout unless related to units
+- Replaced usage of HCO_IsVerb with HcoState_Config%doVerbose
+- Changed documentation in HCO_Error_Mod.F90 to summarize error and log handling in HEMCO
+- Updated ReadTheDocs "Understand what error messages mean" supplemental guide
+
+### Fixed
+- Fixed excessive prints when using MPI
+- Fixed F77 formating in hcox_dustdead_mod.F
+
+### Removed
+- Removed warnings count in HcoState%Config%Err
+- Removed RC argument in HCO_WARNING
+- Deleted subroutine HCO_IsVerb
+- Remove print of HcoDiagn%MassScal since never set in the model
+- Added ReadTheDocs documentation for the HEMCO `LogFile` setting
+
+## [3.10.0] - 2024-11-07
+### Added
+- Added TSOIL1 field to `ExtState`
+- Added `download_data.py` and `download_data.yml` to the `run` folder.  These will be copied into HEMCO standalone rundirs
+- Added `run/cleanRunDir.sh` script to remove old output files & log files
+- Added documentation for the HEMCO 3.10.0 release, including HEMCO standalone dry-run documentation
+
+### Changed
+- Added emission factors for ALK6, C4H6, EBZ, STYR, TMB for GFED and FINN biomass burning extensions
+- Updated soil NOx extention to include the option to use soil temperature and parameterization based on Yi Wang et al. (ERL, 2021) instead of the temperature at 2 meters.
+- Updated HEMCO standalone to print the dry-run header to the HEMCO log file unit `HcoState%Config%Err%Lun` only if the file is opened
+- ReadTheDocs update: Now use GNU 12.2.0 compilers in environment file examples
+- Updated `runHEMCO.sh` standalone script: Change partitions, and pipe output to log file
+
+### Fixed
+- Fixed formatting error in `.github/workflows/stale.yml` that caused the Mark Stale Issues action not to run
+- Updated to `jinja2==3.1.4` in `docs/requirements.txt` (fixes a security issue)
+
+### Removed
+- Example "Scale (or zero) emissions with a rectangular mask" from ReadTheDocs. This is currently not working.
+
+## [3.9.3] - 2024-08-13
+### Fixed
+- Added brackets around `exempt-issue-labels` list in `.github/workflows/stale.yml`
+- Fixed incorrect pressure handling in HEMCO standalone (see issue #277)
+
+## [3.9.2] - 2024-07-24
+### Changed
+- RTD updates: Converted several `:option:` tags to subsections and updated references accordingly
+
+### Fixed
+- Typos in RTD doc file `docs/source/hco_ref_guide/hemco-config.rst`
+
+### Removed
+- Manual `InvMEGAN` diagnostics from `src/Extensions/hcox_megan_mod.F90`; Activate these with `HEMCO_Diagn.rc` instead
+
+## [3.9.1] - 2024-06-28
+### Fixed
+- Fixed formatting error in `.github/workflows/stale.yml` that caused the Mark Stale Issues action not to run
+
+## [3.9.0] - 2024-05-30
+### Added
+- GitHub Action config file `.github/workflows/stale.yml`, which replaces StaleBot
+
+### Removed
+- GitHub config files `.github/stale.yml` and `.github/no-response.yml`
+
+### Changed
+- Converted Github issue templates into issue forms using YAML definition files
+- Updated Python package versions for ReadTheDocs in `docs/requirements.txt`
+- Now request Python 3.12 for ReadTheDocs builds in `.readthedocs.yaml`
+
+## [3.8.1] - 2024-04-02
+### Changed
+- Now allow up to 10 nested brackets (`((( )))`) in the `HEMCO_Config.rc` file
+- Now use short submodule names (i.e. w/o path) in `.gitmodules`
+
+### Fixed
+- Limit volcano climatology file read message to root core
+- Updated `hco_interp_mod.F90` to handle 3D NEI emissions.
+
+## [3.8.0] - 2024-02-07
+### Changed
+- Updated TOMAS_Jeagle sea salt extension
+
+### Fixed
+- Updated IsModelLevel check for CESM and WRF-GC
+- Interpolation error for 8-day MODIS LAI files (removed month loop in `GetIndex2Interp`)
+
 ## [3.7.2] - 2023-12-01
 ### Added
 - Script `.release/changeVersionNumbers.sh` to change version numbers before a new HEMCO release
@@ -111,14 +221,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.5.2] - 2022-11-29
 ### Added
-- Added sanitizer option for detecting memory leaks in HEMCO
-    standalone during build
+- Added sanitizer option for detecting memory leaks in HEMCO standalone during build
 
 ### Changed
 - Remove unused, commented-out code in `src/Extensions/hcox_dustdead_mod.F`
-- Replaced placeholder error messages in
-    `src/Core/hco_config_mod.F90` with more informational messages
-    (often including the line of the HEMCO_Config.rc in the printout)
+- Replaced placeholder error messages in `src/Core/hco_config_mod.F90` with more informational messages (often including the line of the HEMCO_Config.rc in the printout)
 - Added improved documentation for time cycle flag `EFYO` in ReadTheDocs
 
 ### Fixed
@@ -132,8 +239,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support for MAPL 2.16 (needed by GCHP and GEOS)
 - Bug fix for HEMCO standalone run directory creation
-- Bug fix: If HEMCO masks are specified as `lon1/lat1/lon2/lat2`,
-    then don't try to read from disk
+- Bug fix: If HEMCO masks are specified as `lon1/lat1/lon2/lat2`, then don't try to read from disk
 - Documentation from the GEOS-Chem wiki (now on ReadTheDocs)
 - Badges for the ReadTheDocs front page
 - Bug fix for masking issues in MPI environment (for WRF, CESM)
@@ -276,6 +382,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bug fix for distributing emissions in the vertical dimension
 - New error checks in the HEMCO standalone module
 - Bug fix for `ifort` compiler in soil NOx extension
+
 ### Removed
 - Null string character from netCDF unit string
 
@@ -291,8 +398,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.004] - 2017-12-30
 ### Added
-- Updates to remove possible issues and excessive print statements when
-    operating in GEOS environment
+- Updates to remove possible issues and excessive print statements when operating in GEOS environment
 - Fixed possible tracer ID mismatch in sea salt extension
 - New option to normalize MEGAN LAI, HEMCO diagnostics
 - Now write multiple time slices into one file
@@ -375,8 +481,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.009] - 2015-09-10
 ### Added
-- Bug fixes to allow specifying flexible diagnostics output
-    frequencies.
+- Bug fixes to allow specifying flexible diagnostics output frequencies.
 
 ## [1.1.008] - 2015-07-06
 ### Added

@@ -372,7 +372,7 @@ Inst%GFED4_EMFAC(36,5)=1.4E-03_hp
 Inst%GFED4_EMFAC(36,6)=1.7E-03_hp
 
 ! 1,3-butadiene
-GFED4_SPEC_NAME(37)="BUTA"
+GFED4_SPEC_NAME(37)="C4H6"
 Inst%GFED4_EMFAC(37,1)=9.5E-05_hp
 Inst%GFED4_EMFAC(37,2)=8.9E-05_hp
 Inst%GFED4_EMFAC(37,3)=1.25E-04_hp
@@ -426,13 +426,13 @@ Inst%GFED4_EMFAC(40,5)=1.10E-03_hp !PET -  Peatland
 Inst%GFED4_EMFAC(40,6)=1.03E-03_hp !AGW - Crop residue
 
 ! Acrolein
-!GFED4_SPEC_NAME(36)="ACRO"
-!Inst%GFED4_EMFAC(36,1)=4.8E-04_hp
-!Inst%GFED4_EMFAC(36,2)=3.3E-04_hp
-!Inst%GFED4_EMFAC(36,3)=3.4E-04_hp
-!Inst%GFED4_EMFAC(36,4)=6.5E-04_hp
-!Inst%GFED4_EMFAC(36,5)=2.7E-04_hp
-!Inst%GFED4_EMFAC(36,6)=6.2E-04_hp
+GFED4_SPEC_NAME(41)="ACR"
+Inst%GFED4_EMFAC(41,1)=4.8E-04_hp
+Inst%GFED4_EMFAC(41,2)=3.3E-04_hp
+Inst%GFED4_EMFAC(41,3)=3.4E-04_hp
+Inst%GFED4_EMFAC(41,4)=6.5E-04_hp
+Inst%GFED4_EMFAC(41,5)=2.7E-04_hp
+Inst%GFED4_EMFAC(41,6)=6.2E-04_hp
 
 ! butenenitriles
 !GFED4_SPEC_NAME(42)="BNIT"
@@ -444,13 +444,13 @@ Inst%GFED4_EMFAC(40,6)=1.03E-03_hp !AGW - Crop residue
 !Inst%GFED4_EMFAC(42,6)=2.2E-04_hp !AGW - Crop residue
 
 ! Styrene
-!GFED4_SPEC_NAME(43)="STYR"
-!Inst%GFED4_EMFAC(43,1)=5.6E-05_hp !SAV - Savannah
-!Inst%GFED4_EMFAC(43,2)=1.3E-04_hp !BORF - Boreal
-!Inst%GFED4_EMFAC(43,3)=6.6E-05_hp !TEMP - Temperate
-!Inst%GFED4_EMFAC(43,4)=2.8E-05_hp !DEFO - Tropical
-!Inst%GFED4_EMFAC(43,5)=5.5E-05_hp !PET -  Peatland
-!Inst%GFED4_EMFAC(43,6)=4.3E-05_hp !AGW - Crop residue
+GFED4_SPEC_NAME(43)="STYR"
+Inst%GFED4_EMFAC(43,1)=5.6E-05_hp !SAV - Savannah
+Inst%GFED4_EMFAC(43,2)=1.3E-04_hp !BORF - Boreal
+Inst%GFED4_EMFAC(43,3)=6.6E-05_hp !TEMP - Temperate
+Inst%GFED4_EMFAC(43,4)=2.8E-05_hp !DEFO - Tropical
+Inst%GFED4_EMFAC(43,5)=5.5E-05_hp !PET -  Peatland
+Inst%GFED4_EMFAC(43,6)=4.3E-05_hp !AGW - Crop residue
 
 ! Phenol
 GFED4_SPEC_NAME(44)="PHEN"

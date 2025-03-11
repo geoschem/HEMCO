@@ -4,16 +4,17 @@
 Configure your login environment
 ################################
 
+.. tip::
+
+   You may :ref:`skip ahead <hco-sa-download>` if you will be using
+   :program:`HEMCO standalone` on an Amazon EC2 cloud instance.
+   When you initialize the EC2 instance with one of the pre-configured Amazon
+   Machine Images  (AMIs) all of the required software libraries will be
+   automatically loaded.
+
 In this chapter, you will learn how to load the software packages that
 you have created into your computational environment.  This will need
 to be done each time you log in to your computer system.
-
-.. tip::
-
-   You may skip this section if you plan on using HEMCO standalone on
-   an Amazon EC2 cloud instance.  When you initialize the EC2 instance
-   with one of the pre-configured Amazon Machine Images (AMIs) all of
-   the required software libraries will be automatically loaded.
 
 An environment file does the following:
 
@@ -40,36 +41,64 @@ or :file:`~/.bash_aliases` startup scripts.
 .. _hco-sa-login-gnu:
 
 ================================================
-Sample environment file for GNU 10.2.0 compilers
+Sample environment file for GNU 12.2.0 compilers
 ================================================
 
-Below is a sample environment file from the Harvard Cannon computer
-cluster.  This file will load software libraries built with the GNU
-10.2.0 compilers.
+Below is a sample environment file (based on an enviroment file for
+the Harvard Cannon computer cluster).  This file will load software
+libraries built with the `GNU 12.2.0 compilers
+<https://gcc.gnu.org/onlinedocs/12.2.0/>`_.
+
+.. note::
+
+   This environment file shown below assumes that required software
+   packages for :program:`HEMCO standalone` are available as
+   pre-built modules.  If your computer system does not have these
+   packages pre-installed, you can build them with Spack.  Please see
+   our :ref:`spackguide` supplemental guide for detailed instructions.
 
 Save the code below (with any appropriate modifications for your own
-computer system) to a file named :file:`~/gnu10.env`.
+computer system) to a file named :file:`~/gnu12.env`.
 
 .. code-block:: bash
 
+   ###############################################################################
+   #
+   # Environment file for HEMCO + GNU Compiler Collection 12.2.0
+   #
+   ###############################################################################
+
+   # Display message (if we are in a terminal window)
+   if [[ $- = *i* ]] ; then
+     echo "Loading modules for GEOS-Chem Classic, please wait ..."
+   fi
+
    #==============================================================================
-   # Load software packages (EDIT AS NEEDED)
+   # Unload all previously-unloaded software
    #==============================================================================
 
-   # Unload all modules first
+   # Unload packages loaded with "module load"
    module purge
 
-   # Load modules
-   module load gcc/10.2.0-fasrc01             # gcc / g++ / gfortran
-   module load openmpi/4.1.0-fasrc01          # MPI
-   module load netcdf-c/4.8.0-fasrc01         # netcdf-c
-   module load netcdf-fortran/4.5.3-fasrc01   # netcdf-fortran
+   #==============================================================================
+   # Load software packages for GNU 12.2.0
+   #==============================================================================
+   if [[ $- = *i* ]] ; then
+     echo "... Loading FASRC-built software, please wait ..."
+   fi
+
+   # Pre-built modules needed for HEMCO
+   # (NOTE: These may be named differently on your system)
+   module load gcc/12.2.0-fasrc01             # gcc / g++ / gfortran
+   module load openmpi/4.1.4-fasrc01          # MPI
+   module load netcdf-c/4.9.2-fasrc01         # netcdf-c
+   module load netcdf-fortran/4.6.0-fasrc02   # netcdf-fortran
    module load flex/2.6.4-fasrc01             # Flex lexer (needed for KPP)
    module load cmake/3.25.2-fasrc01           # CMake (needed to compile)
 
    #==============================================================================
    # Environment variables and related settings
-   # (NOTE: Lmod will define <module>_HOME variables for each loaded module
+   # (NOTE: Lmod will define <module>_HOME variables for each loaded module)
    #==============================================================================
 
    # Make all files world-readable by default
@@ -94,13 +123,13 @@ computer system) to a file named :file:`~/gnu10.env`.
 
    # netCDF
    if [[ "x${NETCDF_HOME}" == "x" ]]; then
-      export NETCDF_HOME="${NETCDF_C_HOME}"
+       export NETCDF_HOME="${NETCDF_C_HOME}"
    fi
    export NETCDF_C_ROOT="${NETCDF_HOME}"
-   export NETCDF_FORTRAN_ROOT="${NETCDF_FORTRAN_HOME}"
+   export NETCDF_FORTRAN_ROOT=${NETCDF_FORTRAN_HOME}
 
    # KPP 3.0.0+
-   export KPP_FLEX_LIB_DIR="${FLEX_HOME}/lib64"
+   export KPP_FLEX_LIB_DIR=${FLEX_HOME}/lib64
 
    #==============================================================================
    # Set limits
@@ -114,7 +143,22 @@ computer system) to a file named :file:`~/gnu10.env`.
    #==============================================================================
    # Print information
    #==============================================================================
+
    module list
+
+   echo ""
+   echo "Environment:"
+   echo ""
+   echo "CC                  : ${CC}"
+   echo "CXX                 : ${CXX}"
+   echo "FC                  : ${FC}"
+   echo "KPP_FLEX_LIB_DIR    : ${KPP_FLEX_LIB_DIR}"
+   echo "MPI_HOME            : ${MPI_HOME}"
+   echo "NETCDF_HOME         : ${NETCDF_HOME}"
+   echo "NETCDF_FORTRAN_HOME : ${NETCDF_FORTRAN_HOME}"
+   echo "OMP_NUM_THREADS     : ${OMP_NUM_THREADS}"
+   echo ""
+   echo "Done sourcing ${BASH_SOURCE[0]}"
 
 .. tip::
 
@@ -123,11 +167,14 @@ computer system) to a file named :file:`~/gnu10.env`.
    be a software module system installed, with commands similar to
    those listed above.
 
-Then you can activate these seetings from the command line by typing:
+You may also place the above command within your HEMCO standalone run
+script, which will be discussed in a subsequent chapter.
+
+To activate the settings contained in the environment file, type:
 
 .. code-block:: console
 
-   $ source ~/gnu10.env
+   $ . ~/gnu12.env
 
 .. _hco-sa-login-intel:
 
@@ -144,9 +191,11 @@ system) into a file named :file:`~/intel23.env`.
 
 .. code-block:: bash
 
-   #==============================================================================
-   # Load software packages (EDIT AS NEEDED)
-   #==============================================================================
+   ###############################################################################
+   #
+   # Environment file for HEMCO + GNU Compiler Collection 12.2.0
+   #
+   ###############################################################################
 
    # Unload all modules first
    module purge
@@ -208,6 +257,21 @@ system) into a file named :file:`~/intel23.env`.
 
    module list
 
+   echo ""
+   echo "Environment:"
+   echo ""
+   echo "CC                  : ${CC}"
+   echo "CXX                 : ${CXX}"
+   echo "FC                  : ${FC}"
+   echo "KPP_FLEX_LIB_DIR    : ${KPP_FLEX_LIB_DIR}"
+   echo "MPI_HOME            : ${MPI_HOME}"
+   echo "NETCDF_HOME         : ${NETCDF_HOME}"
+   echo "NETCDF_FORTRAN_HOME : ${NETCDF_FORTRAN_HOME}"
+   echo "OMP_NUM_THREADS     : ${OMP_NUM_THREADS}"
+   echo ""
+   echo "Done sourcing ${BASH_SOURCE[0]}"
+
+   
 .. tip::
 
    Ask your sysadmin how to load software libraries.  If you
@@ -215,11 +279,11 @@ system) into a file named :file:`~/intel23.env`.
    are there will be a software module system installed, with
    commands similar to those listed above.
 
-Then you can activate these seetings from the command line by typing:
+To activate the settings contained in the environment file, type:
 
 .. code-block:: console
 
-   $ source intel23.env
+   $ . intel23.env
 
 .. tip::
 
@@ -253,10 +317,9 @@ These environment variables should be defined in your
 
 .. note::
 
-   HEMCOc only requires the Fortran compiler.  But you will
+   HEMCO only requires the Fortran compiler.  But you will
    also need the C and C++ compilers if you plan to build other
-   software packages (:ref:`such as KPP <kppguide>`) or :ref:`install
-   libraries manually <build-libraries-with-spack>`.
+   software packages or :ref:`install libraries manually <spackguide>`.
 
    Also, older Intel compiler versions used :envvar:`icc` as the name
    for the C compiler and :envvar:`icpc` as the name of the C++ compiler.
@@ -311,8 +374,8 @@ control the OpenMP parallelization settings:
       ulimit -s unlimited
       export OMP_STACKSIZE=500m
 
-   The :command:`ulimit -s unlimited` will tell the bash shell to use the
-   maximum amount of stack memory that is available.
+   The :command:`ulimit -s unlimited` command will tell the bash shell
+   to use the maximum amount of stack memory that is available.
 
    The environment variable :envvar:`OMP_STACKSIZE` must also be set to a very
    large number. In this example, we are nominally requesting 500 MB of

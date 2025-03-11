@@ -187,9 +187,9 @@ changed since :ref:`the previous example <edit-hco-cfg-ex1>`.
 
 Note the increased hierarchy (:literal:`2`) of the regional EMEP
 inventory compared to the global MACCity emissions (:literal:`1`) in
-column :option:`Hier`. This will cause the EMEP emissions to replace
-the MACCity emissions in the region where EMEP is defined, which is
-specified by the MASK_EUROPE variable.
+column :ref:`hco-cfg-base-hier`. This will cause the EMEP emissions to
+replace the MACCity emissions in the region where EMEP is defined,
+which is specified by the MASK_EUROPE variable.
 
 .. _edit-hco-cfg-ex3:
 
@@ -232,9 +232,10 @@ modify the :ref:`configuration file <hco-cfg>` accordingly:
 
    ### END SECTION BASE EMISSIONS ###
 
-Note the change in the emission category (column :option:`Cat`) from
-:literal:`1` to :literal:`2`.  In this example, category 1 represents
-anthropogenic emissions and category 2 represents aircraft emissions.
+Note the change in the emission category (column
+:ref:`hco-cfg-base-cat`) from :literal:`1` to :literal:`2`.  In this
+example, category 1 represents anthropogenic emissions and category 2
+represents aircraft emissions.
 
 .. _edit-hco-cfg-ex4:
 
@@ -251,8 +252,8 @@ implemented as a HEMCO Extension, can be added to the simulation by:
    Emissions**.
 
 The extension number defined in the **Extension Switches** section
-must match the corresponding :option:`ExtNr` entry in the Base
-Emissions section (in this example, :literal:`111`).
+must match the corresponding :ref:`hco-cfg-ext-switches-extnr` entry
+in the Base Emissions section (in this example, :literal:`111`).
 
 .. code-block:: kconfig
 

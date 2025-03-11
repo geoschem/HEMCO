@@ -18,7 +18,8 @@ installed on your system in order to use :program:`HEMCO standalone`.
 
 - If you plan to run HEMCO standalone on the Amazon Web services
   cloud, then all of these libraries will be included with the Amazon
-  Machine Image (AMI) that you will use to start your cloud instance. |br|
+  Machine Image (AMI) that you will use to start your cloud instance.
+  You may skip ahead to the :ref:`hco-sa-download` chapter. |br|
   |br|
 
 - If your computer cluster has none of these libraries installed, then

@@ -104,6 +104,7 @@ MODULE HCOX_SoilNOx_Mod
      INTEGER                        :: Instance
      INTEGER                        :: ExtNr          ! Extension number
      INTEGER                        :: IDTNO          ! NO tracer ID
+     LOGICAL                        :: UseSoilTemp    ! Use soil temperature?
      LOGICAL                        :: LFERTILIZERNOX ! Use fertilizer NOx?
      REAL(hp)                       :: FERT_SCALE     ! fertilizer scale factor
 
@@ -298,20 +299,28 @@ CONTAINS
     REAL(dp), ALLOCATABLE    :: VecDp(:)
     LOGICAL                  :: FIRST
     LOGICAL                  :: aIR, FOUND
-    CHARACTER(LEN= 31)       :: DiagnName
-    CHARACTER(LEN=255)       :: MSG, DMY, LOC
+    CHARACTER(LEN= 31)       :: DiagnName, Dummy
+    CHARACTER(LEN=255)       :: ErrMsg, ThisLoc
     TYPE(MyInst),    POINTER :: Inst
 
     !=================================================================
     ! HCOX_SoilNOx_RUN begins here!
     !=================================================================
-    LOC = 'HCOX_SoilNOx_RUN (HCOX_SOILNOX_MOD.F90)'
+
+    ! Define strings for error messgaes
+    ErrMsg = ''
+    ThisLoc = &
+      'HCOX_SoilNOx_Run (in module HEMCO/Extensions/hcox_soilnox_mod.F90)'
+
+    ! Assume success
+    RC = HCO_SUCCESS
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    CALL HCO_ENTER( HcoState%Config%Err, ThisLoc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error entering soil NOx extension'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! Return if extension disabled
@@ -323,8 +332,8 @@ CONTAINS
     ! Get Instance
     CALL InstGet ( ExtState%SoilNox, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       WRITE(MSG,*) 'Cannot find soil NOx instance Nr. ', ExtState%SoilNOx
-       CALL HCO_ERROR(MSG,RC)
+       WRITE(ErrMsg,*) 'Cannot find soil NOx instance number ', ExtState%SoilNOx
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
 
@@ -339,138 +348,191 @@ CONTAINS
     !IF ( FIRST ) THEN
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK1',  Inst%LANDTYPE(1)%VAL,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK1'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK2',  Inst%LANDTYPE(2)%VAL,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK2'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK3',  Inst%LANDTYPE(3)%VAL,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK3'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK4',  Inst%LANDTYPE(4)%VAL,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK4'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK5',  Inst%LANDTYPE(5)%VAL,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK5'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK6',  Inst%LANDTYPE(6)%VAL,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK6'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK7',  Inst%LANDTYPE(7)%VAL,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK7'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK8',  Inst%LANDTYPE(8)%VAL,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK8'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK9',  Inst%LANDTYPE(9)%VAL,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK9'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK10', Inst%LANDTYPE(10)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK10'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK11', Inst%LANDTYPE(11)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK11'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK12', Inst%LANDTYPE(12)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK12'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK13', Inst%LANDTYPE(13)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK13'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK14', Inst%LANDTYPE(14)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK14'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK15', Inst%LANDTYPE(15)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK15'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK16', Inst%LANDTYPE(16)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK16'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK17', Inst%LANDTYPE(17)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK17'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK18', Inst%LANDTYPE(18)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK18'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK19', Inst%LANDTYPE(19)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK19'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK20', Inst%LANDTYPE(20)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK20'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK21', Inst%LANDTYPE(21)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 21', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK21'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK22', Inst%LANDTYPE(22)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 22', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK22'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK23', Inst%LANDTYPE(23)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 23', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK23'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_LANDK24', Inst%LANDTYPE(24)%VAL, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 24', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_LANDK24'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_FERT',    Inst%SOILFERT,         RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 25', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_FERT'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_ARID',    Inst%CLIMARID,         RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 26', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_ARID'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
+
        CALL HCO_EvalFld( HcoState, 'SOILNOX_NONARID', Inst%CLIMNARID,        RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 27', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error evaluating field SOILNOX_NONARID'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
 
     IF ( FIRST ) THEN
@@ -478,17 +540,19 @@ CONTAINS
        ! read it from settings.
        IF ( .NOT. ASSOCIATED(ExtState%DRYCOEFF) ) THEN
           CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'DRYCOEFF', &
-                           OptValChar=DMY, FOUND=FOUND, RC=RC )
+                           OptValChar=Dummy, FOUND=FOUND, RC=RC )
           IF ( .NOT. FOUND ) THEN
-             CALL HCO_ERROR( 'DRYCOEFF not defined', RC )
+             ErrMsg = 'DRYCOEFF not defined'
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
              RETURN
           ENDIF
           ALLOCATE(VecDp(MaxDryCoeff))
-          CALL HCO_CharSplit( DMY, HCO_GetOpt(HcoState%Config%ExtList,'Separator'), &
+          CALL HCO_CharSplit( Dummy, HCO_GetOpt(HcoState%Config%ExtList,'Separator'), &
                               HCO_GetOpt(HcoState%Config%ExtList,'Wildcard'), VecDp, N, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 28', RC, THISLOC=LOC )
-              RETURN
+             ErrMsg = 'Error reading DRYCOEFF'
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+             RETURN
           ENDIF
           ALLOCATE(Inst%DRYCOEFF(N))
           Inst%DRYCOEFF(1:N) = VecDp(1:N)
@@ -524,22 +588,24 @@ CONTAINS
        CALL HCO_RestartGet( HcoState, 'DEP_RESERVOIR', &
                             Inst%DEP_RESERVOIR, RC, Def2D=Def2D )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 29', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error getting field DEP_RESERVOIR'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
 
        ! GWET_PREV [unitless]
        CALL HCO_RestartGet( HcoState, 'GWET_PREV', &
                             Inst%GWET_PREV, RC, FILLED=FOUND )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 30', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error getting field GWET_PREV'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
        IF ( .NOT. FOUND ) THEN
           Inst%GWET_PREV = 0.0_sp
           IF ( HcoState%amIRoot ) THEN
-             MSG = 'Cannot find GWET_PREV restart variable - initialized to 0.0!'
-             CALL HCO_WARNING(HcoState%Config%Err,MSG,RC)
+             ErrMsg = 'Cannot find GWET_PREV restart variable - initialized to 0.0!'
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( ErrMsg )
           ENDIF
        ENDIF
 
@@ -547,14 +613,15 @@ CONTAINS
        CALL HCO_RestartGet( HcoState, 'PFACTOR', &
                             Inst%PFACTOR, RC, FILLED=FOUND )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 31', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error getting field PFACTOR'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
        IF ( .NOT. FOUND ) THEN
           Inst%PFACTOR = 1.0_sp
           IF ( HcoState%amIRoot ) THEN
-             MSG = 'Cannot find PFACTOR restart variable - initialized to 1.0!'
-             CALL HCO_WARNING(HcoState%Config%Err,MSG,RC)
+             ErrMsg = 'Cannot find PFACTOR restart variable - initialized to 1.0!'
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( ErrMsg )
           ENDIF
        ENDIF
 
@@ -562,14 +629,15 @@ CONTAINS
        CALL HCO_RestartGet( HcoState, 'DRYPERIOD', &
                             Inst%DRYPERIOD, RC, FILLED=FOUND )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 32', RC, THISLOC=LOC )
-           RETURN
+          ErrMsg = 'Error ≈getting field DRYPERIOD'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
        ENDIF
        IF ( .NOT. FOUND ) THEN
           Inst%DRYPERIOD = 0.0_sp
           IF ( HcoState%amIRoot ) THEN
-             MSG = 'Cannot find DRYPERIOD restart variable - initialized to 0.0!'
-             CALL HCO_WARNING(HcoState%Config%Err,MSG,RC)
+             ErrMsg = 'Cannot find DRYPERIOD restart variable - initialized to 0.0!'
+             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( ErrMsg )
           ENDIF
        ENDIF
 
@@ -581,8 +649,9 @@ CONTAINS
     ! Now a function of the new MODIS/Koppen biome map (J.D. Maasakkers)
     CALL GET_CANOPY_NOX( HcoState, ExtState, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 33', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error in GET_CANOPY_NOX'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! Init
@@ -653,8 +722,9 @@ CONTAINS
     ! Eventually apply spatiotemporal scale factors
     CALL HCOX_SCALE ( HcoState, FLUX_2D, TRIM(Inst%SpcScalFldNme(1)), RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 34', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error applying scale factors'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     !-----------------------------------------------------------------
@@ -665,7 +735,8 @@ CONTAINS
     CALL HCO_EmisAdd( HcoState, FLUX_2D, Inst%IDTNO, &
                       RC,       ExtNr=Inst%ExtNr )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( 'HCO_EmisAdd error', RC )
+       ErrMsg = 'Error adding emissions fluxes'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
 
@@ -676,29 +747,33 @@ CONTAINS
     ! DEP_RESERVOIR [kg/m3]
     CALL HCO_RestartWrite( HcoState, 'DEP_RESERVOIR', Inst%DEP_RESERVOIR, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 35', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error writing field DEP_RESERVOIR to restart'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! GWET_PREV [unitless]
     CALL HCO_RestartWrite( HcoState, 'GWET_PREV', Inst%GWET_PREV, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 36', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error writing field GWET_PREV to restart'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! PFACTOR [unitless]
     CALL HCO_RestartWrite( HcoState, 'PFACTOR', Inst%PFACTOR, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 37', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error writing field PFACTOR to restart'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! DRYPERIOD [unitless]
     CALL HCO_RestartWrite( HcoState, 'DRYPERIOD', Inst%DRYPERIOD, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 38', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error writing field DRYPERIOD to restart'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! Leave w/ success
@@ -748,7 +823,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER                        :: ExtNr
-    CHARACTER(LEN=255)             :: MSG, LOC
+    CHARACTER(LEN=255)             :: MSG, ErrMsg, ThisLoc
     CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
     INTEGER, ALLOCATABLE           :: HcoIDs(:)
     INTEGER                        :: nSpc, I, J, II, AS
@@ -757,24 +832,33 @@ CONTAINS
     !=================================================================
     ! HCOX_SoilNOx_INIT begins here!
     !=================================================================
-    LOC = 'HCOX_SoilNOx_INIT (HCOX_SOILNOX_MOD.F90)'
+
+    ! Define strings for error messgaes
+    ErrMsg = ''
+    ThisLoc =  &
+    ' -> in HCOX_SoilNOx_Init (in module HEMCO/Extensions/hcox_soilnox_mod.F90)'
+
+    ! Assume success
+    RC = HCO_SUCCESS
 
     ! Extension Nr.
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM(ExtName) )
     IF ( ExtNr <= 0 ) RETURN
 
     ! Enter
-    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
+    CALL HCO_ENTER( HcoState%Config%Err, ThisLoc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 39', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error entering soil NOx extension' 
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! Create instance
     Inst => NULL()
     CALL InstCreate ( ExtNr, ExtState%SoilNox, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR ( 'Cannot create soil NOx instance', RC )
+       ErrMsg = 'Cannot create soil NOx instance'
+       CALL HCO_ERROR ( ErrMsg, RC )
        RETURN
     ENDIF
 
@@ -785,11 +869,20 @@ CONTAINS
     ! Read settings specified in configuration file
     ! Note: the specified strings have to match those in
     !       the config. file!
-    CALL GetExtOpt( HcoState%Config, ExtNr, 'Use fertilizer NOx', &
-                     OptValBool=Inst%LFERTILIZERNOX, RC=RC )
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'UseSoilTemperature', &
+                    OptValBool=Inst%UseSoilTemp, RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 40', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Use soil temperature not specified'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'Use fertilizer NOx', &
+                    OptValBool=Inst%LFERTILIZERNOX, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       ErrMsg = 'Use fertilizer NOx not specified'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! Get global scale factor
@@ -798,12 +891,13 @@ CONTAINS
     ! Get HEMCO species IDs
     CALL HCO_GetExtHcoID( HcoState, ExtNr, HcoIDs, SpcNames, nSpc, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 41', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'No soil NOx species speficied'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
     IF ( nSpc /= 1 ) THEN
-       MSG = 'Module soil NOx accepts only one species!'
-       CALL HCO_ERROR(MSG, RC )
+       ErrMsg = 'Module soil NOx accepts only one species!'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
        RETURN
     ENDIF
     Inst%IDTNO = HcoIDs(1)
@@ -812,15 +906,17 @@ CONTAINS
     CALL GetExtSpcVal( HcoState%Config, ExtNr, nSpc, &
                        SpcNames, 'Scaling', 1.0_sp, Inst%SpcScalVal, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 42', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error reading species scale factor'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     CALL GetExtSpcVal( HcoState%Config, ExtNr, nSpc, &
                        SpcNames, 'ScaleField', HCOX_NOSCALE, Inst%SpcScalFldNme, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 43', RC, THISLOC=LOC )
-        RETURN
+       ErrMsg = 'Error reading ScaleField'
+       CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+       RETURN
     ENDIF
 
     ! Verbose mode
@@ -828,23 +924,21 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: SoilNOx (soil NOx emissions)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
-       ENDIF
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
 
        ! Write all other messages as debug printout only
        WRITE(MSG,*) '   - NOx species            : ', TRIM(SpcNames(1)), Inst%IDTNO
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) '   - NOx scale factor       : ', Inst%SpcScalVal(1)
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) '   - NOx scale field        : ', TRIM(Inst%SpcScalFldNme(1))
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
+       WRITE(MSG,*) '   - Use soil temperature   : ', Inst%UseSoilTemp
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) '   - Use fertilizer NOx     : ', Inst%LFERTILIZERNOX
-       CALL HCO_MSG(HcoState%Config%Err,MSG)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        WRITE(MSG,*) '   - Fertilizer scale factor: ', Inst%FERT_SCALE
-       CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! ----------------------------------------------------------------------
@@ -938,35 +1032,35 @@ CONTAINS
                        Trgt2D    = Inst%FertNO_Diag,      &
                        RC        = RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 44', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 44', RC, ThisLoc )
         RETURN
     ENDIF
 
     CALL HCO_RestartDefine( HcoState, 'PFACTOR', &
                             Inst%PFACTOR, '1',  RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 45', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 45', RC, ThisLoc )
         RETURN
     ENDIF
 
     CALL HCO_RestartDefine( HcoState, 'DRYPERIOD', &
                             Inst%DRYPERIOD, '1',  RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 46', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 46', RC, ThisLoc )
         RETURN
     ENDIF
 
     CALL HCO_RestartDefine( HcoState, 'GWET_PREV', &
                             Inst%GWET_PREV, '1',  RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 47', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 47', RC, ThisLoc )
         RETURN
     ENDIF
 
     CALL HCO_RestartDefine( HcoState, '   DEP_RESERVOIR', &
                             Inst%DEP_RESERVOIR, 'kg/m3', RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 48', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 48', RC, ThisLoc )
         RETURN
     ENDIF
 
@@ -976,6 +1070,9 @@ CONTAINS
 
     ! Activate required met fields
     ExtState%T2M%DoUse       = .TRUE.
+    IF (Inst%UseSoilTemp) THEN
+       ExtState%TSOIL1%DoUse = .TRUE.
+    ENDIF
     ExtState%GWETTOP%DoUse   = .TRUE.
     ExtState%SUNCOS%DoUse    = .TRUE.
     ExtState%U10M%DoUse      = .TRUE.
@@ -1146,7 +1243,7 @@ CONTAINS
 !
     INTEGER   :: K
     REAL(hp)  :: BASE_TERM, CRF_TERM,  PULSE
-    REAL(hp)  :: TC,        TEMP_TERM, WINDSQR
+    REAL(hp)  :: TC,        TSOIL,     TEMP_TERM, WINDSQR
     REAL(hp)  :: WET_TERM,  A_FERT,    A_BIOM
     REAL(hp)  :: LAI,       SUNCOS,    GWET
     REAL(hp)  :: ARID,      NARID
@@ -1161,6 +1258,11 @@ CONTAINS
 
     ! Surface temperature [C]
     TC             = ExtState%T2M%Arr%Val(I,J) - 273.15_hp
+
+    ! Soil temperature [C]
+    IF ( Inst%UseSoilTemp ) THEN
+       TSOIL = ExtState%TSOIL1%Arr%Val(I,J) - 273.15_hp
+    ENDIF
 
     ! Surface wind speed, squared
     WINDSQR        = ExtState%U10M%Arr%Val(I,J)**2 + &
@@ -1188,7 +1290,11 @@ CONTAINS
 
        ! Temperature-dependent term of soil NOx emissions [unitless]
        ! Use GWET instead of climo wet/dry
-       TEMP_TERM = SOILTEMP( K, TC, GWET )
+       IF ( Inst%UseSoilTemp ) THEN
+          TEMP_TERM = SOILTEMP( Inst, K , TSOIL, GWET )
+       ELSE
+          TEMP_TERM = SOILTEMP( Inst, K, TC, GWET )
+       ENDIF
 
        ! Soil moisture scaling of soil NOx emissions
        ARID      = Inst%CLIMARID(I,J)
@@ -1779,18 +1885,19 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  FUNCTION SoilTemp( NN, TC, GWET ) RESULT( SOIL_TEMP )
+  FUNCTION SoilTemp( Inst, NN, TC, GWET ) RESULT( SOIL_TEMP )
 !
 ! !INPUT PARAMETERS:
 !
-    INTEGER,  INTENT(IN) :: NN           ! Soil biome type
-    REAL(hp), INTENT(IN) :: TC           ! Surface air temperature [C]
-    REAL(hp), INTENT(IN) :: GWET         ! Top soil moisture
+    TYPE(MyInst), POINTER    :: Inst         ! Instance object
+    INTEGER,      INTENT(IN) :: NN           ! Soil biome type
+    REAL(hp),     INTENT(IN) :: TC           ! Surface air temperature [C]
+    REAL(hp),     INTENT(IN) :: GWET         ! Top soil moisture
 !
 ! !RETURN VALUE:
 !
-    REAL(hp)             :: SOIL_TEMP    ! Temperature-dependent term of
-                                         ! soil NOx emissions [unitless]
+    REAL(hp)                 :: SOIL_TEMP    ! Temperature-dependent term of
+                                             ! soil NOx emissions [unitless]
 !
 ! !REMARKS:
 !    Based on Ormeci et al., [1999] and Otter et al., [1999]
@@ -1818,6 +1925,10 @@ CONTAINS
 !        Geophys. Res., 105 , 20,69720,706, 1999.
 !  (3 ) Yienger, J.J, and H. Levy, Empirical model of global soil-biogenic
 !        NOx emissions, J. Geophys. Res., 100, D6, 11,447-11464, June 20, 1995.
+!  (4 ) Wang, Y., C. Ge, L. Castro Garcia1, G.D. Jenerette, P.Y. Oikawa, and
+!       J. Wang, Improved modelling of soil NOx emissions in a high temperature
+!       agricultural region: role of background emissions on NO2 trend over the
+!       US, Environ. Res. Lett., 16(8), DOI: 10.1088/1748-9326/ac16a3, 2021.
 !
 ! !REVISION HISTORY:
 !  17 Aug 2009 - R. Yantosca - Initial Version
@@ -1837,18 +1948,20 @@ CONTAINS
     ! Save surface air temp in shadow variable TMMP
     TMMP   = TC
 
-    ! DRY
-    IF ( GWET < 0.3_hp ) THEN
+    IF ( .not. Inst%UseSoilTemp ) THEN
+       ! DRY
+       IF ( GWET < 0.3_hp ) THEN
 
-       ! Convert surface air temperature to model temperature
-       ! by adding 5 degrees C to model temperature
-       TMMP = TMMP + 5.0_hp
+          ! Convert surface air temperature to model temperature
+          ! by adding 5 degrees C to model temperature
+          TMMP = TMMP + 5.0_hp
 
-    ! WET
-    ELSE
+       ! WET
+       ELSE
 
-       TMMP = SOILTA(NN) * TMMP + SOILTB(NN)
+          TMMP = SOILTA(NN) * TMMP + SOILTB(NN)
 
+       ENDIF
     ENDIF
 
     !==============================================================
@@ -1867,10 +1980,26 @@ CONTAINS
 
     ELSE
 
-       ! Caps temperature response at 30C
-       IF ( TMMP >= 30.0_hp ) TMMP = 30.0_hp
+       IF ( Inst%UseSoilTemp ) THEN
 
-       SOIL_TEMP =  EXP( 0.103_hp * TMMP )
+          !----------------------------------------------
+          ! Soil NOx scheme from Yi Wang et al. (ERL, 2021) 
+          !----------------------------------------------
+          ! Caps temperature response at 40C
+          IF ( TMMP >= 40.e+0_hp ) TMMP = 40.e+0_hp
+          IF ( TMMP <= 20.e+0_hp ) SOIL_TEMP =  EXP( 0.103 * TMMP )
+          IF ( TMMP > 20.e+0_hp ) THEN
+             SOIL_TEMP=-0.009*(TMMP**3)+0.837*(TMMP**2)+(-22.527)*TMMP+196.149
+          ENDIF
+
+       ELSE
+
+          ! Caps temperature response at 30C
+          IF ( TMMP >= 30.0_hp ) TMMP = 30.0_hp
+
+          SOIL_TEMP =  EXP( 0.103_hp * TMMP )
+
+       ENDIF
 
     ENDIF
 

@@ -345,7 +345,7 @@ CONTAINS
                                 cYYYY=cYYYY, cMM=cMM, cDD=cDD, RC=RC )
              IF ( RC/=HCO_SUCCESS ) RETURN
              WRITE(MSG, 100) cYYYY, cMM, cDD
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 100          FORMAT( 'FINN daily emissions for year, month, day: ', &
                       i4, '/', i2.2, '/', i2.2 )
           ENDIF
@@ -355,7 +355,7 @@ CONTAINS
                                 cYYYY=cYYYY, cMM=cMM, LMD=NDAYS, RC=RC)
              IF ( RC/=HCO_SUCCESS ) RETURN
              WRITE(MSG, 110) cYYYY, cMM
-             CALL HCO_MSG(HcoState%Config%Err,MSG)
+             CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 110          FORMAT( 'FINN monthly emissions for year, month: ', &
                       i4, '/', i2.2 )
           ENDIF
@@ -531,7 +531,7 @@ CONTAINS
                 TOTAL = SUM(SpcArr(:,:)*HcoState%Grid%AREA_M2%Val(:,:))
                 TOTAL = TOTAL * 86400.0_hp * 1e-9_hp
                 WRITE(MSG, 120) HcoState%Spc(HcoID)%SpcName, TOTAL
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 120             FORMAT( 'SUM biomass ', a4,1x,': ', f11.4,1x,'[Tg]' )
              ENDIF
           ELSE
@@ -539,7 +539,7 @@ CONTAINS
                 TOTAL = SUM(SpcArr(:,:)*HcoState%Grid%AREA_M2%Val(:,:))
                 TOTAL = TOTAL * NDAYS * 86400.0_hp * 1e-9_hp
                 WRITE(MSG, 130) HcoState%Spc(HcoID)%SpcName, TOTAL
-                CALL HCO_MSG(HcoState%Config%Err,MSG)
+                CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
 130             FORMAT( 'SUM biomass ', a4,1x,': ', f11.4,1x,'[Tg]' )
              ENDIF
           ENDIF
@@ -792,7 +792,7 @@ CONTAINS
 
     ! Species listed in VOC speciation table
     Inst%FINN_SPEC_NAME(11) = 'ACET'
-    Inst%FINN_SPEC_NAME(12) = 'ACTA'   ! Not currently emitted by BB in GC
+    Inst%FINN_SPEC_NAME(12) = 'ACTA'
     Inst%FINN_SPEC_NAME(13) = 'ALD2'
     Inst%FINN_SPEC_NAME(14) = 'ALK4'
     Inst%FINN_SPEC_NAME(15) = 'APINE'  ! Currently lumped into MTPA
@@ -803,39 +803,39 @@ CONTAINS
     Inst%FINN_SPEC_NAME(20) = 'C2H4'
     Inst%FINN_SPEC_NAME(21) = 'C2H6'
     Inst%FINN_SPEC_NAME(22) = 'C3H8'
-    Inst%FINN_SPEC_NAME(23) = 'CARENE' ! Currently lumped into MTPA
+    Inst%FINN_SPEC_NAME(23) = 'CARENE' ! Currently lumped into MTPO
     Inst%FINN_SPEC_NAME(24) = 'CH2Br2'
     Inst%FINN_SPEC_NAME(25) = 'CH2O'
     Inst%FINN_SPEC_NAME(26) = 'CH3Br'
     Inst%FINN_SPEC_NAME(27) = 'CH3CN'
     Inst%FINN_SPEC_NAME(28) = 'CH3I'
     Inst%FINN_SPEC_NAME(29) = 'DMS'
-    Inst%FINN_SPEC_NAME(30) = 'EOH'    ! Not currently emitted in GC
-    Inst%FINN_SPEC_NAME(31) = 'ETBENZ' ! Currently lumped with TOLU
-    Inst%FINN_SPEC_NAME(32) = 'FUR'    ! Currently not used
+    Inst%FINN_SPEC_NAME(30) = 'EOH'
+    Inst%FINN_SPEC_NAME(31) = 'ETBENZ'
+    Inst%FINN_SPEC_NAME(32) = 'FUR'
     Inst%FINN_SPEC_NAME(33) = 'GLYC'
     Inst%FINN_SPEC_NAME(34) = 'GLYX'
     Inst%FINN_SPEC_NAME(35) = 'HAC'
     Inst%FINN_SPEC_NAME(36) = 'HCN'    ! Not currently emitted in GC
-    Inst%FINN_SPEC_NAME(37) = 'HCOOH'  ! Not currently emitted by BB in GC
+    Inst%FINN_SPEC_NAME(37) = 'HCOOH'
     Inst%FINN_SPEC_NAME(38) = 'HNO2'   ! Not currently emitted in GC
-    Inst%FINN_SPEC_NAME(39) = 'ISOP'   ! Not currently emitted by BB in GC
+    Inst%FINN_SPEC_NAME(39) = 'ISOP'
     Inst%FINN_SPEC_NAME(40) = 'LIMO'
-    Inst%FINN_SPEC_NAME(41) = 'MACR'   ! Not currently emitted in GC
+    Inst%FINN_SPEC_NAME(41) = 'MACR'
     Inst%FINN_SPEC_NAME(42) = 'MEK'
     Inst%FINN_SPEC_NAME(43) = 'MGLY'
     Inst%FINN_SPEC_NAME(44) = 'MNO3'
-    Inst%FINN_SPEC_NAME(45) = 'MOH'    ! Not currently emitted in GC
-    Inst%FINN_SPEC_NAME(46) = 'MTPO'   ! Not currently emitted in GC
-    Inst%FINN_SPEC_NAME(47) = 'MVK'    ! Not currently emitted in GC
+    Inst%FINN_SPEC_NAME(45) = 'MOH'
+    Inst%FINN_SPEC_NAME(46) = 'MTPO'
+    Inst%FINN_SPEC_NAME(47) = 'MVK'
     Inst%FINN_SPEC_NAME(48) = 'PRPE'
-    Inst%FINN_SPEC_NAME(49) = 'R4N2'   ! Not currently emitted in GC
-    Inst%FINN_SPEC_NAME(50) = 'RCHO'   ! Not currently emitted by BB in GC
-    Inst%FINN_SPEC_NAME(51) = 'RCOOH'  ! Currently not used
-    Inst%FINN_SPEC_NAME(52) = 'ROH'    ! Currently not used
+    Inst%FINN_SPEC_NAME(49) = 'R4N2'
+    Inst%FINN_SPEC_NAME(50) = 'RCHO'
+    Inst%FINN_SPEC_NAME(51) = 'RCOOH'
+    Inst%FINN_SPEC_NAME(52) = 'ROH'
     Inst%FINN_SPEC_NAME(53) = 'SESQ'   ! Currently not used
-    Inst%FINN_SPEC_NAME(54) = 'STYR'   ! Currently lumped with TOLU
-    Inst%FINN_SPEC_NAME(55) = 'TMB'    ! Currently lumped with XYLE
+    Inst%FINN_SPEC_NAME(54) = 'STYR'
+    Inst%FINN_SPEC_NAME(55) = 'TMB'
     Inst%FINN_SPEC_NAME(56) = 'TOLU'
     Inst%FINN_SPEC_NAME(57) = 'XYLE'
     Inst%FINN_SPEC_NAME(58) = 'H2'     ! Currently not used
@@ -877,15 +877,11 @@ CONTAINS
 
        ! Write the name of the extension regardless of the verbose setting
        msg = 'Using HEMCO extension: FINN (biomass burning)'
-       IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-          CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
-       ELSE
-          CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
-       ENDIF
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
 
        ! Other print statements will only be written as debug output
        WRITE(MSG,*) '   - Use daily data          : ', Inst%UseDay
-       CALL HCO_MSG(HcoState%Config%Err,MSG )
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
     ! Get HEMCO species IDs of all species specified in configuration file
@@ -973,6 +969,8 @@ CONTAINS
        IF ( TRIM(SpcName) == 'MTPA' ) SpcName = 'APINE'
        IF ( TRIM(SpcName) == 'Hg0'  ) SpcName = 'CO'
        IF ( TRIM(SpcName) == 'SOAP' ) SpcName = 'CO'
+       IF ( TRIM(SpcName) == 'EBZ'  ) SpcName = 'ETBENZ'
+       IF ( TRIM(SpcName) == 'FURA' ) SpcName = 'FUR'
 
        ! For lumped species, we have to repeat the lookup multiple times,
        ! so use a while loop here.  For example, for species TOLU this will
@@ -1014,11 +1012,11 @@ CONTAINS
                 IF ( HcoState%amIRoot ) THEN
                    MSG = '   - FINN species ' // TRIM(Inst%FINN_SPEC_NAME(N)) // &
                          '     will be emitted as ' // TRIM(Inst%SpcNames(Inst%nSpc))
-                   CALL HCO_MSG(HcoState%Config%Err,MSG )
+                   CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 WRITE(MSG,*) '     --> Uniform scale factor : ', Inst%SpcScal(Inst%nSpc)
-                CALL HCO_MSG(HcoState%Config%Err,MSG )
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 WRITE(MSG,*) '     --> Scale field          : ', TRIM(Inst%SpcScalFldNme(Inst%nSpc))
-                CALL HCO_MSG(HcoState%Config%Err,MSG )
+                CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                 ENDIF
 
                 ! Reset variables
@@ -1058,7 +1056,7 @@ CONTAINS
                       Inst%FINN_EMFAC(N,:) = AdjFact / EMFAC_IN(M,:)
                       IF ( HcoState%amIRoot ) THEN
                          WRITE( MSG, 200 ) TRIM( Inst%FINN_SPEC_NAME(N))
-                         CALL HCO_MSG(HcoState%Config%Err,MSG )
+                         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                       ENDIF
                       EXIT
 
@@ -1080,7 +1078,7 @@ CONTAINS
                       IS_NMOC = .TRUE.
                       IF ( HcoState%amIRoot ) THEN
                          WRITE( MSG, 201 ) TRIM( Inst%FINN_SPEC_NAME(N) )
-                         CALL HCO_MSG(HcoState%Config%Err,MSG )
+                         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
                       ENDIF
                       EXIT
                    ENDIF
@@ -1113,35 +1111,40 @@ CONTAINS
           ! HEMCO species ID to multiple FINN species, so that all of
           ! them will be added to the same model species.
 
-          ! --> TMB is lumped into XYLE
-          IF ( Inst%SpcNames(Inst%nSpc) == 'XYLE' ) THEN
-             IF ( N_LUMPED == 0 ) THEN
-                SpcName  = 'TMB'
-                Missing  = .TRUE.
-                N_LUMPED = N_LUMPED + 1
-             ENDIF
-          ENDIF
+          ! --> TMB is no longer lumped into XYLE
+          !IF ( Inst%SpcNames(Inst%nSpc) == 'XYLE' ) THEN
+          !   IF ( N_LUMPED == 0 ) THEN
+          !      SpcName  = 'TMB'
+          !      Missing  = .TRUE.
+          !      N_LUMPED = N_LUMPED + 1
+          !   ENDIF
+          !ENDIF
 
-          ! --> ETBENZ and STYR are lumped into TOLU
-          IF ( Inst%SpcNames(Inst%nSpc) == 'TOLU' ) THEN
-             IF ( N_LUMPED == 0 ) THEN
-                SpcName  = 'ETBENZ'
-                Missing  = .TRUE.
-                N_LUMPED = N_LUMPED + 1
-             ELSEIF ( N_LUMPED == 1 ) THEN
-                SpcName  = 'STYR'
-                Missing  = .TRUE.
-                N_LUMPED = N_LUMPED + 1
-             ENDIF
-          ENDIF
+          ! --> ETBENZ and STYR are no longer lumped into TOLU
+          !IF ( Inst%SpcNames(Inst%nSpc) == 'TOLU' ) THEN
+          !   IF ( N_LUMPED == 0 ) THEN
+          !      SpcName  = 'ETBENZ'
+          !      Missing  = .TRUE.
+          !      N_LUMPED = N_LUMPED + 1
+          !   ELSEIF ( N_LUMPED == 1 ) THEN
+          !      SpcName  = 'STYR'
+          !      Missing  = .TRUE.
+          !      N_LUMPED = N_LUMPED + 1
+          !   ENDIF
+          !ENDIF
 
-          ! --> BPINE and CARENE are lumped into MTPA
+          ! --> BPINE is lumped into MTPA
           IF ( Inst%SpcNames(Inst%nSpc) == 'MTPA' ) THEN
              IF ( N_LUMPED == 0 ) THEN
                 SpcName  = 'BPINE'
                 Missing  = .TRUE.
                 N_LUMPED = N_LUMPED + 1
-             ELSEIF ( N_LUMPED == 1 ) THEN
+             ENDIF
+          ENDIF
+
+          ! --> CARENE is lumped into MTPO
+          IF ( Inst%SpcNames(Inst%nSpc) == 'MTPO' ) THEN
+             IF ( N_LUMPED == 0 ) THEN
                 SpcName  = 'CARENE'
                 Missing  = .TRUE.
                 N_LUMPED = N_LUMPED + 1
@@ -1435,7 +1438,7 @@ CONTAINS
        ENDIF
        Inst%FinnIDs => NULL()
 
-       IF ( ASSOCIATED( Inst%HcoIDs ) ) THEN 
+       IF ( ASSOCIATED( Inst%HcoIDs ) ) THEN
           DEALLOCATE( Inst%HcoIDs )
        ENDIF
        Inst%HcoIDs => NULL()

@@ -517,15 +517,15 @@
 
 ! Get the proper species name
 !%%% This is a kludge, do better later %%%
-            IF ( N==1  ) SpcName = 'NK1'
-            IF ( N==2  ) SpcName = 'NK2'
-            IF ( N==3  ) SpcName = 'NK3'
-            IF ( N==4  ) SpcName = 'NK4'
-            IF ( N==5  ) SpcName = 'NK5'
-            IF ( N==6  ) SpcName = 'NK6'
-            IF ( N==7  ) SpcName = 'NK7'
-            IF ( N==8  ) SpcName = 'NK8'
-            IF ( N==9  ) SpcName = 'NK9'
+            IF ( N==1  ) SpcName = 'NK01'
+            IF ( N==2  ) SpcName = 'NK02'
+            IF ( N==3  ) SpcName = 'NK03'
+            IF ( N==4  ) SpcName = 'NK04'
+            IF ( N==5  ) SpcName = 'NK05'
+            IF ( N==6  ) SpcName = 'NK06'
+            IF ( N==7  ) SpcName = 'NK07'
+            IF ( N==8  ) SpcName = 'NK08'
+            IF ( N==9  ) SpcName = 'NK09'
             IF ( N==10 ) SpcName = 'NK10'
             IF ( N==11 ) SpcName = 'NK11'
             IF ( N==12 ) SpcName = 'NK12'
@@ -712,23 +712,23 @@
          ! Write the name of the extension regardless of the verbose setting
          msg = 'Using HEMCO extension: TOMAS_DustDead '
      &       // 'dust mobilization for TOMAS)'
-         IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-            CALL HCO_Msg( HcoState%Config%Err, sep1='-' ) ! with separator
+         IF ( HcoState%Config%doVerbose ) THEN
+            CALL HCO_Msg( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
          ELSE
-            CALL HCO_Msg( msg, verb=.TRUE.              ) ! w/o separator
+            CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
          ENDIF
 
          ! Write all other messages as debug printout only
          MSG = 'Use the following species (Name: HcoID):'
-         CALL HCO_MSG(HcoState%Config%Err,MSG)
+         CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
          DO N = 1, nSpc
             WRITE(MSG,*) TRIM(SpcNames(N)), ':', Inst%HcoIDs(N)
-            CALL HCO_MSG(HcoState%Config%Err,MSG)
+            CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
          ENDDO
 
          WRITE(MSG,*) 'Global mass flux tuning factor: ',
      &                 Inst%FLX_MSS_FDG_FCT
-         CALL HCO_MSG(HcoState%Config%Err,MSG,SEP2='-')
+         CALL HCO_MSG(MSG,SEP2='-',LUN=HcoState%Config%HcoLogLUN )
 
       ENDIF
 

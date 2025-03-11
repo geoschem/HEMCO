@@ -60,8 +60,8 @@ The following files can be modified to set up your HEMCO standalone simulation.
 
    Specifies which fields to save out to the HEMCO diagnostics file
    saved in :file:`OutputDir` by default. The frequency to save out
-   diagnostics is controlled by the :option:`DiagnFreq` setting in
-   :option:`HEMCO_sa_Config.rc`
+   diagnostics is controlled by the :ref:`hco-cfg-set-diagnfreq`
+   setting in :option:`HEMCO_sa_Config.rc`
 
    For more information, please see the chapter entitled
    :ref:`hco-diag-configfile`.

@@ -1,0 +1,115 @@
+name: Bug or Issue Report
+description: Report a bug or issue with HEMCO
+title: "Put a one-line description here"
+labels: ["category: Bug"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Your name
+    validations:
+      required: true
+  - type: input
+    id: affiliation
+    attributes:
+      label: Your affiliation
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened? What did you expect to happen?
+      placeholder: Describe your issue
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: What are the steps to reproduce the bug?
+      placeholder: Explain what you did
+    validations:
+      required: true
+  - type: textarea
+    id: log-files
+    attributes:
+      label: Please attach any relevant configuration and log files.
+      description: Drag and drop files like the HEMCO log file, HEMCO_Config.rc, HEMCO_Diagn.rc, and build_info/summarize_build here. You may need to rename files to end in .txt first.
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: What HEMCO version were you using?
+      placeholder: e.g. 3.9.0
+    validations:
+      required: true
+  - type: dropdown
+    id: machine
+    attributes:
+      label: What environment were you running HEMCO on?
+      multiple: true
+      options:
+        - Local cluster
+        - AWS
+        - Personal computer
+        - Other (please explain below)
+    validations:
+      required: true
+  - type: input
+    id: compiler-version
+    attributes:
+      label: What compiler and version were you using?
+      placeholder: e.g. gcc 10.2.0, ifort 19.0.5.281
+    validations:
+      required: true
+  - type: dropdown
+    id: implemenation
+    attributes:
+      label: Will you be addressing this bug yourself?
+      description: If Yes, please also assign this issue to yourself (if possible)
+      multiple: false
+      options:
+        - "Yes"
+        - "Yes, but I will need some help"
+        - "No"
+    validations:
+      required: true
+  - type: dropdown
+    id: configuration
+    attributes:
+      label: In what configuration were you running HEMCO?
+      multiple: false
+      options:
+        - Standalone
+        - GCClassic
+        - GCHP
+        - Other (please explain in additional information section below)
+    validations:
+      required: true
+  - type: input
+    id: resolution
+    attributes:
+      label: As what resolution were you running HEMCO?
+      placeholder: "e.g. 4x5, 2x2.5, 0.5x0.625, 0.25x0.3125"
+    validations:
+      required: true
+  - type: dropdown
+    id: meteorology
+    attributes:
+      label: What meterology fields did you use?
+      multiple: false
+      options:
+        - GEOS-FP
+        - GEOS-IT
+        - MERRA-2
+        - GCAP 2.0
+        - Other (please explain in additional information section below)
+    validations:
+      required: true
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional information
+      description: Please provide any additional information here that you think might be relevant.
+    validations:
+      required: false
