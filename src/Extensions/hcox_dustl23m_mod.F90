@@ -931,10 +931,14 @@ CONTAINS
         ENDIF
 
         !! calculate w_t = 0.01 * a * (17 * f_clay + 14 * f_clay ** 2) where a is a tuning factor and was set to be 1.0
-        w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
+        IF (f_clay(I,J) > 1.0e-15) THEN
+          w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
+        ELSE 
+          w_t(I,J) = 0.0_hp
+        ENDIF
 
         ! calculate f_m [unitless]
-        IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) ) THEN
+        IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) .and. (w_t(I,J) .LE. 0.0_hp) ) THEN
           f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J)) ** 0.68_hp)))
         ELSE
           f_m(I,J) = 1.0_hp
