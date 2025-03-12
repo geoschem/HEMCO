@@ -923,8 +923,8 @@ CONTAINS
         ! Factor by which soil wetness enhancing threhold friction velocity
         ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
         !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
-        ! To prevent divided by 0
-        IF (bulk_den(I,J) < 1.0e-15_hp) THEN
+        ! To prevent divided by 0 and to be stronger bulk density tends to be larger than water density
+        IF (bulk_den(I,J) < 1000.0_hp) THEN
           w(I,J) = 0.0_hp
         ELSE 
           w(I,J) = rho_w / (bulk_den(I,J)) * theta(I,J) * 0.5_hp
@@ -1238,6 +1238,10 @@ CONTAINS
     PRINT*, '### u_star_s Min, Max: ', MINVAL( u_star_s, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_s, mask=(Inst%C_sah<1.0_hp) )
     CALL FLUSH( 6 )
     PRINT*, '### Cd Min, Max: ', MINVAL( C_d, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( C_d, mask=(Inst%C_sah<1.0_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### u_star_ft0 Min, Max: ', MINVAL( u_star_ft0, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_ft0, mask=(Inst%C_sah<1.0_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### u_star_ft Min, Max: ', MINVAL( u_star_ft, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_ft, mask=(Inst%C_sah<1.0_hp) )
     CALL FLUSH( 6 )
     PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_st, mask=(Inst%C_sah<1.0_hp) )
     CALL FLUSH( 6 )
