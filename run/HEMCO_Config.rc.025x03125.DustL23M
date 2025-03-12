@@ -114,7 +114,7 @@ PBL dry deposition:  False
 * HFLUX     $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     HFLUX    1980-2021/1-12/1-31/0-23/+30minute EFY xy  W/m2      * -  1 1
 * SNOWHGT   $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     SNOMAS   1980-2021/1-12/1-31/0-23/+30minute EFY xy  kg-H2O/m2 * -  1 1
 
-* PS           $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.I3.$RES.nc  PS       1980-2021/1-12/1-31/*              EFY xy  hPa       * -  1 1
+* PS        $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.I3.$RES.nc     PS       1980-2021/1-12/1-31/*              EFY xy  hPa       * -  1 1
 )))METEOROLOGY
 
 #==============================================================================
