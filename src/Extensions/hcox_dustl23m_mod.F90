@@ -923,8 +923,8 @@ CONTAINS
         ! Factor by which soil wetness enhancing threhold friction velocity
         ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
         !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
-        ! To prevent divided by 0 and to be stronger the min of the input of bulk density is 10
-        IF (bulk_den(I,J) < 10.0_hp) THEN
+        ! To prevent divided by 0 and here make the restriction stronger (> snow density)
+        IF (bulk_den(I,J) < 100.0_hp) THEN
           w(I,J) = 0.0_hp
         ELSE 
           w(I,J) = rho_w / (bulk_den(I,J)) * theta(I,J) * 0.5_hp
