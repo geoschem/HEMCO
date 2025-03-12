@@ -476,7 +476,7 @@ CONTAINS
         CALL HCO_ERROR( msg, RC, thisLoc=loc )
         RETURN
     ENDIF
-    Inst%A_bare = 0.0_hp
+    Inst%A_bare = -9999.0_hp
 
     ALLOCATE( Inst%A_veg( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS /= 0 ) THEN
@@ -484,7 +484,7 @@ CONTAINS
         CALL HCO_ERROR( msg, RC, thisLoc=loc )
         RETURN
     ENDIF
-    Inst%A_veg = 0.0_hp
+    Inst%A_veg = -9999.0_hp
 
     ALLOCATE( Inst%C_sah( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS /= 0 ) THEN
@@ -492,7 +492,7 @@ CONTAINS
         CALL HCO_ERROR( msg, RC, thisLoc=loc )
         RETURN
     ENDIF
-    Inst%C_sah = 0.0_hp
+    Inst%C_sah = -9999.0_hp
 
     ALLOCATE( Inst%XLAI_t( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS /= 0 ) THEN
@@ -500,7 +500,7 @@ CONTAINS
         CALL HCO_ERROR( msg, RC, thisLoc=loc )
         RETURN
     ENDIF
-    Inst%XLAI_t = 0.0_hp
+    Inst%XLAI_t = -9999.0_hp
 
     ALLOCATE( Inst%f_clay( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS /= 0 ) THEN
@@ -508,7 +508,7 @@ CONTAINS
         CALL HCO_ERROR( msg, RC, thisLoc=loc )
         RETURN
     ENDIF
-    Inst%f_clay = 0.0_hp
+    Inst%f_clay = -9999.0_hp
 
     ALLOCATE( Inst%bulk_den( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS /= 0 ) THEN
@@ -516,7 +516,7 @@ CONTAINS
         CALL HCO_ERROR( msg, RC, thisLoc=loc )
         RETURN
     ENDIF
-    Inst%bulk_den = 0.0_hp
+    Inst%bulk_den = -9999.0_hp
 
     ALLOCATE( Inst%poros( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS /= 0 ) THEN
@@ -524,7 +524,7 @@ CONTAINS
         CALL HCO_ERROR( msg, RC, thisLoc=loc )
         RETURN
     ENDIF
-    Inst%poros = 0.0_hp
+    Inst%poros = -9999.0_hp
 
     ALLOCATE( Inst%roughness_r( HcoState%NX, HcoState%NY), STAT=AS )
     IF ( AS /= 0 ) THEN
@@ -532,7 +532,7 @@ CONTAINS
         CALL HCO_ERROR( msg, RC, thisLoc=loc )
         RETURN
     ENDIF
-    Inst%roughness_r = 0.0_hp
+    Inst%roughness_r = -9999.0_hp
     
     ! Bin size min diameter [m]
     ALLOCATE( Inst%DMT_MIN( NBINS ), STAT=AS )
@@ -914,15 +914,6 @@ CONTAINS
     ! CAL_THR_FRIC_VEL begins here!
     !=================================================================
 
-    ! initialize
-    u_star_ft0 = 0.0_hp
-    u_star_ft  = 0.0_hp
-    u_star_it  = 0.0_hp
-    u_star_st  = 0.0_hp
-    w          = 0.0_hp
-    w_t        = 0.0_hp
-    f_m        = 1.0_hp ! f_m >= 1
-
     DO J = 1, HcoState%NY
       DO I = 1, HcoState%NX
         ! Dry fluid threshold velocity [m s-1]: 
@@ -940,6 +931,8 @@ CONTAINS
         ! calculate f_m [unitless]
         IF ( w(I,J) > w_t(I,J)) THEN
           f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J)) ** 0.68_hp)))
+        ELSE
+          f_m(I,J) = 1.0_hp
         ENDIF
         
       ENDDO
@@ -994,12 +987,6 @@ CONTAINS
 
     ! variables
     REAL(hp)               :: K(HcoState%NX, HcoState%NY)
-
-    ! initialize
-    f_eff_r = 1.0_hp
-    f_eff_v = 1.0_hp
-    F_eff   = 1.0_hp
-    K       = 0.0_hp
 
     DO J = 1, HcoState%NY
       DO I = 1, HcoState%NX
@@ -1080,17 +1067,6 @@ CONTAINS
     REAL(hp)               :: P_it(HcoState%NX, HcoState%NY)
     REAL(hp)               :: eta_temp(HcoState%NX, HcoState%NY) ! Intermittency factor with values in [0,1] [unitless]
     
-    ! initialize
-    eta   = 1.0_hp ! set default eta as 1.0
-    u_ft  = 0.0_hp
-    u_it  = 0.0_hp
-    u_s   = 0.0_hp
-    L     = 0.0_hp
-    sigma = 0.0_hp
-    alpha = 0.0_hp
-    P_ft  = 0.0_hp
-    P_it  = 0.0_hp
-
     DO J = 1, HcoState%NY
       DO I = 1, HcoState%NX
 
@@ -1119,6 +1095,8 @@ CONTAINS
         ! if eta is out of range of [0,1], then skip eta multipling by making the value as 1
         IF ((eta_temp(I,J) > 0.0_hp) .and. (eta_temp(I,J) < 1.0_hp)) THEN
           eta(I,J) = eta_temp(I,J)
+        ELSE 
+          eta(I,J) = 1.0_hp
         ENDIF
       ENDDO
     ENDDO
@@ -1176,29 +1154,6 @@ CONTAINS
     REAL(hp)        :: kappa(HcoState%NX, HcoState%NY)          ! Fragmentaion exponent [unitless]
     REAL(hp)        :: u_star_t(HcoState%NX, HcoState%NY)       ! Thershold friction velocity used [m s-1]
     
-    ! initialize
-    DUST_EMIS_FLUX = 0.0_hp
-    snowdep = 0.0_hp
-    A_snow = 0.0_hp
-    u_star_ft0 = 0.0_hp
-    u_star_ft = 0.0_hp
-    u_star_it = 0.0_hp
-    u_star_st = 0.0_hp
-    f_eff_r = 1.0_hp
-    f_eff_v = 1.0_hp
-    F_eff = 1.0_hp
-    eta = 1.0_hp
-    DUST_EMIS_FLUX_Tmp = 0.0_hp
-    rho_a = rho_a0
-    T2M = T0
-    TS = T0
-    PS = 1013.25_hp
-    C_d = 0.0_hp
-    f_bare = 0.0_hp
-    u_star_s = 0.0_hp
-    kappa = 0.0_hp
-    u_star_t = 0.0_hp
-
     DO J = 1, HcoState%NY
       DO I = 1, HcoState%NX
         TS(I,J) = ExtState%TS%Arr%Val(I,J)
