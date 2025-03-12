@@ -106,15 +106,15 @@ PBL dry deposition:  False
 )))DustL23M
 )))EMISSIONS
 (((METEOROLOGY
-* USTAR     $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     USTAR    2014-2024/1-12/1-31/0-23/+30minute EFY xy  m/s       * -  1 1
-* T2M       $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     T2M      2014-2024/1-12/1-31/0-23/+30minute EFY xy  K         * -  1 1
-* TS        $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     TS       2014-2024/1-12/1-31/0-23/+30minute EFY xy  K         * -  1 1
-* PBLH      $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     PBLH     2014-2024/1-12/1-31/0-23/+30minute EFY xy  m         * -  1 1
-* GWETTOP   $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     GWETTOP  2014-2024/1-12/1-31/0-23/+30minute EFY xy  1         * -  1 1
-* HFLUX     $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     HFLUX    2014-2024/1-12/1-31/0-23/+30minute EFY xy  W/m2      * -  1 1
-* SNOWHGT   $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     SNOMAS   2014-2024/1-12/1-31/0-23/+30minute EFY xy  kg-H2O/m2 * -  1 1
+* USTAR     $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     USTAR    2014-2024/1-12/1-31/*/+30minute EFY xy  m/s       * -  1 1
+* T2M       $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     T2M      2014-2024/1-12/1-31/*/+30minute EFY xy  K         * -  1 1
+* TS        $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     TS       2014-2024/1-12/1-31/*/+30minute EFY xy  K         * -  1 1
+* PBLH      $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     PBLH     2014-2024/1-12/1-31/*/+30minute EFY xy  m         * -  1 1
+* GWETTOP   $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     GWETTOP  2014-2024/1-12/1-31/*/+30minute EFY xy  1         * -  1 1
+* HFLUX     $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     HFLUX    2014-2024/1-12/1-31/*/+30minute EFY xy  W/m2      * -  1 1
+* SNOWHGT   $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.A1.$RES.nc     SNOMAS   2014-2024/1-12/1-31/*/+30minute EFY xy  kg-H2O/m2 * -  1 1
 
-* PS        $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.I3.$RES.nc     PS       2014-2024/1-12/1-31/*              EFY xy  hPa       * -  1 1
+* PS        $METDIR/$YYYY/$MM/$MET.$YYYY$MM$DD.I3.$RES.nc     PS       2014-2024/1-12/1-31/*           EFY xy  hPa       * -  1 1
 )))METEOROLOGY
 
 #==============================================================================
