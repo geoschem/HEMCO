@@ -1078,6 +1078,7 @@ CONTAINS
     REAL(hp)               :: alpha(HcoState%NX, HcoState%NY)
     REAL(hp)               :: P_ft(HcoState%NX, HcoState%NY)
     REAL(hp)               :: P_it(HcoState%NX, HcoState%NY)
+    REAL(hp)               :: eta_temp(HcoState%NX, HcoState%NY) ! Intermittency factor with values in [0,1] [unitless]
     
     ! initialize
     eta   = 1.0_hp ! set default eta as 1.0
@@ -1114,10 +1115,10 @@ CONTAINS
         P_it(I,J) = 0.5_hp * (1.0_hp + ERF((u_it(I,J) - u_s(I,J)) / (SQRT(2.0_hp) * sigma(I,J))))
 
         ! calculate intermittency factor: eta = 1 - P_ft + alpha * (P_ft - P_it)
-        eta(I,J) = 1.0_hp - P_ft(I,J) + alpha(I,J) * (P_ft(I,J) - P_it(I,J))
+        eta_temp(I,J) = 1.0_hp - P_ft(I,J) + alpha(I,J) * (P_ft(I,J) - P_it(I,J))
         ! if eta is out of range of [0,1], then skip eta multipling by making the value as 1
-        IF ((eta(I,J) .LE. 0.0_hp) .or. (eta(I,J) .GE. 1.0_hp) .or. (sigma(I,J) .LE. 0)) THEN
-          eta(I,J) = 1.0_hp
+        IF ((eta_temp(I,J) > 0.0_hp) .and. (eta_temp(I,J) < 1.0_hp)) THEN
+          eta(I,J) = eta_temp(I,J)
         ENDIF
       ENDDO
     ENDDO
@@ -1270,6 +1271,16 @@ CONTAINS
       ENDDO
     ENDDO
 
+    PRINT*, '### eta Min, Max: ', MINVAL( eta, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( eta, mask=(Inst%C_sah<1.0_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### Feff Min, Max: ', MINVAL( F_eff, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( F_eff, mask=(Inst%C_sah<1.0_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### u_star_s Min, Max: ', MINVAL( u_star_s, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_s, mask=(Inst%C_sah<1.0_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### Cd Min, Max: ', MINVAL( C_d, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( C_d, mask=(Inst%C_sah<1.0_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_st, mask=(Inst%C_sah<1.0_hp) )
+    CALL FLUSH( 6 )
     ! Return w/ success
     RC = HCO_SUCCESS
   END SUBROUTINE CAL_DUSTL23M_EmisFlux
