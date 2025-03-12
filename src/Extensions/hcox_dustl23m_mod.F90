@@ -924,6 +924,10 @@ CONTAINS
         ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
         !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
         w(I,J) = rho_w / (bulk_den(I,J)) * theta(I,J) * 0.5_hp
+        ! To prevent divided by 0
+        IF (bulk_den(I,J) < 1.0e-15_hp) THEN
+          w(I,J) = 0.0_hp
+        ENDIF
 
         !! calculate w_t = 0.01 * a * (17 * f_clay + 14 * f_clay ** 2) where a is a tuning factor and was set to be 1.0
         w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
