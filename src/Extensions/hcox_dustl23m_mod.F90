@@ -929,7 +929,7 @@ CONTAINS
         w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
 
         ! calculate f_m [unitless]
-        IF ( w(I,J) > w_t(I,J)) THEN
+        IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) ) THEN
           f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J)) ** 0.68_hp)))
         ELSE
           f_m(I,J) = 1.0_hp
