@@ -923,22 +923,22 @@ CONTAINS
         ! Factor by which soil wetness enhancing threhold friction velocity
         ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
         !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
-        ! To prevent divided by 0 and here make the restriction stronger (> snow density)
-        IF (bulk_den(I,J) < 100.0_hp) THEN
+        ! To prevent divided by 0 and here make the restriction stronger
+        IF (bulk_den(I,J) < 800.0_hp) THEN
           w(I,J) = 0.0_hp
         ELSE 
           w(I,J) = rho_w / (bulk_den(I,J)) * theta(I,J) * 0.5_hp
         ENDIF
 
         !! calculate w_t = 0.01 * a * (17 * f_clay + 14 * f_clay ** 2) where a is a tuning factor and was set to be 1.0
-        IF (f_clay(I,J) > 1.0e-15) THEN
+        IF (f_clay(I,J) > 0.0_hp) THEN
           w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
         ELSE 
           w_t(I,J) = 0.0_hp
         ENDIF
 
         ! calculate f_m [unitless]
-        IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) .and. (w_t(I,J) .LE. 0.0_hp) ) THEN
+        IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) ) THEN
           f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J)) ** 0.68_hp)))
         ELSE
           f_m(I,J) = 1.0_hp
@@ -1253,6 +1253,8 @@ CONTAINS
     PRINT*, '### Cd Min, Max: ', MINVAL( C_d, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( C_d, mask=(Inst%C_sah<1.0_hp) )
     CALL FLUSH( 6 )
     PRINT*, '### u_star_ft0 Min, Max: ', MINVAL( u_star_ft0, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_ft0, mask=(Inst%C_sah<1.0_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### bulk_den Min, Max: ', MINVAL( Inst%bulk_den, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( Inst%bulk_den, mask=(Inst%C_sah<1.0_hp) )
     CALL FLUSH( 6 )
     PRINT*, '### u_star_ft Min, Max: ', MINVAL( u_star_ft, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_ft, mask=(Inst%C_sah<1.0_hp) )
     CALL FLUSH( 6 )
