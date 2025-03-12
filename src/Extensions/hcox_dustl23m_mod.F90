@@ -923,8 +923,8 @@ CONTAINS
         ! Factor by which soil wetness enhancing threhold friction velocity
         ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
         !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
-        ! To prevent divided by 0 and to be stronger bulk density tends to be larger than water density
-        IF (bulk_den(I,J) < 1000.0_hp) THEN
+        ! To prevent divided by 0 and to be stronger the min of the input of bulk density is 10
+        IF (bulk_den(I,J) < 10.0_hp) THEN
           w(I,J) = 0.0_hp
         ELSE 
           w(I,J) = rho_w / (bulk_den(I,J)) * theta(I,J) * 0.5_hp
@@ -1003,12 +1003,21 @@ CONTAINS
         ! calculate K = pi/2 * (1 / f_v - 1) = pi/2 * (LAI_thr / LAI - 1)
         K(I,J) = HcoState%Phys%PI / 2.0_hp * (LAI_thr / LAI(I,J) - 1.0_hp)
 
+        IF (K(I,J) < 0.0_hp) THEN
+          K(I,J) = 0.0_hp
+        ENDIF
+
         ! Calculate drag partioning effects due to rocks:
         ! f_eff_r = 1 - ln(z_0a / z_0s) / ln(b1 * (X / z_0s) ** b2)
-        f_eff_r(I,J) = 1.0d0 - LOG(z_0a(I,J) / z_0s) / LOG(b1 * (X / z_0s) ** b2)
+        IF (z_0a(I,J) > 0.0_hp) THEN
+          f_eff_r(I,J) = 1.0d0 - LOG(z_0a(I,J) / z_0s) / LOG(b1 * (X / z_0s) ** b2)
+        ELSE 
+          f_eff_r(I,J) = 1.0_hp
+        ENDIF
+
         IF ((f_eff_r(I,J) < 0.0_hp)) THEN
           f_eff_r(I,J) = 0.0_hp
-        ELSEIF (f_eff_r(I,J) > 1.0_hp) THEN
+        ELSEIF ((f_eff_r(I,J) > 1.0_hp) .or. (LAI(I,J) > LAI_thr)) THEN
           f_eff_r(I,J) = 1.0_hp
         ENDIF
         
