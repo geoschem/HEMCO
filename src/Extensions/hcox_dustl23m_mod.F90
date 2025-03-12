@@ -1254,7 +1254,7 @@ CONTAINS
     CALL FLUSH( 6 )
     PRINT*, '### u_star_ft0 Min, Max: ', MINVAL( u_star_ft0, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_ft0, mask=(Inst%C_sah<1.0_hp) )
     CALL FLUSH( 6 )
-    PRINT*, '### bulk_den Min, Max: ', MINVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. (Inst%bulk_den>1.0e-15)) ), MAXVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. (Inst%bulk_den>1.0e-15)) )
+    PRINT*, '### bulk_den Min, Max: ', MINVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. (Inst%bulk_den>10.0_hp)) ), MAXVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. (Inst%bulk_den>10.0_hp)) )
     CALL FLUSH( 6 )
     PRINT*, '### u_star_ft Min, Max: ', MINVAL( u_star_ft, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_ft, mask=(Inst%C_sah<1.0_hp) )
     CALL FLUSH( 6 )
