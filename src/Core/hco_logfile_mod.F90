@@ -164,7 +164,8 @@ CONTAINS
 ! !USES
 !
       USE HCO_STATE_MOD,     ONLY : HCO_State
-      USE HCO_TYPES_MOD,     ONLY : DataCont, HCO_DCTTYPE_BASE
+      USE HCO_TYPES_MOD,     ONLY : DataCont
+      USE HCO_TYPES_MOD,     ONLY : HCO_DCTTYPE_BASE, HCO_DCTTYPE_MASK
 !
 ! !INPUT ARGUMENTS:
 !
@@ -282,6 +283,14 @@ CONTAINS
          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
          write(MSG,*) '   -->Coverage        : ', Dct%Dta%Cover
          CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
+
+         ! For masks
+         IF ( Dct%DctType == HCO_DCTTYPE_MASK ) THEN
+            write(MSG,*) '   -->Lon range       : ', Dct%Dta%Lons
+            CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
+            write(MSG,*) '   -->Lat range       : ', Dct%Dta%Lats
+            CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
+         ENDIF
 
          ! For base emissions
          IF ( Dct%DctType==HCO_DCTTYPE_BASE ) THEN
