@@ -923,9 +923,9 @@ CONTAINS
         ! Factor by which soil wetness enhancing threhold friction velocity
         ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
         !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
-        ! To prevent divided by 0 and here make the restriction stronger
-        IF (bulk_den(I,J) < 800.0_hp) THEN
-          w(I,J) = 0.0_hp
+        ! To prevent divided by 0 and here make the restriction stronger (> water density)
+        IF (bulk_den(I,J) < 1000.0_hp) THEN
+          w(I,J) = theta(I,J) * 0.5_hp
         ELSE 
           w(I,J) = rho_w / (bulk_den(I,J)) * theta(I,J) * 0.5_hp
         ENDIF
@@ -1244,21 +1244,21 @@ CONTAINS
       ENDDO
     ENDDO
 
-    PRINT*, '### eta Min, Max: ', MINVAL( eta, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( eta, mask=(Inst%C_sah<1.0_hp) )
+    PRINT*, '### eta Min, Max: ', MINVAL( eta, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( eta, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
     CALL FLUSH( 6 )
-    PRINT*, '### Feff Min, Max: ', MINVAL( F_eff, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( F_eff, mask=(Inst%C_sah<1.0_hp) )
+    PRINT*, '### Feff Min, Max: ', MINVAL( F_eff, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( F_eff, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
     CALL FLUSH( 6 )
-    PRINT*, '### u_star_s Min, Max: ', MINVAL( u_star_s, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_s, mask=(Inst%C_sah<1.0_hp) )
+    PRINT*, '### u_star_s Min, Max: ', MINVAL( u_star_s, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( u_star_s, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
     CALL FLUSH( 6 )
-    PRINT*, '### Cd Min, Max: ', MINVAL( C_d, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( C_d, mask=(Inst%C_sah<1.0_hp) )
+    PRINT*, '### Cd Min, Max: ', MINVAL( C_d, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( C_d, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
     CALL FLUSH( 6 )
-    PRINT*, '### u_star_ft0 Min, Max: ', MINVAL( u_star_ft0, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_ft0, mask=(Inst%C_sah<1.0_hp) )
+    PRINT*, '### u_star_ft0 Min, Max: ', MINVAL( u_star_ft0, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( u_star_ft0, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
     CALL FLUSH( 6 )
     PRINT*, '### bulk_den Min, Max: ', MINVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. (Inst%bulk_den>10.0_hp)) ), MAXVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. (Inst%bulk_den>10.0_hp)) )
     CALL FLUSH( 6 )
-    PRINT*, '### u_star_ft Min, Max: ', MINVAL( u_star_ft, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_ft, mask=(Inst%C_sah<1.0_hp) )
+    PRINT*, '### u_star_ft Min, Max: ', MINVAL( u_star_ft, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( u_star_ft, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
     CALL FLUSH( 6 )
-    PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=(Inst%C_sah<1.0_hp) ), MAXVAL( u_star_st, mask=(Inst%C_sah<1.0_hp) )
+    PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
     CALL FLUSH( 6 )
     ! Return w/ success
     RC = HCO_SUCCESS
