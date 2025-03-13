@@ -1238,7 +1238,7 @@ CONTAINS
           DUST_EMIS_FLUX_Tmp(I,J) = 0.0_hp
         ENDIF
 
-        ! requires all inputs has definition, also using a small value instead of 0
+        ! require all inputs has definition, also use a small value instead of 0 as the criterion
         IF ((DUST_EMIS_FLUX_Tmp(I,J) > 1.0e-15_hp) .and. &
             (f_bare(I,J) > 1.0e-15_hp) .and. &
             (Inst%f_clay(I,J) > 1.0e-15_hp) .and. &
@@ -1250,26 +1250,6 @@ CONTAINS
       ENDDO
     ENDDO
 
-    PRINT*, '### eta Min, Max: ', MINVAL( eta, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( eta, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
-    CALL FLUSH( 6 )
-    PRINT*, '### Feff Min, Max: ', MINVAL( F_eff, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( F_eff, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
-    CALL FLUSH( 6 )
-    PRINT*, '### u_star_s Min, Max: ', MINVAL( u_star_s, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( u_star_s, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
-    CALL FLUSH( 6 )
-    PRINT*, '### Cd Min, Max: ', MINVAL( C_d, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( C_d, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
-    CALL FLUSH( 6 )
-    PRINT*, '### u_star_ft0 Min, Max: ', MINVAL( u_star_ft0, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( u_star_ft0, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
-    CALL FLUSH( 6 )
-    PRINT*, '### bulk_den Min, Max: ', MINVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. (Inst%bulk_den>10.0_hp)) ), MAXVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. (Inst%bulk_den>10.0_hp)) )
-    CALL FLUSH( 6 )
-    PRINT*, '### GWETTOP Min, Max: ', MINVAL( ExtState%GWETTOP%Arr%Val, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( ExtState%GWETTOP%Arr%Val, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
-    CALL FLUSH( 6 )
-    PRINT*, '### poros Min, Max: ', MINVAL( Inst%poros, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( Inst%poros, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
-    CALL FLUSH( 6 )
-    PRINT*, '### u_star_ft Min, Max: ', MINVAL( u_star_ft, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( u_star_ft, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
-    CALL FLUSH( 6 )
-    PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
-    CALL FLUSH( 6 )
     ! Return w/ success
     RC = HCO_SUCCESS
   END SUBROUTINE CAL_DUSTL23M_EmisFlux
