@@ -926,8 +926,8 @@ CONTAINS
         ! To prevent divided by 0 and here make the restriction stronger (> snow density)
         ! According to https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/FAQ/#Q1, 
         ! volumetric soil moisture SFMC = poros*GWETTOP (The minimum poros is 0.373)
-        IF ((bulk_den(I,J) > 100.0_hp) .and. (poros > 0.3_hp)) THEN
-          w(I,J) = rho_w / (bulk_den(I,J)) * (GWETTOP * poros) * 0.5_hp
+        IF ((bulk_den(I,J) > 100.0_hp) .and. (poros(I,J) > 0.3_hp)) THEN
+          w(I,J) = rho_w / (bulk_den(I,J)) * (GWETTOP(I,J) * poros(I,J)) * 0.5_hp
         ELSE 
           w(I,J) = 0.0_hp
         ENDIF
