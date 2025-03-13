@@ -874,7 +874,7 @@ CONTAINS
 
    END SUBROUTINE InstRemove
   
-  SUBROUTINE CAL_THR_FRIC_VEL(HcoState, rho_a, f_clay, bulk_den, poros, theta, &
+  SUBROUTINE CAL_THR_FRIC_VEL(HcoState, rho_a, f_clay, bulk_den, poros, GWETTOP, &
                              u_star_ft0, u_star_ft, u_star_it, u_star_st, RC)
     ! Description: calculate threshold friction velocities
 
@@ -886,7 +886,7 @@ CONTAINS
     REAL(hp),  INTENT(IN)  :: f_clay(HcoState%NX, HcoState%NY) ! Soil clay fraction [unitless]
     REAL(hp),  INTENT(IN)  :: bulk_den(HcoState%NX, HcoState%NY) ! Bulk density of the topmost soil [kg m-3]
     REAL(hp),  INTENT(IN)  :: poros(HcoState%NX, HcoState%NY)  ! Soil porosity [unitless]
-    REAL(hp),  INTENT(IN)  :: theta(HcoState%NX, HcoState%NY) ! Volumetric soil water content [unitless]
+    REAL(hp),  INTENT(IN)  :: GWETTOP(HcoState%NX, HcoState%NY) ! Volumetric soil water content [unitless]
     REAL(hp),  INTENT(OUT) :: u_star_ft0(HcoState%NX, HcoState%NY) ! Dry fluid thershold friction velocity [m s-1]
     REAL(hp),  INTENT(OUT) :: u_star_ft(HcoState%NX, HcoState%NY) ! Wet fluid thershold friction velocity [m s-1]
     REAL(hp),  INTENT(OUT) :: u_star_it(HcoState%NX, HcoState%NY) ! Dynamic fluid thershold friction velocity [m s-1]
@@ -924,8 +924,10 @@ CONTAINS
         ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
         !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
         ! To prevent divided by 0 and here make the restriction stronger (> snow density)
-        IF ((bulk_den(I,J) > 100.0_hp) .and. (theta(I,J) > 1.0e-15_hp)) THEN
-          w(I,J) = rho_w / (bulk_den(I,J)) * theta(I,J) * 0.5_hp
+        ! According to https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/FAQ/#Q1, 
+        ! volumetric soil moisture SFMC = poros*GWETTOP (The minimum poros is 0.373)
+        IF ((bulk_den(I,J) > 100.0_hp) .and. (poros > 0.3_hp)) THEN
+          w(I,J) = rho_w / (bulk_den(I,J)) * (GWETTOP * poros) * 0.5_hp
         ELSE 
           w(I,J) = 0.0_hp
         ENDIF
@@ -1165,7 +1167,6 @@ CONTAINS
     REAL(hp)        :: TS(HcoState%NX, HcoState%NY)    ! Surface temperature [K]
     REAL(hp)        :: PS(HcoState%NX, HcoState%NY)    ! Surface pressure [Pa]
     
-    REAL(hp)        :: theta(HcoState%NX, HcoState%NY)          ! Volumetric soil moisture [unitless]
     REAL(hp)        :: C_d(HcoState%NX, HcoState%NY)            ! Soil erodibility coefficient [unitless]
     REAL(hp)        :: f_bare(HcoState%NX, HcoState%NY)         ! [unitless]
     REAL(hp)        :: u_star_s(HcoState%NX, HcoState%NY)       ! Soil surface friction velocity [m s-1]
@@ -1187,9 +1188,8 @@ CONTAINS
       ENDDO
     ENDDO
 
-    theta = ExtState%GWETTOP%Arr%Val * Inst%poros
     SUBLOC = 'CAL_THR_FRIC_VEL'
-    CALL CAL_THR_FRIC_VEL(HcoState, rho_a, Inst%f_clay, Inst%bulk_den, Inst%poros, theta, &
+    CALL CAL_THR_FRIC_VEL(HcoState, rho_a, Inst%f_clay, Inst%bulk_den, Inst%poros, ExtState%GWETTOP%Arr%Val, &
                           u_star_ft0, u_star_ft, u_star_it, u_star_st, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
       CALL HCO_ERROR( 'ERROR', RC, THISLOC=SUBLOC )
