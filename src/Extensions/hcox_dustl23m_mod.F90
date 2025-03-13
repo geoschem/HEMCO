@@ -886,7 +886,7 @@ CONTAINS
     REAL(hp),  INTENT(IN)  :: f_clay(HcoState%NX, HcoState%NY) ! Soil clay fraction [unitless]
     REAL(hp),  INTENT(IN)  :: bulk_den(HcoState%NX, HcoState%NY) ! Bulk density of the topmost soil [kg m-3]
     REAL(hp),  INTENT(IN)  :: poros(HcoState%NX, HcoState%NY)  ! Soil porosity [unitless]
-    REAL(hp),  INTENT(IN)  :: GWETTOP(HcoState%NX, HcoState%NY) ! Volumetric soil water content [unitless]
+    REAL(hp),  INTENT(IN)  :: GWETTOP(HcoState%NX, HcoState%NY) ! Ground wetness [unitless] => to calculate soil moisture content SFMC
     REAL(hp),  INTENT(OUT) :: u_star_ft0(HcoState%NX, HcoState%NY) ! Dry fluid thershold friction velocity [m s-1]
     REAL(hp),  INTENT(OUT) :: u_star_ft(HcoState%NX, HcoState%NY) ! Wet fluid thershold friction velocity [m s-1]
     REAL(hp),  INTENT(OUT) :: u_star_it(HcoState%NX, HcoState%NY) ! Dynamic fluid thershold friction velocity [m s-1]
