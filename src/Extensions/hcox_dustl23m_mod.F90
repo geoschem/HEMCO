@@ -1254,10 +1254,25 @@ CONTAINS
       ENDDO
     ENDDO
 
-    PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), MAXVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    PRINT*, '### eta Min, Max: ', MINVAL( eta, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), & 
+      MAXVAL( eta, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### Inst%C_sah Min, Max: ', MINVAL( Inst%C_sah, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), & 
+      MAXVAL( Inst%C_sah, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
     CALL FLUSH( 6 )
     PRINT*, '### A_snow Min, Max: ', MINVAL( A_snow, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), MAXVAL( A_snow, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
     CALL FLUSH( 6 )
+    PRINT*, '### f_bare Min, Max: ', MINVAL( f_bare, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), MAXVAL( f_bare, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### rho_a Min, Max: ', MINVAL( rho_a, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), & 
+      MAXVAL( rho_a, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    PRINT*, '### u_star_s Min, Max: ', MINVAL( u_star_s, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), & 
+      MAXVAL( u_star_s, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    PRINT*, '### u_star_t Min, Max: ', MINVAL( u_star_t, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), & 
+      MAXVAL( u_star_t, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), MAXVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    CALL FLUSH( 6 )
+    
     ! Return w/ success
     RC = HCO_SUCCESS
   END SUBROUTINE CAL_DUSTL23M_EmisFlux
