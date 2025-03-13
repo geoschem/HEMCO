@@ -1251,7 +1251,7 @@ CONTAINS
       ENDDO
     ENDDO
 
-    PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 0.0_hp) ), MAXVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 0.0_hp) )
+    PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), MAXVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
     CALL FLUSH( 6 )
     ! Return w/ success
     RC = HCO_SUCCESS
