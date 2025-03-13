@@ -943,7 +943,7 @@ CONTAINS
 
         ! calculate f_m [unitless]
         ! IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) .and. (w_t(I,J) > 0.0_hp) ) THEN
-        IF ( (w(I,J) > w_t(I,J)) ) THEN
+        IF ( (w(I,J) > w_t(I,J)) .and. ) THEN
           f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J)) ** 0.68_hp)))
         ELSE
           f_m(I,J) = 1.0_hp
@@ -1280,6 +1280,15 @@ CONTAINS
     CALL FLUSH( 6 )
     PRINT*, '### u_star_ft Min, Max: ', MINVAL( u_star_ft, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
       MAXVAL( u_star_ft, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### bulk_den Min, Max: ', MINVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
+      MAXVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### f_clay Min, Max: ', MINVAL( Inst%f_clay, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
+      MAXVAL( Inst%f_clay, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### poros Min, Max: ', MINVAL( Inst%poros, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
+      MAXVAL( Inst%poros, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
     CALL FLUSH( 6 )
     
     ! Return w/ success
