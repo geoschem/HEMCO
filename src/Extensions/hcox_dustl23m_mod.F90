@@ -943,7 +943,7 @@ CONTAINS
 
         ! calculate f_m [unitless]
         ! IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) .and. (w_t(I,J) > 0.0_hp) ) THEN
-        IF ( (w(I,J) > w_t(I,J)) .and. ) THEN
+        IF ( (w(I,J) > w_t(I,J)) .and. (bulk_den(I,J) > 1.0e-15). (poros(I,J) > 1.0e-15) .and. (f_clay(I,J) > 1.0e-15)) THEN
           f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J)) ** 0.68_hp)))
         ELSE
           f_m(I,J) = 1.0_hp
