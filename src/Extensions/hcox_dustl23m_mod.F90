@@ -1238,7 +1238,13 @@ CONTAINS
           DUST_EMIS_FLUX_Tmp(I,J) = 0.0_hp
         ENDIF
 
-        IF (DUST_EMIS_FLUX_Tmp(I,J) > 0.0_hp) THEN
+        ! requires all inputs has definition, also using a small value instead of 0
+        IF ((DUST_EMIS_FLUX_Tmp(I,J) > 1.0e-15_hp) .and. &
+            (f_bare > 1.0e-15_hp) .and. &
+            (Inst%f_clay > 1.0e-15_hp) .and. &
+            (Inst%bulk_den > 1.0e-15_hp) .and. &
+            (Inst%poros > 1.0e-15_hp) .and. &
+            (Inst%roughness_r > 1.0e-15_hp)) THEN
           DUST_EMIS_FLUX(I,J) = DUST_EMIS_FLUX_Tmp (I,J)
         ENDIF
       ENDDO
