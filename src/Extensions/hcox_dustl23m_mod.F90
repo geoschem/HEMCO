@@ -1238,8 +1238,8 @@ CONTAINS
           DUST_EMIS_FLUX_Tmp(I,J) = 0.0_hp
         ENDIF
 
-        ! require all inputs have definition, also use a small value instead of 0 
-        ! as the criterion as missing value will be filled with a very small value
+        ! require all inputs are defined, also use a small value instead of 0 as the criterion 
+        ! as missing value will be filled with a very small value in HEMCO
         IF ((DUST_EMIS_FLUX_Tmp(I,J) > 1.0e-15_hp) .and. &
             (f_bare(I,J) > 1.0e-15_hp) .and. &
             (Inst%f_clay(I,J) > 1.0e-15_hp) .and. &
@@ -1252,6 +1252,8 @@ CONTAINS
     ENDDO
 
     PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), MAXVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### A_snow Min, Max: ', MINVAL( A_snow, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), MAXVAL( A_snow, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
     CALL FLUSH( 6 )
     ! Return w/ success
     RC = HCO_SUCCESS
