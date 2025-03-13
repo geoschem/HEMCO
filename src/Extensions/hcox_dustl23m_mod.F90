@@ -909,7 +909,9 @@ CONTAINS
 
     ! Factor by which threhold velocity increases due to soil wetness
     REAL(hp)               :: f_m(HcoState%NX, HcoState%NY)
+    REAL(hp)               :: f_m_temp(HcoState%NX, HcoState%NY)
 
+    ! f_m(:) = 1.0_hp
     !=================================================================
     ! CAL_THR_FRIC_VEL begins here!
     !=================================================================
@@ -943,8 +945,9 @@ CONTAINS
 
         ! calculate f_m [unitless]
         ! IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) .and. (w_t(I,J) > 0.0_hp) ) THEN
+        f_m_temp(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * ((w(I,J) - w_t(I,J)) ** 0.68_hp))))
         IF ( (w(I,J) > w_t(I,J)) .and. (bulk_den(I,J) > 1.0e-15) .and. (poros(I,J) > 1.0e-15) .and. (f_clay(I,J) > 1.0e-15)) THEN
-          f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J)) ** 0.68_hp)))
+          f_m(I,J) = f_m_temp(I,J)
         ELSE
           f_m(I,J) = 1.0_hp
         ENDIF
