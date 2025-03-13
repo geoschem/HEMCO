@@ -1256,7 +1256,7 @@ CONTAINS
     CALL FLUSH( 6 )
     PRINT*, '### bulk_den Min, Max: ', MINVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. (Inst%bulk_den>10.0_hp)) ), MAXVAL( Inst%bulk_den, mask=((Inst%C_sah<1.0_hp) .and. (Inst%bulk_den>10.0_hp)) )
     CALL FLUSH( 6 )
-    PRINT*, '### theta Min, Max: ', MINVAL( theta, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( theta, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
+    PRINT*, '### GWETTOP Min, Max: ', MINVAL( ExtState%GWETTOP%Arr%Val, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( ExtState%GWETTOP%Arr%Val, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
     CALL FLUSH( 6 )
     PRINT*, '### poros Min, Max: ', MINVAL( Inst%poros, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) ), MAXVAL( Inst%poros, mask=((Inst%C_sah<1.0_hp) .and. (DUST_EMIS_FLUX > 0.0_hp)) )
     CALL FLUSH( 6 )
