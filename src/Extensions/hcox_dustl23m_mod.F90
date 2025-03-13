@@ -926,21 +926,24 @@ CONTAINS
         ! To prevent divided by 0 and here make the restriction stronger (> snow density)
         ! According to https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/FAQ/#Q1, 
         ! volumetric soil moisture SFMC = poros*GWETTOP (The minimum poros is 0.373)
-        IF ((bulk_den(I,J) > 100.0_hp) .and. (poros(I,J) > 0.3_hp)) THEN
-          w(I,J) = rho_w / (bulk_den(I,J)) * (GWETTOP(I,J) * poros(I,J)) * 0.5_hp
-        ELSE 
-          w(I,J) = 0.0_hp
-        ENDIF
+        ! IF ((bulk_den(I,J) > 100.0_hp) .and. (poros(I,J) > 0.3_hp)) THEN
+        !   w(I,J) = rho_w / (bulk_den(I,J)) * (GWETTOP(I,J) * poros(I,J)) * 0.5_hp
+        ! ELSE 
+        !   w(I,J) = 0.0_hp
+        ! ENDIF
+        w(I,J) = rho_w / (bulk_den(I,J)) * (GWETTOP(I,J) * poros(I,J)) * 0.5_hp
 
         !! calculate w_t = 0.01 * a * (17 * f_clay + 14 * f_clay ** 2) where a is a tuning factor and was set to be 1.0
-        IF (f_clay(I,J) > 0.0_hp) THEN
-          w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
-        ELSE 
-          w_t(I,J) = 0.0_hp
-        ENDIF
+        ! IF (f_clay(I,J) > 0.0_hp) THEN
+        !   w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
+        ! ELSE 
+        !   w_t(I,J) = 0.0_hp
+        ! ENDIF
+        w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
 
         ! calculate f_m [unitless]
-        IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) .and. (w_t(I,J) > 0.0_hp) ) THEN
+        ! IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) .and. (w_t(I,J) > 0.0_hp) ) THEN
+        IF ( (w(I,J) > w_t(I,J)) ) THEN
           f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J)) ** 0.68_hp)))
         ELSE
           f_m(I,J) = 1.0_hp
