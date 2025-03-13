@@ -1238,7 +1238,7 @@ CONTAINS
           DUST_EMIS_FLUX_Tmp(I,J) = 0.0_hp
         ENDIF
 
-        ! require all inputs has definition, also use a small value instead of 0 as the criterion
+        ! require all inputs have definition, also use a small value instead of 0 as the criterion
         IF ((DUST_EMIS_FLUX_Tmp(I,J) > 1.0e-15_hp) .and. &
             (f_bare(I,J) > 1.0e-15_hp) .and. &
             (Inst%f_clay(I,J) > 1.0e-15_hp) .and. &
