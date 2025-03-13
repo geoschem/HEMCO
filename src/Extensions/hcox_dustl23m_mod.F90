@@ -1239,7 +1239,7 @@ CONTAINS
         ENDIF
 
         ! require all inputs have definition, also use a small value instead of 0 as the criterion
-        IF ((DUST_EMIS_FLUX_Tmp(I,J) > 1.0e-15_hp) .and. &
+        IF ((DUST_EMIS_FLUX_Tmp(I,J) > 0.0_hp) .and. &
             (f_bare(I,J) > 1.0e-15_hp) .and. &
             (Inst%f_clay(I,J) > 1.0e-15_hp) .and. &
             (Inst%bulk_den(I,J) > 1.0e-15_hp) .and. &
@@ -1250,6 +1250,8 @@ CONTAINS
       ENDDO
     ENDDO
 
+    PRINT*, '### u_star_st Min, Max: ', MINVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 0.0_hp) ), MAXVAL( u_star_st, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 0.0_hp) )
+    CALL FLUSH( 6 )
     ! Return w/ success
     RC = HCO_SUCCESS
   END SUBROUTINE CAL_DUSTL23M_EmisFlux
