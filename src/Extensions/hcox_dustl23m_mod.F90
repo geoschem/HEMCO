@@ -1150,6 +1150,14 @@ CONTAINS
     REAL(hp)                :: u_star_ft(HcoState%NX, HcoState%NY)  ! Wet fluid thershold friction velocity [m s-1]
     REAL(hp)                :: u_star_it(HcoState%NX, HcoState%NY)  ! Dynamic fluid thershold friction velocity [m s-1]
     REAL(hp)                :: u_star_st(HcoState%NX, HcoState%NY)  ! Standardized wet fluid thershold friction velocity [m s-1]
+    ! Gravimetric soil moisture [unitless]
+    REAL(hp)                :: w(HcoState%NX, HcoState%NY)
+
+    ! Threshols gravimetric soil moisture [unitlss]
+    REAL(hp)                :: w_t(HcoState%NX, HcoState%NY)
+
+    ! Factor by which threhold velocity increases due to soil wetness
+    REAL(hp)                :: f_m(HcoState%NX, HcoState%NY)
 
     REAL(hp)                :: f_eff_r(HcoState%NX, HcoState%NY) ! The drag partitioning effects due to rocks [unitless]
     REAL(hp)                :: f_eff_v(HcoState%NX, HcoState%NY) ! The drag partitioning effects due to short vegetation [unitless]
