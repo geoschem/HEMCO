@@ -1238,6 +1238,8 @@ CONTAINS
             (Inst%poros(I,J) > 1.0e-15_hp) .and. &
             (Inst%roughness_r(I,J) > 1.0e-15_hp)) THEN
           DUST_EMIS_FLUX(I,J) = DUST_EMIS_FLUX_Tmp (I,J)
+        ELSE 
+          DUST_EMIS_FLUX(I,J) = 0.0_hp
         ENDIF
       ENDDO
     ENDDO
