@@ -922,7 +922,9 @@ CONTAINS
 
         ! Factor by which soil wetness enhancing threhold friction velocity
         ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
-        !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
+        !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling
+        !!! According to https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/FAQ/#Q1:
+        !!! soil moisture SFMC = GWETTOP * poros (SFMC is not archived in MERRA2/GEOSFP for GEOS-Chem) 
         w(I,J) = rho_w / (bulk_den(I,J)) * (GWETTOP(I,J) * poros(I,J)) * 0.5_hp
 
         !! calculate w_t = 0.01 * a * (17 * f_clay + 14 * f_clay ** 2) where a is a tuning factor and was set to be 1.0
