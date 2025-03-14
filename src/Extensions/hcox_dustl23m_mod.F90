@@ -875,7 +875,7 @@ CONTAINS
    END SUBROUTINE InstRemove
   
   SUBROUTINE CAL_THR_FRIC_VEL(HcoState, rho_a, f_clay, bulk_den, poros, GWETTOP, &
-                             u_star_ft0, u_star_ft, u_star_it, u_star_st, RC)
+                             u_star_ft0, u_star_ft, u_star_it, u_star_st, w, w_t, f_m, RC)
     ! Description: calculate threshold friction velocities
 
     !----------------
@@ -902,13 +902,13 @@ CONTAINS
     REAL(hp),  PARAMETER   :: B_it      = 0.82_hp
 
     ! Gravimetric soil moisture [unitless]
-    REAL(hp)               :: w(HcoState%NX, HcoState%NY)
+    REAL(hp),  INTENT(OUT)               :: w(HcoState%NX, HcoState%NY)
 
     ! Threshols gravimetric soil moisture [unitlss]
-    REAL(hp)               :: w_t(HcoState%NX, HcoState%NY)
+    REAL(hp),  INTENT(OUT)               :: w_t(HcoState%NX, HcoState%NY)
 
     ! Factor by which threhold velocity increases due to soil wetness
-    REAL(hp)               :: f_m(HcoState%NX, HcoState%NY)
+    REAL(hp),  INTENT(OUT)               :: f_m(HcoState%NX, HcoState%NY)
     REAL(hp)               :: f_m_temp(HcoState%NX, HcoState%NY)
 
     ! f_m(:) = 1.0_hp
@@ -1196,7 +1196,7 @@ CONTAINS
 
     SUBLOC = 'CAL_THR_FRIC_VEL'
     CALL CAL_THR_FRIC_VEL(HcoState, rho_a, Inst%f_clay, Inst%bulk_den, Inst%poros, ExtState%GWETTOP%Arr%Val, &
-                          u_star_ft0, u_star_ft, u_star_it, u_star_st, RC)
+                          u_star_ft0, u_star_ft, u_star_it, u_star_st, w, w_t, f_m, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
       CALL HCO_ERROR( 'ERROR', RC, THISLOC=SUBLOC )
       RETURN
@@ -1293,8 +1293,17 @@ CONTAINS
     PRINT*, '### poros Min, Max: ', MINVAL( Inst%poros, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
       MAXVAL( Inst%poros, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
     CALL FLUSH( 6 )
-    PRINT*, '### f_m Min, Max: ', MINVAL( u_star_ft/u_star_ft0, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
-      MAXVAL( u_star_ft/u_star_ft0, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    PRINT*, '### f_m Min, Max: ', MINVAL( f_m, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
+      MAXVAL( f_m, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### f_m Min, Max: ', MINVAL( f_m, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
+      MAXVAL( f_m, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### w Min, Max: ', MINVAL( w, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
+      MAXVAL( w, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    CALL FLUSH( 6 )
+    PRINT*, '### w_t Min, Max: ', MINVAL( w_t, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
+      MAXVAL( w_t, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
     CALL FLUSH( 6 )
     
     ! Return w/ success
