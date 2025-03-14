@@ -875,7 +875,7 @@ CONTAINS
    END SUBROUTINE InstRemove
   
   SUBROUTINE CAL_THR_FRIC_VEL(HcoState, rho_a, f_clay, bulk_den, poros, GWETTOP, &
-                             u_star_ft0, u_star_ft, u_star_it, u_star_st, w, w_t, f_m, RC)
+                             u_star_ft0, u_star_ft, u_star_it, u_star_st, RC)
     ! Description: calculate threshold friction velocities
 
     !----------------
@@ -902,16 +902,14 @@ CONTAINS
     REAL(hp),  PARAMETER   :: B_it      = 0.82_hp
 
     ! Gravimetric soil moisture [unitless]
-    REAL(hp),  INTENT(OUT)               :: w(HcoState%NX, HcoState%NY)
+    REAL(hp)               :: w(HcoState%NX, HcoState%NY)
 
     ! Threshols gravimetric soil moisture [unitlss]
-    REAL(hp),  INTENT(OUT)               :: w_t(HcoState%NX, HcoState%NY)
+    REAL(hp)               :: w_t(HcoState%NX, HcoState%NY)
 
     ! Factor by which threhold velocity increases due to soil wetness
-    REAL(hp),  INTENT(OUT)               :: f_m(HcoState%NX, HcoState%NY)
-    REAL(hp)               :: f_m_temp(HcoState%NX, HcoState%NY)
+    REAL(hp)               :: f_m(HcoState%NX, HcoState%NY)
 
-    ! f_m(:) = 1.0_hp
     !=================================================================
     ! CAL_THR_FRIC_VEL begins here!
     !=================================================================
@@ -925,29 +923,14 @@ CONTAINS
         ! Factor by which soil wetness enhancing threhold friction velocity
         ! calculate f_m = sqrt (1 + 1.21 * ((100 * (w - w_t)) ** 0.68)) for w > w_t; and f_m = 1 for w <= w_t
         !! calculate w = rho_w / rho_b * theta with additional 0.5 scaling 
-        ! To prevent divided by 0 and here make the restriction stronger (> snow density)
-        ! According to https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/FAQ/#Q1, 
-        ! volumetric soil moisture SFMC = poros*GWETTOP (The minimum poros is 0.373)
-        ! IF ((bulk_den(I,J) > 100.0_hp) .and. (poros(I,J) > 0.3_hp)) THEN
-        !   w(I,J) = rho_w / (bulk_den(I,J)) * (GWETTOP(I,J) * poros(I,J)) * 0.5_hp
-        ! ELSE 
-        !   w(I,J) = 0.0_hp
-        ! ENDIF
         w(I,J) = rho_w / (bulk_den(I,J)) * (GWETTOP(I,J) * poros(I,J)) * 0.5_hp
 
         !! calculate w_t = 0.01 * a * (17 * f_clay + 14 * f_clay ** 2) where a is a tuning factor and was set to be 1.0
-        ! IF (f_clay(I,J) > 0.0_hp) THEN
-        !   w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
-        ! ELSE 
-        !   w_t(I,J) = 0.0_hp
-        ! ENDIF
         w_t(I,J) = 0.01_hp * (17.0_hp * f_clay(I,J) + 14.0_hp * (f_clay(I,J) ** 2.0_hp))
 
         ! calculate f_m [unitless]
-        ! IF ( (w(I,J) > w_t(I,J)) .and. (w(I,J) > 0.0_hp) .and. (w_t(I,J) > 0.0_hp) ) THEN
-        f_m_temp(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * ((w(I,J) - w_t(I,J)) ** 0.68_hp))))
         IF ( (w(I,J) > w_t(I,J)) .and. (bulk_den(I,J) > 1.0e-15) .and. (poros(I,J) > 1.0e-15) .and. (f_clay(I,J) > 1.0e-15)) THEN
-          f_m(I,J) = f_m_temp(I,J)
+          f_m(I,J) = SQRT(1.0_hp + 1.21_hp * ((100.0_hp * (w(I,J) - w_t(I,J))) ** 0.68_hp))
         ELSE
           f_m(I,J) = 1.0_hp
         ENDIF
@@ -1150,15 +1133,7 @@ CONTAINS
     REAL(hp)                :: u_star_ft(HcoState%NX, HcoState%NY)  ! Wet fluid thershold friction velocity [m s-1]
     REAL(hp)                :: u_star_it(HcoState%NX, HcoState%NY)  ! Dynamic fluid thershold friction velocity [m s-1]
     REAL(hp)                :: u_star_st(HcoState%NX, HcoState%NY)  ! Standardized wet fluid thershold friction velocity [m s-1]
-    ! Gravimetric soil moisture [unitless]
-    REAL(hp)                :: w(HcoState%NX, HcoState%NY)
-
-    ! Threshols gravimetric soil moisture [unitlss]
-    REAL(hp)                :: w_t(HcoState%NX, HcoState%NY)
-
-    ! Factor by which threhold velocity increases due to soil wetness
-    REAL(hp)                :: f_m(HcoState%NX, HcoState%NY)
-
+    
     REAL(hp)                :: f_eff_r(HcoState%NX, HcoState%NY) ! The drag partitioning effects due to rocks [unitless]
     REAL(hp)                :: f_eff_v(HcoState%NX, HcoState%NY) ! The drag partitioning effects due to short vegetation [unitless]
     REAL(hp)                :: F_eff(HcoState%NX, HcoState%NY) ! The total drag partitioning effects due to rocks and short vegetation [unitless]
@@ -1204,7 +1179,7 @@ CONTAINS
 
     SUBLOC = 'CAL_THR_FRIC_VEL'
     CALL CAL_THR_FRIC_VEL(HcoState, rho_a, Inst%f_clay, Inst%bulk_den, Inst%poros, ExtState%GWETTOP%Arr%Val, &
-                          u_star_ft0, u_star_ft, u_star_it, u_star_st, w, w_t, f_m, RC)
+                          u_star_ft0, u_star_ft, u_star_it, u_star_st, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
       CALL HCO_ERROR( 'ERROR', RC, THISLOC=SUBLOC )
       RETURN
@@ -1301,17 +1276,8 @@ CONTAINS
     PRINT*, '### poros Min, Max: ', MINVAL( Inst%poros, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
       MAXVAL( Inst%poros, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
     CALL FLUSH( 6 )
-    PRINT*, '### f_m Min, Max: ', MINVAL( f_m, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
-      MAXVAL( f_m, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
-    CALL FLUSH( 6 )
-    PRINT*, '### f_m Min, Max: ', MINVAL( f_m, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
-      MAXVAL( f_m, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
-    CALL FLUSH( 6 )
-    PRINT*, '### w Min, Max: ', MINVAL( w, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
-      MAXVAL( w, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
-    CALL FLUSH( 6 )
-    PRINT*, '### w_t Min, Max: ', MINVAL( w_t, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
-      MAXVAL( w_t, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
+    PRINT*, '### f_m Min, Max: ', MINVAL( u_star_ft/u_star_ft0, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.0e-15_hp) ), &
+      MAXVAL( u_star_ft/u_star_ft0, mask=((Inst%C_sah<1.0_hp) .and. DUST_EMIS_FLUX > 1.e-15_hp) )
     CALL FLUSH( 6 )
     
     ! Return w/ success
