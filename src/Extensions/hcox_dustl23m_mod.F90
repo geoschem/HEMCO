@@ -1171,6 +1171,8 @@ CONTAINS
         PS(I,J) = ExtState%PS%Arr%Val(I,J) * 100.0_hp ! convert hPa to Pa
         rho_a(I,J) = PS(I,J) * (HcoState%Phys%AIRMW * 1.0e-3_hp) / (HcoState%Phys%RSTARG * T2M(I,J))
 
+        ! According to https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/FAQ/#Q2, 
+        ! because snwomass is relative to the gridbox area, we use snowmass instead of snow depth from the met field.
         snowdep(I,J) = ExtState%SNOWHGT%Arr%Val(I,J) / 1000 * (1000 / 100) ! convert kg H2O / m2 to m
         A_snow(I,J) = snowdep(I,J) / snowdep_thr
         IF ((A_snow(I,J) > 1.0_hp) .or. (TS(I,J) < T0)) THEN
