@@ -730,7 +730,7 @@ CONTAINS
 
 #endif
 
-          ! Set level indeces to be read
+          ! Set level indexes to be read
           lev1 = 1
           lev2 = nlev
 
@@ -1495,8 +1495,12 @@ CONTAINS
 
        ENDIF ! nlev>1
 
+       ! Optional debug tool: make input data constant everywhere
+       !NcArr = 1.e-5_sp
+
 #if defined( MODEL_WRF ) || defined( MODEL_CESM )
        ! Input data is "never" on model levels because model levels can change! (hplin, 5/29/20)
+       ! Update IsModelLevel to be false when passed to MESSy
        IsModelLevel = .false.
 #endif
 
@@ -1505,8 +1509,8 @@ CONTAINS
                                LonEdge,   LatEdge,      SigEdge, &
                                Lct,       IsModelLevel, RC        )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
-           RETURN
+          CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
+          RETURN
        ENDIF
 
        ! Cleanup
