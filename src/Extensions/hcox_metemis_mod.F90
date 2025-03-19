@@ -117,32 +117,32 @@ MODULE HCOX_MetEmis_MOD
      ! Look-up tables currently used in CMAQv5.3.1
      ! Described by Baek et al. 2023, now includes effects of temperature
      ! Last three digits in LUT names indicate temperature in Fahrenheit
-     REAL(sp), POINTER     :: NO_TEMP000(:,:,:,:)   !Temp=0. F
-     REAL(sp), POINTER     :: NO_TEMP005(:,:,:,:)   !Temp=5. F
-     REAL(sp), POINTER     :: NO_TEMP010(:,:,:,:)   !Temp=10. F
-     REAL(sp), POINTER     :: NO_TEMP015(:,:,:,:)   !Temp=15. F
-     REAL(sp), POINTER     :: NO_TEMP020(:,:,:,:)   !Temp=20. F
-     REAL(sp), POINTER     :: NO_TEMP025(:,:,:,:)   !Temp=25. F
-     REAL(sp), POINTER     :: NO_TEMP030(:,:,:,:)   !Temp=30. F
-     REAL(sp), POINTER     :: NO_TEMP035(:,:,:,:)   !Temp=35. F
-     REAL(sp), POINTER     :: NO_TEMP040(:,:,:,:)   !Temp=40. F
-     REAL(sp), POINTER     :: NO_TEMP045(:,:,:,:)   !Temp=45. F
-     REAL(sp), POINTER     :: NO_TEMP050(:,:,:,:)   !Temp=50. F
-     REAL(sp), POINTER     :: NO_TEMP055(:,:,:,:)   !Temp=55. F
-     REAL(sp), POINTER     :: NO_TEMP060(:,:,:,:)   !Temp=60. F
-     REAL(sp), POINTER     :: NO_TEMP065(:,:,:,:)   !Temp=65. F
-     REAL(sp), POINTER     :: NO_TEMP070(:,:,:,:)   !Temp=70. F
-     REAL(sp), POINTER     :: NO_TEMP075(:,:,:,:)   !Temp=75. F
-     REAL(sp), POINTER     :: NO_TEMP080(:,:,:,:)   !Temp=80. F
-     REAL(sp), POINTER     :: NO_TEMP085(:,:,:,:)   !Temp=85. F
-     REAL(sp), POINTER     :: NO_TEMP090(:,:,:,:)   !Temp=90. F
-     REAL(sp), POINTER     :: NO_TEMP095(:,:,:,:)   !Temp=95. F
-     REAL(sp), POINTER     :: NO_TEMP100(:,:,:,:)   !Temp=100. F
-     REAL(sp), POINTER     :: NO_TEMP105(:,:,:,:)   !Temp=105. F
-     REAL(sp), POINTER     :: NO_TEMP110(:,:,:,:)   !Temp=110. F
-     REAL(sp), POINTER     :: NO_TEMP115(:,:,:,:)   !Temp=115. F
-     REAL(sp), POINTER     :: NO_TEMP120(:,:,:,:)   !Temp=120. F
-     REAL(sp), POINTER     :: NO_TEMP125(:,:,:,:)   !Temp=125. F
+     REAL(sp), POINTER     :: NO_LUT000(:,:,:,:)   !Temp=0. F
+     REAL(sp), POINTER     :: NO_LUT005(:,:,:,:)   !Temp=5. F
+     REAL(sp), POINTER     :: NO_LUT010(:,:,:,:)   !Temp=10. F
+     REAL(sp), POINTER     :: NO_LUT015(:,:,:,:)   !Temp=15. F
+     REAL(sp), POINTER     :: NO_LUT020(:,:,:,:)   !Temp=20. F
+     REAL(sp), POINTER     :: NO_LUT025(:,:,:,:)   !Temp=25. F
+     REAL(sp), POINTER     :: NO_LUT030(:,:,:,:)   !Temp=30. F
+     REAL(sp), POINTER     :: NO_LUT035(:,:,:,:)   !Temp=35. F
+     REAL(sp), POINTER     :: NO_LUT040(:,:,:,:)   !Temp=40. F
+     REAL(sp), POINTER     :: NO_LUT045(:,:,:,:)   !Temp=45. F
+     REAL(sp), POINTER     :: NO_LUT050(:,:,:,:)   !Temp=50. F
+     REAL(sp), POINTER     :: NO_LUT055(:,:,:,:)   !Temp=55. F
+     REAL(sp), POINTER     :: NO_LUT060(:,:,:,:)   !Temp=60. F
+     REAL(sp), POINTER     :: NO_LUT065(:,:,:,:)   !Temp=65. F
+     REAL(sp), POINTER     :: NO_LUT070(:,:,:,:)   !Temp=70. F
+     REAL(sp), POINTER     :: NO_LUT075(:,:,:,:)   !Temp=75. F
+     REAL(sp), POINTER     :: NO_LUT080(:,:,:,:)   !Temp=80. F
+     REAL(sp), POINTER     :: NO_LUT085(:,:,:,:)   !Temp=85. F
+     REAL(sp), POINTER     :: NO_LUT090(:,:,:,:)   !Temp=90. F
+     REAL(sp), POINTER     :: NO_LUT095(:,:,:,:)   !Temp=95. F
+     REAL(sp), POINTER     :: NO_LUT100(:,:,:,:)   !Temp=100. F
+     REAL(sp), POINTER     :: NO_LUT105(:,:,:,:)   !Temp=105. F
+     REAL(sp), POINTER     :: NO_LUT110(:,:,:,:)   !Temp=110. F
+     REAL(sp), POINTER     :: NO_LUT115(:,:,:,:)   !Temp=115. F
+     REAL(sp), POINTER     :: NO_LUT120(:,:,:,:)   !Temp=120. F
+     REAL(sp), POINTER     :: NO_LUT125(:,:,:,:)   !Temp=125. F
 
      ! Location and type of MetEmis look up table data
      CHARACTER(LEN=255)    :: LutDir
@@ -305,7 +305,7 @@ CONTAINS
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    REAL(hp),        INTENT(INOUT)  :: ShipNoEmis(:,:,:)  ! Emissions
+    REAL(hp),        INTENT(INOUT)  :: MetNOEmis(:,:,:)   ! Emissions
     TYPE(HCO_State), POINTER        :: HcoState           ! HEMCO State obj
     TYPE(MyInst),    POINTER        :: Inst               ! Local instance
     INTEGER,         INTENT(INOUT)  :: RC                 ! Success or failure
@@ -324,15 +324,14 @@ CONTAINS
     LOGICAL                  :: FILLED
     LOGICAL                  :: FIRST
     LOGICAL                  :: DefScaleEmis
-    REAL(hp)                 :: iFlx, TMP
     CHARACTER(LEN=255)       :: MSG, LOC
     CHARACTER(LEN=1)         :: CHAR1
 
     ! Arrays
     REAL(hp), TARGET         :: FLUXNO  (HcoState%NX,HcoState%NY)
-    REAL(hp), TARGET         :: FLUXNO2 (HcoState%NX,HcoState%NY)
-    REAL(hp), TARGET         :: FLUXHNO3(HcoState%NX,HcoState%NY)
-    REAL(hp), TARGET         :: FLUXO3  (HcoState%NX,HcoState%NY)
+!    REAL(hp), TARGET         :: FLUXNO2 (HcoState%NX,HcoState%NY)
+!    REAL(hp), TARGET         :: FLUXHNO3(HcoState%NX,HcoState%NY)
+!    REAL(hp), TARGET         :: FLUXO3  (HcoState%NX,HcoState%NY)
 !%%% Comment out unused code
 !%%%!    REAL(hp), TARGET         :: DEPO3   (HcoState%NX,HcoState%NY)
 !%%%!    REAL(hp), TARGET         :: DEPHNO3 (HcoState%NX,HcoState%NY)
@@ -347,10 +346,14 @@ CONTAINS
     TYPE(DiagnCont), POINTER :: TmpCnt
 
     ! Paranox update
-    REAL(dp)                 :: SHIP_FNOx, SHIP_DNOx, SHIP_OPE, SHIP_MOE
-    REAL(dp)                 :: FNO_NOx
-    REAL(hp)                 :: iMass
-    REAL(hp)                 :: ExpVal
+!    REAL(dp)                 :: SHIP_FNOx, SHIP_DNOx, SHIP_OPE, SHIP_MOE
+!    REAL(dp)                 :: FNO_NOx
+!    REAL(hp)                 :: iMass
+!    REAL(hp)                 :: ExpVal
+
+    !MetEmis Diag Update
+    REAL(dp)                 :: TEMP_NO
+
 !%%% Comment out debug code
 !%%%!    ! testing only
 !%%%!    REAL*8             :: FRAC, TOTPRES, DELTPRES
@@ -359,9 +362,9 @@ CONTAINS
 !%%%!    logical, parameter :: add2hemco = .true.
 
     !=================================================================
-    ! EVOLVE_PLUME begins here!
+    ! MetEmis begins here!
     !=================================================================
-    LOC = 'EVOLVE_PLUE (HCOX_PARANOX_MOD.F90)'
+    LOC = 'MetEmis (HCOX_METEMIS_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
@@ -371,7 +374,8 @@ CONTAINS
     ENDIF
 
     ! Leave here if none of the tracers defined
-    IF ( Inst%IDTNO <= 0 .AND. Inst%IDTO3 <= 0 .AND. Inst%IDTHNO3 <= 0 ) THEN
+!    IF ( Inst%IDTNO <= 0 .AND. Inst%IDTO3 <= 0 .AND. Inst%IDTHNO3 <= 0 ) THEN
+     IF ( Inst%IDTNO ) THEN  !Starting with only NO right now
        RC = HCO_SUCCESS
        RETURN
     ENDIF
@@ -387,36 +391,43 @@ CONTAINS
 
     IF ( FIRST ) THEN
        ! See if we have to write out manual diagnostics
+!       IF ( .NOT. DoDiagn ) THEN
+!          DiagnName = 'PARANOX_NOXFRAC_REMAINING'
+!          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+!                                DiagnName, 0, DoDiagn, TmpCnt )
+!          TmpCnt => NULL()
+!       ENDIF
+!       IF ( .NOT. DoDiagn ) THEN
+!          DiagnName = 'PARANOX_O3_PRODUCTION'
+!          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+!                                DiagnName, 0, DoDiagn, TmpCnt )
+!          TmpCnt => NULL()
+!       ENDIF
+!       IF ( .NOT. DoDiagn ) THEN
+!          DiagnName = 'PARANOX_NO_PRODUCTION'
+!          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+!                                DiagnName, 0, DoDiagn, TmpCnt )
+!          TmpCnt => NULL()
+!       ENDIF
+!       IF ( .NOT. DoDiagn ) THEN
+!          DiagnName = 'PARANOX_TOTAL_SHIPNOX'
+!          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+!                                DiagnName, 0, DoDiagn, TmpCnt )
+!          TmpCnt => NULL()
+!       ENDIF
+!       IF ( .NOT. DoDiagn ) THEN
+!          DiagnName = 'PARANOX_OPE'
+!          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+!                                DiagnName, 0, DoDiagn, TmpCnt )
+!          TmpCnt => NULL()
+!       ENDIF
        IF ( .NOT. DoDiagn ) THEN
-          DiagnName = 'PARANOX_NOXFRAC_REMAINING'
+          DiagnName = 'METEMIS_TEMP_NO'
           CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
                                 DiagnName, 0, DoDiagn, TmpCnt )
           TmpCnt => NULL()
        ENDIF
-       IF ( .NOT. DoDiagn ) THEN
-          DiagnName = 'PARANOX_O3_PRODUCTION'
-          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
-                                DiagnName, 0, DoDiagn, TmpCnt )
-          TmpCnt => NULL()
-       ENDIF
-       IF ( .NOT. DoDiagn ) THEN
-          DiagnName = 'PARANOX_NO_PRODUCTION'
-          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
-                                DiagnName, 0, DoDiagn, TmpCnt )
-          TmpCnt => NULL()
-       ENDIF
-       IF ( .NOT. DoDiagn ) THEN
-          DiagnName = 'PARANOX_TOTAL_SHIPNOX'
-          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
-                                DiagnName, 0, DoDiagn, TmpCnt )
-          TmpCnt => NULL()
-       ENDIF
-       IF ( .NOT. DoDiagn ) THEN
-          DiagnName = 'PARANOX_OPE'
-          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
-                                DiagnName, 0, DoDiagn, TmpCnt )
-          TmpCnt => NULL()
-       ENDIF
+
     ENDIF
 
     IF ( DoDiagn ) DIAGN(:,:,:) = 0.0_hp
@@ -425,24 +436,24 @@ CONTAINS
     ! Update SC5
     ! ------------------------------------------------------------------
     ! SC5 holds the SUNCOS values of 5 hours ago.
-    CALL HCO_getSUNCOS( HcoState, Inst%SC5, -5, RC )
-    IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-        RETURN
-    ENDIF
+!    CALL HCO_getSUNCOS( HcoState, Inst%SC5, -5, RC )
+!    IF ( RC /= HCO_SUCCESS ) THEN
+!        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+!        RETURN
+!    ENDIF
 
     ! Error check
     ERR = .FALSE.
 
     ! Initialize
     FLUXNO       = 0.0_hp
-    FLUXNO2      = 0.0_hp
-    FLUXHNO3     = 0.0_hp
-    FLUXO3       = 0.0_hp
+!    FLUXNO2      = 0.0_hp
+!    FLUXHNO3     = 0.0_hp
+!    FLUXO3       = 0.0_hp
 
     ! Deposition fluxes
-    Inst%DEPO3   = 0.0_sp
-    Inst%DEPHNO3 = 0.0_sp
+!    Inst%DEPO3   = 0.0_sp
+!    Inst%DEPHNO3 = 0.0_sp
 
 !%%% Comment out debug code
 !%%%!    ! Debug
@@ -473,28 +484,28 @@ CONTAINS
     DO I = 1, HcoState%NX
 
        ! Zero private variables for safety's sake
-       FNO_NOx   = 0.0_dp
-       iFlx      = 0.0_hp
-       iMass     = 0.0_hp
-       SHIP_FNOx = 0.0_dp
-       SHIP_DNOx = 0.0_dp
-       SHIP_OPE  = 0.0_dp
-       SHIP_MOE  = 0.0_dp
-       TMP       = 0.0_hp
+!       FNO_NOx   = 0.0_dp
+!       iFlx      = 0.0_hp
+!       iMass     = 0.0_hp
+!       SHIP_FNOx = 0.0_dp
+!       SHIP_DNOx = 0.0_dp
+!       SHIP_OPE  = 0.0_dp
+!       SHIP_MOE  = 0.0_dp
+!       TMP       = 0.0_hp
+       TEMP_NO    = 0.0_hp
+    
+       !---------------------------------------------------------------------
+       ! Skip if no MetEmis NO emissions in this grid box
+       !---------------------------------------------------------------------
+       IF ( .not. ( MetNOEmis(I,J,1) > 0.0_hp ) ) CYCLE
 
        !---------------------------------------------------------------------
-       ! Skip if no ship emissions in this grid box
+       ! MetEmis lookup table for NO emiss based on temperature 
+       ! Includes effects of humidity
+       ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
-       IF ( .not. ( ShipNoEmis(I,J,1) > 0.0_hp ) ) CYCLE
-
-       !---------------------------------------------------------------------
-       ! Production Efficiency for ship emiss (gvinken,mpayer,2/7/12)
-       ! Updated to include effects of wind speed (cdh, 3/25/2014)
-       ! Updated for HEMCO (ckeller, 02/04/2015)
-       !---------------------------------------------------------------------
-       CALL PARANOX_LUT( ExtState,  HcoState,  Inst,      I,                  &
-                         J,         RC,        SHIP_FNOx, SHIP_DNOx,          &
-                         SHIP_OPE,  SHIP_MOE                                 )
+       CALL METEMIS_LUT( ExtState,  HcoState,  Inst,      I,                  &
+                         J,         RC,        TEMP_NO )
        IF ( RC /= HCO_SUCCESS ) THEN
           ERR = .TRUE.; EXIT
        ENDIF
@@ -2398,26 +2409,17 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: paranox_lut
+! !IROUTINE: metemis_lut
 !
-! !DESCRIPTION:  Subroutine PARANOX\_LUT returns fractional remainder of
-! ship NOx (FNOx), fraction of NOx that dry deposits as NOy species (DNOx),
-! ozone production efficiency (OPE), and methane oxidation
-! efficiency (MOE) after 5-hrs of plume aging. Values are taken taken from a
+! !DESCRIPTION:  Subroutine METEMIS_LUT returns NO emissions 
+! based on temperature LUT (TEMPNO), Values are taken taken from a
 ! lookup table using piecewise linear interpolation. The look-up table is derived
-! from the PARANOx gaussian plume model (Vinken et al. 2011; Holmes et al. 2014)
-! (G.C.M. Vinken, KNMI, June 2010; C. Holmes June 2013)
+! from the EPA MOVES model involving work by (Baek et al. 2023; 
+! https://doi.org/10.5194/gmd-16-4659-2023)
 !
-! The lookup table uses 8 input variables:
+! The lookup table uses 1 input variable:
 !     TEMP   : model temperature, K
-!     JNO2   : J(NO2) value, 1/s
-!     O3     : concentration O3 in ambient air, ppb
-!     SEA0   : solar elevation angle at emission time 5 hours ago, degree
-!     SEA5   : solar elevation angle at this time, degree
-!     JRatio : ratio J(OH)/J(NO2), unitless
-!     NOx    : concentration NOx in ambient air, ppt
-!     WS     : wind speed, m/s
-!
+
 ! In GEOS-Chem v9-01-03 through v9-02, the effects of wind speed on FNOx and OPE
 ! were not included (wind speed set at 6 m/s). The JRatio also used J(O1D)
 ! rather than J(OH); this has only a small effect on interpolated values.
@@ -2427,8 +2429,8 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
- SUBROUTINE PARANOX_LUT( ExtState,  HcoState, Inst, &
-                         I, J, RC,  FNOX, DNOx, OPE, MOE_OUT )
+ SUBROUTINE METEMIS_LUT( ExtState,  HcoState, Inst, &
+                         I, J, RC,  TEMPNO )
 !
 ! !USES:
 !
@@ -2444,17 +2446,18 @@ CONTAINS
 !
 ! !OUTPUT PARAMETERS:
 !
-   REAL*8, INTENT(OUT)           :: FNOX    ! fraction of NOx remaining, mol/mol
-   REAL*8, INTENT(OUT)           :: DNOX    ! fraction of NOx deposited, mol/mol
-   REAL*8, INTENT(OUT)           :: OPE     ! net OPE, mol(net P(O3))/mol(P(HNO3))
-   REAL*8, INTENT(OUT), OPTIONAL :: MOE_OUT ! net MOE, mol(L(CH4))/mol(E(NOx))
-!
+   REAL*8, INTENT(OUT)           :: TEMPNO  ! Temp dependent NO emissions (with humidity correction), kg/m2/s
+!   REAL*8, INTENT(OUT)           :: FNOX    ! fraction of NOx remaining, mol/mol
+!   REAL*8, INTENT(OUT)           :: DNOX    ! fraction of NOx deposited, mol/mol
+!   REAL*8, INTENT(OUT)           :: OPE     ! net OPE, mol(net P(O3))/mol(P(HNO3))
+!   REAL*8, INTENT(OUT), OPTIONAL :: MOE_OUT ! net MOE, mol(L(CH4))/mol(E(NOx))
+
 ! !INPUT/OUTPUT PARAMETERS:
 !
    INTEGER, INTENT(INOUT)        :: RC      ! Return code
 !
 ! !REVISION HISTORY:
-!     Jun 2010 - G.C.M. Vinken - Initial version
+!     Mar 2025 - P.C. Campbell - Initial version
 !  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
@@ -2462,47 +2465,56 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-   INTEGER                    :: I1,I2,I3,I4,I5,I6,I7,I8
-   REAL(sp)                   :: FNOX_TMP, DNOX_TMP, OPE_TMP, MOE_TMP
+!   INTEGER                    :: I1,I2,I3,I4,I5,I6,I7,I8
+!   REAL(sp)                   :: FNOX_TMP, DNOX_TMP, OPE_TMP, MOE_TMP
+   INTEGER                    :: I1
+   REAL(sp)                   :: TEMPNO_TMP
    REAL(sp)                   :: WEIGHT
-   REAL(sp)                   :: JNO2, JOH, TAIR
+!   REAL(sp)                   :: JNO2, JOH, TAIR
+   REAL(sp)                   :: TAIR !,QH2O (TBD: Add humidity correction; need fuel types)
    REAL(sp)                   :: AIR
-   REAL*8                     :: MOE
+!   REAL*8                     :: MOE
 
    ! Interpolation variables, indices, and weights
-   REAL(sp), DIMENSION(8)     :: VARS
-   INTEGER,  DIMENSION(8,2)   :: INDX
-   REAL(sp), DIMENSION(8,2)   :: WTS
+   REAL(sp), DIMENSION(1)     :: VARS
+   INTEGER,  DIMENSION(1,2)   :: INDX
+   REAL(sp), DIMENSION(1,2)   :: WTS
 
-   REAL(sp), POINTER          :: FRACNOX_LUT(:,:,:,:,:,:,:)
-   REAL(sp), POINTER          :: DNOX_LUT   (:,:,:,:,:,:,:)
-   REAL(sp), POINTER          :: OPE_LUT    (:,:,:,:,:,:,:)
-   REAL(sp), POINTER          :: MOE_LUT    (:,:,:,:,:,:,:)
+!   REAL(sp), POINTER          :: FRACNOX_LUT(:,:,:,:,:,:,:)
+!   REAL(sp), POINTER          :: DNOX_LUT   (:,:,:,:,:,:,:)
+!   REAL(sp), POINTER          :: OPE_LUT    (:,:,:,:,:,:,:)
+!   REAL(sp), POINTER          :: MOE_LUT    (:,:,:,:,:,:,:)
+
+   REAL(sp), POINTER          :: TEMPNO_LUT(:,:,:,:)
 
    CHARACTER(LEN=255)         :: MSG
-   CHARACTER(LEN=255)         :: LOC = 'PARANOX_LUT'
+   CHARACTER(LEN=255)         :: LOC = 'METEMIS_LUT'
 
    !=================================================================
-   ! PARANOX_LUT begins here!
+   ! METEMIS_LUT begins here!
    !=================================================================
 
    ! Initialize for safety's sake
-   FRACNOX_LUT => NULL()
-   DNOX_LUT    => NULL()
-   OPE_LUT     => NULL()
-   MOE_LUT     => NULL()
-   FNOX        = 0.0_sp
-   DNOX        = 0.0_sp
-   OPE         = 0.0_sp
-   IF ( PRESENT( MOE_OUT ) ) THEN
-      MOE_OUT  = 0.0_sp
-   ENDIF
+!   FRACNOX_LUT => NULL()
+!   DNOX_LUT    => NULL()
+!   OPE_LUT     => NULL()
+!   MOE_LUT     => NULL()
+!   FNOX        = 0.0_sp
+!   DNOX        = 0.0_sp
+!   OPE         = 0.0_sp
+    TEMPNO_LUT  => NULL()
+!   IF ( PRESENT( MOE_OUT ) ) THEN
+!      MOE_OUT  = 0.0_sp
+!   ENDIF
 
    ! Air mass [kg]
-   AIR = ExtState%AIR%Arr%Val(I,J,1)
+!   AIR = ExtState%AIR%Arr%Val(I,J,1)
 
    ! Air temperature, K
-   Tair = ExtState%T2M%Arr%Val(I,J)
+   TAIR = ExtState%T2M%Arr%Val(I,J)
+
+   ! Specific humidity at midpoint of surface layer [kg H2O/kg air]
+!   QH2O       = ExtState%SPHU%Arr%Val(I,J,1)
 
 !   ! for debugging only
 !   if(I==3.and.J==35)then
@@ -2512,10 +2524,10 @@ CONTAINS
 !   endif
 
    ! Check if sun is up
-   IF ( ExtState%SUNCOS%Arr%Val(I,J) > 0.0_hp ) THEN
+!   IF ( ExtState%SUNCOS%Arr%Val(I,J) > 0.0_hp ) THEN
 
       ! J(NO2), 1/s
-      JNO2 = ExtState%JNO2%Arr%Val(I,J)
+!      JNO2 = ExtState%JNO2%Arr%Val(I,J)
 
 !      ! J(O1D), 1/s
 !      JO1D = ExtState%JO1D%Arr%Val(I,J)
@@ -2538,15 +2550,15 @@ CONTAINS
 !            3.30e-11 * EXP( 55.e0/Tair) * DENS * 0.2095e0   )
 
       ! J(OH) - effective rate for O3+hv(+H2O)-> OH+OH, 1/s
-      JOH = ExtState%JOH%Arr%Val(I,J)
+!      JOH = ExtState%JOH%Arr%Val(I,J)
 
-   ELSE
+!   ELSE
 
-      ! J-values are zero when sun is down
-      JNO2 = 0e0_sp
-      JOH  = 0e0_sp
-
-   ENDIF
+!      ! J-values are zero when sun is down
+!      JNO2 = 0e0_sp
+!      JOH  = 0e0_sp
+!
+!   ENDIF
 
 !   ! for debugging only
 !   if(I==3.and.J==35)then
@@ -2558,11 +2570,11 @@ CONTAINS
    ! Load all variables into a single array
    !========================================================================
 
-   ! Temperature, K
-   VARS(1) = Tair
+   ! Air Temperature, K
+   VARS(1) = TAIR
 
-   ! J(NO2), 1/s
-   VARS(2) = JNO2
+   ! Air QH2O, kg/kg
+ !  VARS(2) = QH2O
 
 ! old
 !   ! O3 concentration in ambient air, ppb
@@ -2572,9 +2584,9 @@ CONTAINS
 ! new
    ! O3 concentration in ambient air, ppb
    ! NOTE: ExtState%O3 units are now kg/kg dry air (ewl, 9/11/15)
-   VARS(3) = ExtState%O3%Arr%Val(I,J,1)         &
-           * HcoState%Phys%AIRMW        / Inst%MW_O3 &
-           * 1.e9_sp
+!   VARS(3) = ExtState%O3%Arr%Val(I,J,1)         &
+!           * HcoState%Phys%AIRMW        / Inst%MW_O3 &
+!           * 1.e9_sp
 ! end new (ewl)
 
    ! Solar elevation angle, degree
@@ -2584,18 +2596,18 @@ CONTAINS
    ! thus SEA = arcsin( cos( SZA ) )
    !VARS(4) = ASIND( SC5(I,J) )
    !VARS(5) = ASIND( ExtState%SUNCOS%Arr%Val(I,J) )
-   VARS(4) = ASIN( Inst%SC5(I,J)                ) / HcoState%Phys%PI_180
-   VARS(5) = ASIN( ExtState%SUNCOS%Arr%Val(I,J) ) / HcoState%Phys%PI_180
+!   VARS(4) = ASIN( Inst%SC5(I,J)                ) / HcoState%Phys%PI_180
+!   VARS(5) = ASIN( ExtState%SUNCOS%Arr%Val(I,J) ) / HcoState%Phys%PI_180
 
    ! J(OH)/J(NO2), unitless
    ! Note J(OH) is the loss rate (1/s) of O3 to OH, which accounts for
    ! the temperature, pressure and water vapor dependence of these reactions
-   VARS(6) = 0.0_sp
-   IF ( JNO2 /= 0.0_sp ) THEN
-      IF ( (EXPONENT(JOH)-EXPONENT(JNO2)) < MAXEXPONENT(JOH) ) THEN
-         VARS(6) = JOH / JNO2
-      ENDIF
-   ENDIF
+!   VARS(6) = 0.0_sp
+!   IF ( JNO2 /= 0.0_sp ) THEN
+!      IF ( (EXPONENT(JOH)-EXPONENT(JNO2)) < MAXEXPONENT(JOH) ) THEN
+!         VARS(6) = JOH / JNO2
+!      ENDIF
+!   ENDIF
 
 ! old
 !   ! NOx concetration in ambient air, ppt
@@ -2607,16 +2619,17 @@ CONTAINS
 ! new
    ! NOx concetration in ambient air, ppt
    ! NOTE: ExtState vars NO and NO2 units are now kg/kg dry air (ewl, 9/11/15)
-   VARS(7) = ( ( ExtState%NO%Arr%Val(I,J,1)               &
-           *     HcoState%Phys%AIRMW         / Inst%MW_NO  )   &
-           +   ( ExtState%NO2%Arr%Val(I,J,1)              &
-           *     HcoState%Phys%AIRMW         / Inst%MW_NO2 ) ) &
-           * 1.e12_sp
+!   VARS(7) = ( ( ExtState%NO%Arr%Val(I,J,1)               &
+!           *     HcoState%Phys%AIRMW         / Inst%MW_NO  )   &
+!           +   ( ExtState%NO2%Arr%Val(I,J,1)              &
+!           *     HcoState%Phys%AIRMW         / Inst%MW_NO2 ) ) &
+!           * 1.e12_sp
 ! end new (ewl)
 
       ! Wind speed, m/s
-   VARS(8) = SQRT( ExtState%U10M%Arr%Val(I,J)**2 &
-           +       ExtState%V10M%Arr%Val(I,J)**2 )
+!   VARS(8) = SQRT( ExtState%U10M%Arr%Val(I,J)**2 &
+
+!+       ExtState%V10M%Arr%Val(I,J)**2 )
 
 !   ! for debugging only
 !   if(I==1.and.J==35)then
@@ -2655,72 +2668,193 @@ CONTAINS
    CALL INTERPOL_LINWEIGHTS( Inst%Tlev, VARS(1), INDX(1,:), WTS(1,:) )
 
    ! J(NO2):
-   CALL INTERPOL_LINWEIGHTS( Inst%JNO2lev, VARS(2), INDX(2,:), WTS(2,:) )
-
-   ! [O3]:
-   CALL INTERPOL_LINWEIGHTS( Inst%O3lev, VARS(3), INDX(3,:), WTS(3,:) )
-
-   ! SEA0:
-   CALL INTERPOL_LINWEIGHTS( Inst%SEA0lev, VARS(4), INDX(4,:), WTS(4,:) )
-
-   ! SEA5:
-   CALL INTERPOL_LINWEIGHTS( Inst%SEA5lev, VARS(5), INDX(5,:), WTS(5,:) )
-
-   ! JRATIO:
-   CALL INTERPOL_LINWEIGHTS( Inst%JRATIOlev, VARS(6), INDX(6,:), WTS(6,:))
-
-   ! [NOx]:
-   CALL INTERPOL_LINWEIGHTS( Inst%NOXlev, VARS(7), INDX(7,:), WTS(7,:) )
-
-   ! Wind speed:
-   CALL INTERPOL_LINWEIGHTS( Inst%WSlev, VARS(8), INDX(8,:), WTS(8,:) )
+!   CALL INTERPOL_LINWEIGHTS( Inst%JNO2lev, VARS(2), INDX(2,:), WTS(2,:) )
+!
+!   ! [O3]:
+!   CALL INTERPOL_LINWEIGHTS( Inst%O3lev, VARS(3), INDX(3,:), WTS(3,:) )
+!
+!   ! SEA0:
+!   CALL INTERPOL_LINWEIGHTS( Inst%SEA0lev, VARS(4), INDX(4,:), WTS(4,:) )
+!
+!   ! SEA5:
+!   CALL INTERPOL_LINWEIGHTS( Inst%SEA5lev, VARS(5), INDX(5,:), WTS(5,:) )
+!
+!   ! JRATIO:
+!   CALL INTERPOL_LINWEIGHTS( Inst%JRATIOlev, VARS(6), INDX(6,:), WTS(6,:))
+!
+!   ! [NOx]:
+!   CALL INTERPOL_LINWEIGHTS( Inst%NOXlev, VARS(7), INDX(7,:), WTS(7,:) )
+!
+!   ! Wind speed:
+!   CALL INTERPOL_LINWEIGHTS( Inst%WSlev, VARS(8), INDX(8,:), WTS(8,:) )
 
    !========================================================================
    ! Piecewise linear interpolation
    !========================================================================
 
    ! Initialize
-   FNOX = 0.0d0
-   DNOx = 0.0d0
-   OPE  = 0.0d0
-   MOE  = 0.0d0
+!   FNOX = 0.0d0
+!   DNOx = 0.0d0
+!   OPE  = 0.0d0
+!   MOE  = 0.0d0
+
+   TEMPNO = 0.0d0
 
    ! Loop over wind speed
-   DO I8=1,2
+!   DO I8=1,2
+!
+!      ! Point at the LUT for this wind speed
+!      ! Last two digits in fortran variable names indicate wind speed in m/s
+!      SELECT CASE ( NINT( Inst%WSlev(INDX(8,I8)) ) )
+!         CASE (  2 )
+!            FRACNOX_LUT => Inst%FRACNOX_LUT02
+!            DNOx_LUT    => Inst%DNOx_LUT02
+!            OPE_LUT     => Inst%OPE_LUT02
+!            MOE_LUT     => Inst%MOE_LUT02
+!         CASE (  6 )
+!            FRACNOX_LUT => Inst%FRACNOX_LUT06
+!            DNOx_LUT    => Inst%DNOx_LUT06
+!            OPE_LUT     => Inst%OPE_LUT06
+!            MOE_LUT     => Inst%MOE_LUT06
+!         CASE ( 10 )
+!            FRACNOX_LUT => Inst%FRACNOX_LUT10
+!            DNOx_LUT    => Inst%DNOx_LUT10
+!            OPE_LUT     => Inst%OPE_LUT10
+!            MOE_LUT     => Inst%MOE_LUT10
+!         CASE ( 14 )
+!            FRACNOX_LUT => Inst%FRACNOX_LUT14
+!            DNOx_LUT    => Inst%DNOx_LUT14
+!            OPE_LUT     => Inst%OPE_LUT14
+!            MOE_LUT     => Inst%MOE_LUT14
+!         CASE ( 18 )
+!            FRACNOX_LUT => Inst%FRACNOX_LUT18
+!            DNOx_LUT    => Inst%DNOx_LUT18
+!            OPE_LUT     => Inst%OPE_LUT18
+!            MOE_LUT     => Inst%MOE_LUT18
+!         CASE DEFAULT
+!             MSG = 'LUT error: Wind speed interpolation error!'
+!             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
+!             RETURN
+!      END SELECT
 
-      ! Point at the LUT for this wind speed
-      ! Last two digits in fortran variable names indicate wind speed in m/s
-      SELECT CASE ( NINT( Inst%WSlev(INDX(8,I8)) ) )
-         CASE (  2 )
-            FRACNOX_LUT => Inst%FRACNOX_LUT02
-            DNOx_LUT    => Inst%DNOx_LUT02
-            OPE_LUT     => Inst%OPE_LUT02
-            MOE_LUT     => Inst%MOE_LUT02
-         CASE (  6 )
-            FRACNOX_LUT => Inst%FRACNOX_LUT06
-            DNOx_LUT    => Inst%DNOx_LUT06
-            OPE_LUT     => Inst%OPE_LUT06
-            MOE_LUT     => Inst%MOE_LUT06
+  ! Loop over temperature bins
+   DO I1=1,2
+
+      ! Point at the LUT for this temperature
+      ! Last three digits in fortran variable names indicate temperature in F
+      SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
+         CASE (  0 )
+            TEMPNO_LUT  => Inst%NO_LUT000
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE (  5 )
+            TEMPNO_LUT  => Inst%NO_LUT005
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
          CASE ( 10 )
-            FRACNOX_LUT => Inst%FRACNOX_LUT10
-            DNOx_LUT    => Inst%DNOx_LUT10
-            OPE_LUT     => Inst%OPE_LUT10
-            MOE_LUT     => Inst%MOE_LUT10
-         CASE ( 14 )
-            FRACNOX_LUT => Inst%FRACNOX_LUT14
-            DNOx_LUT    => Inst%DNOx_LUT14
-            OPE_LUT     => Inst%OPE_LUT14
-            MOE_LUT     => Inst%MOE_LUT14
-         CASE ( 18 )
-            FRACNOX_LUT => Inst%FRACNOX_LUT18
-            DNOx_LUT    => Inst%DNOx_LUT18
-            OPE_LUT     => Inst%OPE_LUT18
-            MOE_LUT     => Inst%MOE_LUT18
+            TEMPNO_LUT  => Inst%NO_LUT010
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 15 )
+            TEMPNO_LUT  => Inst%NO_LUT015
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 20 )
+            TEMPNO_LUT  => Inst%NO_LUT020
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 25 )
+            TEMPNO_LUT  => Inst%NO_LUT025
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 30 )
+            TEMPNO_LUT  => Inst%NO_LUT030
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 35 )
+            TEMPNO_LUT  => Inst%NO_LUT035
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 40 )
+            TEMPNO_LUT  => Inst%NO_LUT040
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 45 )
+            TEMPNO_LUT  => Inst%NO_LUT045
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 50 )
+            TEMPNO_LUT  => Inst%NO_LUT050
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 55 )
+            TEMPNO_LUT  => Inst%NO_LUT055
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 60 )
+            TEMPNO_LUT  => Inst%NO_LUT060
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 65 )
+            TEMPNO_LUT  => Inst%NO_LUT065
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 70 )
+            TEMPNO_LUT  => Inst%NO_LUT070
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 75 )
+            TEMPNO_LUT  => Inst%NO_LUT075
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 80 )
+            TEMPNO_LUT  => Inst%NO_LUT080
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 85 )
+            TEMPNO_LUT  => Inst%NO_LUT085
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 90 )
+            TEMPNO_LUT  => Inst%NO_LUT090
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 95 )
+            TEMPNO_LUT  => Inst%NO_LUT095
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 100 )
+            TEMPNO_LUT  => Inst%NO_LUT100
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 105 )
+            TEMPNO_LUT  => Inst%NO_LUT105
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 110 )
+            TEMPNO_LUT  => Inst%NO_LUT110
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 115 )
+            TEMPNO_LUT  => Inst%NO_LUT115
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 120 )
+            TEMPNO_LUT  => Inst%NO_LUT120
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
+         CASE ( 125 )
+            TEMPNO_LUT  => Inst%NO_LUT125
+            TEMPNO_TMP  = TEMPNO_LUT
+            WEIGHT      = WTS(1,I1)
          CASE DEFAULT
-             MSG = 'LUT error: Wind speed interpolation error!'
+             MSG = 'LUT error: Temperature interpolation error!'
              CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
       END SELECT
+
+
+
 
       !*****************************************************
       ! Restoring the following lines reproduces the behavior of
@@ -2731,41 +2865,40 @@ CONTAINS
       !*****************************************************
 
       ! loop over all other variables
-      DO I7=1,2
-      DO I6=1,2
-      DO I5=1,2
-      DO I4=1,2
-      DO I3=1,2
-      DO I2=1,2
-      DO I1=1,2
+!      DO I7=1,2
+!      DO I6=1,2
+!      DO I5=1,2
+ !     DO I4=1,2
+ !     DO I3=1,2
+ !     DO I2=1,2
+ !     DO I1=1,2
 
          !------------------------------------------
          ! Nodes and weights used in the interpolation
          !------------------------------------------
 
          ! Fraction NOx from the LUT
-         FNOX_TMP = FRACNOX_LUT( INDX(1,I1), INDX(2,I2), INDX(3,I3), &
-                                 INDX(4,I4), INDX(5,I5),             &
-                                 INDX(6,I6), INDX(7,I7) )
+!         FNOX_TMP = FRACNOX_LUT( INDX(1,I1), INDX(2,I2), INDX(3,I3), &
+!                                 INDX(4,I4), INDX(5,I5),             &
+!                                 INDX(6,I6), INDX(7,I7) )
 
-         DNOX_TMP = DNOx_LUT(    INDX(1,I1), INDX(2,I2), INDX(3,I3), &
-                                 INDX(4,I4), INDX(5,I5),             &
-                                 INDX(6,I6), INDX(7,I7) )
+!         DNOX_TMP = DNOx_LUT(    INDX(1,I1), INDX(2,I2), INDX(3,I3), &
+!                                 INDX(4,I4), INDX(5,I5),             &
+!                                 INDX(6,I6), INDX(7,I7) )
 
          ! OPE from the LUT
-         OPE_TMP  = OPE_LUT(     INDX(1,I1), INDX(2,I2), INDX(3,I3), &
-                                 INDX(4,I4), INDX(5,I5),             &
-                                 INDX(6,I6), INDX(7,I7) )
+!         OPE_TMP  = OPE_LUT(     INDX(1,I1), INDX(2,I2), INDX(3,I3), &
+!                                 INDX(4,I4), INDX(5,I5),             &
+!                                 INDX(6,I6), INDX(7,I7) )
 
          ! MOE from the LUT
-         MOE_TMP  = MOE_LUT(     INDX(1,I1), INDX(2,I2), INDX(3,I3), &
-                                 INDX(4,I4), INDX(5,I5),             &
-                                 INDX(6,I6), INDX(7,I7) )
+!         MOE_TMP  = MOE_LUT(     INDX(1,I1), INDX(2,I2), INDX(3,I3), &
+!                                 INDX(4,I4), INDX(5,I5),             &
+!                                 INDX(6,I6), INDX(7,I7) )
 
          ! Interpolation weight for this element
-         WEIGHT = WTS(1,I1) * WTS(2,I2) * WTS(3,I3) * WTS(4,I4) * &
-                  WTS(5,I5) * WTS(6,I6) * WTS(7,I7) * WTS(8,I8)
-
+!         WEIGHT = WTS(1,I1) * WTS(2,I2) * WTS(3,I3) * WTS(4,I4) * &
+!                  WTS(5,I5) * WTS(6,I6) * WTS(7,I7) * WTS(8,I8)
          !-----------------------------------
          ! Error Check
          !-----------------------------------
@@ -2794,50 +2927,66 @@ CONTAINS
             RETURN
          ENDIF
 
+         !IF ENCOUNTER -999 IN THE LUT PRINT ERROR!!
+         IF ( ( TEMPNO_TMP < 0. ) .or. ( TEMPNO_TMP > 1. ) ) THEN
+
+            PRINT*, 'METEMIS_LUT: TEMPNO = ', TEMPNO_TMP
+            PRINT*, 'This occured at grid box ', I, J
+            PRINT*, 'Lon/Lat: ', HcoState%Grid%XMID%Val(I,J), HcoState%Grid%YMID%Val(I,J)
+            MSG = 'LUT error: TEMPNO should be between 0 and 125 F!'
+            CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
+            RETURN
+         ENDIF
+
+         
          !-----------------------------------
          ! Final interpolated values
          !-----------------------------------
 
          ! Weighted sum of FNOx from the LUT
-         FNOx = FNOx + FNOX_TMP * WEIGHT
+!         FNOx = FNOx + FNOX_TMP * WEIGHT
 
          ! Weighted sum of DNOx from the LUT
-         DNOx = DNOx + DNOX_TMP * WEIGHT
+!         DNOx = DNOx + DNOX_TMP * WEIGHT
 
          ! Weighted sum of OPE from the LUT
-         OPE  = OPE + OPE_TMP * WEIGHT
+!         OPE  = OPE + OPE_TMP * WEIGHT
 
          ! Weighted sum of MOE from the LUT
-         MOE  = MOE + MOE_TMP * WEIGHT
+!         MOE  = MOE + MOE_TMP * WEIGHT
 
-      END DO
-      END DO
-      END DO
-      END DO
-      END DO
-      END DO
-      END DO
+         ! Weighted sum of TempNO from the LUT
+         TEMPNO = TEMPNO + TEMPNO_TMP * WEIGHT
+!      END DO
+!      END DO
+!      END DO
+!      END DO
+!      END DO
+!      END DO
+!      END DO
 
       ! Free pointers
-      FRACNOX_LUT => NULL()
-      DNOx_LUT    => NULL()
-      OPE_LUT     => NULL()
-      MOE_LUT     => NULL()
+!      FRACNOX_LUT => NULL()
+!      DNOx_LUT    => NULL()
+!      OPE_LUT     => NULL()
+!      MOE_LUT     => NULL()
+       TEMPNO_LUT => NULL()
    END DO
 
    ! Transfer MOE if optional output parameter is present
-   IF ( PRESENT( MOE_OUT ) ) MOE_OUT = MOE
+!   IF ( PRESENT( MOE_OUT ) ) MOE_OUT = MOE
 
    ! Nullify pointers
-   NULLIFY( FRACNOX_LUT )
-   NULLIFY( DNOx_LUT )
-   NULLIFY( OPE_LUT  )
-   NULLIFY( MOE_LUT  )
+!   NULLIFY( FRACNOX_LUT )
+!   NULLIFY( DNOx_LUT )
+!   NULLIFY( OPE_LUT  )
+!   NULLIFY( MOE_LUT  )
+   NULLIFY( TEMPNO_LUT )
 
    ! Return w/ success
    RC = HCO_SUCCESS
 
- END SUBROUTINE PARANOX_LUT
+ END SUBROUTINE METEMIS_LUT
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
