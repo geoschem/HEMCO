@@ -311,7 +311,7 @@ CONTAINS
     INTEGER,         INTENT(INOUT)  :: RC                 ! Success or failure
 !
 ! !REVISION HISTORY:
-!  06 Aug 2013 - C. Keller   - Initial Version
+!  19 Mar 2025 - P. C. Campbell   - Initial Version
 !  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
@@ -340,7 +340,7 @@ CONTAINS
     REAL(hp), POINTER        :: Arr2D(:,:)
 
     ! For diagnostics
-    REAL(hp), TARGET         :: DIAGN   (HcoState%NX,HcoState%NY,5)
+    REAL(hp), TARGET         :: DIAGN   (HcoState%NX,HcoState%NY,1)
     LOGICAL, SAVE            :: DODIAGN = .FALSE.
     CHARACTER(LEN=31)        :: DiagnName
     TYPE(DiagnCont), POINTER :: TmpCnt
@@ -501,7 +501,7 @@ CONTAINS
 
        !---------------------------------------------------------------------
        ! MetEmis lookup table for NO emiss based on temperature 
-       ! Includes effects of humidity
+       ! TBD:  Include effects of humidity on different fuel types
        ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
        CALL METEMIS_LUT( ExtState,  HcoState,  Inst,      I,                  &
