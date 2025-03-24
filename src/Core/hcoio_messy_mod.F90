@@ -381,20 +381,20 @@ MODULE HCOIO_MESSY_MOD
     lat   => HcoState%Grid%YEDGE%Val(1,:)
 
     ! Optional debug print: print what is used to create dest axis for location on grid
-    DO I = 1, HcoState%NX
-       DO J = 1, HcoState%NY
-          IF ( ( HcoState%Grid%XMID%Val(I,J) < -104 ) .AND. &
-               ( HcoState%Grid%XMID%Val(I,J) > -106 ) .AND. &
-               ( HcoState%Grid%YMID%Val(I,J) <   41 ) .AND. &
-               ( HcoState%Grid%YMID%Val(I,J) >   39 ) ) THEN
-             write(HcoState%Config%stdLogLUN,*) ' '
-             write(HcoState%Config%stdLogLUN,*) 'hcoio_messy_regrid at lon, lat: ', HcoState%Grid%XMID%Val(I,J), HcoState%Grid%YMID%Val(I,J)
-             write(HcoState%Config%stdLogLUN,*) '  --> lons for this core: ', lon
-             write(HcoState%Config%stdLogLUN,*) '  --> lats for this core: ', lat
-             write(HcoState%Config%stdLogLUN,*) ' '
-          ENDIF
-       ENDDO
-    ENDDO
+    !DO I = 1, HcoState%NX
+    !   DO J = 1, HcoState%NY
+    !      IF ( ( HcoState%Grid%XMID%Val(I,J) < -104 ) .AND. &
+    !           ( HcoState%Grid%XMID%Val(I,J) > -106 ) .AND. &
+    !           ( HcoState%Grid%YMID%Val(I,J) <   41 ) .AND. &
+    !           ( HcoState%Grid%YMID%Val(I,J) >   39 ) ) THEN
+    !         write(HcoState%Config%stdLogLUN,*) ' '
+    !         write(HcoState%Config%stdLogLUN,*) 'hcoio_messy_regrid at lon, lat: ', HcoState%Grid%XMID%Val(I,J), HcoState%Grid%YMID%Val(I,J)
+    !         write(HcoState%Config%stdLogLUN,*) '  --> lons for this core: ', lon
+    !         write(HcoState%Config%stdLogLUN,*) '  --> lats for this core: ', lat
+    !         write(HcoState%Config%stdLogLUN,*) ' '
+    !      ENDIF
+    !   ENDDO
+    !ENDDO
 
     IF( ASSOCIATED(LevEdge) ) sigma => sigout(:,:,1:NZOUT+1)
 
