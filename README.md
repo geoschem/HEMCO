@@ -8,10 +8,10 @@
   <a href="https://doi.org/10.5281/zenodo.4618253"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4618253.svg" alt="DOI"></a>
   <a href="https://github.com/geoschem/hemco/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
   <a href="https://hemco.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/geos-chem?label=ReadTheDocs"></a>
+  <a href="https://github.com/geoschem/hemco/actions/workflows/ubuntu.yml"><img src="https://github.com/geoschem/hemco/actions/workflows/ubuntu.yml/badge.svg" alt="Ubuntu"></a>
+  <a href="https://github.com/geoschem/hemco/actions/workflows/mac.yml"><img src="https://github.com/geoschem/hemco/actions/workflows/mac.yml/badge.svg" alt="Mac"></a>
+  <a href="https://github.com/geoschem/hemco/actions/workflows/windows.yml"><img src="https://github.com/geoschem/hemco/actions/workflows/windows.yml/badge.svg" alt="Windows"></a>
 </p>
-[![Ubuntu](https://github.com/geoschem/hemco/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/geoschem/hemco/actions/workflows/ubuntu.yml)
-[![Mac](https://github.com/geoschem/hemco/actions/workflows/mac.yml/badge.svg)](https://github.com/geoschem/hemco/actions/workflows/mac.yml)
-[![Windows](https://github.com/geoschem/hemco/actions/workflows/windows.yml/badge.svg)](https://github.com/geoschem/hemco/actions/workflows/windows.yml)
 
 ## Description
 
