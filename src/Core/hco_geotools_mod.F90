@@ -1332,6 +1332,21 @@ CONTAINS
     ! Wrap up and leave
     ! ------------------------------------------------------------------
 
+    ! Optional debug print: Fields in specific lat/lon box
+    !write(HcoState%Config%stdLogLUN,*) 'HCO_CalcVertGrid: fields at XMID (lon), YMID (lat): ', &
+    !     HcoState%Grid%XMID%Val(I,J), HcoState%Grid%YMID%Val(I,J)
+    !DO I = 1, HcoState%NX
+    !   DO J = 1,  HcoState%NY
+    !      IF ( ( HcoState%Grid%XMID%Val(I,J) < -104 ) .AND. &
+    !           ( HcoState%Grid%XMID%Val(I,J) > -106 ) .AND. &
+    !           ( HcoState%Grid%YMID%Val(I,J) <   41 ) .AND. &
+    !           ( HcoState%Grid%YMID%Val(I,J) >   39 ) ) THEN
+    !         write(HcoState%Config%stdLogLUN,*) ' --> PSFC: ', HcoState%Grid%PSFC%Val(I,J)
+    !         ! Add more as needed
+    !      ENDIF
+    !   ENDDO
+    !ENDDO
+
     ! Verbose
     IF ( Verb ) THEN
        WRITE(MSG,*) 'Vertical grid calculations done.'
