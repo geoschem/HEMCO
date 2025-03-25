@@ -99,6 +99,7 @@ MODULE HCOX_STATE_MOD
      ! switch in subroutine ExtStateInit below!
      !----------------------------------------------------------------------
      INTEGER                   :: Custom         ! Customizable ext.
+     INTEGER                   :: DustL23M       ! DustL23M dust model
      INTEGER                   :: DustDead       ! DEAD dust model
      INTEGER                   :: DustGinoux     ! Ginoux dust emissions
      INTEGER                   :: DustAlk        ! Dust alkalinity
@@ -130,11 +131,12 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: V10M        ! N/S 10m wind speed [m/s]
      TYPE(ExtDat_2R),  POINTER :: ALBD        ! Surface albedo [-]
      TYPE(ExtDat_2R),  POINTER :: T2M         ! 2m Sfce temperature [K]
+     TYPE(ExtDat_2R),  POINTER :: TS          ! Surface temperature [K]
      TYPE(ExtDat_2R),  POINTER :: TSKIN       ! Surface skin temperature [K]
      TYPE(ExtDat_2R),  POINTER :: TSOIL1      ! Soil temperature, layer 1 [K]
      TYPE(ExtDat_2R),  POINTER :: GWETROOT    ! Root soil wetness [1]
-     TYPE(ExtDat_2R),  POINTER :: GWETTOP     ! Top soil moisture [-]
-     TYPE(ExtDat_2R),  POINTER :: SNOWHGT     ! Snow height [mm H2O = kg H2O/m2]
+     TYPE(ExtDat_2R),  POINTER :: GWETTOP     ! Top soil moisture [1]
+     TYPE(ExtDat_2R),  POINTER :: SNOWHGT     ! Snow mass [mm H2O = kg H2O/m2]
      TYPE(ExtDat_2R),  POINTER :: SNODP       ! Snow depth [m ]
      TYPE(ExtDat_2R),  POINTER :: SNICE       ! Fraction of snow/ice [1]
      TYPE(ExtDat_2R),  POINTER :: USTAR       ! Friction velocity [m/s]
@@ -144,6 +146,9 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: SZAFACT     ! current SZA/total daily SZA
      TYPE(ExtDat_2R),  POINTER :: PARDR       ! direct photsyn radiation [W/m2]
      TYPE(ExtDat_2R),  POINTER :: PARDF       ! diffuse photsyn radiation [W/m2]
+     TYPE(ExtDat_2R),  POINTER :: PS          ! Surface pressure [hPa]
+     TYPE(ExtDat_2R),  POINTER :: PBLH        ! Planetary boundary layer height [m]
+     TYPE(ExtDat_2R),  POINTER :: HFLUX       ! Sensible height flux due to turbulence [W m-2]
      TYPE(ExtDat_2R),  POINTER :: PSC2_WET    ! Interpolated sfc pressure [hPa]
      TYPE(ExtDat_2R),  POINTER :: RADSWG      ! surface radiation [W/m2]
      TYPE(ExtDat_2R),  POINTER :: FRCLND      ! Olson land fraction [-]
@@ -291,6 +296,7 @@ CONTAINS
     ! Set all switches to -1
     !-----------------------------------------------------------------------
     ExtState%Custom         = -1
+    ExtState%DustL23M       = -1
     ExtState%DustDead       = -1
     ExtState%DustGinoux     = -1
     ExtState%DustAlk        = -1
@@ -376,7 +382,7 @@ CONTAINS
 
     CALL ExtDat_Init ( ExtState%SNOWHGT, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR SNOWHGT', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -425,6 +431,30 @@ CONTAINS
     CALL ExtDat_Init ( ExtState%PARDR, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%PS, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR PS', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%TS, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR TS', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%PBLH, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR PBLH', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%HFLUX, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR HFLUX', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -682,6 +712,7 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%V10M       )
        CALL ExtDat_Cleanup( ExtState%ALBD       )
        CALL ExtDat_Cleanup( ExtState%T2M        )
+       CALL ExtDat_Cleanup( ExtState%TS         )
        CALL ExtDat_Cleanup( ExtState%TSKIN      )
        CALL ExtDat_Cleanup( ExtState%TSOIL1     )
        CALL ExtDat_Cleanup( ExtState%GWETROOT   )
@@ -696,6 +727,9 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%SZAFACT    )
        CALL ExtDat_Cleanup( ExtState%PARDR      )
        CALL ExtDat_Cleanup( ExtState%PARDF      )
+       CALL ExtDat_Cleanup( ExtState%PS         )
+       CALL ExtDat_Cleanup( ExtState%PBLH       )
+       CALL ExtDat_Cleanup( ExtState%HFLUX      )
        CALL ExtDat_Cleanup( ExtState%PSC2_WET   )
        CALL ExtDat_Cleanup( ExtState%RADSWG     )
        CALL ExtDat_Cleanup( ExtState%FRCLND     )
