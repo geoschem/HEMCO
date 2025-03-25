@@ -1512,7 +1512,7 @@ CONTAINS
        ENDIF
 
        ! Verbose mode
-       IF ( HcoConfig%doVerbose ) THEN
+       IF ( HcoConfig%doVerbose .AND. HcoConfig%amIRoot ) THEN
           MSG = 'Opened shortcut bracket: '//TRIM(TmpBracket)
           CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
           WRITE(MSG,*) ' - Skip content of this bracket: ', SKIP
@@ -1541,7 +1541,7 @@ CONTAINS
        NEST              = NEST - 1
 
        ! Verbose mode
-       IF ( HcoConfig%doVerbose ) THEN
+       IF ( HcoConfig%doVerbose .AND. HcoConfig%amIRoot ) THEN
           MSG = 'Closed shortcut bracket: '//TRIM(TmpBracket)
           CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
           WRITE(MSG,*) ' - Skip following lines: ', SKIP
@@ -2214,11 +2214,8 @@ CONTAINS
           CALL HCO_MSG( msg, LUN=HcoConfig%hcoLogLUN )
        ENDIF
 #else
-       ! Always write to atm.log in CESM. LogFile entry in HEMCO_Config.rc
-       ! is omitted in CESM HEMCO_Config.rc. If it is found it will be ignored.
+       ! Always write to atm.log in CESM
        LogFile = 'atm.log'
-       msg = 'WARNING: HEMCO config entry for LogFile is ignored in CESM'
-       CALL HCO_MSG( msg, LUN=HcoConfig%stdLogLUN)
 #endif
 
        ! Initialize (standard) HEMCO tokens
@@ -2454,10 +2451,10 @@ CONTAINS
           ThisCover = -1
 #else
           ! Get mask edges
-          lon1 = Lct%Dct%Dta%ncYrs(1)
-          lat1 = Lct%Dct%Dta%ncYrs(2)
-          lon2 = Lct%Dct%Dta%ncMts(1)
-          lat2 = Lct%Dct%Dta%ncMts(2)
+          lon1 = Lct%Dct%Dta%Lons(1)
+          lon2 = Lct%Dct%Dta%Lons(2)
+          lat1 = Lct%Dct%Dta%Lats(1)
+          lat2 = Lct%Dct%Dta%Lats(2)
 
           ! If ncFile is passed as the lon1/lat1/lon2/lat2 instead
           ! of netCDF file name, then set ncRead to false, so that
@@ -2482,8 +2479,6 @@ CONTAINS
 
           ! Update container information
           Lct%Dct%Dta%Cover    = ThisCover
-          Lct%Dct%Dta%ncYrs(:) = -999
-          Lct%Dct%Dta%ncMts(:) = -999
 
           IF ( HcoState%Config%doVerbose ) THEN
              WRITE(MSG,*) 'Coverage: ', Lct%Dct%Dta%Cover
@@ -5261,12 +5256,11 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! Save temporarily in year and month range. Will be
-       ! reset lateron.
-       Dta%ncYrs(1) = splitInts(1)
-       Dta%ncYrs(2) = splitInts(2)
-       Dta%ncMts(1) = splitInts(3)
-       Dta%ncMts(2) = splitInts(4)
+       ! Save lat and lon ranges for mask
+       Dta%Lons(1) = splitInts(1)
+       Dta%Lats(1) = splitInts(2)
+       Dta%Lons(2) = splitInts(3)
+       Dta%Lats(2) = splitInts(4)
 
        ! Make sure that masks are always being read if specified so.
        IF ( char2 == 'y' .OR. char2 == 'Y' ) THEN

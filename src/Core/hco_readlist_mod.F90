@@ -802,7 +802,7 @@ CONTAINS
 
     ELSE
        WRITE(MSG,*) 'ReadList not defined yet!!'
-       CALL HCO_MSG( msg, SEP1='=', LUN=HcoState%Config%hcoLogLUN )
+       IF ( HcoState%Config%amIRoot ) CALL HCO_MSG( msg, SEP1='=', LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
   END SUBROUTINE ReadList_Print
