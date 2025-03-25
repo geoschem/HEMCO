@@ -1748,11 +1748,11 @@ CONTAINS
 !   Inst%WSlev = (/ 2.0e0, 6.0e0, 10.0e0, 14.0e0, 18.0e0 /)
 
    ! Temperature levels correspond to the files we will read below
-!   Inst%Tlev = (/ 0.0e0, 5.0e0, 10.0e0, 15.0e0, 20.0e0, 25.0e0, 30.0e0, & 
-!                  35.0e0, 40.0e0,  45.0e0,  50.0e0,  55.0e0,  60.0e0,  &
-!                  65.0e0, 70.0e0,  75.0e0,  80.0e0,  85.0e0,  90.0e0,  &
-!                  95.0e0, 100.0e0, 105.0e0, 110.0e0, 115.0e0, 120.0e0,  
-!                  125.0e0 /)
+   Inst%Tlev = (/ 0.0e0, 5.0e0, 10.0e0, 15.0e0, 20.0e0, 25.0e0, 30.0e0, & 
+                  35.0e0, 40.0e0,  45.0e0,  50.0e0,  55.0e0,  60.0e0,  &
+                  65.0e0, 70.0e0,  75.0e0,  80.0e0,  85.0e0,  90.0e0,  &
+                  95.0e0, 100.0e0, 105.0e0, 110.0e0, 115.0e0, 120.0e0,  
+                  125.0e0 /)
 
    ! Read 0 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
