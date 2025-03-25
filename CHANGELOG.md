@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed improper handling of mask files by removing code that overwrote	mask file years and months with lat/lon values and later hardcoded year and month values to -999
 
+## [3.10.3] - 2025-03-25
+### Added
+- Added commented out debug print options useful for debugging HEMCO in MPI models
+
+### Fixed
+- Fixed bug setting destination grid object sigma vector passed to MESSy for vertical regridding
+- Updated README to fix display of workflow badges
+
 ## [3.10.2] - 2025-03-04
 ### Added
 - Added `.zenodo.json` for auto-DOI generation upon version releases

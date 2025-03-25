@@ -145,7 +145,7 @@ MODULE HCOIO_MESSY_MOD
     REAL(hp)                      :: sigMin
     INTEGER                       :: NZIN, NZOUT, NTIME
     INTEGER                       :: NXIN, NYIN
-    INTEGER                       :: I, L, AS
+    INTEGER                       :: I, J, L, AS
     INTEGER                       :: NCALLS
     CHARACTER(LEN=255)            :: MSG, LOC
     LOGICAL                       :: SameGrid, verb
@@ -379,6 +379,23 @@ MODULE HCOIO_MESSY_MOD
     ! Get horizontal grid directly from HEMCO state
     lon   => HcoState%Grid%XEDGE%Val(:,1)
     lat   => HcoState%Grid%YEDGE%Val(1,:)
+
+    ! Optional debug print: print what is used to create dest axis for location on grid
+    !DO I = 1, HcoState%NX
+    !   DO J = 1, HcoState%NY
+    !      IF ( ( HcoState%Grid%XMID%Val(I,J) < -104 ) .AND. &
+    !           ( HcoState%Grid%XMID%Val(I,J) > -106 ) .AND. &
+    !           ( HcoState%Grid%YMID%Val(I,J) <   41 ) .AND. &
+    !           ( HcoState%Grid%YMID%Val(I,J) >   39 ) ) THEN
+    !         write(HcoState%Config%stdLogLUN,*) ' '
+    !         write(HcoState%Config%stdLogLUN,*) 'hcoio_messy_regrid at lon, lat: ', HcoState%Grid%XMID%Val(I,J), HcoState%Grid%YMID%Val(I,J)
+    !         write(HcoState%Config%stdLogLUN,*) '  --> lons for this core: ', lon
+    !         write(HcoState%Config%stdLogLUN,*) '  --> lats for this core: ', lat
+    !         write(HcoState%Config%stdLogLUN,*) ' '
+    !      ENDIF
+    !   ENDDO
+    !ENDDO
+
     IF( ASSOCIATED(LevEdge) ) sigma => sigout(:,:,1:NZOUT+1)
 
     CALL AXIS_CREATE( HcoState, lon, lat, sigma, axis_dst, RC )
@@ -459,6 +476,12 @@ MODULE HCOIO_MESSY_MOD
        !-----------------------------------------------------------------
        ! Do the regridding
        !-----------------------------------------------------------------
+       ! takes global array of source data (narr_src) and its MESSy axis properties
+       ! (axis_src). Also takes MESSy axis properties of destination HEMCO grid (global
+       ! for GC-Classic, regional for MPI applications). The axis_dst object contains
+       ! 1D array of latitudes, 1D array of longitudes, and 1D array of sigma pressures.
+       ! The 1D array of sigma pressures was created by collapse a 3D array of sigma
+       ! during creation of axis_dst in earlier call to axis_create for destination.
        CALL NREGRID(s=narr_src,      sax=axis_src, dax=axis_dst, d=narr_dst, &
                     rg_type=rg_type, sovl=sovl,    dovl=dovl,    rcnt=rcnt    )
 
@@ -722,9 +745,9 @@ MODULE HCOIO_MESSY_MOD
        ax(N)%lm = .false.     ! VERTICAL AXIS IS NON-MODULO AXIS
 
        ! Axis dimension
-       XLEV = SIZE(lev,1)
-       YLEV = SIZE(lev,2)
-       ZLEV = SIZE(lev,3)
+       XLEV = SIZE(lev,1)  ! HEMCO lon
+       YLEV = SIZE(lev,2)  ! HEMCO lat
+       ZLEV = SIZE(lev,3)  ! HEMCO lev+1
 
        ! Sanity check: if XLEV and YLEV are > 1, they must correspond
        ! to the lon/lat axis defined above
@@ -781,17 +804,19 @@ MODULE HCOIO_MESSY_MOD
 
        ALLOCATE(ax(N)%dat%vd(nlev),STAT=status)
        IF ( status/= 0 ) THEN
-          CALL HCO_ERROR( 'Cannot allocate lat axis', RC )
+          CALL HCO_ERROR( 'Cannot allocate lev axis', RC )
           RETURN
        ENDIF
 
        ! -------------------------------------------------------------
        ! Pass vertical sigma coordinates to vector
        ! -------------------------------------------------------------
+       ! Order is pressure profile of (lat1,lon1), (lat2,lon1), ..., (latN,lon1),
+       ! (lat1,lon2), (lat2,lon2), ..., (latN,lon2), ... until (latN,lonN)
        LOW = 1
        UPP = 1
-       DO J = 1, YLEV !lat
        DO I = 1, XLEV !lon
+       DO J = 1, YLEV !lat
           UPP                   = LOW + ZLEV - 1 ! Upper index
           ax(N)%dat%vd(LOW:UPP) = lev(I,J,:)     ! Pass to vector
           LOW                   = UPP + 1        ! Next lower index
@@ -1028,7 +1053,7 @@ MODULE HCOIO_MESSY_MOD
     ! MESSY2HCO begins here
     !=================================================================
 
-    ! Grid dimensions
+    ! Grid dimensions (global in GC-Classic, regional in MPI applications)
     NX = HcoState%NX
     NY = HcoState%NY
     NT = SIZE(narr)
