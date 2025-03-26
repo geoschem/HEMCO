@@ -97,7 +97,7 @@ MODULE HCOX_MetEmis_MOD
 ! !MODULE VARIABLES:
 
   ! Number of values for each variable in the look-up table
-  INTEGER, PARAMETER ::  nT=25  !25 Temperature Bins
+  INTEGER, PARAMETER ::  nT=26  !25 + 1 Temperature Bins
 
   ! Now place all module variables in a lderived type object (for a linked
   ! list) so that we can have one instance per node in an MPI environment.
@@ -109,7 +109,7 @@ MODULE HCOX_MetEmis_MOD
      INTEGER               :: IDTNO
 
      ! Arrays
-     REAL(hp), POINTER     :: MetNO(:,:,:)
+     REAL(hp), POINTER     :: MetEmisNO(:,:,:)
 
      ! Reference values of variables in the MetEmis look-up tables
      REAL*4                :: Tlev(nT)
@@ -288,7 +288,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE Calc_MetEmis( ExtState, MetNOEmis, HcoState, Inst, RC )
+  SUBROUTINE Calc_MetEmis( ExtState, MetEmisNO, HcoState, Inst, RC )
 !
 ! !USES:
 !
@@ -305,7 +305,7 @@ CONTAINS
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    REAL(hp),        INTENT(INOUT)  :: MetNOEmis(:,:,:)   ! Emissions
+    REAL(hp),        INTENT(INOUT)  :: MetEmisNO(:,:,:)   ! Emissions
     TYPE(HCO_State), POINTER        :: HcoState           ! HEMCO State obj
     TYPE(MyInst),    POINTER        :: Inst               ! Local instance
     INTEGER,         INTENT(INOUT)  :: RC                 ! Success or failure
@@ -375,7 +375,7 @@ CONTAINS
 
     ! Leave here if none of the tracers defined
 !    IF ( Inst%IDTNO <= 0 .AND. Inst%IDTO3 <= 0 .AND. Inst%IDTHNO3 <= 0 ) THEN
-     IF ( Inst%IDTNO ) THEN  !Starting with only NO right now
+     IF ( Inst%IDTNO <= 0) THEN  !Starting with only NO right now
        RC = HCO_SUCCESS
        RETURN
     ENDIF
@@ -497,7 +497,7 @@ CONTAINS
        !---------------------------------------------------------------------
        ! Skip if no MetEmis NO emissions in this grid box
        !---------------------------------------------------------------------
-       IF ( .not. ( MetNOEmis(I,J,1) > 0.0_hp ) ) CYCLE
+       IF ( .not. ( MetEmisNO(I,J,1) > 0.0_hp ) ) CYCLE
 
        !---------------------------------------------------------------------
        ! MetEmis lookup table for NO emiss based on temperature 
@@ -955,7 +955,7 @@ CONTAINS
 !      Inst%JRATIOlev     =  0.0e0
 !      Inst%NOXlev        =  0.0e0
 !      Inst%WSlev         =  0.0e0
-!      Inst%ShipNO        => NULL()
+       Inst%MetEmisNO     => NULL()
 !      Inst%SC5           => NULL()
 !      Inst%DEPO3         => NULL()
 !      Inst%DEPHNO3       => NULL()
@@ -1102,15 +1102,6 @@ CONTAINS
 !      ENDIF
 
       ! Verbose mode
-      IF ( HcoState%amIRoot ) THEN
-
-         ! Write the name of the extension regardless of the verbose setting
-         msg = 'Using HEMCO extension: MetEmis (met emis adjustment)'
-         IF ( HCO_IsVerb( HcoState%Config%Err ) ) THEN
-            CALL HCO_Msg( HcoState%Config%Err, msg, sep1='-' ) ! with separator
-         ELSE
-            CALL HCO_Msg( msg, verb=.TRUE.                   ) ! w/o separator
-         ENDIF
 
          ! Write the rest of the information only when verbose is set
 !         MSG = '    - Use the following species: (MW, emitted as HEMCO ID) '
@@ -1123,188 +1114,196 @@ CONTAINS
 !         CALL HCO_MSG(HcoState%Config%Err,MSG)
 !         WRITE(MSG,"(a,F5.2,I5)") '     HNO3: ', Inst%MW_HNO3, Inst%IDTHNO3
 !         CALL HCO_MSG(HcoState%Config%Err,MSG)
+
+      ! Verbose mode
+      IF ( HcoState%amIRoot ) THEN
+
+         ! Write the name of the extension regardless of the verbose setting
+         msg = 'Using HEMCO extension: MetEmis (met adjusted emissions)'
+         CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN, sep1='-' ) ! with separator
+
       ENDIF
 
       !--------------------------------
       ! Allocate module arrays
       !--------------------------------
 
-      ALLOCATE( Inst%NO_LUT000(24,1,HcoState%NY,HcoState%NX), STAT=RC ) 
+      ALLOCATE( Inst%NO_LUT000(1,1,HcoState%NY,HcoState%NX), STAT=RC ) 
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT000', RC )
          RETURN
       ENDIF
       Inst%NO_LUT000 = 0.0_sp
       
-      ALLOCATE( Inst%NO_LUT005(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT005(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT005', RC )
          RETURN
       ENDIF
       Inst%NO_LUT005 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT010(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT010(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT010', RC )
          RETURN
       ENDIF
       Inst%NO_LUT010 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT015(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT015(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT015', RC )
          RETURN
       ENDIF
       Inst%NO_LUT015 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT020(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT020(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT020', RC )
          RETURN
       ENDIF
       Inst%NO_LUT020 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT025(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT025(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT025', RC )
          RETURN
       ENDIF
       Inst%NO_LUT025 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT030(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT030(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT030', RC )
          RETURN
       ENDIF
       Inst%NO_LUT030 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT035(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT035(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT035', RC )
          RETURN
       ENDIF
       Inst%NO_LUT035 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT040(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT040(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT040', RC )
          RETURN
       ENDIF
       Inst%NO_LUT040 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT045(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT045(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT045', RC )
          RETURN
       ENDIF
       Inst%NO_LUT045 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT050(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT050(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT050', RC )
          RETURN
       ENDIF
       Inst%NO_LUT050 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT055(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT055(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT055', RC )
          RETURN
       ENDIF
       Inst%NO_LUT055 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT060(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT060(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT060', RC )
          RETURN
       ENDIF
       Inst%NO_LUT060 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT065(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT065(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT065', RC )
          RETURN
       ENDIF
       Inst%NO_LUT065 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT070(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT070(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT070', RC )
          RETURN
       ENDIF
       Inst%NO_LUT070 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT075(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT075(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT075', RC )
          RETURN
       ENDIF
       Inst%NO_LUT075 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT080(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT080(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT080', RC )
          RETURN
       ENDIF
       Inst%NO_LUT080 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT085(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT085(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT085', RC )
          RETURN
       ENDIF
       Inst%NO_LUT085 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT090(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT090(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT090', RC )
          RETURN
       ENDIF
       Inst%NO_LUT090 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT095(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT095(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT095', RC )
          RETURN
       ENDIF
       Inst%NO_LUT095 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT100(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT100(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT100', RC )
          RETURN
       ENDIF
       Inst%NO_LUT100 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT105(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT105(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT105', RC )
          RETURN
       ENDIF
       Inst%NO_LUT105 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT110(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT110(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT110', RC )
          RETURN
       ENDIF
       Inst%NO_LUT110 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT115(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT115(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT115', RC )
          RETURN
       ENDIF
       Inst%NO_LUT115 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT120(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT120(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT120', RC )
          RETURN
       ENDIF
       Inst%NO_LUT120 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT125(24,1,HcoState%NY,HcoState%NX), STAT=RC )
+      ALLOCATE( Inst%NO_LUT125(1,1,HcoState%NY,HcoState%NX), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
          CALL HCO_ERROR ( 'NO_LUT125', RC )
          RETURN
@@ -1552,12 +1551,12 @@ CONTAINS
    !------------------------------------------------------------------------
    ! Set other module variables
    !------------------------------------------------------------------------
-!   ALLOCATE ( Inst%ShipNO(HcoState%NX,HcoState%NY,HcoState%NZ), STAT=RC )
-!   IF ( RC /= HCO_SUCCESS ) THEN
-!      CALL HCO_ERROR ( 'ShipNO', RC )
-!      RETURN
-!   ENDIF
-!   Inst%ShipNO = 0.0_hp
+   ALLOCATE ( Inst%MetEmisNO(HcoState%NX,HcoState%NY,HcoState%NZ), STAT=RC )
+   IF ( RC /= HCO_SUCCESS ) THEN
+      CALL HCO_ERROR ( 'MetEmisNO', RC )
+      RETURN
+   ENDIF
+   Inst%MetEmisNO = 0.0_hp
 !
 !   ! Allocate variables for SunCosMid from 5 hours ago.
 !   ALLOCATE ( Inst%SC5(HcoState%NX,HcoState%NY), STAT=RC )
@@ -1751,137 +1750,137 @@ CONTAINS
    Inst%Tlev = (/ 0.0e0, 5.0e0, 10.0e0, 15.0e0, 20.0e0, 25.0e0, 30.0e0, & 
                   35.0e0, 40.0e0,  45.0e0,  50.0e0,  55.0e0,  60.0e0,  &
                   65.0e0, 70.0e0,  75.0e0,  80.0e0,  85.0e0,  90.0e0,  &
-                  95.0e0, 100.0e0, 105.0e0, 110.0e0, 115.0e0, 120.0e0,  
+                  95.0e0, 100.0e0, 105.0e0, 110.0e0, 115.0e0, 120.0e0, & 
                   125.0e0 /)
 
    ! Read 0 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 1                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 1,                       &
         Inst%NO_LUT000, RC=RC)
 
   ! Read 5 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 2                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 2,                       &
         Inst%NO_LUT005, RC=RC)
 
   ! Read 10 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 3                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 3,                       &
         Inst%NO_LUT010, RC=RC)
 
   ! Read 15 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 4                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 4,                       &
         Inst%NO_LUT015, RC=RC)
 
   ! Read 20 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 5                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 5,                       &
         Inst%NO_LUT020, RC=RC)
 
   ! Read 25 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 6                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 6,                       &
         Inst%NO_LUT025, RC=RC)
 
   ! Read 30 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 7                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 7,                       &
         Inst%NO_LUT030, RC=RC)
 
   ! Read 35 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 8                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 8,                       &
         Inst%NO_LUT035, RC=RC)
 
   ! Read 40 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 9                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 9,                       &
         Inst%NO_LUT040, RC=RC)
 
   ! Read 45 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 10                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 10,                       &
         Inst%NO_LUT045, RC=RC)
 
   ! Read 50 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 11                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 11,                       &
         Inst%NO_LUT050, RC=RC)
 
   ! Read 55 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 12                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 12,                       &
         Inst%NO_LUT055, RC=RC)
 
   ! Read 60 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 13                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 13,                       &
         Inst%NO_LUT060, RC=RC)
 
   ! Read 65 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 14                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 14,                       &
         Inst%NO_LUT065, RC=RC)
 
   ! Read 70 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 15                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 15,                       &
         Inst%NO_LUT070, RC=RC)
 
   ! Read 75 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 16                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 16,                       &
         Inst%NO_LUT075, RC=RC)
 
   ! Read 80 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 17                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 17,                       &
         Inst%NO_LUT080, RC=RC)
 
   ! Read 85 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 18                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 18,                       &
         Inst%NO_LUT085, RC=RC)
 
   ! Read 90 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 19                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 19,                       &
         Inst%NO_LUT090, RC=RC)
 
   ! Read 95 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 20                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 20,                       &
         Inst%NO_LUT095, RC=RC)
 
   ! Read 100 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 21                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 21,                       &
         Inst%NO_LUT100, RC=RC)
 
   ! Read 105 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 22                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 22,                       &
         Inst%NO_LUT105, RC=RC)
 
   ! Read 110 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 23                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 23,                       &
         Inst%NO_LUT110, RC=RC)
 
   ! Read 115 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 24                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 24,                       &
         Inst%NO_LUT115, RC=RC)
 
   ! Read 120 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 25                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 25,                       &
         Inst%NO_LUT120, RC=RC)
 
   ! Read 125 Degrees F LUT
    WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 26                       &
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 26,                       &
         Inst%NO_LUT125, RC=RC)
 
 !   ! Read 6 m/s LUT
@@ -1901,7 +1900,7 @@ CONTAINS
 !   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ),                         &
 !        Inst%FRACNOX_LUT14, Inst%DNOx_LUT14, Inst%OPE_LUT14,                 &
 !        Inst%MOE_LUT14, RC=RC )
-3!
+!
 !   ! Read 18 m/s LUT
 !   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir), 18
 !   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ),                         &
@@ -1941,7 +1940,7 @@ CONTAINS
 
    ! Return w/ success
    RC = HCO_SUCCESS
-#endif
+!#endif
 
  END SUBROUTINE READ_METEMIS_LUT_NC
 !EOC
@@ -2031,7 +2030,7 @@ CONTAINS
    IF ( HcoState%amIRoot ) THEN
       WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( FileName )
       WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( FileName )
-      CALL HCO_MSG( HcoState%Config%Err, MSG )
+      CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
  300  FORMAT( a, ' ', a )
    ENDIF
 
@@ -2114,7 +2113,7 @@ CONTAINS
 !   ct7d = (/ nT,nJ,nO3,nSEA,nSEA,nJ,nNOx /)
    ! Define 4D variables used below
    st4d = (/ 1, LUT_IND, 1,  1/)
-   ct4d = (/ 24, LUT_IND, HcoState%NY,  HcoState%NX/)
+   ct4d = (/ 1, LUT_IND, HcoState%NY,  HcoState%NX/)
    !-----------------------------------------------------------------
    ! Read look up table for temperature dependent NO from MetEmis
    ! emissions [kg m-2 s-1]
@@ -2161,7 +2160,7 @@ CONTAINS
 
  END SUBROUTINE READ_LUT_NCFILE
 !EOC
-#endif
+!#endif
 !------------------------------------------------------------------------------
 !                  GEOS-Chem Global Chemical Transport Model                  !
 !------------------------------------------------------------------------------
@@ -2925,9 +2924,9 @@ CONTAINS
    ! Load all variables into a single array
    !========================================================================
 
-   ! Air Temperature, K
-   VARS(1) = TAIR
-
+   ! Air Temperature, K --> Fahrenheit
+   VARS(1) = (TAIR - 273.15)*1.8 + 32.0
+   
    ! Air QH2O, kg/kg
  !  VARS(2) = QH2O
 
@@ -3100,107 +3099,107 @@ CONTAINS
       SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
          CASE (  0 )
             TEMPNO_LUT  => Inst%NO_LUT000
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE (  5 )
             TEMPNO_LUT  => Inst%NO_LUT005
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 10 )
             TEMPNO_LUT  => Inst%NO_LUT010
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 15 )
             TEMPNO_LUT  => Inst%NO_LUT015
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 20 )
             TEMPNO_LUT  => Inst%NO_LUT020
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 25 )
             TEMPNO_LUT  => Inst%NO_LUT025
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 30 )
             TEMPNO_LUT  => Inst%NO_LUT030
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 35 )
             TEMPNO_LUT  => Inst%NO_LUT035
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 40 )
             TEMPNO_LUT  => Inst%NO_LUT040
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 45 )
             TEMPNO_LUT  => Inst%NO_LUT045
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 50 )
             TEMPNO_LUT  => Inst%NO_LUT050
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 55 )
             TEMPNO_LUT  => Inst%NO_LUT055
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 60 )
             TEMPNO_LUT  => Inst%NO_LUT060
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 65 )
             TEMPNO_LUT  => Inst%NO_LUT065
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 70 )
             TEMPNO_LUT  => Inst%NO_LUT070
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 75 )
             TEMPNO_LUT  => Inst%NO_LUT075
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 80 )
             TEMPNO_LUT  => Inst%NO_LUT080
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 85 )
             TEMPNO_LUT  => Inst%NO_LUT085
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 90 )
             TEMPNO_LUT  => Inst%NO_LUT090
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 95 )
             TEMPNO_LUT  => Inst%NO_LUT095
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 100 )
             TEMPNO_LUT  => Inst%NO_LUT100
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 105 )
             TEMPNO_LUT  => Inst%NO_LUT105
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 110 )
             TEMPNO_LUT  => Inst%NO_LUT110
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 115 )
             TEMPNO_LUT  => Inst%NO_LUT115
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 120 )
             TEMPNO_LUT  => Inst%NO_LUT120
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 125 )
             TEMPNO_LUT  => Inst%NO_LUT125
-            TEMPNO_TMP  = TEMPNO_LUT
+            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE DEFAULT
              MSG = 'LUT error: Temperature interpolation error!'
@@ -3283,15 +3282,15 @@ CONTAINS
 !         ENDIF
 
          !IF ENCOUNTER -999 IN THE LUT PRINT ERROR!!
-         IF ( ( TEMPNO_TMP < 0. ) .or. ( TEMPNO_TMP > 1. ) ) THEN
-
-            PRINT*, 'METEMIS_LUT: TEMPNO = ', TEMPNO_TMP
-            PRINT*, 'This occured at grid box ', I, J
-            PRINT*, 'Lon/Lat: ', HcoState%Grid%XMID%Val(I,J), HcoState%Grid%YMID%Val(I,J)
-            MSG = 'LUT error: TEMPNO should be between 0 and 125 F!'
-            CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
-            RETURN
-         ENDIF
+!         IF ( ( TEMPNO_TMP < 0. ) .or. ( TEMPNO_TMP > 1. ) ) THEN
+!
+!            PRINT*, 'METEMIS_LUT: TEMPNO = ', TEMPNO_TMP
+!            PRINT*, 'This occured at grid box ', I, J
+!            PRINT*, 'Lon/Lat: ', HcoState%Grid%XMID%Val(I,J), HcoState%Grid%YMID%Val(I,J)
+!            MSG = 'LUT error: TEMPNO should be between 0 and 125 F!'
+!            CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
+!            RETURN
+!         ENDIF
 
          
          !-----------------------------------
@@ -3653,10 +3652,10 @@ CONTAINS
        ENDIF
        Inst%NO_LUT125 => NULL()
 
-!       IF ( ASSOCIATED( Inst%ShipNO ) ) THEN
-!          DEALLOCATE ( Inst%ShipNO )
-!       ENDIF
-!       Inst%ShipNO => NULL()
+       IF ( ASSOCIATED( Inst%MetEmisNO ) ) THEN
+          DEALLOCATE ( Inst%MetEmisNO )
+       ENDIF
+       Inst%MetEmisNO => NULL()
 !
 !       IF ( ASSOCIATED( Inst%SC5 ) ) THEN
 !          DEALLOCATE ( Inst%SC5 )

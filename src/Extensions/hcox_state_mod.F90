@@ -117,6 +117,7 @@ MODULE HCOX_STATE_MOD
      INTEGER                   :: TOMAS_DustDead ! TOMAS sectional Dead Dust
      INTEGER                   :: Volcano        ! Volcano emissions
      INTEGER                   :: Inorg_Iodine   ! Oceanic inorganic iodine emissions
+     INTEGER                   :: MetEmis        ! MetEmis Emissions
 
      !----------------------------------------------------------------------
      ! Data directory
