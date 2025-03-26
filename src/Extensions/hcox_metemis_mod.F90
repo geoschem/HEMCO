@@ -145,8 +145,8 @@ MODULE HCOX_MetEmis_MOD
      REAL(sp), POINTER     :: NO_LUT125(:,:,:,:)   !Temp=125. F
 
      ! Location and type of MetEmis look up table data
-     CHARACTER(LEN=255)    :: LutDir
-     LOGICAL               :: IsNc
+     CHARACTER(LEN=255)    :: FileName
+!     LOGICAL               :: IsNc
 
      TYPE(MyInst), POINTER :: NextInst => NULL()
   END TYPE MyInst
@@ -900,6 +900,7 @@ CONTAINS
    CHARACTER(LEN=31)              :: DiagnName
    CHARACTER(LEN=255)             :: MSG, LOC
    CHARACTER(LEN= 1)              :: CHAR1
+   LOGICAL                        :: FOUND
    TYPE(MyInst), POINTER          :: Inst
 
    !========================================================================
@@ -1484,33 +1485,47 @@ CONTAINS
    !========================================================================
 
    ! LUT data directory
-   CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'LUT source dir', &
-                   OptValChar=Inst%LutDir, RC=RC)
-   IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( &
-            'MetEmis: Could not read "LUT source dir"!', RC, THISLOC=LOC )
+!   CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'MetEmis LUT source dir', &
+!                   OptValChar=Inst%LutDir, RC=RC)
+!   IF ( RC /= HCO_SUCCESS ) THEN
+!       CALL HCO_ERROR( &
+!            'MetEmis: Could not read "MetEmis LUT source dir"!', RC, THISLOC=LOC )
+!       RETURN
+!   ENDIF
+
+
+ ! Get location of MetEmis table. This must be provided.
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'MetEmis_Table',                 &
+                    OptValChar=Inst%FileName, FOUND=FOUND, RC=RC            )
+
+    IF ( RC /= HCO_SUCCESS .OR. .NOT. FOUND ) THEN
+       MSG = 'Cannot read MetEmis table file name. Please provide '       // &
+             'the MetEmis table as a setting to the MetEmis extension. '  // &
+             'The name of this setting must be `MetEmis_Table`.'
+       CALL HCO_Error( MSG, RC )
        RETURN
-   ENDIF
+    ENDIF
+
 
    ! Call HEMCO parser to replace tokens such as $ROOT, $MET, or $RES.
    ! There shouldn't be any date token in there ($YYYY, etc.), so just
    ! provide some dummy variables here
-   CALL HCO_CharParse( HcoState%Config, Inst%LutDir, -999, -1, -1, -1, -1, RC )
-   IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( &
-            'MetEmis: Error encountered in "HCO_CharParse"', RC, THISLOC=LOC )
-       RETURN
-   ENDIF
+!   CALL HCO_CharParse( HcoState%Config, Inst%LutDir, -999, -1, -1, -1, -1, RC )
+!   IF ( RC /= HCO_SUCCESS ) THEN
+!       CALL HCO_ERROR( &
+!            'MetEmis: Error encountered in "HCO_CharParse"', RC, THISLOC=LOC )
+!       RETURN
+!   ENDIF
 
    ! Data format: ncdf (default) or txt
-   Inst%IsNc = .TRUE.
-   CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'LUT data format', &
-                   OptValChar=Dummy, RC=RC)
-   IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( &
-            'MetEmis: Could not read "LUT data format"', RC, THISLOC=LOC )
-       RETURN
-   ENDIF
+!   Inst%IsNc = .TRUE.
+!   CALL GetExtOpt( HcoState%Config, Inst%ExtNr, 'LUT data format', &
+!                   OptValChar=Dummy, RC=RC)
+!   IF ( RC /= HCO_SUCCESS ) THEN
+!       CALL HCO_ERROR( &
+!            'MetEmis: Could not read "LUT data format"', RC, THISLOC=LOC )
+!       RETURN
+!   ENDIF
  !  IF ( TRIM(Dummy) == 'txt' ) Inst%IsNc = .FALSE.
 
    ! Read MetEmis look-up tables from disk. This can be netCDF or txt
@@ -1699,7 +1714,7 @@ CONTAINS
  SUBROUTINE READ_METEMIS_LUT_NC ( HcoState, Inst, RC )
 !
 ! !USES:
-!
+  USE HCO_CLOCK_MOD,      ONLY : HcoClock_Get!
 ! !INPUT ARGUMENTS:
 !
    TYPE(HCO_State), POINTER     :: HcoState    ! HEMCO State object
@@ -1719,10 +1734,11 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
    INTEGER             :: IOS
+   INTEGER             :: YYYY, MM, DD, HH
    CHARACTER(LEN=255)  :: FILENAME
    CHARACTER(LEN=255)  :: MSG
    INTEGER             :: fID
-
+   CHARACTER(LEN=255)    :: LOC = 'READ_METEMIS_LUT_NC (hcox_metemis_mod.F90)'
    !=================================================================
    ! READ_METEMIS_LUT_NC begins here
    !=================================================================
@@ -1737,11 +1753,36 @@ CONTAINS
 !   RETURN
 !#else
 
+ ! Get current year, month, day
+    CALL HcoClock_Get ( HcoState%Clock, cYYYY=YYYY, cMM=MM, cDD=DD, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) RETURN
+!#if defined( MODEL_GEOS )
+    ! Error trap: skip leap days
+!    IF ( MM == 2 .AND. DD > 28 ) DD = 28
+!#endif
+
+    ! Compare current day against day on file
+!    ThisYMD  = YYYY*10000 + MM*100+ DD
+
+    ! Do only if it's a different day
+!    IF ( ThisYMD /= Inst%YmdOnFile ) THEN
+
+       ! Get file name
+       FILENAME = Inst%FileName
+       CALL HCO_CharParse( HcoState%Config, FILENAME, YYYY, MM, DD, HH, 0, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+
+
    ! Clear FILENAME
-   FILENAME = ''
+!   FILENAME = ''
 
    ! FILENAME format string
- 101  FORMAT( a, '/met_emis_lut_2019.nc'  )
+! 101  FORMAT( a, '/met_emis_lut_2019.nc'  )
+
 
    ! Wind speed levels correspond to the files we will read below
 !   Inst%WSlev = (/ 2.0e0, 6.0e0, 10.0e0, 14.0e0, 18.0e0 /)
@@ -1754,132 +1795,132 @@ CONTAINS
                   125.0e0 /)
 
    ! Read 0 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 1,                       &
         Inst%NO_LUT000, RC=RC)
 
   ! Read 5 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 2,                       &
         Inst%NO_LUT005, RC=RC)
 
   ! Read 10 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 3,                       &
         Inst%NO_LUT010, RC=RC)
 
   ! Read 15 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 4,                       &
         Inst%NO_LUT015, RC=RC)
 
   ! Read 20 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 5,                       &
         Inst%NO_LUT020, RC=RC)
 
   ! Read 25 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 6,                       &
         Inst%NO_LUT025, RC=RC)
 
   ! Read 30 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 7,                       &
         Inst%NO_LUT030, RC=RC)
 
   ! Read 35 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 8,                       &
         Inst%NO_LUT035, RC=RC)
 
   ! Read 40 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 9,                       &
         Inst%NO_LUT040, RC=RC)
 
   ! Read 45 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 10,                       &
         Inst%NO_LUT045, RC=RC)
 
   ! Read 50 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 11,                       &
         Inst%NO_LUT050, RC=RC)
 
   ! Read 55 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 12,                       &
         Inst%NO_LUT055, RC=RC)
 
   ! Read 60 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 13,                       &
         Inst%NO_LUT060, RC=RC)
 
   ! Read 65 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 14,                       &
         Inst%NO_LUT065, RC=RC)
 
   ! Read 70 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 15,                       &
         Inst%NO_LUT070, RC=RC)
 
   ! Read 75 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 16,                       &
         Inst%NO_LUT075, RC=RC)
 
   ! Read 80 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 17,                       &
         Inst%NO_LUT080, RC=RC)
 
   ! Read 85 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 18,                       &
         Inst%NO_LUT085, RC=RC)
 
   ! Read 90 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 19,                       &
         Inst%NO_LUT090, RC=RC)
 
   ! Read 95 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 20,                       &
         Inst%NO_LUT095, RC=RC)
 
   ! Read 100 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 21,                       &
         Inst%NO_LUT100, RC=RC)
 
   ! Read 105 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 22,                       &
         Inst%NO_LUT105, RC=RC)
 
   ! Read 110 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 23,                       &
         Inst%NO_LUT110, RC=RC)
 
   ! Read 115 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 24,                       &
         Inst%NO_LUT115, RC=RC)
 
   ! Read 120 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 25,                       &
         Inst%NO_LUT120, RC=RC)
 
   ! Read 125 Degrees F LUT
-   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
    CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 26,                       &
         Inst%NO_LUT125, RC=RC)
 
