@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Added
 - Added `Lons` and `Lats` to `FileData` type to store bounds of mask files
+- Added definition of 0.125x0.15625 grid resolution
 
 ### Changed
 - Use `USTAR` from meteorology instead of calculating from reference 10m wind in DustDead extension

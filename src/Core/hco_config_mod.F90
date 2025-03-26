@@ -2132,6 +2132,8 @@ CONTAINS
              GridRes = '0.5x0.625'
           CASE( '025x03125', '0.25x0.3125' )
              GridRes = '0.25x0.3125'
+          CASE( '0125x015625', '0.125x0.15625' )
+             GridRes = '0.125x0.15625'
           CASE DEFAULT
              Msg = 'Improperly formatted grid resolution: ' // TRIM( GridRes )
              CALL HCO_Error( Msg, RC, Loc )
