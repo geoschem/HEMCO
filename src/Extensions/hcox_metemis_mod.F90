@@ -1494,7 +1494,7 @@ CONTAINS
 !   ENDIF
 
 
- ! Get location of MetEmis table. This must be provided.
+ ! Get location of MetEmis table. This must be provided and should be date/hour specific.
     CALL GetExtOpt( HcoState%Config, ExtNr, 'MetEmis_Table',                 &
                     OptValChar=Inst%FileName, FOUND=FOUND, RC=RC            )
 
