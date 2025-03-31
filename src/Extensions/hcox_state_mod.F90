@@ -310,6 +310,7 @@ CONTAINS
     ExtState%TOMAS_DustDead = -1
     ExtState%Volcano        = -1
     ExtState%Inorg_Iodine   = -1
+    ExtState%MetEmis        = -1
 
     !-----------------------------------------------------------------------
     ! Initialize constants for POPs emissions module
