@@ -866,7 +866,7 @@ CONTAINS
 !
 ! !USES:
 !
-   USE HCO_Chartools_Mod, ONLY : HCO_CharParse
+!   USE HCO_Chartools_Mod, ONLY : HCO_CharParse
    USE HCO_State_MOD,     ONLY : HCO_GetHcoID
    USE HCO_State_MOD,     ONLY : HCO_GetExtHcoID
    USE HCO_ExtList_Mod,   ONLY : GetExtNr
@@ -1715,6 +1715,7 @@ CONTAINS
 !
 ! !USES:
   USE HCO_CLOCK_MOD,      ONLY : HcoClock_Get!
+  USE HCO_Chartools_Mod,  ONLY : HCO_CharParse
 ! !INPUT ARGUMENTS:
 !
    TYPE(HCO_State), POINTER     :: HcoState    ! HEMCO State object
