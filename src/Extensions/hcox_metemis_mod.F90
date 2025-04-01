@@ -96,8 +96,10 @@ MODULE HCOX_MetEmis_MOD
 !
 ! !MODULE VARIABLES:
 
-  ! Number of values for each variable in the look-up table
-  INTEGER, PARAMETER ::  nT=26  !25 + 1 Temperature Bins
+  ! Number of values for each variable in the provided input look-up table
+  INTEGER, PARAMETER ::  nT=25     !25 Temperature Bins
+  INTEGER, PARAMETER ::  nLat=317  !317 Latitude Points
+  INTEGER, PARAMETER ::  nLon=735  !735 Longitude Points
 
   ! Now place all module variables in a lderived type object (for a linked
   ! list) so that we can have one instance per node in an MPI environment.
@@ -117,32 +119,33 @@ MODULE HCOX_MetEmis_MOD
      ! Look-up tables currently used in CMAQv5.3.1
      ! Described by Baek et al. 2023, now includes effects of temperature
      ! Last three digits in LUT names indicate temperature in Fahrenheit
-     REAL(sp), POINTER     :: NO_LUT000(:,:,:,:)   !Temp=0. F
-     REAL(sp), POINTER     :: NO_LUT005(:,:,:,:)   !Temp=5. F
-     REAL(sp), POINTER     :: NO_LUT010(:,:,:,:)   !Temp=10. F
-     REAL(sp), POINTER     :: NO_LUT015(:,:,:,:)   !Temp=15. F
-     REAL(sp), POINTER     :: NO_LUT020(:,:,:,:)   !Temp=20. F
-     REAL(sp), POINTER     :: NO_LUT025(:,:,:,:)   !Temp=25. F
-     REAL(sp), POINTER     :: NO_LUT030(:,:,:,:)   !Temp=30. F
-     REAL(sp), POINTER     :: NO_LUT035(:,:,:,:)   !Temp=35. F
-     REAL(sp), POINTER     :: NO_LUT040(:,:,:,:)   !Temp=40. F
-     REAL(sp), POINTER     :: NO_LUT045(:,:,:,:)   !Temp=45. F
-     REAL(sp), POINTER     :: NO_LUT050(:,:,:,:)   !Temp=50. F
-     REAL(sp), POINTER     :: NO_LUT055(:,:,:,:)   !Temp=55. F
-     REAL(sp), POINTER     :: NO_LUT060(:,:,:,:)   !Temp=60. F
-     REAL(sp), POINTER     :: NO_LUT065(:,:,:,:)   !Temp=65. F
-     REAL(sp), POINTER     :: NO_LUT070(:,:,:,:)   !Temp=70. F
-     REAL(sp), POINTER     :: NO_LUT075(:,:,:,:)   !Temp=75. F
-     REAL(sp), POINTER     :: NO_LUT080(:,:,:,:)   !Temp=80. F
-     REAL(sp), POINTER     :: NO_LUT085(:,:,:,:)   !Temp=85. F
-     REAL(sp), POINTER     :: NO_LUT090(:,:,:,:)   !Temp=90. F
-     REAL(sp), POINTER     :: NO_LUT095(:,:,:,:)   !Temp=95. F
-     REAL(sp), POINTER     :: NO_LUT100(:,:,:,:)   !Temp=100. F
-     REAL(sp), POINTER     :: NO_LUT105(:,:,:,:)   !Temp=105. F
-     REAL(sp), POINTER     :: NO_LUT110(:,:,:,:)   !Temp=110. F
-     REAL(sp), POINTER     :: NO_LUT115(:,:,:,:)   !Temp=115. F
-     REAL(sp), POINTER     :: NO_LUT120(:,:,:,:)   !Temp=120. F
-     REAL(sp), POINTER     :: NO_LUT125(:,:,:,:)   !Temp=125. F
+      REAL(sp), POINTER     :: NO_LUT(:,:,:,:)
+!     REAL(sp), POINTER     :: NO_LUT000(:,:,:,:)   !Temp=0. F
+!     REAL(sp), POINTER     :: NO_LUT005(:,:,:,:)   !Temp=5. F
+!     REAL(sp), POINTER     :: NO_LUT010(:,:,:,:)   !Temp=10. F
+!     REAL(sp), POINTER     :: NO_LUT015(:,:,:,:)   !Temp=15. F
+!     REAL(sp), POINTER     :: NO_LUT020(:,:,:,:)   !Temp=20. F
+!     REAL(sp), POINTER     :: NO_LUT025(:,:,:,:)   !Temp=25. F
+!     REAL(sp), POINTER     :: NO_LUT030(:,:,:,:)   !Temp=30. F
+!     REAL(sp), POINTER     :: NO_LUT035(:,:,:,:)   !Temp=35. F
+!     REAL(sp), POINTER     :: NO_LUT040(:,:,:,:)   !Temp=40. F
+!     REAL(sp), POINTER     :: NO_LUT045(:,:,:,:)   !Temp=45. F
+!     REAL(sp), POINTER     :: NO_LUT050(:,:,:,:)   !Temp=50. F
+!     REAL(sp), POINTER     :: NO_LUT055(:,:,:,:)   !Temp=55. F
+!     REAL(sp), POINTER     :: NO_LUT060(:,:,:,:)   !Temp=60. F
+!     REAL(sp), POINTER     :: NO_LUT065(:,:,:,:)   !Temp=65. F
+!     REAL(sp), POINTER     :: NO_LUT070(:,:,:,:)   !Temp=70. F
+!     REAL(sp), POINTER     :: NO_LUT075(:,:,:,:)   !Temp=75. F
+!     REAL(sp), POINTER     :: NO_LUT080(:,:,:,:)   !Temp=80. F
+!     REAL(sp), POINTER     :: NO_LUT085(:,:,:,:)   !Temp=85. F
+!     REAL(sp), POINTER     :: NO_LUT090(:,:,:,:)   !Temp=90. F
+!     REAL(sp), POINTER     :: NO_LUT095(:,:,:,:)   !Temp=95. F
+!     REAL(sp), POINTER     :: NO_LUT100(:,:,:,:)   !Temp=100. F
+!     REAL(sp), POINTER     :: NO_LUT105(:,:,:,:)   !Temp=105. F
+!     REAL(sp), POINTER     :: NO_LUT110(:,:,:,:)   !Temp=110. F
+!     REAL(sp), POINTER     :: NO_LUT115(:,:,:,:)   !Temp=115. F
+!     REAL(sp), POINTER     :: NO_LUT120(:,:,:,:)   !Temp=120. F
+!     REAL(sp), POINTER     :: NO_LUT125(:,:,:,:)   !Temp=125. F
 
      ! Location and type of MetEmis look up table data
      CHARACTER(LEN=255)    :: FileName
@@ -980,32 +983,33 @@ CONTAINS
 !      Inst%DNOX_LUT10    => NULL()
 !      Inst%DNOX_LUT14    => NULL()
 !      Inst%DNOX_LUT18    => NULL()
-      Inst%NO_LUT000     => NULL()
-      Inst%NO_LUT005     => NULL()
-      Inst%NO_LUT010     => NULL()
-      Inst%NO_LUT015     => NULL()
-      Inst%NO_LUT020     => NULL()
-      Inst%NO_LUT025     => NULL()
-      Inst%NO_LUT030     => NULL()
-      Inst%NO_LUT035     => NULL()
-      Inst%NO_LUT040     => NULL()
-      Inst%NO_LUT045     => NULL()
-      Inst%NO_LUT050     => NULL()
-      Inst%NO_LUT055     => NULL()
-      Inst%NO_LUT060     => NULL()
-      Inst%NO_LUT065     => NULL()
-      Inst%NO_LUT070     => NULL()
-      Inst%NO_LUT075     => NULL()
-      Inst%NO_LUT080     => NULL()
-      Inst%NO_LUT085     => NULL()
-      Inst%NO_LUT090     => NULL()
-      Inst%NO_LUT095     => NULL()
-      Inst%NO_LUT100     => NULL()
-      Inst%NO_LUT105     => NULL()
-      Inst%NO_LUT110     => NULL()
-      Inst%NO_LUT115     => NULL()
-      Inst%NO_LUT120     => NULL()
-      Inst%NO_LUT125     => NULL()
+       Inst%NO_LUT        => NULL()
+!      Inst%NO_LUT000     => NULL()
+!      Inst%NO_LUT005     => NULL()
+!      Inst%NO_LUT010     => NULL()
+!      Inst%NO_LUT015     => NULL()
+!      Inst%NO_LUT020     => NULL()
+!      Inst%NO_LUT025     => NULL()
+!      Inst%NO_LUT030     => NULL()
+!      Inst%NO_LUT035     => NULL()
+!      Inst%NO_LUT040     => NULL()
+!      Inst%NO_LUT045     => NULL()
+!      Inst%NO_LUT050     => NULL()
+!      Inst%NO_LUT055     => NULL()
+!      Inst%NO_LUT060     => NULL()
+!      Inst%NO_LUT065     => NULL()
+!      Inst%NO_LUT070     => NULL()
+!      Inst%NO_LUT075     => NULL()
+!      Inst%NO_LUT080     => NULL()
+!      Inst%NO_LUT085     => NULL()
+!      Inst%NO_LUT090     => NULL()
+!      Inst%NO_LUT095     => NULL()
+!      Inst%NO_LUT100     => NULL()
+!      Inst%NO_LUT105     => NULL()
+!      Inst%NO_LUT110     => NULL()
+!      Inst%NO_LUT115     => NULL()
+!      Inst%NO_LUT120     => NULL()
+!      Inst%NO_LUT125     => NULL()
 
       !------------------------------------------------------------------------
       ! Get species IDs
@@ -1129,187 +1133,195 @@ CONTAINS
       ! Allocate module arrays
       !--------------------------------
 
-      ALLOCATE( Inst%NO_LUT000(1,1,HcoState%NY,HcoState%NX), STAT=RC ) 
+      ALLOCATE( Inst%NO_LUT(1,nT,nLat,nLon), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT000', RC )
+         CALL HCO_ERROR ( 'NO_LUT', RC )
          RETURN
       ENDIF
-      Inst%NO_LUT000 = 0.0_sp
-      
-      ALLOCATE( Inst%NO_LUT005(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT005', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT005 = 0.0_sp
+      Inst%NO_LUT = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT010(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT010', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT010 = 0.0_sp
 
-      ALLOCATE( Inst%NO_LUT015(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT015', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT015 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT020(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT020', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT020 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT025(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT025', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT025 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT030(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT030', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT030 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT035(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT035', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT035 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT040(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT040', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT040 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT045(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT045', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT045 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT050(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT050', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT050 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT055(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT055', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT055 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT060(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT060', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT060 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT065(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT065', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT065 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT070(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT070', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT070 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT075(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT075', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT075 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT080(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT080', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT080 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT085(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT085', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT085 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT090(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT090', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT090 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT095(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT095', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT095 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT100(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT100', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT100 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT105(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT105', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT105 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT110(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT110', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT110 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT115(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT115', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT115 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT120(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT120', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT120 = 0.0_sp
-
-      ALLOCATE( Inst%NO_LUT125(1,1,HcoState%NY,HcoState%NX), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT125', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT125 = 0.0_sp
+!      ALLOCATE( Inst%NO_LUT000(1,1,nLat,nLon), STAT=RC ) 
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT000', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT000 = 0.0_sp
+!      
+!      ALLOCATE( Inst%NO_LUT005(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT005', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT005 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT010(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT010', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT010 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT015(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT015', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT015 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT020(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT020', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT020 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT025(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT025', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT025 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT030(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT030', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT030 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT035(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT035', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT035 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT040(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT040', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT040 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT045(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT045', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT045 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT050(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT050', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT050 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT055(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT055', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT055 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT060(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT060', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT060 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT065(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT065', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT065 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT070(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT070', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT070 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT075(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT075', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT075 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT080(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT080', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT080 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT085(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT085', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT085 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT090(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT090', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT090 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT095(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT095', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT095 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT100(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT100', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT100 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT105(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT105', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT105 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT110(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT110', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT110 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT115(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT115', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT115 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT120(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT120', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT120 = 0.0_sp
+!
+!      ALLOCATE( Inst%NO_LUT125(1,1,nLat,nLon), STAT=RC )
+!      IF ( RC /= HCO_SUCCESS ) THEN
+!         CALL HCO_ERROR ( 'NO_LUT125', RC )
+!         RETURN
+!      ENDIF
+!      Inst%NO_LUT125 = 0.0_sp
 
       ! FNOX
 !      ALLOCATE( Inst%FRACNOX_LUT02(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
@@ -1789,141 +1801,181 @@ CONTAINS
 !   Inst%WSlev = (/ 2.0e0, 6.0e0, 10.0e0, 14.0e0, 18.0e0 /)
 
    ! Temperature levels correspond to the files we will read below
-   Inst%Tlev = (/ 0.0e0, 5.0e0, 10.0e0, 15.0e0, 20.0e0, 25.0e0, 30.0e0, & 
+!   Inst%Tlev = (/ 0.0e0, 5.0e0, 10.0e0, 15.0e0, 20.0e0, 25.0e0, 30.0e0, & 
+!                  35.0e0, 40.0e0,  45.0e0,  50.0e0,  55.0e0,  60.0e0,  &
+!                  65.0e0, 70.0e0,  75.0e0,  80.0e0,  85.0e0,  90.0e0,  &
+!                  95.0e0, 100.0e0, 105.0e0, 110.0e0, 115.0e0, 120.0e0, & 
+!                  125.0e0 /)
+
+   Inst%Tlev = (/ 0.0e0, 5.0e0, 10.0e0, 15.0e0, 20.0e0, 25.0e0, 30.0e0, &
                   35.0e0, 40.0e0,  45.0e0,  50.0e0,  55.0e0,  60.0e0,  &
                   65.0e0, 70.0e0,  75.0e0,  80.0e0,  85.0e0,  90.0e0,  &
-                  95.0e0, 100.0e0, 105.0e0, 110.0e0, 115.0e0, 120.0e0, & 
-                  125.0e0 /)
+                  95.0e0, 100.0e0, 105.0e0, 110.0e0, 115.0e0, 120.0e0 /)
+  
 
-   ! Read 0 Degrees F LUT
+!  print*, "READ LUT_NCFILE, Inst%NO_LUT000"
+   ! Read NO in Degrees F LUT
 !   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 1,                       &
-        Inst%NO_LUT000, RC=RC)
+   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ),                          &
+        Inst%NO_LUT, RC=RC)
 
-  ! Read 5 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 2,                       &
-        Inst%NO_LUT005, RC=RC)
 
-  ! Read 10 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 3,                       &
-        Inst%NO_LUT010, RC=RC)
+!   ! Read 0 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 1,                       &
+!        Inst%NO_LUT000, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT005"
+!
+!  ! Read 5 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 2,                       &
+!        Inst%NO_LUT005, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT010"
+!  ! Read 10 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 3,                       &
+!        Inst%NO_LUT010, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT015"
+!  ! Read 15 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 4,                       &
+!        Inst%NO_LUT015, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT020"
+!  ! Read 20 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 5,                       &
+!        Inst%NO_LUT020, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT025"
+!
+!  ! Read 25 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 6,                       &
+!        Inst%NO_LUT025, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT030"
+!  ! Read 30 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 7,                       &
+!        Inst%NO_LUT030, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT035"
+!  ! Read 35 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 8,                       &
+!        Inst%NO_LUT035, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT040"
+!  ! Read 40 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 9,                       &
+!        Inst%NO_LUT040, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT045"
+!  ! Read 45 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 10,                       &
+!        Inst%NO_LUT045, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT050"
+!  ! Read 50 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 11,                       &
+!        Inst%NO_LUT050, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT055"
+!  ! Read 55 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 12,                       &
+!        Inst%NO_LUT055, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT060"
+!  ! Read 60 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 13,                       &
+!        Inst%NO_LUT060, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT065"
+!  ! Read 65 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 14,                       &
+!        Inst%NO_LUT065, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT070"
+!  ! Read 70 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 15,                       &
+!        Inst%NO_LUT070, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT075"
+!  ! Read 75 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 16,                       &
+!        Inst%NO_LUT075, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT080"
+!  ! Read 80 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 17,                       &
+!        Inst%NO_LUT080, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT085"
+!  ! Read 85 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 18,                       &
+!        Inst%NO_LUT085, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT090"
+!  ! Read 90 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 19,                       &
+!        Inst%NO_LUT090, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT095"
+!  ! Read 95 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 20,                       &
+!        Inst%NO_LUT095, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT100"
+!  ! Read 100 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 21,                       &
+!        Inst%NO_LUT100, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT105"
+!  ! Read 105 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 22,                       &
+!        Inst%NO_LUT105, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT110"
+!  ! Read 110 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 23,                       &
+!        Inst%NO_LUT110, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT115"
+!  ! Read 115 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 24,                       &
+!        Inst%NO_LUT115, RC=RC)
+!
+! print*, "READ LUT_NCFILE, Inst%NO_LUT120"
+!  ! Read 120 Degrees F LUT
+!!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 25,                       &
+!        Inst%NO_LUT120, RC=RC)
 
-  ! Read 15 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 4,                       &
-        Inst%NO_LUT015, RC=RC)
-
-  ! Read 20 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 5,                       &
-        Inst%NO_LUT020, RC=RC)
-
-  ! Read 25 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 6,                       &
-        Inst%NO_LUT025, RC=RC)
-
-  ! Read 30 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 7,                       &
-        Inst%NO_LUT030, RC=RC)
-
-  ! Read 35 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 8,                       &
-        Inst%NO_LUT035, RC=RC)
-
-  ! Read 40 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 9,                       &
-        Inst%NO_LUT040, RC=RC)
-
-  ! Read 45 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 10,                       &
-        Inst%NO_LUT045, RC=RC)
-
-  ! Read 50 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 11,                       &
-        Inst%NO_LUT050, RC=RC)
-
-  ! Read 55 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 12,                       &
-        Inst%NO_LUT055, RC=RC)
-
-  ! Read 60 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 13,                       &
-        Inst%NO_LUT060, RC=RC)
-
-  ! Read 65 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 14,                       &
-        Inst%NO_LUT065, RC=RC)
-
-  ! Read 70 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 15,                       &
-        Inst%NO_LUT070, RC=RC)
-
-  ! Read 75 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 16,                       &
-        Inst%NO_LUT075, RC=RC)
-
-  ! Read 80 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 17,                       &
-        Inst%NO_LUT080, RC=RC)
-
-  ! Read 85 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 18,                       &
-        Inst%NO_LUT085, RC=RC)
-
-  ! Read 90 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 19,                       &
-        Inst%NO_LUT090, RC=RC)
-
-  ! Read 95 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 20,                       &
-        Inst%NO_LUT095, RC=RC)
-
-  ! Read 100 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 21,                       &
-        Inst%NO_LUT100, RC=RC)
-
-  ! Read 105 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 22,                       &
-        Inst%NO_LUT105, RC=RC)
-
-  ! Read 110 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 23,                       &
-        Inst%NO_LUT110, RC=RC)
-
-  ! Read 115 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 24,                       &
-        Inst%NO_LUT115, RC=RC)
-
-  ! Read 120 Degrees F LUT
-!   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 25,                       &
-        Inst%NO_LUT120, RC=RC)
-
+! print*, "READ LUT_NCFILE, Inst%NO_LUT125"
   ! Read 125 Degrees F LUT
 !   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir)
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 26,                       &
-        Inst%NO_LUT125, RC=RC)
+!   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ), 26,                       &
+!        Inst%NO_LUT125, RC=RC)
 
 !   ! Read 6 m/s LUT
 !   WRITE( FILENAME, 101 ) TRIM(Inst%LutDir), 6
@@ -2000,11 +2052,18 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
- SUBROUTINE READ_LUT_NCFILE( HcoState, FILENAME, LUT_IND, NO,                 &
+! SUBROUTINE READ_LUT_NCFILE( HcoState, FILENAME, LUT_IND, NO,                 &
+!!                             DNOx,      OPE,      MOE,      T,               &
+!!                             JNO2,      O3,       SEA0,     SEA5,            &
+!!                             JRATIO,    NOX,      RC                        )
+!                              RC                        )
+
+ SUBROUTINE READ_LUT_NCFILE( HcoState, FILENAME,   NO,                 &
 !                             DNOx,      OPE,      MOE,      T,               &
 !                             JNO2,      O3,       SEA0,     SEA5,            &
 !                             JRATIO,    NOX,      RC                        )
                               RC                        )
+                              
 ! !USES:
 !
    ! Modules for netCDF read
@@ -2020,7 +2079,7 @@ CONTAINS
 !
    TYPE(HCO_State), POINTER     :: HcoState    ! HEMCO State object
    CHARACTER(LEN=*),INTENT(IN)  :: FILENAME
-   INTEGER, INTENT(IN)          :: LUT_IND     ! MetEmis LUT Index
+!   INTEGER, INTENT(IN)          :: LUT_IND     ! MetEmis LUT Index
 !
 ! !OUTPUT PARAMETERS:
 !
@@ -2050,6 +2109,7 @@ CONTAINS
 !   INTEGER             :: st1d(1), ct1d(1)
    INTEGER             :: st4d(4), ct4d(4)
 !   INTEGER             :: st7d(7), ct7d(7)
+!   INTEGER             :: nLat, nLon
 
    CHARACTER(LEN=255)  :: MSG,     FileMsg
 
@@ -2150,20 +2210,28 @@ CONTAINS
 !      CALL NcRd( NOX, fId, 'NOx', st1d, ct1d )
 !   ENDIF
 
+
+!   CALL Ncget_Dimlen(fId, 'lat', nLat)
+!   CALL Ncget_Dimlen(fId, 'lon', nLon)
+
    ! Define 7D variables used below
 !   st7d = (/ 1, 1, 1,  1,   1,   1, 1    /)
 !   ct7d = (/ nT,nJ,nO3,nSEA,nSEA,nJ,nNOx /)
    ! Define 4D variables used below
-   st4d = (/ 1, LUT_IND, 1,  1/)
-   ct4d = (/ 1, LUT_IND, HcoState%NY,  HcoState%NX/)
+!   print*, "LUT_IND=", LUT_IND, 'nLat=', nLat, 'nLon', nLon
+!   st4d = (/ 1, LUT_IND, 1,  1/)
+!   ct4d = (/ 1, LUT_IND, nLat, nLon/)
+   !Fortran NC read file always backwards
+   st4d = (/ 1,    1,    1, 1 /)
+   ct4d = (/ nLon, nLat, nT, 1 /)
+!   ct4d = (/ 1, nT, nLat, nLon/)
    !-----------------------------------------------------------------
    ! Read look up table for temperature dependent NO from MetEmis
    ! emissions [kg m-2 s-1]
    !-----------------------------------------------------------------
-
 !   CALL NcRd( FNOx, fId, 'FNOx', st7d, ct7d )
    CALL NcRd( NO, fId, 'NO', st4d, ct4d )
-
+   print*, "NO=", NO
   ! testing only
 !   PRINT*, "binary_fracnox: ", Fnox(1:4,1,1,2,3,4,4)
 
@@ -2199,6 +2267,7 @@ CONTAINS
 
    ! Close netCDF file
    CALL NcCl( fId )
+   print*,"closing NcCl file"
 
  END SUBROUTINE READ_LUT_NCFILE
 !EOC
@@ -2881,7 +2950,7 @@ CONTAINS
 !   REAL(sp), POINTER          :: OPE_LUT    (:,:,:,:,:,:,:)
 !   REAL(sp), POINTER          :: MOE_LUT    (:,:,:,:,:,:,:)
 
-   REAL(sp), POINTER          :: TEMPNO_LUT(:,:,:,:)
+!   REAL(sp), POINTER          :: TEMPNO_LUT(:,:,:,:)
 
    CHARACTER(LEN=255)         :: MSG
    CHARACTER(LEN=255)         :: LOC = 'METEMIS_LUT'
@@ -2898,7 +2967,7 @@ CONTAINS
 !   FNOX        = 0.0_sp
 !   DNOX        = 0.0_sp
 !   OPE         = 0.0_sp
-    TEMPNO_LUT  => NULL()
+!    TEMPNO_LUT  => NULL()
 !   IF ( PRESENT( MOE_OUT ) ) THEN
 !      MOE_OUT  = 0.0_sp
 !   ENDIF
@@ -3140,108 +3209,129 @@ CONTAINS
       ! Last three digits in fortran variable names indicate temperature in F
       SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
          CASE (  0 )
-            TEMPNO_LUT  => Inst%NO_LUT000
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            !TEMPNO_LUT  => Inst%NO_LUT000
+!            !TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
          CASE (  5 )
-            TEMPNO_LUT  => Inst%NO_LUT005
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            !TEMPNO_LUT  => Inst%NO_LUT005
+!            !TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,2,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 10 )
-            TEMPNO_LUT  => Inst%NO_LUT010
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            !TEMPNO_LUT  => Inst%NO_LUT010
+!            !TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,3,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 15 )
-            TEMPNO_LUT  => Inst%NO_LUT015
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            !TEMPNO_LUT  => Inst%NO_LUT015
+!            !TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,4,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 20 )
-            TEMPNO_LUT  => Inst%NO_LUT020
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT020
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,5,J,I)           
             WEIGHT      = WTS(1,I1)
          CASE ( 25 )
-            TEMPNO_LUT  => Inst%NO_LUT025
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT025
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,6,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 30 )
-            TEMPNO_LUT  => Inst%NO_LUT030
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT030
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,7,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 35 )
-            TEMPNO_LUT  => Inst%NO_LUT035
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT035
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,8,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 40 )
-            TEMPNO_LUT  => Inst%NO_LUT040
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT040
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,9,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 45 )
-            TEMPNO_LUT  => Inst%NO_LUT045
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT045
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,10,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 50 )
-            TEMPNO_LUT  => Inst%NO_LUT050
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT050
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,11,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 55 )
-            TEMPNO_LUT  => Inst%NO_LUT055
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT055
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,12,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 60 )
-            TEMPNO_LUT  => Inst%NO_LUT060
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT060
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,13,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 65 )
-            TEMPNO_LUT  => Inst%NO_LUT065
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT065
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,14,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 70 )
-            TEMPNO_LUT  => Inst%NO_LUT070
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT070
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,15,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 75 )
-            TEMPNO_LUT  => Inst%NO_LUT075
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT075
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,16,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 80 )
-            TEMPNO_LUT  => Inst%NO_LUT080
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT080
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,17,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 85 )
-            TEMPNO_LUT  => Inst%NO_LUT085
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT085
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,18,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 90 )
-            TEMPNO_LUT  => Inst%NO_LUT090
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT090
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,19,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 95 )
-            TEMPNO_LUT  => Inst%NO_LUT095
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT095
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,20,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 100 )
-            TEMPNO_LUT  => Inst%NO_LUT100
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT100
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,21,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 105 )
-            TEMPNO_LUT  => Inst%NO_LUT105
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT105
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,22,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 110 )
-            TEMPNO_LUT  => Inst%NO_LUT110
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT110
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,23,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 115 )
-            TEMPNO_LUT  => Inst%NO_LUT115
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT115
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,24,J,I)
             WEIGHT      = WTS(1,I1)
          CASE ( 120 )
-            TEMPNO_LUT  => Inst%NO_LUT120
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
-            WEIGHT      = WTS(1,I1)
-         CASE ( 125 )
-            TEMPNO_LUT  => Inst%NO_LUT125
-            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+!            TEMPNO_LUT  => Inst%NO_LUT120
+!            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  Inst%NO_LUT(1,25,J,I)
             WEIGHT      = WTS(1,I1)
          CASE DEFAULT
              MSG = 'LUT error: Temperature interpolation error!'
@@ -3366,7 +3456,7 @@ CONTAINS
 !      DNOx_LUT    => NULL()
 !      OPE_LUT     => NULL()
 !      MOE_LUT     => NULL()
-       TEMPNO_LUT => NULL()
+!       TEMPNO_LUT => NULL()
    END DO
 
    ! Transfer MOE if optional output parameter is present
@@ -3377,7 +3467,7 @@ CONTAINS
 !   NULLIFY( DNOx_LUT )
 !   NULLIFY( OPE_LUT  )
 !   NULLIFY( MOE_LUT  )
-   NULLIFY( TEMPNO_LUT )
+!   NULLIFY( TEMPNO_LUT )
 
    ! Return w/ success
    RC = HCO_SUCCESS
@@ -3564,135 +3654,140 @@ CONTAINS
        ! Edited for MetEmis
        !---------------------------------------------------------------------
 
-       IF ( ASSOCIATED( Inst%NO_LUT000 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT000 )
+        IF ( ASSOCIATED( Inst%NO_LUT ) ) THEN
+          DEALLOCATE ( Inst%NO_LUT )
        ENDIF
-       Inst%NO_LUT000 => NULL()
+       Inst%NO_LUT => NULL()
 
-       IF ( ASSOCIATED( Inst%NO_LUT005 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT005 )
-       ENDIF
-       Inst%NO_LUT005 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT010 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT010 )
-       ENDIF
-       Inst%NO_LUT010 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT015 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT015 )
-       ENDIF
-       Inst%NO_LUT015 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT020 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT020 )
-       ENDIF
-       Inst%NO_LUT020 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT025 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT025 )
-       ENDIF
-       Inst%NO_LUT025 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT030 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT030 )
-       ENDIF
-       Inst%NO_LUT030 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT035 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT035 )
-       ENDIF
-       Inst%NO_LUT035 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT040 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT040 )
-       ENDIF
-       Inst%NO_LUT040 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT045 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT045 )
-       ENDIF
-       Inst%NO_LUT045 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT050 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT050 )
-       ENDIF
-       Inst%NO_LUT050 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT055 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT055 )
-       ENDIF
-       Inst%NO_LUT055 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT060 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT060 )
-       ENDIF
-       Inst%NO_LUT060 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT065 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT065 )
-       ENDIF
-       Inst%NO_LUT065 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT070 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT070 )
-       ENDIF
-       Inst%NO_LUT070 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT075 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT075 )
-       ENDIF
-       Inst%NO_LUT075 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT080 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT080 )
-       ENDIF
-       Inst%NO_LUT080 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT085 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT085 )
-       ENDIF
-       Inst%NO_LUT085 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT090 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT090 )
-       ENDIF
-       Inst%NO_LUT090 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT095 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT095 )
-       ENDIF
-       Inst%NO_LUT095 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT100 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT100 )
-       ENDIF
-       Inst%NO_LUT100 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT105 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT105 )
-       ENDIF
-       Inst%NO_LUT105 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT110 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT110 )
-       ENDIF
-       Inst%NO_LUT110 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT115 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT115 )
-       ENDIF
-       Inst%NO_LUT115 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT120 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT120 )
-       ENDIF
-       Inst%NO_LUT120 => NULL()
-
-       IF ( ASSOCIATED( Inst%NO_LUT125 ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT125 )
-       ENDIF
-       Inst%NO_LUT125 => NULL()
+!       IF ( ASSOCIATED( Inst%NO_LUT000 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT000 )
+!       ENDIF
+!       Inst%NO_LUT000 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT005 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT005 )
+!       ENDIF
+!       Inst%NO_LUT005 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT010 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT010 )
+!       ENDIF
+!       Inst%NO_LUT010 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT015 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT015 )
+!       ENDIF
+!       Inst%NO_LUT015 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT020 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT020 )
+!       ENDIF
+!       Inst%NO_LUT020 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT025 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT025 )
+!       ENDIF
+!       Inst%NO_LUT025 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT030 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT030 )
+!       ENDIF
+!       Inst%NO_LUT030 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT035 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT035 )
+!       ENDIF
+!       Inst%NO_LUT035 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT040 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT040 )
+!       ENDIF
+!       Inst%NO_LUT040 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT045 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT045 )
+!       ENDIF
+!       Inst%NO_LUT045 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT050 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT050 )
+!       ENDIF
+!       Inst%NO_LUT050 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT055 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT055 )
+!       ENDIF
+!       Inst%NO_LUT055 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT060 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT060 )
+!       ENDIF
+!       Inst%NO_LUT060 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT065 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT065 )
+!       ENDIF
+!       Inst%NO_LUT065 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT070 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT070 )
+!       ENDIF
+!       Inst%NO_LUT070 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT075 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT075 )
+!       ENDIF
+!       Inst%NO_LUT075 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT080 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT080 )
+!       ENDIF
+!       Inst%NO_LUT080 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT085 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT085 )
+!       ENDIF
+!       Inst%NO_LUT085 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT090 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT090 )
+!       ENDIF
+!       Inst%NO_LUT090 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT095 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT095 )
+!       ENDIF
+!       Inst%NO_LUT095 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT100 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT100 )
+!       ENDIF
+!       Inst%NO_LUT100 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT105 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT105 )
+!       ENDIF
+!       Inst%NO_LUT105 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT110 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT110 )
+!       ENDIF
+!       Inst%NO_LUT110 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT115 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT115 )
+!       ENDIF
+!       Inst%NO_LUT115 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT120 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT120 )
+!       ENDIF
+!       Inst%NO_LUT120 => NULL()
+!
+!       IF ( ASSOCIATED( Inst%NO_LUT125 ) ) THEN
+!          DEALLOCATE ( Inst%NO_LUT125 )
+!       ENDIF
+!       Inst%NO_LUT125 => NULL()
 
        IF ( ASSOCIATED( Inst%MetEmisNO ) ) THEN
           DEALLOCATE ( Inst%MetEmisNO )
