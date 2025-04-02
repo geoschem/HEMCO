@@ -322,7 +322,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER                  :: I, J, L
+INTEGER                  :: I, J, L, YYYY, MM , DD
     LOGICAL                  :: ERR
     LOGICAL                  :: FILLED
     LOGICAL                  :: FIRST
@@ -500,7 +500,7 @@ CONTAINS
        !---------------------------------------------------------------------
        ! Skip if no MetEmis NO emissions in this grid box
        !---------------------------------------------------------------------
-       IF ( .not. ( MetEmisNO(I,J,1) > 0.0_hp ) ) CYCLE
+!       IF ( .not. ( MetEmisNO(I,J,1) > 0.0_hp ) ) CYCLE
 
        !---------------------------------------------------------------------
        ! MetEmis lookup table for NO emiss based on temperature 
@@ -554,6 +554,7 @@ CONTAINS
 !           ! Unit: kg/m2/s
 !           FLUXNO(I,J) = ShipNoEmis(I,J,1) * SHIP_FNOx * FNO_NOx
            FLUXNO(I,J) = TEMP_NO
+           print*, 'FLUXNO(I,J) from TEMPNO = ', FLUXNO(I,J)
        ENDIF
 !
 !       !---------------------------------------------------------------------
@@ -702,6 +703,7 @@ CONTAINS
 !          DIAGN(I,J,4) = ShipNoEmis(I,J,1)
 !          DIAGN(I,J,5) = FLUXNO(I,J)
            DIAGN(I,J,1) =  FLUXNO(I,J)
+           print*, ' DIAGN(I,J,1) write from FLUXNO(I,J) = ',  DIAGN(I,J,1)
        ENDIF
 
        !---------------------------------------------------------------------
@@ -713,6 +715,11 @@ CONTAINS
     ENDDO !I
     ENDDO !J
     !!!$OMP END PARALLEL DO
+
+    print*, '-----after I, J loop checks---------'
+    print*, 'max FLUXNO = ', maxval(FLUXNO), 'min FLUXNO = ', minval(FLUXNO)
+    print*, 'max DIAGN = ', maxval(DIAGN), 'min DIAGN = ', minval(DIAGN)
+    print*, '-----------------------------------'
 
     ! Error check
     IF ( ERR ) THEN
@@ -793,6 +800,9 @@ CONTAINS
            RETURN
        ENDIF
 
+       print*, '--------After Diagnostic Add------------'
+       print*, 'max Arr2D = ', maxval(Arr2D), 'min Arr2D = ', minval(Arr2D)
+
 !       DiagnName =  'PARANOX_NOXFRAC_REMAINING'
 !       Arr2D     => DIAGN(:,:,1)
 !       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
@@ -868,8 +878,8 @@ CONTAINS
  SUBROUTINE HCOX_MetEmis_Init( HcoState, ExtName, ExtState, RC )
 !
 ! !USES:
-!
-!   USE HCO_Chartools_Mod, ONLY : HCO_CharParse
+!   USE HCO_CLOCK_MOD,      ONLY : HcoClock_Get
+   USE HCO_Chartools_Mod, ONLY : HCO_CharParse
    USE HCO_State_MOD,     ONLY : HCO_GetHcoID
    USE HCO_State_MOD,     ONLY : HCO_GetExtHcoID
    USE HCO_ExtList_Mod,   ONLY : GetExtNr
@@ -897,6 +907,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
    INTEGER                        :: ExtNr, I, NN, tmpID, nSpc
+   INTEGER                        :: YYYY, MM, DD
    INTEGER,           ALLOCATABLE :: HcoIDs(:)
    CHARACTER(LEN=31), ALLOCATABLE :: SpcNames(:)
    CHARACTER(LEN=31)              :: Dummy
@@ -1518,6 +1529,30 @@ CONTAINS
        RETURN
     ENDIF
 
+! Get current year, month, day
+!    CALL HcoClock_Get ( HcoState%Clock, cYYYY=YYYY, cMM=MM, cDD=DD, RC=RC )
+!    IF ( RC /= HCO_SUCCESS ) RETURN
+
+!    print*, 'YYYY=', YYYY, 'MM=', MM, 'DD'
+    !
+!
+    CALL HCO_CharParse( HcoState%Config, Inst%FileName, -999, -1, -1, -1, -1, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+!
+!    
+!
+!! Get current year, month, day
+!!    CALL HcoClock_Get ( HcoState%Clock, cYYYY=YYYY, cMM=MM, cDD=DD, RC=RC )
+!!    IF ( RC /= HCO_SUCCESS ) RETURN
+!!
+!    print*, 'YYYY=', YYYY, 'MM=', MM, 'DD'
+
+
+
+
 
    ! Call HEMCO parser to replace tokens such as $ROOT, $MET, or $RES.
    ! There shouldn't be any date token in there ($YYYY, etc.), so just
@@ -1726,7 +1761,7 @@ CONTAINS
  SUBROUTINE READ_METEMIS_LUT_NC ( HcoState, Inst, RC )
 !
 ! !USES:
-  USE HCO_CLOCK_MOD,      ONLY : HcoClock_Get!
+!  USE HCO_CLOCK_MOD,      ONLY : HcoClock_Get!
   USE HCO_Chartools_Mod,  ONLY : HCO_CharParse
 ! !INPUT ARGUMENTS:
 !
@@ -1747,7 +1782,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
    INTEGER             :: IOS
-   INTEGER             :: YYYY, MM, DD, HH
+   INTEGER             :: YYYY, MM, DD
    CHARACTER(LEN=255)  :: FILENAME
    CHARACTER(LEN=255)  :: MSG
    INTEGER             :: fID
@@ -1765,11 +1800,20 @@ CONTAINS
 !           THISLOC = 'READ_PARANOX_LUT_NC (hcox_paranox_mod.F90)' )
 !   RETURN
 !#else
+!     CALL HcoClock_Get( HcoState%Clock, cDOY = DOY, RC=RC )
+!     print*, 'Test DOY=', DOY
+
+
 
  ! Get current year, month, day
-    CALL HcoClock_Get ( HcoState%Clock, cYYYY=YYYY, cMM=MM, cDD=DD, RC=RC )
-    IF ( RC /= HCO_SUCCESS ) RETURN
-!#if defined( MODEL_GEOS )
+!    CALL HcoClock_Get ( HcoState%Clock, cYYYY=YYYY, cMM=MM, cDD=DD, RC=RC )
+!    IF ( RC /= HCO_SUCCESS ) RETURN
+
+!    print*, 'YYYY=', YYYY, 'MM=', MM, 'DD'
+
+    
+    
+    !#if defined( MODEL_GEOS )
     ! Error trap: skip leap days
 !    IF ( MM == 2 .AND. DD > 28 ) DD = 28
 !#endif
@@ -1782,15 +1826,14 @@ CONTAINS
 
        ! Get file name
        FILENAME = Inst%FileName
-       CALL HCO_CharParse( HcoState%Config, FILENAME, YYYY, MM, DD, HH, 0, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
-           RETURN
-       ENDIF
+!       CALL HCO_CharParse( HcoState%Config, FILENAME, YYYY, MM, DD, 0, 0, RC )
+!       IF ( RC /= HCO_SUCCESS ) THEN
+!           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
+!           RETURN
+! 
+!       ENDIF
 
-
-
-   ! Clear FILENAME
+! Clear FILENAME
 !   FILENAME = ''
 
    ! FILENAME format string
@@ -2231,7 +2274,9 @@ CONTAINS
    !-----------------------------------------------------------------
 !   CALL NcRd( FNOx, fId, 'FNOx', st7d, ct7d )
    CALL NcRd( NO, fId, 'NO', st4d, ct4d )
-   print*, "NO=", NO
+   print*, size(NO,1), size(NO,2), size(NO,3), size(NO,4)
+!   print*, "max NO=", maxval(NO)
+!   print*, "min NO=", minval(NO)
   ! testing only
 !   PRINT*, "binary_fracnox: ", Fnox(1:4,1,1,2,3,4,4)
 
@@ -2267,7 +2312,7 @@ CONTAINS
 
    ! Close netCDF file
    CALL NcCl( fId )
-   print*,"closing NcCl file"
+!   print*,"closing NcCl file"
 
  END SUBROUTINE READ_LUT_NCFILE
 !EOC
@@ -2977,7 +3022,6 @@ CONTAINS
 
    ! Air temperature, K
    TAIR = ExtState%T2M%Arr%Val(I,J)
-
    ! Specific humidity at midpoint of surface layer [kg H2O/kg air]
 !   QH2O       = ExtState%SPHU%Arr%Val(I,J,1)
 
@@ -3037,7 +3081,7 @@ CONTAINS
 
    ! Air Temperature, K --> Fahrenheit
    VARS(1) = (TAIR - 273.15)*1.8 + 32.0
-   
+   print*,'I = ', I, 'J = ', J, 'TAIR (F) = ', VARS(1)   
    ! Air QH2O, kg/kg
  !  VARS(2) = QH2O
 
@@ -3204,7 +3248,7 @@ CONTAINS
 
   ! Loop over temperature bins
    DO I1=1,2
-
+      print*, 'Interpolation I1 = ', I1
       ! Point at the LUT for this temperature
       ! Last three digits in fortran variable names indicate temperature in F
       SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
@@ -3213,126 +3257,201 @@ CONTAINS
 !            !TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,1,J,I)
             WEIGHT      = WTS(1,I1)
+         print*, 'TEMPNO_TMP =', TEMPNO_TMP
+         print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE (  5 )
 !            !TEMPNO_LUT  => Inst%NO_LUT005
 !            !TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,2,J,I)
             WEIGHT      = WTS(1,I1)
+            print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 10 )
 !            !TEMPNO_LUT  => Inst%NO_LUT010
 !            !TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,3,J,I)
             WEIGHT      = WTS(1,I1)
+            print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 15 )
 !            !TEMPNO_LUT  => Inst%NO_LUT015
 !            !TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,4,J,I)
             WEIGHT      = WTS(1,I1)
+            print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 20 )
 !            TEMPNO_LUT  => Inst%NO_LUT020
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,5,J,I)           
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 25 )
 !            TEMPNO_LUT  => Inst%NO_LUT025
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,6,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 30 )
 !            TEMPNO_LUT  => Inst%NO_LUT030
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,7,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 35 )
 !            TEMPNO_LUT  => Inst%NO_LUT035
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,8,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 40 )
 !            TEMPNO_LUT  => Inst%NO_LUT040
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,9,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 45 )
 !            TEMPNO_LUT  => Inst%NO_LUT045
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,10,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 50 )
 !            TEMPNO_LUT  => Inst%NO_LUT050
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,11,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 55 )
 !            TEMPNO_LUT  => Inst%NO_LUT055
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,12,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 60 )
 !            TEMPNO_LUT  => Inst%NO_LUT060
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,13,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 65 )
 !            TEMPNO_LUT  => Inst%NO_LUT065
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,14,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 70 )
 !            TEMPNO_LUT  => Inst%NO_LUT070
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,15,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 75 )
 !            TEMPNO_LUT  => Inst%NO_LUT075
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,16,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 80 )
 !            TEMPNO_LUT  => Inst%NO_LUT080
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,17,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 85 )
 !            TEMPNO_LUT  => Inst%NO_LUT085
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,18,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 90 )
 !            TEMPNO_LUT  => Inst%NO_LUT090
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,19,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 95 )
 !            TEMPNO_LUT  => Inst%NO_LUT095
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,20,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 100 )
 !            TEMPNO_LUT  => Inst%NO_LUT100
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,21,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 105 )
 !            TEMPNO_LUT  => Inst%NO_LUT105
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,22,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 110 )
 !            TEMPNO_LUT  => Inst%NO_LUT110
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,23,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 115 )
 !            TEMPNO_LUT  => Inst%NO_LUT115
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,24,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE ( 120 )
 !            TEMPNO_LUT  => Inst%NO_LUT120
 !            TEMPNO_TMP  = TEMPNO_LUT(1,1,J,I)
             TEMPNO_TMP  =  Inst%NO_LUT(1,25,J,I)
             WEIGHT      = WTS(1,I1)
+             print*, 'TEMPNO_TMP =', TEMPNO_TMP
+            print*, 'CASE=', NINT( Inst%Tlev(INDX(1,I1)) )
+         print*,'WEIGHT=',WEIGHT
          CASE DEFAULT
              MSG = 'LUT error: Temperature interpolation error!'
              CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
@@ -3443,6 +3562,7 @@ CONTAINS
 
          ! Weighted sum of TempNO from the LUT
          TEMPNO = TEMPNO + TEMPNO_TMP * WEIGHT
+         print*, 'TEMPNO after interpolation weighted sum = ', TEMPNO
 !      END DO
 !      END DO
 !      END DO
