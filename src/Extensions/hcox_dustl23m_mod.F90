@@ -274,7 +274,7 @@ CONTAINS
     FLUX(:,:,5) = TFLUX * 3.430e-2_hp
     FLUX(:,:,6) = TFLUX * 1.248e-1_hp
     FLUX(:,:,7) = TFLUX * 2.573e-1_hp
-    FLUX(:,:,7) = TFLUX * 5.698e-1_hp
+    FLUX(:,:,8) = TFLUX * 5.698e-1_hp
 
     ! Include DUST Alkalinity SOURCE, assuming an alkalinity
     ! of 4% by weight [kg].                  !tdf 05/10/08
