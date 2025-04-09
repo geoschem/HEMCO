@@ -99,9 +99,7 @@ MODULE HCOX_MetEmis_MOD
   ! Number of values for each variable in the provided input look-up table
   ! Right now hard coded for 0.1 degree CONUS MetEmis Table with 
   ! 25 temperature bins
-  INTEGER, PARAMETER ::  nT=25     !25 Temperature Bins
-  INTEGER, PARAMETER ::  nLat=317  !317 Latitude Points
-  INTEGER, PARAMETER ::  nLon=735  !735 Longitude Points
+   INTEGER, PARAMETER ::  nT=25     !25 Temperature Bins
 
   ! Now place all module variables in a lderived type object (for a linked
   ! list) so that we can have one instance per node in an MPI environment.
@@ -113,20 +111,9 @@ MODULE HCOX_MetEmis_MOD
      INTEGER               :: IDTNO
 
      ! Arrays
-!     REAL(hp), POINTER     :: MetEmisNO(:,:,:)
 
      ! Reference values of variables in the MetEmis look-up tables
      REAL*4                :: Tlev(nT)
-
-     ! Look-up tables currently used in CMAQv5.3.1
-     ! Described by Baek et al. 2023, now includes effects of temperature
-      REAL(sp), POINTER     :: NO_LUT(:,:,:,:)
-      REAL(sp), POINTER     :: Lat(:)
-      REAL(sp), POINTER     :: Lon(:)
-
-     ! Location and type of MetEmis look up table data
-     CHARACTER(LEN=255)    :: FileName
-!     LOGICAL               :: IsNc
 
      TYPE(MyInst), POINTER :: NextInst => NULL()
   END TYPE MyInst
@@ -252,7 +239,6 @@ CONTAINS
     USE HCO_Types_Mod,    ONLY : DiagnCont
     USE HCO_FluxArr_mod,  ONLY : HCO_EmisAdd
     USE HCO_Clock_Mod,    ONLY : HcoClock_First
-    USE HCO_GeoTools_MOD, ONLY : HCO_GetHorzIJIndex
 
 ! !INPUT PARAMETERS:
 !
@@ -295,8 +281,8 @@ CONTAINS
 
     !MetEmis Diag Update
     REAL(dp)                 :: TEMP_NO
-    REAL(dp)                 :: Lon_MetEmis(1), Lat_MetEmis(1)
-    INTEGER                  :: IH(1), JH(1)
+!    REAL(dp)                 :: Lon_MetEmis(1), Lat_MetEmis(1)
+!    INTEGER                  :: IH(1), JH(1)
 
     !=================================================================
     ! MetEmis begins here!
@@ -343,21 +329,12 @@ CONTAINS
     ! Initialize
     FLUXNO       = 0.0_hp
 
-!    DO J = 1, HcoState%NY
-!    DO I = 1, HcoState%NX
-
-     DO J = 1, nLat
-     DO I = 1, nLon
+    DO J = 1, HcoState%NY
+    DO I = 1, HcoState%NX
 
        TEMP_NO    = 0.0_hp
     
        !---------------------------------------------------------------------
-       ! Skip if no MetEmis NO emissions in this grid box
-       !---------------------------------------------------------------------
-       IF (I .gt. HcoState%NX .or. J .gt. HcoState%NY) CYCLE  
-!        IF (I .gt. nLon .or. J .gt. nLat) CYCLE
-
-!---------------------------------------------------------------------
        ! MetEmis lookup table for NO emiss based on temperature 
        ! TBD:  Include effects of humidity on different fuel types
        ! (P.C. Campbell, 03/19/2025)
@@ -368,32 +345,20 @@ CONTAINS
           ERR = .TRUE.; EXIT
        ENDIF
 
-
-       TEMP_NO    = 1.0_hp
-      Lon_MetEmis=Inst%Lon(I)
-      Lat_MetEmis=Inst%Lat(J)
-       ! Get HEMCO grid box indices for each MetEmis lat/lon location (different grid)
-          CALL HCO_GetHorzIJIndex( HcoState, 1, Lon_MetEmis, &
-                                   Lat_MetEmis, IH, JH, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
-              RETURN
-          ENDIF
-       
 !       !---------------------------------------------------------------------
 !       ! Calculate NO emissions
 !       !---------------------------------------------------------------------
        IF ( Inst%IDTNO > 0 ) THEN
 !
 !           ! Unit: kg/m2/s
-           FLUXNO(IH,JH) = TEMP_NO
+           FLUXNO(I,J) = TEMP_NO
        ENDIF
 !
        !---------------------------------------------------------------------
        ! Eventually write out into diagnostics array
        !---------------------------------------------------------------------
        IF ( DoDiagn ) THEN
-           DIAGN(IH,JH,1) =  FLUXNO(IH,JH)
+           DIAGN(I,J,1) =  FLUXNO(I,J)
        ENDIF
 
     ENDDO !I
@@ -541,9 +506,6 @@ CONTAINS
       !---------------------------------------------------------------------
       Inst%IDTNO         = -1
       Inst%Tlev          =  0.0e0
-      Inst%NO_LUT        => NULL()
-      Inst%Lat           => NULL()
-      Inst%Lon           => NULL()
 
       !------------------------------------------------------------------------
       ! Get species IDs
@@ -575,63 +537,7 @@ CONTAINS
 
       ENDIF
 
-      !--------------------------------
-      ! Allocate module arrays
-      !--------------------------------
-
-      ALLOCATE( Inst%NO_LUT(1,nT,nLat,nLon), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'NO_LUT', RC )
-         RETURN
-      ENDIF
-      Inst%NO_LUT = 0.0_sp
-
-
-      ALLOCATE( Inst%Lat(nLat), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'Lat', RC )
-         RETURN
-      ENDIF
-      Inst%Lat = 0.0_sp
-
-      ALLOCATE( Inst%Lon(nLon), STAT=RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'Lon', RC )
-         RETURN
-      ENDIF
-      Inst%Lat = 0.0_sp
-
-
    ENDIF
-
-   !========================================================================
-   ! Initialize the MetEmis look-up tables
-   !========================================================================
-
- ! Get location of MetEmis table. This must be provided and should be date/hour specific.
-    CALL GetExtOpt( HcoState%Config, ExtNr, 'MetEmis_Table',                 &
-                    OptValChar=Inst%FileName, FOUND=FOUND, RC=RC            )
-
-    IF ( RC /= HCO_SUCCESS .OR. .NOT. FOUND ) THEN
-       MSG = 'Cannot read MetEmis table file name. Please provide '       // &
-             'the MetEmis table as a setting to the MetEmis extension. '  // &
-             'The name of this setting must be `MetEmis_Table`.'
-       CALL HCO_Error( MSG, RC )
-       RETURN
-    ENDIF
-
-    CALL HCO_CharParse( HcoState%Config, Inst%FileName, -999, -1, -1, -1, -1, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
-           RETURN
-       ENDIF
-!
-      CALL READ_MetEmis_LUT_NC( HcoState, Inst, RC )
-      IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-               'METEMIS: Error in "READ_METEMIS_LUT_NC"!', RC, THISLOC=LOC )
-          RETURN
-      ENDIF
 
    !========================================================================
    ! Exit if this is a GEOS-Chem dry-run or HEMCO-standalone dry-run
@@ -645,8 +551,33 @@ CONTAINS
    !========================================================================
    ! Continue initializing METEMIS for regular simulations
    !========================================================================
-
-   ExtState%T2M%DoUse         = .TRUE.
+   !three digit suffix pertains to temperature bins in degrees fahrenheit
+   ExtState%T2M%DoUse                      = .TRUE.
+   ExtState%MEmisNO_OR_000%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_005%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_010%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_015%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_020%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_025%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_030%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_035%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_040%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_045%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_050%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_055%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_060%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_065%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_070%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_075%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_080%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_085%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_090%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_095%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_100%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_105%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_110%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_115%DoUse           = .TRUE.
+   ExtState%MEmisNO_OR_120%DoUse           = .TRUE.
 
    !------------------------------------------------------------------------
    ! Leave w/ success
@@ -703,192 +634,6 @@ CONTAINS
    RC = HCO_SUCCESS
 
  END SUBROUTINE HCOX_MetEmis_Final
-!EOC
-!------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
-!------------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: read_metemis_lut_nc
-!
-! !DESCRIPTION: Subroutine READ\_METEMIS\_LUT\_NC reads look-up tables in
-!  netCDF format for use in the METEMIS model (B. H. Baek)
-!\\
-!\\
-! !INTERFACE:
-!
- SUBROUTINE READ_METEMIS_LUT_NC ( HcoState, Inst, RC )
-!
-! !USES:
-  USE HCO_Chartools_Mod,  ONLY : HCO_CharParse
-! !INPUT ARGUMENTS:
-!
-   TYPE(HCO_State), POINTER     :: HcoState    ! HEMCO State object
-   TYPE(MyInst),    POINTER     :: Inst
-!
-! !INPUT/OUTPUT ARGUMENTS:
-!
-   INTEGER, INTENT(INOUT) :: RC
-!
-! !REVISION HISTORY:
-!  25 Mar 2025 - P. C. Campbell   - Initial version modified from code provided by
-!                              B. H. Baek
-!  See https://github.com/geoschem/hemco for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-!
-! !LOCAL VARIABLES:
-   INTEGER             :: IOS
-   INTEGER             :: YYYY, MM, DD
-   CHARACTER(LEN=255)  :: FILENAME
-   CHARACTER(LEN=255)  :: MSG
-   INTEGER             :: fID
-   CHARACTER(LEN=255)    :: LOC = 'READ_METEMIS_LUT_NC (hcox_metemis_mod.F90)'
-   !=================================================================
-   ! READ_METEMIS_LUT_NC begins here
-   !=================================================================
-
-       FILENAME = Inst%FileName
-
-   !MetEmis Temperature Bins (Degrees Fahrenheit)
-   Inst%Tlev = (/ 0.0e0, 5.0e0, 10.0e0, 15.0e0, 20.0e0, 25.0e0, 30.0e0, &
-                  35.0e0, 40.0e0,  45.0e0,  50.0e0,  55.0e0,  60.0e0,  &
-                  65.0e0, 70.0e0,  75.0e0,  80.0e0,  85.0e0,  90.0e0,  &
-                  95.0e0, 100.0e0, 105.0e0, 110.0e0, 115.0e0, 120.0e0 /)
-  
-
-   CALL READ_LUT_NCFILE( HcoState, TRIM( FILENAME ),                          &
-        Inst%NO_LUT, Inst%Lat, Inst%Lon, RC=RC)
-
-   ! Return w/ success
-   RC = HCO_SUCCESS
-
- END SUBROUTINE READ_METEMIS_LUT_NC
-
-!------------------------------------------------------------------------------
-!                  GEOS-Chem Global Chemical Transport Model                  !
-!------------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: read_lut_ncfile
-!
-! !DESCRIPTION: Subroutine READ\_LUT\_NCFILE reads look up tables for use in
-!  the METEMIS  model (B. H. Baek)
-!\\
-!\\
-! !INTERFACE:
-!
-
- SUBROUTINE READ_LUT_NCFILE( HcoState, FILENAME,   NO, Lat, Lon,              &
-                              RC                        )
-                              
-! !USES:
-!
-   ! Modules for netCDF read
-   USE HCO_m_netcdf_io_open
-   USE HCO_m_netcdf_io_get_dimlen
-   USE HCO_m_netcdf_io_read
-   USE HCO_m_netcdf_io_readattr
-   USE HCO_m_netcdf_io_close
-#  include "netcdf.inc"
-!
-! !INPUT PARAMETERS:
-!
-   TYPE(HCO_State), POINTER     :: HcoState    ! HEMCO State object
-   CHARACTER(LEN=*),INTENT(IN)  :: FILENAME
-!
-! !OUTPUT PARAMETERS:
-!
-   REAL*4,  INTENT(OUT), DIMENSION(:,:,:,:) :: NO
-   REAL*4,  INTENT(OUT), DIMENSION(:) :: Lat
-   REAL*4,  INTENT(OUT), DIMENSION(:) :: Lon
-   INTEGER, INTENT(OUT), OPTIONAL :: RC
-!
-! !REVISION HISTORY:
-!  25 Mar 2025 - P. C. Campbell    - Initial version modified from code provided by
-!                              B. H. Baek
-!  See https://github.com/geoschem/hemco for complete history
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-!
-! !LOCAL VARIABLES:
-
-   ! Scalars
-   LOGICAL             :: FileExists
-   INTEGER             :: AS, IOS
-   INTEGER             :: fID, HMRC
-   ! arrays
-   INTEGER             :: st1d(1), ct1d(1)
-   INTEGER             :: st4d(4), ct4d(4)
-
-   CHARACTER(LEN=255)  :: MSG,     FileMsg
-
-   !=================================================================
-   ! In dry-run mode, print file path to dryrun log and exit.
-   ! Otherwise, print file path to the HEMCO log file and continue.
-   !=================================================================
-
-   ! Test if the file exists
-   INQUIRE( FILE=TRIM( FileName ), EXIST=FileExists )
-
-   ! Create a display string based on whether or not the file is found
-   IF ( FileExists ) THEN
-      FileMsg = 'HEMCO (METEMIS): Opening'
-   ELSE
-      FileMsg = 'HEMCO (METEMIS): REQUIRED FILE NOT FOUND'
-   ENDIF
-
-   ! Print file status to stdout and the HEMCO log
-   IF ( HcoState%amIRoot ) THEN
-      WRITE( 6,   300 ) TRIM( FileMsg ), TRIM( FileName )
-      WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( FileName )
-      CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
- 300  FORMAT( a, ' ', a )
-   ENDIF
-
-   ! For dry-run simulations, return to calling program.
-   ! For regular simulations, throw an error if we can't find the file.
-   IF ( HcoState%Options%IsDryRun ) THEN
-      RETURN
-   ELSE
-      IF ( .not. FileExists ) THEN
-         WRITE( MSG, 300 ) TRIM( FileMsg ), TRIM( FileName )
-         CALL HCO_ERROR(MSG, HMRC )
-         IF ( PRESENT( RC ) ) RC = HMRC
-         RETURN
-      ENDIF
-   ENDIF
-
-   !=================================================================
-   ! READ_LUT_NCFILE begins here!
-   !=================================================================
-
-   ! Open file for reading
-   CALL Ncop_Rd( fId, TRIM(FILENAME) )
-
-   !Fortran NC read file always backwards
-   st4d = (/ 1,    1,    1, 1 /)
-   ct4d = (/ nLon, nLat, nT, 1 /)
-   !-----------------------------------------------------------------
-   ! Read look up table for temperature dependent NO from MetEmis
-   ! emissions [kg m-2 s-1]
-   !-----------------------------------------------------------------
-   CALL NcRd( NO, fId, 'NO', st4d, ct4d )
-
-   st1d = (/ 1  /)
-   ct1d = (/ nLat /)
-   CALL NcRd( Lat, fId, 'lat',st1d, ct1d )
-   st1d = (/ 1  /)
-   ct1d = (/ nLon /)
-   CALL NcRd( Lon, fId, 'lon',st1d, ct1d  )
-
-   ! Close netCDF file
-   CALL NcCl( fId )
-!   print*,"closing NcCl file"
-
- END SUBROUTINE READ_LUT_NCFILE
 !EOC
 !------------------------------------------------------------------------------
 !                  GEOS-Chem Global Chemical Transport Model                  !
@@ -1037,7 +782,6 @@ CONTAINS
    REAL(sp)                   :: TEMPNO_TMP
    REAL(sp)                   :: WEIGHT
    REAL(sp)                   :: TAIR !,QH2O (TBD: Add humidity correction; need fuel types)
-   REAL(sp)                   :: AIR
 
    ! Interpolation variables, indices, and weights
    REAL(sp), DIMENSION(1)     :: VARS
@@ -1051,14 +795,27 @@ CONTAINS
    ! METEMIS_LUT begins here!
    !=================================================================
 
-   ! Air temperature, K
+   !MetEmis Temperature Bins (Degrees Fahrenheit)
+   Inst%Tlev = (/ 0.0e0, 5.0e0, 10.0e0, 15.0e0, 20.0e0, 25.0e0, 30.0e0, &
+                  35.0e0, 40.0e0,  45.0e0,  50.0e0,  55.0e0,  60.0e0,  &
+                  65.0e0, 70.0e0,  75.0e0,  80.0e0,  85.0e0,  90.0e0,  &
+                  95.0e0, 100.0e0, 105.0e0, 110.0e0, 115.0e0, 120.0e0 /)
+
+
+
+   !Get air temperature, K
    TAIR = ExtState%T2M%Arr%Val(I,J)
- 
+   print*,'SIZE MEmisNO_000 1 = ', size(ExtState%MEmisNO_OR_000%Arr%Val,1)
+   print*,'SIZE MEmisNO_000 2 = ', size(ExtState%MEmisNO_OR_000%Arr%Val,2)
+   print*,'SIZE T2M 1 = ', size(ExtState%T2M%Arr%Val,1)
+   print*,'SIZE T2M 2 = ', size(ExtState%T2M%Arr%Val,2)
+
+   
    !========================================================================
    ! Load all variables into a single array
    !========================================================================
 
-   ! Air Temperature, K --> Fahrenheit
+   ! Air Temperature, K --> Fahrenheit for MetEmis consistency
    VARS(1) = (TAIR - 273.15)*1.8 + 32.0
 
    !========================================================================
@@ -1080,79 +837,79 @@ CONTAINS
    DO I1=1,2
       SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
          CASE (  0 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,1,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_000%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE (  5 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,2,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_005%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 10 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,3,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_010%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 15 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,4,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_015%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 20 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,5,J,I)           
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_020%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 25 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,6,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_025%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 30 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,7,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_030%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 35 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,8,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_035%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 40 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,9,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_040%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 45 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,10,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_045%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 50 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,11,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_050%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 55 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,12,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_055%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 60 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,13,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_060%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 65 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,14,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_065%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 70 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,15,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_070%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 75 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,16,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_075%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 80 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,17,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_080%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 85 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,18,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_085%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 90 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,19,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_090%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 95 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,20,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_095%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 100 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,21,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_100%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 105 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,22,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_105%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 110 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,23,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_110%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 115 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,24,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_115%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE ( 120 )
-            TEMPNO_TMP  =  Inst%NO_LUT(1,25,J,I)
+            TEMPNO_TMP  =  ExtState%MEmisNO_OR_120%Arr%Val(I,J)
             WEIGHT      = WTS(1,I1)
          CASE DEFAULT
              MSG = 'LUT error: Temperature interpolation error!'
@@ -1165,6 +922,7 @@ CONTAINS
          !-----------------------------------
          ! Weighted sum of TempNO from the LUT
          TEMPNO = TEMPNO + TEMPNO_TMP * WEIGHT
+
    END DO
 
    ! Return w/ success
@@ -1351,22 +1109,6 @@ CONTAINS
        ! in order to avoid memory leaks (Bob Yantosca (17 Aug 2022)
        ! Edited for MetEmis
        !---------------------------------------------------------------------
-
-        IF ( ASSOCIATED( Inst%NO_LUT ) ) THEN
-          DEALLOCATE ( Inst%NO_LUT )
-       ENDIF
-       Inst%NO_LUT => NULL()
-
-
-       IF ( ASSOCIATED( Inst%Lat ) ) THEN
-          DEALLOCATE ( Inst%Lat )
-       ENDIF
-       Inst%Lat => NULL()
-
-       IF ( ASSOCIATED( Inst%Lon ) ) THEN
-          DEALLOCATE ( Inst%Lon )
-       ENDIF
-       Inst%Lon => NULL()
 
        !---------------------------------------------------------------------
        ! Pop off instance from list
