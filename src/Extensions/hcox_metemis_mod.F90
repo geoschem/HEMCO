@@ -336,7 +336,6 @@ CONTAINS
     
        !---------------------------------------------------------------------
        ! MetEmis lookup table for NO emiss based on temperature 
-       ! TBD:  Include effects of humidity on different fuel types
        ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
        CALL METEMIS_LUT( ExtState,  HcoState,  Inst,      I,                  &
@@ -553,6 +552,7 @@ CONTAINS
    !========================================================================
    !three digit suffix pertains to temperature bins in degrees fahrenheit
    ExtState%T2M%DoUse                      = .TRUE.
+   ExtState%QV2M%DoUse                     = .TRUE.
    ExtState%MEmisNO_OR_000%DoUse           = .TRUE.
    ExtState%MEmisNO_OR_005%DoUse           = .TRUE.
    ExtState%MEmisNO_OR_010%DoUse           = .TRUE.
@@ -781,7 +781,9 @@ CONTAINS
    INTEGER                    :: I1
    REAL(sp)                   :: TEMPNO_TMP
    REAL(sp)                   :: WEIGHT
-   REAL(sp)                   :: TAIR !,QH2O (TBD: Add humidity correction; need fuel types)
+   REAL(sp)                   :: TAIR
+   REAL(sp)                   :: QAIR,QMOL,A,B
+   REAL(sp)                   :: NOXGAS,NOXDIS,NOXCORR
 
    ! Interpolation variables, indices, and weights
    REAL(sp), DIMENSION(1)     :: VARS
@@ -803,8 +805,10 @@ CONTAINS
 
 
 
-   !Get air temperature, K
+   !Get 2-m air temperature, K
    TAIR = ExtState%T2M%Arr%Val(I,J)
+   !Get 2-m air specific humidity, kg/kg
+   QAIR = ExtState%QV2M%Arr%Val(I,J)
    print*,'SIZE MEmisNO_000 1 = ', size(ExtState%MEmisNO_OR_000%Arr%Val,1)
    print*,'SIZE MEmisNO_000 2 = ', size(ExtState%MEmisNO_OR_000%Arr%Val,2)
    print*,'SIZE T2M 1 = ', size(ExtState%T2M%Arr%Val,1)
@@ -924,6 +928,26 @@ CONTAINS
          TEMPNO = TEMPNO + TEMPNO_TMP * WEIGHT
 
    END DO
+
+   !Calculate humidity correction For NOx
+   QAIR = QAIR*1000.0   !convert from kg water/kg dry air to g/kg
+   A = MIN( QAIR, 17.71 )
+   B = MAX( 3.0, A )
+   NOXGAS = 1.0 - 0.0329 * ( B - 10.71 )   ! NOx humidity correction for Gasoline fuel
+   QMOL = QAIR * 0.001607524  ! convert from g of water/kg of dry air to moles of water/moles of dry air
+   A = MIN( QMOL, 0.035 )
+   B = MAX( 0.002, A )
+   NOXDIS = 1.0 / ( 9.953 * B  + 0.832 )  ! Nox humidity correction for Diesel fuel
+
+   !::: These NOXGAS and NOXDIS correction factors can be multiplied with the 
+   !estimated emissions between temperature bins to reflect the impact of humidity up to 20% (+/-)
+
+   !For now since we do not yet separate NOx Gas vs. Diesel fuels in MetEmis tables...
+   !  I arbitrarily take average of two factors..
+   NOXCORR = ( NOXGAS + NOXDIS )/2.0
+
+   !Apply humidity correction for NOx
+   TEMPNO = NOXCORR * TEMPNO
 
    ! Return w/ success
    RC = HCO_SUCCESS
