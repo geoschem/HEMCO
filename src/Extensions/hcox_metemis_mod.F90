@@ -44,11 +44,11 @@
 ! A further, detailed meteorology dependency of MOVES emission factors on local meteorology can be found in Choi et al. (2010).
 
 ! This module can dynamically estimate meteorology-induced hourly gridded 
-! on-road mobile emissions within the CMAQ, using simulated meteorology 
+! on-road mobile emissions using simulated meteorology 
 ! without any computational burden to the modeling system.
 !\\
 !\\
-! The MetEmis onroad look-up-table (LUT) can be provided in netCDF format.
+! The MetEmis onroad look-up-tables (LUT) are be provided in netCDF format.
 
 !\\
 ! References:
@@ -65,7 +65,6 @@
 ! !INTERFACE:
 !
 MODULE HCOX_MetEmis_MOD
-!
 ! !USES:
 !
   USE HCO_Error_MOD
@@ -97,9 +96,8 @@ MODULE HCOX_MetEmis_MOD
 ! !MODULE VARIABLES:
 
   ! Number of values for each variable in the provided input look-up table
-  ! Right now hard coded for 0.1 degree CONUS MetEmis Table with 
-  ! 25 temperature bins
-   INTEGER, PARAMETER ::  nT=25     !25 Temperature Bins
+  ! CONUS MetEmis Tables with  25 temperature bins
+   INTEGER, PARAMETER ::  nT=25     !25 Temperature Bins in degrees F
 
   ! Now place all module variables in a lderived type object (for a linked
   ! list) so that we can have one instance per node in an MPI environment.
@@ -112,7 +110,7 @@ MODULE HCOX_MetEmis_MOD
 
      ! Arrays
 
-     ! Reference values of variables in the MetEmis look-up tables
+     ! Reference temperature values of variables in the MetEmis look-up tables
      REAL*4                :: Tlev(nT)
 
      TYPE(MyInst), POINTER :: NextInst => NULL()
@@ -132,7 +130,7 @@ CONTAINS
 !
 ! !DESCRIPTION: Subroutine HCOX\_MetEmis\_Run is the driver routine to
 ! calculate MetEmis emissions for the current time step. Emissions in
-! [kg/m2/s] are added to the emissions array of the passed
+! [kg/m2/s] are added to the emissions array.
 !\\
 !\\
 ! !INTERFACE:
@@ -153,7 +151,7 @@ CONTAINS
     INTEGER,         INTENT(INOUT) :: RC          ! Success or failure?
 
 ! !REVISION HISTORY:
-!  11 Mar 2025 - P. C. Campbell   - Initial Version
+!  11 Mar 2025 - P. C. Campbell   - Initial NO Version
 !  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
@@ -225,9 +223,9 @@ CONTAINS
 ! !IROUTINE: Calc_MetEmis
 !
 ! !DESCRIPTION: Subroutine Calc_MetEmis performs linear interpolation of 
-! temperature binned onroad NO emissions for every grid box based on 
+! temperature binned onroad emissions for every grid box based on 
 ! HEMCO model state near-surface temperature (e.g., 2-meter temperature)
-! and writes the resulting NO emission rates into State\_Chm%NomixS.
+! and writes the resulting emission rates into State\_Chm%NomixS.
 !\\
 !\\
 ! !INTERFACE:
@@ -281,8 +279,6 @@ CONTAINS
 
     !MetEmis Diag Update
     REAL(dp)                 :: TEMP_NO
-!    REAL(dp)                 :: Lon_MetEmis(1), Lat_MetEmis(1)
-!    INTEGER                  :: IH(1), JH(1)
 
     !=================================================================
     ! MetEmis begins here!
@@ -335,7 +331,7 @@ CONTAINS
        TEMP_NO    = 0.0_hp
     
        !---------------------------------------------------------------------
-       ! MetEmis lookup table for NO emiss based on temperature 
+       ! MetEmis lookup table for emissions based on temperature 
        ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
        CALL METEMIS_LUT( ExtState,  HcoState,  Inst,      I,                  &
@@ -736,13 +732,6 @@ CONTAINS
 !
 ! The lookup table uses 1 input variable:
 !     TEMP   : model temperature, K
-
-! In GEOS-Chem v9-01-03 through v9-02, the effects of wind speed on FNOx and OPE
-! were not included (wind speed set at 6 m/s). The JRatio also used J(O1D)
-! rather than J(OH); this has only a small effect on interpolated values.
-! To reproduce the behavior of these earlier versions, modify code below marked
-! with ******* and call READ\_PARANOX\_LUT\_v913 in emissions\_mod.F
-!\\
 !\\
 ! !INTERFACE:
 !
@@ -809,11 +798,6 @@ CONTAINS
    TAIR = ExtState%T2M%Arr%Val(I,J)
    !Get 2-m air specific humidity, kg/kg
    QAIR = ExtState%QV2M%Arr%Val(I,J)
-   print*,'SIZE MEmisNO_000 1 = ', size(ExtState%MEmisNO_OR_000%Arr%Val,1)
-   print*,'SIZE MEmisNO_000 2 = ', size(ExtState%MEmisNO_OR_000%Arr%Val,2)
-   print*,'SIZE T2M 1 = ', size(ExtState%T2M%Arr%Val,1)
-   print*,'SIZE T2M 2 = ', size(ExtState%T2M%Arr%Val,2)
-
    
    !========================================================================
    ! Load all variables into a single array
