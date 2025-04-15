@@ -88,7 +88,7 @@ MODULE HCOX_MetEmis_MOD
 !  Adapted from the code in CMAQv5.3.1
 !
 ! !REVISION HISTORY:
-!  11 Mar 2025 - P.C. Campbell   - Initial NO only version
+!  11 Mar 2025 - P.C. Campbell   - Initial NOx only version
 !EOP
 !------------------------------------------------------------------------------
 !BOC
@@ -107,6 +107,7 @@ MODULE HCOX_MetEmis_MOD
      INTEGER               :: Instance
      INTEGER               :: ExtNr
      INTEGER               :: IDTNO
+     INTEGER               :: IDTNO2
 
      ! Arrays
 
@@ -151,7 +152,7 @@ CONTAINS
     INTEGER,         INTENT(INOUT) :: RC          ! Success or failure?
 
 ! !REVISION HISTORY:
-!  11 Mar 2025 - P. C. Campbell   - Initial NO Version
+!  11 Mar 2025 - P. C. Campbell   - Initial NOx Version
 !  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
@@ -266,19 +267,21 @@ CONTAINS
     CHARACTER(LEN=1)         :: CHAR1
 
     ! Arrays
-    REAL(hp), TARGET         :: FLUXNO  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXNO   (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXNO2  (HcoState%NX,HcoState%NY)
 
     ! Pointers
     REAL(hp), POINTER        :: Arr2D(:,:)
 
     ! For diagnostics
-    REAL(hp), TARGET         :: DIAGN   (HcoState%NX,HcoState%NY,1)
+    REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,2)
     LOGICAL, SAVE            :: DODIAGN = .FALSE.
     CHARACTER(LEN=31)        :: DiagnName
     TYPE(DiagnCont), POINTER :: TmpCnt
 
     !MetEmis Diag Update
     REAL(dp)                 :: TEMP_NO
+    REAL(dp)                 :: TEMP_NO2
 
     !=================================================================
     ! MetEmis begins here!
@@ -293,10 +296,16 @@ CONTAINS
     ENDIF
 
     ! Leave here if none of the tracers defined
-     IF ( Inst%IDTNO <= 0) THEN  !Starting with only NO right now
+     IF ( Inst%IDTNO <= 0) THEN  !NO
        RC = HCO_SUCCESS
        RETURN
     ENDIF
+
+     IF ( Inst%IDTNO2 <= 0) THEN  !NO2
+       RC = HCO_SUCCESS
+       RETURN
+    ENDIF
+
 
     ! Nullify
     Arr2D  => NULL()
@@ -309,7 +318,14 @@ CONTAINS
 
     IF ( FIRST ) THEN
        IF ( .NOT. DoDiagn ) THEN
-          DiagnName = 'METEMIS_NO'
+          DiagnName = 'METEMIS_OR_NO'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+        IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_NO2'
           CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
                                 DiagnName, 0, DoDiagn, TmpCnt )
           TmpCnt => NULL()
@@ -323,37 +339,46 @@ CONTAINS
     ERR = .FALSE.
 
     ! Initialize
-    FLUXNO       = 0.0_hp
+    FLUXNO        = 0.0_hp
+    FLUXNO2       = 0.0_hp
 
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
-       TEMP_NO    = 0.0_hp
+       TEMP_NO     = 0.0_hp
+       TEMP_NO2    = 0.0_hp
     
        !---------------------------------------------------------------------
        ! MetEmis lookup table for emissions based on temperature 
        ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
        CALL METEMIS_LUT( ExtState,  HcoState,  Inst,      I,                  &
-                         J,         RC,        TEMP_NO )
+                         J,         RC,        TEMP_NO, TEMP_NO2 )
+
        IF ( RC /= HCO_SUCCESS ) THEN
           ERR = .TRUE.; EXIT
        ENDIF
 
 !       !---------------------------------------------------------------------
-!       ! Calculate NO emissions
+!       ! Calculate emissions
 !       !---------------------------------------------------------------------
        IF ( Inst%IDTNO > 0 ) THEN
-!
 !           ! Unit: kg/m2/s
            FLUXNO(I,J) = TEMP_NO
        ENDIF
+
+       IF ( Inst%IDTNO2 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXNO2(I,J) = TEMP_NO2
+       ENDIF
+
 !
        !---------------------------------------------------------------------
        ! Eventually write out into diagnostics array
        !---------------------------------------------------------------------
        IF ( DoDiagn ) THEN
            DIAGN(I,J,1) =  FLUXNO(I,J)
+           DIAGN(I,J,2) =  FLUXNO2(I,J)
        ENDIF
 
     ENDDO !I
@@ -388,10 +413,35 @@ CONTAINS
        ENDIF
     ENDIF
 
+    IF ( Inst%IDTNO2 > 0 ) THEN
+
+       ! Add flux to emission array
+       CALL HCO_EmisAdd( HcoState, FLUXNO2, Inst%IDTNO2, &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXNO2', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+
     ! Eventually update manual diagnostics
     IF ( DoDiagn ) THEN
         DiagnName =  'MetEmis_NO'
        Arr2D     => DIAGN(:,:,1)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_NO2'
+       Arr2D     => DIAGN(:,:,2)
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -499,8 +549,9 @@ CONTAINS
       !---------------------------------------------------------------------
       ! Initialize fields of Inst object for safety's sake (bmy, 10/17/18)
       !---------------------------------------------------------------------
-      Inst%IDTNO         = -1
-      Inst%Tlev          =  0.0e0
+      Inst%IDTNO          = -1
+      Inst%IDTNO2         = -1
+      Inst%Tlev           =  0.0e0
 
       !------------------------------------------------------------------------
       ! Get species IDs
@@ -518,10 +569,13 @@ CONTAINS
          SELECT CASE ( TRIM(SpcNames(I)) )
             CASE ( "NO" )
                Inst%IDTNO = HcoIDs(I)
+            CASE ( "NO2" )
+               Inst%IDTNO2 = HcoIDs(I)
             CASE DEFAULT
                ! leave empty
          END SELECT
       ENDDO
+
 
       ! Verbose mode
       IF ( HcoState%amIRoot ) THEN
@@ -574,6 +628,32 @@ CONTAINS
    ExtState%MEmisNO_OR_110%DoUse           = .TRUE.
    ExtState%MEmisNO_OR_115%DoUse           = .TRUE.
    ExtState%MEmisNO_OR_120%DoUse           = .TRUE.
+
+   ExtState%MEmisNO2_OR_000%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_005%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_010%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_015%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_020%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_025%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_030%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_035%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_040%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_045%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_050%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_055%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_060%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_065%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_070%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_075%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_080%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_085%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_090%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_095%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_100%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_105%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_110%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_115%DoUse           = .TRUE.
+   ExtState%MEmisNO2_OR_120%DoUse           = .TRUE.
 
    !------------------------------------------------------------------------
    ! Leave w/ success
@@ -736,7 +816,7 @@ CONTAINS
 ! !INTERFACE:
 !
  SUBROUTINE METEMIS_LUT( ExtState,  HcoState, Inst, &
-                         I, J, RC,  TEMPNO )
+                         I, J, RC,  TEMPNO, TEMPNO2 )
 !
 ! !USES:
 !
@@ -752,7 +832,8 @@ CONTAINS
 !
 ! !OUTPUT PARAMETERS:
 !
-   REAL*8, INTENT(OUT)           :: TEMPNO  ! Temp dependent NO emissions, kg/m2/s
+   REAL*8, INTENT(OUT)           :: TEMPNO   ! Temp dependent NO emissions, kg/m2/s
+   REAL*8, INTENT(OUT)           :: TEMPNO2  ! Temp dependent NO2 emissions, kg/m2/s
 
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -769,6 +850,7 @@ CONTAINS
 !
    INTEGER                    :: I1
    REAL(sp)                   :: TEMPNO_TMP
+   REAL(sp)                   :: TEMPNO2_TMP
    REAL(sp)                   :: WEIGHT
    REAL(sp)                   :: TAIR
    REAL(sp)                   :: QAIR,QMOL,A,B
@@ -798,7 +880,9 @@ CONTAINS
    TAIR = ExtState%T2M%Arr%Val(I,J)
    !Get 2-m air specific humidity, kg/kg
    QAIR = ExtState%QV2M%Arr%Val(I,J)
-   
+!   print*, 'I=', I,  'J=', J
+!   print*, 'size1(ExtState%MEmisNO2_OR_120%Arr%Val)', size(ExtState%MEmisNO2_OR_120%Arr%Val,1)
+!   print*, 'size2(ExtState%MEmisNO2_OR_120%Arr%Val)', size(ExtState%MEmisNO2_OR_120%Arr%Val,2) 
    !========================================================================
    ! Load all variables into a single array
    !========================================================================
@@ -819,86 +903,112 @@ CONTAINS
    !========================================================================
 
    ! Initialize
-   TEMPNO = 0.0d0
+   TEMPNO  = 0.0d0
+   TEMPNO2 = 0.0d0
 
   ! Loop over temperature bins
    DO I1=1,2
       SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
          CASE (  0 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_000%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_000%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_000%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE (  5 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_005%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_005%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_005%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 10 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_010%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_010%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_010%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 15 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_015%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_015%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_015%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 20 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_020%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_020%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_020%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 25 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_025%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_025%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_025%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 30 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_030%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_030%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_030%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 35 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_035%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_035%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_035%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 40 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_040%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_040%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_040%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 45 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_045%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_045%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_045%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 50 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_050%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_050%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_050%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 55 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_055%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_055%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_055%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 60 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_060%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_060%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_060%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 65 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_065%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_065%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_065%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 70 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_070%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_070%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_070%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 75 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_075%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_075%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_075%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 80 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_080%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_080%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_080%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 85 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_085%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_085%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_085%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 90 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_090%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_090%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_090%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 95 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_095%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_095%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_095%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 100 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_100%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_100%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_100%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 105 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_105%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_105%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_105%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 110 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_110%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_110%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_110%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 115 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_115%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_115%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_115%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE ( 120 )
-            TEMPNO_TMP  =  ExtState%MEmisNO_OR_120%Arr%Val(I,J)
-            WEIGHT      = WTS(1,I1)
+            TEMPNO_TMP   =  ExtState%MEmisNO_OR_120%Arr%Val(I,J)
+            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_120%Arr%Val(I,J)
+            WEIGHT       = WTS(1,I1)
          CASE DEFAULT
              MSG = 'LUT error: Temperature interpolation error!'
              CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
@@ -910,6 +1020,7 @@ CONTAINS
          !-----------------------------------
          ! Weighted sum of TempNO from the LUT
          TEMPNO = TEMPNO + TEMPNO_TMP * WEIGHT
+         TEMPNO2 = TEMPNO2 + TEMPNO2_TMP * WEIGHT
 
    END DO
 
@@ -931,7 +1042,8 @@ CONTAINS
    NOXCORR = ( NOXGAS + NOXDIS )/2.0
 
    !Apply humidity correction for NOx
-   TEMPNO = NOXCORR * TEMPNO
+   TEMPNO  = NOXCORR * TEMPNO
+   TEMPNO2 = NOXCORR * TEMPNO2
 
    ! Return w/ success
    RC = HCO_SUCCESS
