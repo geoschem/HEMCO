@@ -3584,8 +3584,9 @@ CONTAINS
         CALL HCO_ERROR( 'ERROR 35', RC, THISLOC=LOC )
         RETURN
     ENDIF
+    Inst%InvMEGANAll = .FALSE.
     CALL GetExtOpt( HcoState%Config, ExtNr, 'InvMEGAN All ', &
-                    OptValBool=Inst%InvMEGANAll, RC=RC )
+                    OptValBool=Inst%InvMEGANAll, Found=FOUND, RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 36', RC, THISLOC=LOC )
         RETURN
