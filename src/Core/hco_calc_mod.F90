@@ -200,7 +200,7 @@ CONTAINS
     CHARACTER(LEN=255)  :: MSG, LOC
 
     ! testing / debugging
-    integer :: ix,iy
+    integer :: ix,iy,L
 
     !=================================================================
     ! HCO_CalcEmis begins here!
@@ -402,6 +402,13 @@ CONTAINS
              CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              WRITE(MSG,*) 'Spc. emissions: ', SUM(SpcFlx)
              CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
+
+             ! Optional debug print: single column profile of emissions
+             !DO L = 1, HcoState%NZ
+             !   CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
+             !   WRITE(MSG,*) 'Cat. emissions at (1,1,L): ', L, CatFlx(1,1,L)
+             !ENDDO
+
           ENDIF
 
           ! Add category emissions to diagnostics at category level
