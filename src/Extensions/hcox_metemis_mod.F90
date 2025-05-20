@@ -108,7 +108,7 @@ MODULE HCOX_MetEmis_MOD
      INTEGER               :: ExtNr
      INTEGER               :: IDTNO
      INTEGER               :: IDTNO2
-
+     LOGICAL               :: NOXGASDIS  ! Split NOx in Gas and Diesel Fuels
      ! Arrays
 
      ! Reference temperature values of variables in the MetEmis look-up tables
@@ -206,7 +206,7 @@ CONTAINS
 
      CALL Calc_MetEmis( ExtState, HcoState, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -291,7 +291,7 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -432,7 +432,7 @@ CONTAINS
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
            RETURN
        ENDIF
 
@@ -445,7 +445,7 @@ CONTAINS
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
            RETURN
        ENDIF
 
@@ -528,7 +528,7 @@ CONTAINS
    ! Enter
    CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
    IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
+       CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
        RETURN
    ENDIF
 
@@ -560,7 +560,7 @@ CONTAINS
       ! Get HEMCO species IDs
       CALL HCO_GetExtHcoID( HcoState, ExtNr, HcoIDs, SpcNames, nSpc, RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
+          CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
           RETURN
       ENDIF
 
@@ -587,6 +587,28 @@ CONTAINS
       ENDIF
 
    ENDIF
+
+     !-----------------------------------------------------------------
+    ! Read settings
+    !-----------------------------------------------------------------
+
+    ! Read settings specified in configuration file
+    ! Note: the specified strings have to match those in
+    !       the config. file!
+
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'NOx Gas Diesel', &
+                    OptValBool=Inst%NOXGASDIS, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+     ! Verbose mode
+    IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis NOx Gas Diesel Split option is ',Inst%NOXGASDIS
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+    ENDIF
 
    !========================================================================
    ! Exit if this is a GEOS-Chem dry-run or HEMCO-standalone dry-run
