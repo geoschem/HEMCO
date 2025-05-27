@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Added
 - Added option to enable `InvMEGAN` manual diagnostic output
+- Added supplemental guide documentation updates in the `geos-chem-shared-docs` submodule
 
 ## [3.11.0] - 2025-04-18
 ### Added
