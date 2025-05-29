@@ -141,6 +141,7 @@ MODULE HCOX_MEGAN_MOD
      REAL(hp)                :: MONOTOSOAS   ! Direct SOA Emission factor
      REAL(hp)                :: OTHRTOSOAS   ! Direct SOA Emission factor
      LOGICAL                 :: LISOPCO2     ! Include CO2 inhibition of ISOP?
+     LOGICAL                 :: InvMEGANAll  ! Include all manual InvMEGAN diagnostics?
      LOGICAL                 :: NORMLAI      ! Normalize LAI by PFT?
      LOGICAL                 :: OFFLINE_BIOGENICVOC ! Use offline emiss?
 
@@ -3583,6 +3584,13 @@ CONTAINS
         CALL HCO_ERROR( 'ERROR 35', RC, THISLOC=LOC )
         RETURN
     ENDIF
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'InvMEGAN All ', &
+                    OptValBool=Inst%InvMEGANAll, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 65', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
 
     ! Normalize LAI by PFT? Default setting is 'yes'
     ! ckeller, 7/17/17.
@@ -3854,6 +3862,9 @@ CONTAINS
        CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Use CO2 inhibition on isoprene option ', &
                     Inst%LISOPCO2
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+       WRITE(MSG,*) ' --> Use all InvMEGAN manual diagnostic option ', &
+                    Inst%InvMEGANAll
        CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        WRITE(MSG,*) ' --> Global atmospheric CO2 concentration : ', &
                     Inst%GLOBCO2, ' ppmv'
@@ -4295,6 +4306,251 @@ CONTAINS
     Inst%AEF_LIMO  = 0.0_hp
     Inst%AEF_OCIM  = 0.0_hp
     Inst%AEF_SABI  = 0.0_hp
+
+    !=================================================================
+    ! Create manual diagnostics
+    !=================================================================
+    IF ( Inst%InvMEGANAll ) THEN
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_ACET_MBOX',  &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXACETmb,       &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'ERROR 45', RC, THISLOC=LOC )
+          RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_ACET_DIRECT',&
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXACETbg,       &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 46', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_APIN',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXAPIN,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 47', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_BPIN',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXBPIN,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 48', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_SABI',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXSABI,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 49', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_MYRC',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXMYRC,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 50', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_CARE',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXCARE,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 51', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_OCIM',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXOCIM,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 52', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_OMON',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXOMON,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 53', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_FARN',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXFARN,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 54', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_BCAR',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXBCAR,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 55', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_OSQT',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXOSQT,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 56', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_MBOX',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXMBOX,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 57', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_FAXX',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXFAXX,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 58', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+       CALL Diagn_Create( HcoState  = HcoState,              &
+                       cName     = 'InvMEGAN_AAXX',       &
+                       ExtNr     = ExtNr,                 &
+                       Cat       = -1,                    &
+                       Hier      = -1,                    &
+                       HcoID     = -1,                    &
+                       SpaceDim  = 2,                     &
+                       OutUnit   = 'kg/m2/s',             &
+                       AutoFill  = 0,                     &
+                       Trgt2D    = Inst%FLUXAAXX,         &
+                       RC        = RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 59', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+    ENDIF
 
     !=================================================================
     ! Initialize internal diagnostics. These are the restart variables

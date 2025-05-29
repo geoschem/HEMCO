@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Added
+- Added option to enable `InvMEGAN` manual diagnostic output
+- Added supplemental guide documentation updates in the `geos-chem-shared-docs` submodule
+
 ## [3.11.0] - 2025-04-18
 ### Added
 - Added `Lons` and `Lats` to `FileData` type to store bounds of mask files
