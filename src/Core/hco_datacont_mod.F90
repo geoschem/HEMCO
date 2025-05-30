@@ -190,6 +190,7 @@ CONTAINS
     Dct%cName        = ''
     Dct%spcName      = ''
     Dct%ScalID       = -999
+    Dct%srcGMaskID   = -999
     Dct%HcoID        = -999
     Dct%Cat          = -999
     Dct%Hier         = -999

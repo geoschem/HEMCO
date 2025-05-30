@@ -5224,15 +5224,11 @@ CONTAINS
     IF ( levScal2 > 0 ) Lct%Dct%levScalID2 = levScal2
 
     !========================================================================
-    ! For scale factors: check if a mask is assigned to this scale factor.
-    ! In this case, pass mask ID to first slot of Scal_cID vector. This
-    ! value will be set to the container ID of the corresponding mask
-    ! field later on.
+    ! For scale factors: Use srcGMaskID to select specific grid boxes with the 
+    ! scale (mask) value equal to srcGMaskID (D. Zhang, 05/28/2025)
     !========================================================================
     IF ( DctType == HCO_DCTTYPE_SCAL .AND. Int3 > 0 ) THEN
-       ALLOCATE ( Lct%Dct%Scal_cID(1) )
-       Lct%Dct%Scal_cID(1) = Int3
-       Lct%Dct%nScalID     = 1
+       Lct%Dct%srcGMaskID = Int3
     ENDIF
 
     !========================================================================
