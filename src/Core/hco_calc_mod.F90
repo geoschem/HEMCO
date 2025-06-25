@@ -2837,7 +2837,7 @@ END FUNCTION GetEmisLUnit
     ! Verbose
     IF ( HcoState%Config%doVerbose ) THEN
        WRITE(MSG,*) 'Evaluate field ', TRIM(BaseDct%cName)
-       CALL HCO_MSG(SEP1=' ',LUN=HcoState%Config%hcoLogLUN)
+       CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
     ENDIF
 
     ! ----------------------------------------------------------------
