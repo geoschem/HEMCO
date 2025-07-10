@@ -370,7 +370,7 @@ CONTAINS
     IF ( RC /= 0 ) RETURN
 
     ! Dust bins (set default to 4)
-    HcoState%nDust = 4
+    HcoState%nDust = 7 ! (Extend to 7 dust bins)
 
     ! Turn off marine POA by default
     HcoState%MarinePOA = .FALSE.

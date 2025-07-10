@@ -2224,6 +2224,34 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% Surface temperature %%%%%
+    IF ( ExtState%TS%DoUse ) THEN
+       Name = 'TS'
+       CALL ExtDat_Set( HcoState,     ExtState%TS,                        &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                   '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% Surface pressure %%%%%
+    IF ( ExtState%PS%DoUse ) THEN
+       Name = 'PS'
+       CALL ExtDat_Set( HcoState,     ExtState%PS,                        &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                   '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
     !%%%%% Skin temperature %%%%%
     IF ( ExtState%TSKIN%DoUse ) THEN
        Name = 'TS'
@@ -2281,7 +2309,7 @@ CONTAINS
 
     !%%%%% Snow fields %%%%%
     IF ( ExtState%SNOWHGT%DoUse ) THEN
-       Name = 'SNOMAS'
+       Name = 'SNOWHGT'
        CALL ExtDat_Set( HcoState,     ExtState%SNOWHGT,                      &
                         TRIM( Name ), RC,       FIRST=FIRST                 )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -2310,6 +2338,34 @@ CONTAINS
     IF ( ExtState%USTAR%DoUse ) THEN
        Name = 'USTAR'
        CALL ExtDat_Set( HcoState,     ExtState%USTAR,                        &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                   '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% PBLH %%%%%
+    IF ( ExtState%PBLH%DoUse ) THEN
+       Name = 'PBLH'
+       CALL ExtDat_Set( HcoState,     ExtState%PBLH,                        &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                   '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% HFLUX %%%%%
+    IF ( ExtState%HFLUX%DoUse ) THEN
+       Name = 'HFLUX'
+       CALL ExtDat_Set( HcoState,     ExtState%HFLUX,                        &
                         TRIM( Name ), RC,       FIRST=FIRST                 )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
