@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the functionality of selectively applying gridded scaling factor based on the value of mask ID from a gridded file
 - Added functions `HCO_WordWrapPrint` and `HCO_CountMatches` as `PRIVATE` routines to `hco_error_mod.F90`
 - Added function `IO_ErrMsg` to `hcoio_read_std_mod.F90` to generate a replacement error message for the "cannot find field for current simulation time" message
+- Added `DustL23M` extension module `src/Extensions/hcox_dustl23m_mod.F90`
 
 ### Changed
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewrote "cannot find field for current simulation time" error message for clarity
 - Updated `HCO_Error` and `HCO_Warning` to call `HCO_WordWrapPrint` to wrap messages to 78 characters wide
 - Replaced terse error messages in `hcoio_read_std_mod.F90` with more descriptive ones
+- Updated error messages in routine `ExtStateInit` to be more descriptive
 
 ### Fixed
 - Fixed security issues in GitHub Actions

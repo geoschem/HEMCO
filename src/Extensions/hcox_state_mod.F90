@@ -283,7 +283,8 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    CHARACTER(LEN=255)  :: LOC
+    CHARACTER(LEN=255)  :: LOC, MSG
+
     !======================================================================
     ! ExtStateInit begins here
     !======================================================================
@@ -334,340 +335,396 @@ CONTAINS
     !-----------------------------------------------------------------------
     CALL ExtDat_Init( ExtState%U10M, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+       MSG = 'Could not allocate ExtState%U10M'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
+    ENDIF
+
+    CALL ExtDat_Init( ExtState%V10M, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = 'Could not allocate ExtState%V10M'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
+    ENDIF
+
+    CALL ExtDat_Init( ExtState%ALBD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = 'Could not allocate ExtState%ALBD'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
+    ENDIF
+
+    CALL ExtDat_Init( ExtState%T2M, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = 'Could not allocate ExtState%T2M'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
+    ENDIF
+
+    CALL ExtDat_Init( ExtState%TSKIN, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = 'Could not allocate ExtState%TSKIN'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
+    ENDIF
+
+    CALL ExtDat_Init( ExtState%TSOIL1, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = 'Could not allocate ExtState%TSOIL1'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%V10M, RC )
+    CALL ExtDat_Init( ExtState%GWETROOT, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%GWETROOT'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%ALBD, RC )
+    CALL ExtDat_Init( ExtState%GWETTOP, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%GWETTOP'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%T2M, RC )
+    CALL ExtDat_Init( ExtState%SNOWHGT, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%SNOWHGT'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%TSKIN, RC )
+    CALL ExtDat_Init( ExtState%SNODP, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%SNODP'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%TSOIL1, RC )
+    CALL ExtDat_Init( ExtState%SNICE, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'Initializing TSOIL1', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%SNICE'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%GWETROOT, RC )
+    CALL ExtDat_Init( ExtState%USTAR, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%USTAR'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%GWETTOP, RC )
+    CALL ExtDat_Init( ExtState%Z0, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%Z0'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%SNOWHGT, RC )
+    CALL ExtDat_Init( ExtState%TROPP, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR SNOWHGT', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%TROPP'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%SNODP, RC )
+    CALL ExtDat_Init( ExtState%SUNCOS, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%SUNCOS'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%SNICE, RC )
+    CALL ExtDat_Init( ExtState%SZAFACT, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%SZAFACT'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%USTAR, RC )
+    CALL ExtDat_Init( ExtState%PARDR, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%PARDR'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%Z0, RC )
+    CALL ExtDat_Init( ExtState%PS, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%PS'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%TROPP, RC )
+    CALL ExtDat_Init( ExtState%TS, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%TS'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%SUNCOS, RC )
+    CALL ExtDat_Init( ExtState%PBLH, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%PBLH'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%SZAFACT, RC )
+    CALL ExtDat_Init( ExtState%HFLUX, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%HFLUX'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%PARDR, RC )
+    CALL ExtDat_Init( ExtState%PARDF, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%PARDF'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%PS, RC )
+    CALL ExtDat_Init( ExtState%PSC2_WET, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR PS', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%PSC2_WET'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%TS, RC )
+    CALL ExtDat_Init( ExtState%RADSWG, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR TS', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%RADSWG'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%PBLH, RC )
+    CALL ExtDat_Init( ExtState%FRCLND, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR PBLH', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%FRCLND'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%HFLUX, RC )
+    CALL ExtDat_Init( ExtState%FRLAND, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR HFLUX', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%FRLAND'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%PARDF, RC )
+    CALL ExtDat_Init( ExtState%FROCEAN, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%FROCEAN'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%PSC2_WET, RC )
+    CALL ExtDat_Init( ExtState%FRSEAICE, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%FRSEAICE'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%RADSWG, RC )
+    CALL ExtDat_Init( ExtState%QV2M, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 19', RC, THISLOC=LOC )
-        RETURN
-    ENDIF
-
-    CALL ExtDat_Init ( ExtState%FRCLND, RC )
-    IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 20', RC, THISLOC=LOC )
-        RETURN
-    ENDIF
-
-    CALL ExtDat_Init ( ExtState%FRLAND, RC )
-    IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 21', RC, THISLOC=LOC )
-        RETURN
-    ENDIF
-
-    CALL ExtDat_Init ( ExtState%FROCEAN, RC )
-    IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 22', RC, THISLOC=LOC )
-        RETURN
-    ENDIF
-
-    CALL ExtDat_Init ( ExtState%FRSEAICE, RC )
-    IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 23', RC, THISLOC=LOC )
-        RETURN
-    ENDIF
-
-    CALL ExtDat_Init ( ExtState%QV2M, RC )
-    IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 24', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%QV2M'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     CALL ExtDat_Init ( ExtState%FRLAKE, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 25', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%'
+       CALL HCO_ERROR( 'ERROR 25', RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%FRLANDIC, RC )
+    CALL ExtDat_Init( ExtState%FRLANDIC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 26', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%FRLANDIC'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%CLDFRC, RC )
+    CALL ExtDat_Init( ExtState%CLDFRC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 27', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%CLDFRC'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%LAI, RC )
+    CALL ExtDat_Init( ExtState%LAI, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 28', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%LAI'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%CHLR, RC )
+    CALL ExtDat_Init( ExtState%CHLR, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 29', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%CHLR'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%FLASH_DENS, RC )
+    CALL ExtDat_Init( ExtState%FLASH_DENS, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 30', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%FLASH_DENS'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%CONV_DEPTH, RC )
+    CALL ExtDat_Init( ExtState%CONV_DEPTH, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 31', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%CONV_DEPTH'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%JNO2, RC )
+    CALL ExtDat_Init( ExtState%JNO2, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 32', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%JNO2'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%JOH, RC )
+    CALL ExtDat_Init( ExtState%JOH, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 33', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%JOH'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%CNV_MFC, RC )
+    CALL ExtDat_Init( ExtState%CNV_MFC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 34', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%CNV_MFC'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ExtState%PBL_MAX    => NULL()
 
-    CALL ExtDat_Init ( ExtState%FRAC_OF_PBL, RC )
+    CALL ExtDat_Init( ExtState%FRAC_OF_PBL, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 35', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%FRAC_OF_PBL'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%SPHU, RC )
+    CALL ExtDat_Init( ExtState%SPHU, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 36', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%SPHU'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%TK, RC )
+    CALL ExtDat_Init( ExtState%TK, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 37', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%TK'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%AIR, RC )
+    CALL ExtDat_Init( ExtState%AIR, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 38', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%AIR'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%AIRVOL, RC )
+    CALL ExtDat_Init( ExtState%AIRVOL, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 39', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%AIRVOL'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%AIRDEN, RC )
+    CALL ExtDat_Init( ExtState%AIRDEN, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 40', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%AIRDEN'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%O3, RC )
+    CALL ExtDat_Init( ExtState%O3, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 41', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%O3'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%NO, RC )
+    CALL ExtDat_Init( ExtState%NO, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 42', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%NO'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%NO2, RC )
+    CALL ExtDat_Init( ExtState%NO2, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 43', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%NO2'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%HNO3, RC )
+    CALL ExtDat_Init( ExtState%HNO3, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 44', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%HNO3'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%POPG, RC )
+    CALL ExtDat_Init( ExtState%POPG, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 45', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%POPG'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%DRY_TOTN, RC )
+    CALL ExtDat_Init( ExtState%DRY_TOTN, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 46', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%DRY_TOTN'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%WET_TOTN, RC )
+    CALL ExtDat_Init( ExtState%WET_TOTN, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 47', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%WET_TOTN'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%BYNCY, RC )
+    CALL ExtDat_Init( ExtState%BYNCY, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 48', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%BYNCY'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%LFR, RC )
+    CALL ExtDat_Init( ExtState%LFR, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 49', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%LFR'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%CNV_FRC, RC )
+    CALL ExtDat_Init( ExtState%CNV_FRC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 50', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%CNV_FRC'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%TropLev, RC )
+    CALL ExtDat_Init( ExtState%TropLev, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 51', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Could not allocate ExtState%TropLev'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Return w/ success
