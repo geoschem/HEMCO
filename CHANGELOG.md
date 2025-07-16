@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.11.0] - 2025-04-18
 ### Added
+- Added option to enable `InvMEGAN` manual diagnostic output
+- Added supplemental guide documentation updates in the `geos-chem-shared-docs` submodule
 - Added `Lons` and `Lats` to `FileData` type to store bounds of mask files
 - Added definition of 0.125x0.15625 grid resolution
 
