@@ -130,8 +130,10 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: U10M        ! E/W 10m wind speed [m/s]
      TYPE(ExtDat_2R),  POINTER :: V10M        ! N/S 10m wind speed [m/s]
      TYPE(ExtDat_2R),  POINTER :: ALBD        ! Surface albedo [-]
-     TYPE(ExtDat_2R),  POINTER :: T2M         ! 2m Sfce temperature [K]
-     TYPE(ExtDat_2R),  POINTER :: TS          ! Surface temperature [K]
+     TYPE(ExtDat_2R),  POINTER :: T2M         ! T at 2m above sfc [K]; Used as
+                                              !  a proxy for GMAO surface temp.
+     TYPE(ExtDat_2R),  POINTER :: TS          ! Surface temperature [K]; Keep
+                                              !  in case non-GEOS met needs it.
      TYPE(ExtDat_2R),  POINTER :: TSKIN       ! Surface skin temperature [K]
      TYPE(ExtDat_2R),  POINTER :: TSOIL1      ! Soil temperature, layer 1 [K]
      TYPE(ExtDat_2R),  POINTER :: GWETROOT    ! Root soil wetness [1]
@@ -361,6 +363,13 @@ CONTAINS
        RETURN
     ENDIF
 
+    CALL ExtDat_Init( ExtState%TS, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = 'Could not allocate ExtState%TS'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
+    ENDIF
+
     CALL ExtDat_Init( ExtState%TSKIN, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Could not allocate ExtState%TSKIN'
@@ -455,13 +464,6 @@ CONTAINS
     CALL ExtDat_Init( ExtState%PS, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Could not allocate ExtState%PS'
-       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-       RETURN
-    ENDIF
-
-    CALL ExtDat_Init( ExtState%TS, RC )
-    IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Could not allocate ExtState%TS'
        CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
