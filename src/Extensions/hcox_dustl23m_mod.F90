@@ -631,14 +631,14 @@ CONTAINS
     Inst%DMT_MAX(7) = 1.2e-5_hp
 
     ! Activate met fields used by this extension
-    ExtState%T2M%DoUse      = .TRUE.
-    ExtState%TSKIN%DoUse    = .TRUE.
-    ExtState%PS%DoUse       = .TRUE.
-    ExtState%GWETTOP%DoUse  = .TRUE.
-    ExtState%SNOWHGT%DoUse  = .TRUE.
-    ExtState%USTAR%DoUse    = .TRUE.
-    ExtState%PBLH%DoUse     = .TRUE.
-    ExtState%HFLUX%DoUse    = .TRUE.
+    ExtState%T2M%DoUse     = .TRUE.
+    ExtState%TSKIN%DoUse   = .TRUE.
+    ExtState%PS%DoUse      = .TRUE.
+    ExtState%GWETTOP%DoUse = .TRUE.
+    ExtState%SNOWHGT%DoUse = .TRUE.
+    ExtState%USTAR%DoUse   = .TRUE.
+    ExtState%PBLH%DoUse    = .TRUE.
+    ExtState%HFLUX%DoUse   = .TRUE.
 
     ! Cleanup
     Inst => NULL()

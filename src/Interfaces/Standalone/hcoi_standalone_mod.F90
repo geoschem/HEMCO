@@ -475,12 +475,14 @@ CONTAINS
 !
 ! !USES:
 !
-    USE HCO_FluxArr_Mod, ONLY : HCO_FluxarrReset
-    USE HCO_Clock_Mod,   ONLY : HcoClock_Set
-    USE HCO_Clock_Mod,   ONLY : HcoClock_Get
-    USE HCO_Clock_Mod,   ONLY : HcoClock_Increase
-    USE HCO_Driver_Mod,  ONLY : HCO_RUN
-    USE HCOX_Driver_Mod, ONLY : HCOX_RUN
+    USE HCO_FluxArr_Mod,  ONLY : HCO_FluxarrReset
+    USE HCO_Calc_Mod,     ONLY : HCO_EvalFld
+    USE HCO_Clock_Mod,    ONLY : HcoClock_Set
+    USE HCO_Clock_Mod,    ONLY : HcoClock_Get
+    USE HCO_Clock_Mod,    ONLY : HcoClock_Increase
+    USE HCO_Driver_Mod,   ONLY : HCO_Run
+    USE HCO_GeoTools_Mod, ONLY : HCO_SetPBLm
+    USE HCOX_Driver_Mod,  ONLY : HCOX_Run
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -496,7 +498,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
-    LOGICAL            :: notDryRun
+    LOGICAL            :: notDryRun, found
     INTEGER            :: CNT
     INTEGER            :: YR, MT, DY, HR, MN, SC
 
@@ -619,6 +621,21 @@ CONTAINS
        ENDIF
 
        IF ( notDryRun ) THEN
+
+          ! Evaluate the PBL height in meters from the meteorology here,
+          ! If meteorology is turned off, set to a default height of 1 km.
+          ! This is needed so that PBL height will evolve with time.
+          ! (skip for dry-run)
+          CALL HCO_SetPBLm( HcoState = HcoState,                             &
+                            FldName  = 'PBLH',                               &
+                            PBLM     = HcoState%Grid%PBLHEIGHT%Val,          &
+                            DefVal   = 1000.0_hp,                            &
+                            RC       = RC                                   )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in routine "HCO_SetPBLm"!'
+             CALL HCO_Error( ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
 
           ! Set ExtState fields (skip for dry-run)
           CALL ExtState_SetFields( HcoState, ExtState, RC )
@@ -1531,7 +1548,7 @@ CONTAINS
 
     ! Define a default PBL height
     CALL HCO_SetPBLm( HcoState = HcoState,                                   &
-                      FldName  ='PBL_HEIGHT',                                &
+                      FldName  ='PBLH',                                      &
                       PBLM     = HcoState%Grid%PBLHEIGHT%Val,                &
                       DefVal   = 1000.0_hp,                                  &
                       RC       = RC                                         )
@@ -2169,11 +2186,11 @@ CONTAINS
     ! (2) Not all extension fields are used for a given simulation type
     !------------------------------------------------------------------------
 
-    !%%%%% 10-m winds %%%%%
+    !%%%%% 10-m wind (zonal) %%%%%
     IF ( ExtState%U10M%DoUse ) THEN
        Name = 'U10M'
        CALL ExtDat_Set( HcoState,     ExtState%U10M,                         &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                     '" for the HEMCO standalone simulation!'
@@ -2183,10 +2200,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% 10-m wind (meridional) %%%%%
     IF ( ExtState%V10M%DoUse ) THEN
        Name = 'V10M'
        CALL ExtDat_Set( HcoState,     ExtState%V10M,                         &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2200,7 +2218,7 @@ CONTAINS
     IF ( ExtState%ALBD%DoUse ) THEN
        Name = 'ALBEDO'
        CALL ExtDat_Set( HcoState,     ExtState%ALBD,                         &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2214,7 +2232,7 @@ CONTAINS
     IF ( ExtState%T2M%DoUse ) THEN
        Name = 'T2M'
        CALL ExtDat_Set( HcoState,     ExtState%T2M,                          &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2227,8 +2245,8 @@ CONTAINS
     !%%%%% Surface temperature %%%%%
     IF ( ExtState%TS%DoUse ) THEN
        Name = 'TS'
-       CALL ExtDat_Set( HcoState,     ExtState%TS,                        &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       CALL ExtDat_Set( HcoState,     ExtState%TS,                           &
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2241,8 +2259,8 @@ CONTAINS
     !%%%%% Surface pressure %%%%%
     IF ( ExtState%PS%DoUse ) THEN
        Name = 'PS'
-       CALL ExtDat_Set( HcoState,     ExtState%PS,                        &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       CALL ExtDat_Set( HcoState,     ExtState%PS,                           &
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2256,7 +2274,7 @@ CONTAINS
     IF ( ExtState%TSKIN%DoUse ) THEN
        Name = 'TS'
        CALL ExtDat_Set( HcoState,     ExtState%TSKIN,                        &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2270,7 +2288,7 @@ CONTAINS
     IF ( ExtState%TSOIL1%DoUse ) THEN
        Name = 'TSOIL1'
        CALL ExtDat_Set( HcoState,     ExtState%TSOIL1,                       &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2280,11 +2298,11 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% Soil moisture %%%%%
+    !%%%%% Soil moisture (@ roots) %%%%%
     IF ( ExtState%GWETROOT%DoUse ) THEN
        Name = 'GWETROOT'
        CALL ExtDat_Set( HcoState,     ExtState%GWETROOT,                     &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2294,10 +2312,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% Soil moisture (@ surface) %%%%%
     IF ( ExtState%GWETTOP%DoUse ) THEN
        Name = 'GWETTOP'
        CALL ExtDat_Set( HcoState,     ExtState%GWETTOP,                      &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2307,24 +2326,25 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% Snow fields %%%%%
+    !%%%%% Total snow storage (land) %%%%%
     IF ( ExtState%SNOWHGT%DoUse ) THEN
-       Name = 'SNOWHGT'
+       Name = 'SNOMAS'
        CALL ExtDat_Set( HcoState,     ExtState%SNOWHGT,                      &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                  FIRST=FIRST      )
        IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
-                   '" for the HEMCO standalone simulation!'
+          ErrMsg = 'Could not find quantity "SNOMAS" (aka "SNOWHGT") '    // &
+                   'for the HEMCO standalone simulation!'
           CALL HCO_Error( ErrMsg, RC, ThisLoc )
           CALL HCO_Leave( HcoState%Config%Err, RC )
           RETURN
        ENDIF
     ENDIF
 
+    !%%%%% Snow depth %%%%%
     IF ( ExtState%SNODP%DoUse ) THEN
        Name = 'SNODP'
        CALL ExtDat_Set( HcoState,     ExtState%SNODP,                        &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2338,7 +2358,7 @@ CONTAINS
     IF ( ExtState%USTAR%DoUse ) THEN
        Name = 'USTAR'
        CALL ExtDat_Set( HcoState,     ExtState%USTAR,                        &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2348,11 +2368,11 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% PBLH %%%%%
+    !%%%%% PBL height  %%%%%
     IF ( ExtState%PBLH%DoUse ) THEN
        Name = 'PBLH'
-       CALL ExtDat_Set( HcoState,     ExtState%PBLH,                        &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       CALL ExtDat_Set( HcoState,     ExtState%PBLH,                         &
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2362,11 +2382,11 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% HFLUX %%%%%
+    !%%%%% Sensible heat flux %%%%%
     IF ( ExtState%HFLUX%DoUse ) THEN
        Name = 'HFLUX'
        CALL ExtDat_Set( HcoState,     ExtState%HFLUX,                        &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2380,7 +2400,7 @@ CONTAINS
     IF ( ExtState%Z0%DoUse ) THEN
        Name = 'Z0M'
        CALL ExtDat_Set( HcoState,     ExtState%Z0,                           &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2394,7 +2414,7 @@ CONTAINS
     IF ( ExtState%TROPP%DoUse ) THEN
        Name = 'TROPPT'
        CALL ExtDat_Set( HcoState,     ExtState%TROPP,                        &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2404,11 +2424,11 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% PAR direct and diffuse %%%%%
+    !%%%%% PAR direct %%%%%
     IF ( ExtState%PARDR%DoUse ) THEN
        Name = 'PARDR'
        CALL ExtDat_Set( HcoState,     ExtState%PARDR,                        &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2418,10 +2438,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% PAR diffuse %%%%%
     IF ( ExtState%PARDF%DoUse ) THEN
        Name = 'PARDF'
        CALL ExtDat_Set( HcoState,     ExtState%PARDF,                        &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2431,10 +2452,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% Surface incoming shortwave flux %%%%%
     IF ( ExtState%RADSWG%DoUse ) THEN
        Name = 'SWGDN'
        CALL ExtDat_Set( HcoState,     ExtState%RADSWG,                       &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2448,7 +2470,7 @@ CONTAINS
     IF ( ExtState%CLDFRC%DoUse ) THEN
        Name = 'CLDTOT'
        CALL ExtDat_Set( HcoState,     ExtState%CLDFRC,                       &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2462,7 +2484,7 @@ CONTAINS
     IF ( ExtState%LAI%DoUse ) THEN
        Name = 'LAI'
        CALL ExtDat_Set( HcoState,     ExtState%LAI,                          &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                    FIRST=FIRST    )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2476,7 +2498,7 @@ CONTAINS
     IF ( ExtState%FLASH_DENS%DoUse ) THEN
        Name = 'FLASH_DENS'
        CALL ExtDat_Set( HcoState,     ExtState%FLASH_DENS,                   &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2490,7 +2512,7 @@ CONTAINS
     IF ( ExtState%CONV_DEPTH%DoUse ) THEN
        Name = 'CONV_DEPTH'
        CALL ExtDat_Set( HcoState,     ExtState%CONV_DEPTH,                   &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2504,7 +2526,7 @@ CONTAINS
     IF ( ExtState%FRCLND%DoUse ) THEN
        Name = 'FRCLND'
        CALL ExtDat_Set( HcoState,     ExtState%FRCLND,                       &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2514,10 +2536,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%%% Land fraction %%%%%
     IF ( ExtState%FRLAND%DoUse ) THEN
        Name = 'FRLAND'
        CALL ExtDat_Set( HcoState,     ExtState%FRLAND,                       &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2527,10 +2550,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% Ocean fraction %%%%%
     IF ( ExtState%FROCEAN%DoUse ) THEN
        Name = 'FROCEAN'
        CALL ExtDat_Set( HcoState,     ExtState%FROCEAN,                      &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2540,10 +2564,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% Lake fraction %%%%%
     IF ( ExtState%FRLAKE%DoUse ) THEN
        Name = 'FRLAKE'
        CALL ExtDat_Set( HcoState,     ExtState%FRLAKE,                       &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2553,10 +2578,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% Land ice fraction %%%%%
     IF ( ExtState%FRLANDIC%DoUse ) THEN
        Name = 'FRLANDIC'
        CALL ExtDat_Set( HcoState,     ExtState%FRLANDIC,                     &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2570,7 +2596,7 @@ CONTAINS
     IF ( ExtState%FRSEAICE%DoUse ) THEN
        Name = 'FRSEAICE'
        CALL ExtDat_Set( HcoState,     ExtState%FRSEAICE,                     &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2584,7 +2610,7 @@ CONTAINS
     IF ( ExtState%QV2M%DoUse ) THEN
        Name = 'QV2M'
        CALL ExtDat_Set( HcoState,     ExtState%QV2M,                         &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2598,7 +2624,7 @@ CONTAINS
     IF ( ExtState%SZAFACT%DoUse ) THEN
        Name = 'SZAFACT'
        CALL ExtDat_Set( HcoState,     ExtState%SZAFACT,                      &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2612,7 +2638,7 @@ CONTAINS
     IF ( ExtState%JNO2%DoUse ) THEN
        Name = 'JNO2'
        CALL ExtDat_Set( HcoState,     ExtState%JNO2,                         &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
       IF ( RC == HCO_SUCCESS ) THEN
          ErrMsg = 'Could not find quantity "' // TRIM( Name )             // &
                   '" for the HEMCO standalone simulation!'
@@ -2625,7 +2651,7 @@ CONTAINS
    IF ( ExtState%JOH%DoUse ) THEN
       Name = 'JOH'
       CALL ExtDat_Set( HcoState,     ExtState%JOH,                           &
-                       TRIM( Name ), RC,       FIRST=FIRST                  )
+                       TRIM( Name ), RC,                    FIRST=FIRST     )
       IF ( RC == HCO_SUCCESS ) THEN
          ErrMsg = 'Could not find quantity "' // TRIM( Name )             // &
                   '" for the HEMCO standalone simulation!'
@@ -2645,9 +2671,8 @@ CONTAINS
     !%%%%% Cloud convection mass flux %%%%%
     IF ( ExtState%CNV_MFC%DoUse ) THEN
        Name = 'CMFMC'
-       CALL ExtDat_Set( HcoState,     ExtState%CNV_MFC,                      &
-                        TRIM( Name ), RC,       FIRST=FIRST,                 &
-                        OnLevEdge=.TRUE.                                    )
+       CALL ExtDat_Set( HcoState, ExtState%CNV_MFC, TRIM( Name ),            &
+                        RC,       FIRST=FIRST,      OnLevEdge=.TRUE.        )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2661,7 +2686,7 @@ CONTAINS
     IF ( ExtState%SPHU%DoUse ) THEN
        Name = 'SPHU'
        CALL ExtDat_Set( HcoState,     ExtState%SPHU,                         &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2675,7 +2700,7 @@ CONTAINS
     IF ( ExtState%TK%DoUse ) THEN
        Name = 'TMPU'
        CALL ExtDat_Set( HcoState,     ExtState%TK,                           &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2689,7 +2714,7 @@ CONTAINS
     IF ( ExtState%AIR%DoUse ) THEN
        Name = 'AIR'
        CALL ExtDat_Set( HcoState,     ExtState%AIR,                          &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC == HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2702,7 +2727,7 @@ CONTAINS
     IF ( ExtState%AIRVOL%DoUse ) THEN
        Name = 'AIRVOL'
        CALL ExtDat_Set( HcoState,     ExtState%AIRVOL,                       &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC == HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2715,7 +2740,7 @@ CONTAINS
     IF ( ExtState%AIRDEN%DoUse ) THEN
        Name = 'AIRDEN'
        CALL ExtDat_Set( HcoState,     ExtState%AIRDEN,                       &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST      )
        IF ( RC == HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2725,11 +2750,11 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% Concentration fields %%%%%
+    !%%%%% O3 concentration %%%%%
     IF ( ExtState%O3%DoUse ) THEN
        Name = 'O3'
        CALL ExtDat_Set( HcoState,     ExtState%O3,                           &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC == HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                 '" for the HEMCO standalone simulation!'
@@ -2739,10 +2764,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% NO concentration %%%%%
     IF ( ExtState%NO%DoUse ) THEN
        Name = 'NO'
        CALL ExtDat_Set( HcoState,     ExtState%NO,                           &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC == HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                 '" for the HEMCO standalone simulation!'
@@ -2752,10 +2778,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% NO2 concentration %%%%%
     IF ( ExtState%NO2%DoUse ) THEN
        Name = 'NO2'
        CALL ExtDat_Set( HcoState,     ExtState%NO2,                          &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC == HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2765,10 +2792,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% HNO3 concentration %%%%%
     IF ( ExtState%HNO3%DoUse ) THEN
        Name = 'HNO3'
        CALL ExtDat_Set( HcoState,     ExtState%HNO3,                         &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC == HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2778,11 +2806,11 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% Deposition fields (for soil NOx) %%%%%
+    !%%%%% Dry-deposited nitrogen (for soil NOx) %%%%%
     IF ( ExtState%DRY_TOTN%DoUse ) THEN
        Name = 'DRY_TOTN'
        CALL ExtDat_Set( HcoState,     ExtState%DRY_TOTN,                     &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC == HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                 '" for the HEMCO standalone simulation!'
@@ -2792,10 +2820,11 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% Wet-deposited nitrogen (for soil NOx) %%%%%
     IF ( ExtState%WET_TOTN%DoUse ) THEN
        Name = 'WET_TOTN'
        CALL ExtDat_Set( HcoState,     ExtState%WET_TOTN,                     &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC == HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2809,7 +2838,7 @@ CONTAINS
     IF ( ExtState%FRAC_OF_PBL%DoUse ) THEN
        Name = 'FRAC_OF_PBL'
        CALL ExtDat_Set( HcoState,     ExtState%FRAC_OF_PBL,                  &
-                        TRIM( Name ), RC,       FIRST=FIRST                 )
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
        IF ( RC == HCO_SUCCESS ) THEN
           ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
                    '" for the HEMCO standalone simulation!'
@@ -2819,16 +2848,16 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !-----------------------------------------------------------------
+    !------------------------------------------------------------------------
     ! ==> DRYCOEFF must be read from the configuration file in module
     !     hcox_soilnox_mod.F90.
-    !-----------------------------------------------------------------
+    !------------------------------------------------------------------------
 
-    !-----------------------------------------------------------------
+    !------------------------------------------------------------------------
     ! Check for vertical grid update. This will try to read the
     ! vertical grid quantities from disk or calculate them from other
     ! quantities read from disk.
-    !-----------------------------------------------------------------
+    !------------------------------------------------------------------------
 
     ! Attempt to calculate vertical grid quantities
     CALL HCO_CalcVertGrid( HcoState, PSFC, ZSFC, TK, BXHEIGHT, PEDGE, RC )
@@ -2845,12 +2874,13 @@ CONTAINS
     BXHEIGHT => NULL()
     PEDGE    => NULL()
 
-    !-----------------------------------------------------------------
+    !------------------------------------------------------------------------
     ! If needed, calculate SUNCOS values
-    !-----------------------------------------------------------------
+    !------------------------------------------------------------------------
     IF ( ExtState%SUNCOS%DoUse ) THEN
        IF ( FIRST ) THEN
-          CALL HCO_ArrAssert( ExtState%SUNCOS%Arr, HcoState%NX, HcoState%NY, RC )
+          CALL HCO_ArrAssert( ExtState%SUNCOS%Arr, HcoState%NX,              &
+                              HcoState%NY,         RC                       )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'SUNCOS array is not the expected dimensions!'
              CALL HCO_Error( ErrMsg, RC, ThisLoc )
@@ -2868,9 +2898,9 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !-----------------------------------------------------------------
+    !------------------------------------------------------------------------
     ! All done
-    !-----------------------------------------------------------------
+    !------------------------------------------------------------------------
 
     ! Not first call any more
     FIRST = .FALSE.
