@@ -1472,7 +1472,7 @@ CONTAINS
     REAL(hp), PARAMETER     :: C_kappa    = 2.7_hp      ! [unitless]
 
     ! other constants
-    REAL(hp), PARAMETER     :: u_star_st0 = 0.16_hp      ! [m s-1]
+    REAL(hp), PARAMETER     :: u_star_st0 = 0.16_hp     ! [m s-1]
 !
 ! !LOCAL VARIABLES:
 !
@@ -1574,9 +1574,9 @@ CONTAINS
        ! According to https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/FAQ/#Q2,
        ! because snwomass is relative to the gridbox area, we use snowmass
        ! instead of snow depth from the met field.
-       snowdep(I,J) = ExtState%SNOWHGT%Arr%Val(I,J)                         &
-                    / 1000 * (1000 / 100)       ! convert kg H2O / m2 to m
-       A_snow(I,J) = snowdep(I,J) / snowdep_thr
+       ! SNOWDEP = SNOWHGT / 1000 * (1000 / 100) = SNOWHGT / 100
+       snowdep(I,J) = ExtState%SNOWHGT%Arr%Val(I,J) / 100.0_hp
+       A_snow(I,J)  = snowdep(I,J)                  / snowdep_thr
        IF ( A_snow(I,J) > 1.0_hp .or. TSKIN(I,J) < T0 ) THEN
           A_snow(I,J) = 1.0_hp
        ENDIF
