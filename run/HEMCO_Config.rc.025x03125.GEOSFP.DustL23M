@@ -87,6 +87,7 @@ PBL dry deposition:  False
     --> METEOROLOGY            :       true   # 1980-2021
     --> CHEMISTRY_INPUT        :       false
 140     DustL23M               : on    TDST/DSTbin1/DSTbin2/DSTbin3/DSTbin4/DSTbin5/DSTbin6/DSTbin7
+    --> Tuning factor          :       2.832e-3
 ### END SECTION EXTENSION SWITCHES ###
 
 ###############################################################################

@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `run/HEMCO_sa_Spec.rc` to be consistent with the new dust species
 - Updated `run/createRunDir.sh` to copy the`cleanRunDir.sh` script to the run directory
 - Updated comment headers and removed GCHP-specific text in `run/cleanRunDir.sh`
+- Updated `DustL23M` extension to read the `C_tune` parameter from the HEMCO configuration file
 
 ### Fixed
 - Fixed security issues in GitHub Actions

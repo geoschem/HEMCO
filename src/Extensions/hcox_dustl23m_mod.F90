@@ -82,6 +82,7 @@ MODULE HCOX_DustL23M_mod
      CHARACTER(LEN=61), ALLOCATABLE :: SpcScalFldNme(:) ! Scalefac field names
 
      ! Other fields
+     REAL(hp)                       :: C_tune           ! Met-specific factor
      REAL(hp),          ALLOCATABLE :: DMT_MIN(:)       ! Bin size min diam [m]
      REAL(hp),          ALLOCATABLE :: DMT_MAX(:)       ! Bin size max diam [m]
 
@@ -424,8 +425,14 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
-    INTEGER               :: ExtNr, N
-    CHARACTER(LEN=255)    :: MSG,   LOC
+    LOGICAL               :: FOUND
+    INTEGER               :: ExtNr
+    INTEGER               :: N
+    REAL(hp)              :: TmpScal
+
+    ! Strings
+    CHARACTER(LEN=255)    :: MSG
+    CHARACTER(LEN=255)    :: LOC
 
     ! Pointers
     TYPE(MyInst), POINTER :: Inst
@@ -442,6 +449,8 @@ CONTAINS
     IF ( ExtNr <= 0 ) RETURN
 
     ! Initialize
+    TmpScal = 0.0_hp
+    MSG  = ''
     LOC  = 'HCOX_DustL23M_INIT (HCOX_DUSTL23M_MOD.F90)'
     Inst => NULL()
 
@@ -461,6 +470,8 @@ CONTAINS
        CALL HCO_ERROR( 'Cannot create DustL23M instance', RC )
        RETURN
     ENDIF
+
+    print*, '### inst%extnr: ', inst%extnr
 
     ! Get species IDs.
     CALL HCO_GetExtHcoID( HcoState,      Inst%ExtNr, Inst%HcoIDs,            &
@@ -499,6 +510,25 @@ CONTAINS
        RETURN
     ENDIF
 
+    ! Set resolution-dependent scale factor: first try to read from 
+    ! configuration file.  If not specified, call wrapper function which 
+    ! sets teh scale factor
+    ! based upon compiler switches.
+    CALL GetExtOpt( HcoState%Config,  Inst%ExtNr,  'Tuning factor',          &
+                    OptValDp=TmpScal, Found=FOUND,  RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = 'Error encountered in routine "GetExtOpt" (for tuning factor)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
+    ENDIF
+
+    ! Read horizontal-grid dependent parameter C_tune from config file
+    IF ( FOUND ) THEN
+       Inst%C_tune = TmpScal
+    ELSE
+       Inst%C_tune = -999.0e0
+    ENDIF
+    
     ! Determine scale factor to be applied to each species. This is 1.00
     ! by default, but can be set in the HEMCO configuration file via setting
     ! Scaling_<SpcName>.
@@ -1466,7 +1496,6 @@ CONTAINS
 ! !DEFINED PARAMETERS:
 !
     ! empirical constants
-    REAL(hp), PARAMETER     :: C_tune     = 2.832e-3_hp ! [unitless]
     REAL(hp), PARAMETER     :: C_d0       = 4.4e-5_hp   ! [unitless]
     REAL(hp), PARAMETER     :: C_e        = 2.0_hp      ! [unitless]
     REAL(hp), PARAMETER     :: C_kappa    = 2.7_hp      ! [unitless]
@@ -1677,7 +1706,7 @@ CONTAINS
        u_star_t(I,J) = u_star_it(I,J)
 
        DUST_EMIS_FLUX_Tmp =                                                  &
-            eta(I,J)           * C_tune                       *              &
+            eta(I,J)           * Inst%C_tune                  *              &
             Inst%C_sah(I,J)    * C_d                          *              &
             f_bare             * rho_a(I,J)                   *              &
             ( u_star_s(I,J)**2 -  u_star_t(I,J)**2          ) /              &
