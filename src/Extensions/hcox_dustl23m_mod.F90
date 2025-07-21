@@ -643,13 +643,13 @@ CONTAINS
     Inst%DMT_MAX(7) = 1.2e-5_hp
 
     ! Activate met fields used by this extension
+    ! NOTE: PS and PBLH will be taken from the HcoState%Grid object
+    ExtState%GWETTOP%DoUse = .TRUE.
+    ExtState%HFLUX%DoUse   = .TRUE.
+    ExtState%SNOWHGT%DoUse = .TRUE.
     ExtState%T2M%DoUse     = .TRUE.
     ExtState%TSKIN%DoUse   = .TRUE.
-    ExtState%PS%DoUse      = .TRUE.
-    ExtState%GWETTOP%DoUse = .TRUE.
-    ExtState%SNOWHGT%DoUse = .TRUE.
     ExtState%USTAR%DoUse   = .TRUE.
-    ExtState%HFLUX%DoUse   = .TRUE.
 
     ! Cleanup
     Inst => NULL()

@@ -149,7 +149,6 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: PARDR       ! direct photsyn radiation [W/m2]
      TYPE(ExtDat_2R),  POINTER :: PARDF       ! diffuse photsyn radiation [W/m2]
      TYPE(ExtDat_2R),  POINTER :: PS          ! Surface pressure [hPa]
-     TYPE(ExtDat_2R),  POINTER :: PBLH        ! Planetary boundary layer height [m]
      TYPE(ExtDat_2R),  POINTER :: HFLUX       ! Sensible height flux due to turbulence [W m-2]
      TYPE(ExtDat_2R),  POINTER :: PSC2_WET    ! Interpolated sfc pressure [hPa]
      TYPE(ExtDat_2R),  POINTER :: RADSWG      ! surface radiation [W/m2]
@@ -468,13 +467,6 @@ CONTAINS
        RETURN
     ENDIF
 
-    CALL ExtDat_Init( ExtState%PBLH, RC )
-    IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Could not allocate ExtState%PBLH'
-       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-       RETURN
-    ENDIF
-
     CALL ExtDat_Init( ExtState%HFLUX, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Could not allocate ExtState%HFLUX'
@@ -787,7 +779,6 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%PARDR      )
        CALL ExtDat_Cleanup( ExtState%PARDF      )
        CALL ExtDat_Cleanup( ExtState%PS         )
-       CALL ExtDat_Cleanup( ExtState%PBLH       )
        CALL ExtDat_Cleanup( ExtState%HFLUX      )
        CALL ExtDat_Cleanup( ExtState%PSC2_WET   )
        CALL ExtDat_Cleanup( ExtState%RADSWG     )

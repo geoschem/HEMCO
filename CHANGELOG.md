@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Removed Microsoft Azure Dev Pipeline continuous integration tests
+- Removed `ExtState%PBLH` (and code that referenced this), as PBL height may be obtained from `HcoState%Grid%PBLHEIGHT`.
 
 ## [3.11.2] - 2025-07-28
 ### Changed
