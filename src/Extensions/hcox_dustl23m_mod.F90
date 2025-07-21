@@ -251,7 +251,7 @@ CONTAINS
     CALL InstGet( ExtState%DustL23M, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find DustL23M instance Nr. ', ExtState%DustL23M
-       CALL HCO_ERROR(MSG,RC)
+       CALL HCO_ERROR( MSG, RC )
        RETURN
     ENDIF
 
@@ -354,7 +354,7 @@ CONTAINS
                             ExtNr=Inst%ExtNr                                )
           IF ( RC /= HCO_SUCCESS ) THEN
              WRITE(MSG,*) 'HCO_EmisAdd error: dust bin ', N
-             CALL HCO_ERROR(MSG, RC )
+             CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
        ENDIF
@@ -367,7 +367,7 @@ CONTAINS
                                ExtNr=Inst%ExtNrAlk                          )
              IF ( RC /= HCO_SUCCESS ) THEN
                 WRITE(MSG,*) 'HCO_EmisAdd error: dust alk bin ', N
-                CALL HCO_ERROR(MSG, RC )
+                CALL HCO_ERROR( MSG, RC )
                 RETURN
              ENDIF
           ENDIF
@@ -424,8 +424,8 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
-    INTEGER               :: ExtNr, N, AS
-    CHARACTER(LEN=255)    :: MSG, LOC
+    INTEGER               :: ExtNr, N
+    CHARACTER(LEN=255)    :: MSG,   LOC
 
     ! Pointers
     TYPE(MyInst), POINTER :: Inst
@@ -433,6 +433,9 @@ CONTAINS
     !========================================================================
     ! HCOX_DustL23M_INIT begins here!
     !========================================================================
+
+    ! Assume success
+    RC = HCO_SUCCESS
 
     ! Exit if this extension is turned off
     ExtNr = GetExtNr( HcoState%Config%ExtList, TRIM( ExtName ) )
@@ -464,8 +467,8 @@ CONTAINS
                           Inst%SpcNames, Inst%nSpc,  RC                     )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error encountered in "HCO_GetExtHcoId"'
-        CALL HCO_ERROR( MSG, RC, LOC )
-        RETURN
+       CALL HCO_ERROR( MSG, RC, LOC )
+       RETURN
     ENDIF
 
     ! Check for dust alkalinity option
@@ -473,19 +476,21 @@ CONTAINS
 
     ! Get the dust alkalinity species defined for DustAlk option
     IF ( Inst%ExtNrAlk > 0 ) THEN
-      CALL HCO_GetExtHcoID( HcoState,         Inst%ExtNrAlk, Inst%HcoIDsAlk, &
-                            Inst%SpcNamesAlk, Inst%nSpcAlk,  RC             )
-      IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-        RETURN
-      ENDIF
+       CALL HCO_GetExtHcoID( HcoState,       Inst%ExtNrAlk,                  &
+                             Inst%HcoIDsAlk, Inst%SpcNamesAlk,               &
+                             Inst%nSpcAlk,   RC                             )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          MSG = 'Error encountered in "HCO_GetExtHcoId" (for DustAlk)'
+          CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+          RETURN
+       ENDIF
     ENDIF
 
     ! Sanity check
     IF ( Inst%nSpc /= TNSPEC ) THEN
-      MSG = 'DustL23M model does not have 7(+1 total) species!'
-      CALL HCO_ERROR(MSG, RC )
-      RETURN
+       MSG = 'DustL23M model does not have 7(+1 total) species!'
+       CALL HCO_ERROR(MSG, RC )
+       RETURN
     ENDIF
 
     ! There must be at least one species
@@ -501,34 +506,41 @@ CONTAINS
                        Inst%SpcNames,   'Scaling',   1.0_sp,                 &
                        Inst%SpcScl,      RC                                 )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in routine "GetExtSpcVal" (for "Scaling")!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Get species mask fields
-    CALL GetExtSpcVal( HcoState%Config, Inst%ExtNr, Inst%nSpc, &
-                       Inst%SpcNames, 'ScaleField', HCOX_NOSCALE, Inst%SpcScalFldNme, RC )
+    CALL GetExtSpcVal( HcoState%Config,    Inst%ExtNr,  Inst%nSpc,           &
+                       Inst%SpcNames,     'ScaleField', HCOX_NOSCALE,        &
+                       Inst%SpcScalFldNme, RC                               )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in routine "GetExtSpcVal" (for "ScaleField")!'
+
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
 
        ! Write the name of the extension regardless of the verbose setting
+       ! Use the separator if Verbose output is turned on
        msg = 'Using HEMCO extension: DustL23M (dust emission scheme)'
        IF ( HcoState%Config%doVerbose ) THEN
-          CALL HCO_Msg( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN ) ! with separator
+          CALL HCO_Msg( msg, sep1='-', LUN=HcoState%Config%hcoLogLUN )
        ELSE
-          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN ) ! w/o separator
+          CALL HCO_Msg( msg, LUN=HcoState%Config%hcoLogLUN )
        ENDIF
 
        ! Write all other messages as debug printout only
        MSG = ' - use the following species (Name, HcoID, Scaling):'
        CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
        DO N = 1, Inst%nSpc
-          WRITE(MSG,*) TRIM(Inst%SpcNames(N)), ', ', Inst%HcoIDs(N), ', ', Inst%SpcScl(N)
+          WRITE(MSG,*) TRIM(Inst%SpcNames(N)), ', ',                         &
+                       Inst%HcoIDs(N),         ', ',                         &
+                       Inst%SpcScl(N)
           CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
           WRITE(MSG,*) 'Apply scale field: ', TRIM(Inst%SpcScalFldNme(N))
           CALL HCO_MSG( MSG, LUN=HcoState%Config%hcoLogLUN )
@@ -538,8 +550,8 @@ CONTAINS
     !-----------------------------------------------------------------
     ! Init module arrays
     !-----------------------------------------------------------------
-    ALLOCATE( Inst%A_bare( HcoState%NX, HcoState%NY), STAT=AS )
-    IF ( AS /= HCO_SUCCESS ) THEN
+    ALLOCATE( Inst%A_bare( HcoState%NX, HcoState%NY), STAT=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
        msg = 'Could not allocate Inst%A_bare!'
        CALL HCO_ERROR( msg, RC, thisLoc=loc )
        RETURN
@@ -637,7 +649,6 @@ CONTAINS
     ExtState%GWETTOP%DoUse = .TRUE.
     ExtState%SNOWHGT%DoUse = .TRUE.
     ExtState%USTAR%DoUse   = .TRUE.
-    ExtState%PBLH%DoUse    = .TRUE.
     ExtState%HFLUX%DoUse   = .TRUE.
 
     ! Cleanup
@@ -991,6 +1002,11 @@ CONTAINS
     !========================================================================
     ! CAL_THR_FRIC_VEL begins here!
     !========================================================================
+
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J, w, w_t                                             )&
+    !$OMP COLLAPSE( 2                                                       )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -1039,10 +1055,11 @@ CONTAINS
             ( f_clay(I,J)   > 1.0e-15 ) ) THEN
          f_m(I,J) =                                                          &
            SQRT( 1.0_hp + 1.21_hp * ( ( 100.0_hp * ( w - w_t ) )**0.68_hp ) )
-      ENDIF
+       ENDIF
 
-   ENDDO
-   ENDDO
+    ENDDO
+    ENDDO
+    !$OMP END PARALLEL DO
 
     ! Wet threshold friction velocity [m s-1]
     u_star_ft = u_star_ft0 * f_m
@@ -1137,6 +1154,11 @@ CONTAINS
     !========================================================================
     ! CAL_DRAG_PART begins here!
     !========================================================================
+
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J, K                                                  )&
+    !$OMP COLLAPSE( 2                                                       )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -1199,6 +1221,7 @@ CONTAINS
 
     ENDDO
     ENDDO
+    !$OMP END PARALLEL DO
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -1289,6 +1312,12 @@ CONTAINS
     eta = 1.0_hp           ! Start by setting eta = 1 everywhere
 
     ! Loop over grid boxes
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( alpha,  P_ft, P_it, sigma, term_1, term_2                )&
+    !$OMP PRIVATE( term_3, u_ft, u_it, u_s,   L                             )&
+    !$OMP SCHEDULE( GUIDED, 24                                              )&
+    !$OMP COLLAPSE( 2                                                       )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -1394,6 +1423,7 @@ CONTAINS
 
     ENDDO
     ENDDO
+    !$OMP END PARALLEL DO
 
   END SUBROUTINE CAL_INTERM_FACTOR
 !EOC
@@ -1529,6 +1559,10 @@ CONTAINS
     !------------------------------------------------------------------------
     ! Calculate air density & snow cover
     !------------------------------------------------------------------------
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J                                                     )&
+    !$OMP COLLAPSE( 2                                                       )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -1549,6 +1583,7 @@ CONTAINS
 
     ENDDO
     ENDDO
+    !$OMP END PARALLEL DO
 
     !------------------------------------------------------------------------
     ! Calculate threshold friction velocity [m/s]
@@ -1603,6 +1638,11 @@ CONTAINS
     !------------------------------------------------------------------------
     ! Calculate dust emission flux
     !------------------------------------------------------------------------
+
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J, C_d, f_bare, kappa, DUST_EMIS_FLUX_Tmp             )&
+    !$OMP COLLAPSE( 2                                                       )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -1664,6 +1704,7 @@ CONTAINS
 
     ENDDO
     ENDDO
+    !$OMP END PARALLEL DO
 
     ! Cleanup & return
     RC    =  HCO_SUCCESS
