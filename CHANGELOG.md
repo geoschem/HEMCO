@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Changed
 - Bumped `jinja2==3.1.5` to `jinja2==3.1.6` in `docs/requirements.txt` to fix a security issue
+- Increase string length for reading lines from HEMCO standalone grid file for 0.125x0.15625 global resolution
+- Updated ReadTheDocs documentation to state that we are using Spack v0.23.1 in the Spack installation guide
+- Updated the ReadTheDocs "Known Bugs" page to include links to open and resolved issues
+
+### Fixed
+- Fixed print in adjoint subroutine for getting current emissions
 
 ## [3.11.0] - 2025-04-18
 ### Added
