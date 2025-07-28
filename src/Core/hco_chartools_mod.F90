@@ -869,8 +869,8 @@ CONTAINS
 !
 ! LOCAL VARIABLES:
 !
-    INTEGER             :: IOS
-    CHARACTER(LEN=5500) :: DUM
+    INTEGER              :: IOS
+    CHARACTER(LEN=15000) :: DUM
 
     !=================================================================
     ! GetNextLine begins here
@@ -950,9 +950,9 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER             :: IOS, C
-    CHARACTER(LEN=255)  :: MSG
-    CHARACTER(LEN=5500) :: DUM
+    INTEGER              :: IOS, C
+    CHARACTER(LEN=255)   :: MSG
+    CHARACTER(LEN=15000) :: DUM
 
     !=================================================================
     ! HCO_ReadLine begins here!
