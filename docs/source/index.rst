@@ -58,8 +58,6 @@ HEMCO is given in :cite:t:`Keller_et_al._2014` and
    hco-ref-guide/under-the-hood.rst
    hco-ref-guide/input-file-format.rst
    coupling/intro.rst
-   hco-ref-guide/known-bugs.rst
-   hco-ref-guide/version-history.rst
    hco-ref-guide/key-references.rst
 
 .. toctree::
@@ -81,6 +79,8 @@ HEMCO is given in :cite:t:`Keller_et_al._2014` and
    :maxdepth: 1
    :caption: Help and Reference
 
+   hco-ref-guide/version-history.rst
+   hco-ref-guide/known-bugs.rst
    reference/CONTRIBUTING.md
    reference/SUPPORT.md
    geos-chem-shared-docs/editing_these_docs.rst

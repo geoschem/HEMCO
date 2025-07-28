@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.11.2] - 2025-07-28
+### Changed
+- Increase string length for reading lines from HEMCO standalone grid file for 0.125x0.15625 global resolution
+- Bumped `jinja2==3.1.5` to `jinja2==3.1.6` in `docs/requirements.txt` to fix a security issue
+- Updated ReadTheDocs documentation to state that we are using Spack v0.23.1 in the Spack installation guide
+- Updated the ReadTheDocs "Known Bugs" page to include links to open and resolved issues
+
+### Fixed
+- Fixed print in adjoint subroutine for getting current emissions
+
 ## [3.11.0] - 2025-04-18
 ### Added
 - Added option to enable `InvMEGAN` manual diagnostic output

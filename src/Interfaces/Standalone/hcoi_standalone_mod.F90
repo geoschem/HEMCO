@@ -1057,7 +1057,7 @@ CONTAINS
     CHARACTER(LEN=255)    :: LOC
     CHARACTER(LEN=  1)    :: COL
     CHARACTER(LEN=255)    :: MyGridFile, ThisLoc
-    CHARACTER(LEN=5500)   :: DUM
+    CHARACTER(LEN=15000)  :: DUM
     CHARACTER(LEN=255)    :: ErrMsg,  Msg
 
     !=================================================================
