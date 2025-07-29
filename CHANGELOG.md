@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
 - Updated badges on `README.md` and `docs/source/index.rst`
 
+### Removed
+- Removed Microsoft Azure Dev Pipeline continuous integration tests
+
 ## [3.11.2] - 2025-07-28
 ### Changed
 - Increase string length for reading lines from HEMCO standalone grid file for 0.125x0.15625 global resolution
