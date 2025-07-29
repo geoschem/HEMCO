@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
 - Updated badges on `README.md` and `docs/source/index.rst`
+- Updated GitHub Actions to run if the branch name matches `dev`, `dev/**`, `release`, `release/**`
+
+### Fixed
+- Fixed security issues in GitHub Actions
 
 ### Removed
 - Removed Microsoft Azure Dev Pipeline continuous integration tests
