@@ -5228,7 +5228,7 @@ CONTAINS
     ! scale (mask) value equal to srcGMaskID (D. Zhang, 05/28/2025)
     !========================================================================
     IF ( DctType == HCO_DCTTYPE_SCAL .AND. Int3 > 0 ) THEN
-       Lct%Dct%srcGMaskID = Int3
+       Lct%Dct%srcGMaskID = REAL(Int3, kind=sp)
     ENDIF
 
     !========================================================================

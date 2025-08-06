@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - TBD
+### Added
+- Added the functionality of scaling gridded emissions based on the state vector ID from a gridded file for IMI
+
 ### Changed
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
 - Updated badges on `README.md` and `docs/source/index.rst`

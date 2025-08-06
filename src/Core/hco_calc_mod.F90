@@ -1280,7 +1280,7 @@ CONTAINS
                 IF ( ScalDct%srcGMaskID > 0 ) THEN
                   ! Set missing mask to 0
                   IF ( tmpVal == HCO_MISSVAL ) tmpVal = 0.0_sp
-                  IF ( abs(TMPVAL - REAL(ScalDct%srcGMaskID)) < 0.01_sp ) THEN
+                  IF ( abs(TMPVAL - ScalDct%srcGMaskID) < 0.01_sp ) THEN
                      tmpval = 1.0_sp
                   ELSE
                      tmpval = 0.0_sp
@@ -3186,7 +3186,7 @@ END FUNCTION GetEmisLUnit
              IF ( ScalDct%srcGMaskID > 0 ) THEN
                ! Set missing mask to 0
                IF ( tmpVal == HCO_MISSVAL ) tmpVal = 0.0_sp
-               IF ( abs(TMPVAL - REAL(ScalDct%srcGMaskID)) < 0.01_sp ) THEN
+               IF ( abs(TMPVAL - ScalDct%srcGMaskID) < 0.01_sp ) THEN
                  tmpval = 1.0_sp
                ELSE
                  tmpval = 0.0_sp

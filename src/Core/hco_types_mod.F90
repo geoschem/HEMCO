@@ -317,7 +317,7 @@ MODULE HCO_TYPES_MOD
      INTEGER                     :: Cat            ! Category
      INTEGER                     :: Hier           ! Hierarchy
      INTEGER                     :: ScalID         ! Scale factor ID
-     INTEGER                     :: srcGMaskID     ! global source mask ID
+     REAL(sp)                    :: srcGMaskID     ! global source mask ID
      INTEGER                     :: Oper           ! Operator
      INTEGER                     :: levScalID1     ! ID of vertical level field
      INTEGER                     :: levScalID2     ! ID of vertical level field
