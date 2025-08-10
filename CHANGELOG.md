@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - TBD
 ### Added
-- Added the functionality of scaling gridded emissions based on the state vector ID from a gridded file for IMI
+- Restore the functionality of selectively applying gridded scaling factor based on the value of mask ID from a gridded file
 
 ### Changed
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
