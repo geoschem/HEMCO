@@ -471,8 +471,6 @@ CONTAINS
        RETURN
     ENDIF
 
-    print*, '### inst%extnr: ', inst%extnr
-
     ! Get species IDs.
     CALL HCO_GetExtHcoID( HcoState,      Inst%ExtNr, Inst%HcoIDs,            &
                           Inst%SpcNames, Inst%nSpc,  RC                     )
@@ -514,7 +512,7 @@ CONTAINS
     ! configuration file.  If not specified, call wrapper function which 
     ! sets teh scale factor
     ! based upon compiler switches.
-    CALL GetExtOpt( HcoState%Config,  Inst%ExtNr,  'Tuning factor',          &
+    CALL GetExtOpt( HcoState%Config,  Inst%ExtNr,  'Mass tuning factor',    &
                     OptValDp=TmpScal, Found=FOUND,  RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error encountered in routine "GetExtOpt" (for tuning factor)!'
