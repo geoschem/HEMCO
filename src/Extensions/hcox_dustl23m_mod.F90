@@ -520,13 +520,19 @@ CONTAINS
        RETURN
     ENDIF
 
-    ! Read horizontal-grid dependent parameter C_tune from config file
+    ! Read horizontal-grid dependent parameter C_tune from config file.
+    ! Now halt run if C_tune is not found, as the negative fill value
+    ! will result in negative emissions.
     IF ( FOUND ) THEN
        Inst%C_tune = TmpScal
     ELSE
        Inst%C_tune = -999.0e0
     ENDIF
-    
+    IF ( Inst%C_tune < 0.0 ) THEN
+       CALL HCO_ERROR( 'Mass tuning factor "C_tune" is undefined!', RC )
+       RETURN
+    ENDIF
+
     ! Determine scale factor to be applied to each species. This is 1.00
     ! by default, but can be set in the HEMCO configuration file via setting
     ! Scaling_<SpcName>.
