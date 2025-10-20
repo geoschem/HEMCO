@@ -183,6 +183,7 @@ CONTAINS
 !
 ! !USES:
 !
+    USE HCO_CharTools_Mod, ONLY : HCO_WordWrapPrint
 #if defined( ESMF_ )
 #include "MAPL_Generic.h"
     USE ESMF
@@ -206,7 +207,7 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
     INTEGER             :: I, J, hcoLogLUN
-    CHARACTER(LEN=1023) :: MSG, MSG1, MSG2
+    CHARACTER(LEN=1023) :: MSG
 #if defined( ESMF_)
     INTEGER             :: localPET, STATUS
     CHARACTER(4)        :: localPETchar
@@ -218,11 +219,8 @@ CONTAINS
     !======================================================================
 
     ! Specify where to write
-    IF ( PRESENT(LUN) ) THEN
-       hcoLogLUN = LUN
-    ELSE
-       hcoLogLUN = 6
-    ENDIF
+    hcoLogLUN = 6
+    IF ( PRESENT(LUN) ) hcoLogLUN = LUN
 
     ! Construct error message
 #if defined( ESMF_ )
@@ -230,18 +228,20 @@ CONTAINS
     CALL ESMF_VMGetCurrent(VM, RC=STATUS)
     CALL ESMF_VmGet( VM, localPET=localPET, __RC__ )
     WRITE(localPETchar,'(I4.4)') localPET
-    MSG1 = 'HEMCO ERROR ['//TRIM(localPETchar)//']: '//TRIM(ErrMsg)
+    MSG = 'HEMCO ERROR [' // TRIM( localPETchar ) //']: '// TRIM( ErrMsg )
 #else
-    MSG1 = 'HEMCO ERROR: '//TRIM(ErrMsg)
+    MSG = 'HEMCO ERROR: ' // TRIM( ErrMsg       )
 #endif
-    MSG2 = ''
-    IF ( PRESENT(THISLOC) ) THEN
-       MSG2 = NEW_LINE('a') // ' --> LOCATION: ' // TRIM( THISLOC )
-    ENDIF
-    MSG = NEW_LINE('a') // TRIM(MSG1) // TRIM(MSG2)
+    MSG = NEW_LINE('a')   // TRIM( MSG          )
 
-    ! Print error message
-    WRITE(hcoLogLUN,*) TRIM(MSG)
+    ! Print error message with word wrap
+    CALL HCO_WordWrapPrint( MSG, LineWidth=78, FileLun=hcoLogLUN )
+
+    ! Print location (if THISLOC argument is passed) with word wrap
+    IF ( PRESENT( THISLOC ) ) THEN
+       MSG = ' --> LOCATION: ' // TRIM( THISLOC )
+       CALL HCO_WordWrapPrint( MSG, LineWidth=78, FileLun=hcoLogLUN )
+    ENDIF
 
     ! Return w/ error
     RC = HCO_FAIL
@@ -265,6 +265,10 @@ CONTAINS
 ! !INTERFACE:
 !
   SUBROUTINE HCO_Warning( ErrMsg, THISLOC, LUN )
+!
+! !USES:
+!
+    USE HCO_CharTools_Mod, ONLY : HCO_WordWrapPrint
 !
 ! !INPUT PARAMETERS"
 !
@@ -294,12 +298,12 @@ CONTAINS
 
     ! Print warning
     MSG = 'HEMCO WARNING: ' // TRIM( ErrMsg )
-    WRITE( hcoLogLUN, '(a)' ) TRIM(MSG)
+    CALL HCO_WordWrapPrint( MSG, LineWidth=78, FileLun=hcoLogLUN )
 
     ! Print location
     IF ( PRESENT(THISLOC) ) THEN
        MSG = '--> LOCATION: ' // TRIM(THISLOC)
-       WRITE( hcoLogLUN, '(a)' ) TRIM(MSG)
+       CALL HCO_WordWrapPrint( MSG, LineWidth=78, FileLun=hcoLogLUN )
     ENDIF
 
   END SUBROUTINE HCO_Warning
@@ -324,6 +328,10 @@ CONTAINS
 !
   SUBROUTINE HCO_MSG( Msg, Sep1, Sep2, LUN )
 !
+! !USES:
+!
+    USE HCO_CharTools_Mod, ONLY : HCO_WordWrapPrint
+!
 ! !INPUT PARAMETERS:
 !
     CHARACTER(LEN=*), INTENT(IN   )            :: Msg
@@ -346,11 +354,11 @@ CONTAINS
     hcoLogLUN = 6
     IF ( PRESENT(LUN) ) hcoLogLUN = LUN
 
-    ! Write message
+    ! Write message 
     IF ( PRESENT(SEP1) ) THEN
        WRITE( hcoLogLUN,'(a)' ) REPEAT( SEP1, 79 )
     ENDIF
-    WRITE( hcoLogLUN,'(a)' ) TRIM( MSG )
+    CALL HCO_WordWrapPrint( MSG, LineWidth=78, FileLun=hcoLogLUN )
     IF ( PRESENT(SEP2) ) THEN
        WRITE( hcoLogLUN,'(a)' ) REPEAT( SEP2, 79 )
     ENDIF
