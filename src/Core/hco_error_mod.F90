@@ -8,7 +8,7 @@
 ! !DESCRIPTION: Module HCO\_Error\_Mod contains routines and variables
 ! for error handling and logfile messages in HEMCO. It alse contains
 ! definitions of some globally used parameters, such as single/double
-! precision as well s the HEMCO precision which can be either single or
+! precision as well as the HEMCO precision which can be either single or
 ! double. The HEMCO precision is used for almost all HEMCO internal data
 ! arrays and can be changed if required.
 !\\
