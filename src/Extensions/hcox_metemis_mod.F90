@@ -108,7 +108,8 @@ MODULE HCOX_MetEmis_MOD
      INTEGER               :: ExtNr
      INTEGER               :: IDTNO
      INTEGER               :: IDTNO2
-     LOGICAL               :: NOXGASDIS  ! Split NOx in Gas and Diesel Fuels
+     LOGICAL               :: NOXGASDIS  ! Apply humidity correction for split
+                                         ! NOx gas and diesel fuels
      ! Arrays
 
      ! Reference temperature values of variables in the MetEmis look-up tables
@@ -1046,26 +1047,28 @@ CONTAINS
 
    END DO
 
-   !Calculate humidity correction For NOx
-   QAIR = QAIR*1000.0   !convert from kg water/kg dry air to g/kg
-   A = MIN( QAIR, 17.71 )
-   B = MAX( 3.0, A )
-   NOXGAS = 1.0 - 0.0329 * ( B - 10.71 )   ! NOx humidity correction for Gasoline fuel
-   QMOL = QAIR * 0.001607524  ! convert from g of water/kg of dry air to moles of water/moles of dry air
-   A = MIN( QMOL, 0.035 )
-   B = MAX( 0.002, A )
-   NOXDIS = 1.0 / ( 9.953 * B  + 0.832 )  ! Nox humidity correction for Diesel fuel
+   IF ( Inst%NOXGASDIS ) THEN
+      !Calculate and apply humidity correction For NOx across split gas vs. diesel fuels
+      QAIR = QAIR*1000.0   !convert from kg water/kg dry air to g/kg
+      A = MIN( QAIR, 17.71 )
+      B = MAX( 3.0, A )
+      NOXGAS = 1.0 - 0.0329 * ( B - 10.71 )   ! NOx humidity correction for Gasoline fuel
+      QMOL = QAIR * 0.001607524  ! convert from g of water/kg of dry air to moles of water/moles of dry air
+      A = MIN( QMOL, 0.035 )
+      B = MAX( 0.002, A )
+      NOXDIS = 1.0 / ( 9.953 * B  + 0.832 )  ! Nox humidity correction for Diesel fuel
 
-   !::: These NOXGAS and NOXDIS correction factors can be multiplied with the 
-   !estimated emissions between temperature bins to reflect the impact of humidity up to 20% (+/-)
+      !::: These NOXGAS and NOXDIS correction factors can be multiplied with the 
+      !estimated emissions between temperature bins to reflect the impact of humidity up to 20% (+/-)
 
-   !For now since we do not yet separate NOx Gas vs. Diesel fuels in MetEmis tables...
-   !  I arbitrarily take average of two factors..
-   NOXCORR = ( NOXGAS + NOXDIS )/2.0
+      !For now since we do not yet separate NOx Gas vs. Diesel fuels in MetEmis tables...
+      !  I arbitrarily take average of two factors..
+      NOXCORR = ( NOXGAS + NOXDIS )/2.0
 
-   !Apply humidity correction for NOx
-   TEMPNO  = NOXCORR * TEMPNO
-   TEMPNO2 = NOXCORR * TEMPNO2
+      !Apply humidity correction for NOx
+      TEMPNO  = NOXCORR * TEMPNO
+      TEMPNO2 = NOXCORR * TEMPNO2
+   ENDIF
 
    ! Return w/ success
    RC = HCO_SUCCESS
