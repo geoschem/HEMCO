@@ -96,8 +96,8 @@ MODULE HCOX_MetEmis_MOD
 ! !MODULE VARIABLES:
 
   ! Number of values for each variable in the provided input look-up table
-  ! CONUS MetEmis Tables with  25 temperature bins
-   INTEGER, PARAMETER ::  nT=25     !25 Temperature Bins in degrees F
+  ! CONUS MetEmis Tables with  10 temperature bins
+   INTEGER, PARAMETER ::  nT=10    !10 Temperature bins in degrees F
 
   ! Now place all module variables in a lderived type object (for a linked
   ! list) so that we can have one instance per node in an MPI environment.
@@ -624,59 +624,51 @@ CONTAINS
    ! Continue initializing METEMIS for regular simulations
    !========================================================================
    !three digit suffix pertains to temperature bins in degrees fahrenheit
-   ExtState%T2M%DoUse                      = .TRUE.
-   ExtState%QV2M%DoUse                     = .TRUE.
-   ExtState%MEmisNO_OR_000%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_005%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_010%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_015%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_020%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_025%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_030%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_035%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_040%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_045%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_050%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_055%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_060%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_065%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_070%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_075%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_080%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_085%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_090%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_095%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_100%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_105%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_110%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_115%DoUse           = .TRUE.
-   ExtState%MEmisNO_OR_120%DoUse           = .TRUE.
+   ExtState%T2M%DoUse                          = .TRUE.
+   ExtState%QV2M%DoUse                         = .TRUE.
+   ExtState%MEmisNO_GAS_OR_030%DoUse           = .TRUE.
+   ExtState%MEmisNO_GAS_OR_040%DoUse           = .TRUE.
+   ExtState%MEmisNO_GAS_OR_050%DoUse           = .TRUE.
+   ExtState%MEmisNO_GAS_OR_060%DoUse           = .TRUE.
+   ExtState%MEmisNO_GAS_OR_070%DoUse           = .TRUE.
+   ExtState%MEmisNO_GAS_OR_080%DoUse           = .TRUE.
+   ExtState%MEmisNO_GAS_OR_090%DoUse           = .TRUE.
+   ExtState%MEmisNO_GAS_OR_100%DoUse           = .TRUE.
+   ExtState%MEmisNO_GAS_OR_110%DoUse           = .TRUE.
+   ExtState%MEmisNO_GAS_OR_120%DoUse           = .TRUE.
 
-   ExtState%MEmisNO2_OR_000%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_005%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_010%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_015%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_020%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_025%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_030%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_035%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_040%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_045%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_050%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_055%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_060%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_065%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_070%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_075%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_080%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_085%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_090%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_095%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_100%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_105%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_110%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_115%DoUse           = .TRUE.
-   ExtState%MEmisNO2_OR_120%DoUse           = .TRUE.
+   ExtState%MEmisNO_DIS_OR_030%DoUse           = .TRUE.
+   ExtState%MEmisNO_DIS_OR_040%DoUse           = .TRUE.
+   ExtState%MEmisNO_DIS_OR_050%DoUse           = .TRUE.
+   ExtState%MEmisNO_DIS_OR_060%DoUse           = .TRUE.
+   ExtState%MEmisNO_DIS_OR_070%DoUse           = .TRUE.
+   ExtState%MEmisNO_DIS_OR_080%DoUse           = .TRUE.
+   ExtState%MEmisNO_DIS_OR_090%DoUse           = .TRUE.
+   ExtState%MEmisNO_DIS_OR_100%DoUse           = .TRUE.
+   ExtState%MEmisNO_DIS_OR_110%DoUse           = .TRUE.
+   ExtState%MEmisNO_DIS_OR_120%DoUse           = .TRUE.
+
+   ExtState%MEmisNO2_GAS_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisNO2_GAS_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisNO2_GAS_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisNO2_GAS_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisNO2_GAS_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisNO2_GAS_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisNO2_GAS_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisNO2_GAS_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisNO2_GAS_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisNO2_GAS_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisNO2_DIS_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisNO2_DIS_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisNO2_DIS_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisNO2_DIS_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisNO2_DIS_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisNO2_DIS_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisNO2_DIS_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisNO2_DIS_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisNO2_DIS_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisNO2_DIS_OR_120%DoUse          = .TRUE.
 
    !------------------------------------------------------------------------
    ! Leave w/ success
@@ -872,12 +864,18 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
    INTEGER                    :: I1
-   REAL(sp)                   :: TEMPNO_TMP
-   REAL(sp)                   :: TEMPNO2_TMP
+   REAL(sp)                   :: TEMPNO_GAS
+   REAL(sp)                   :: TEMPNO_DIS
+   REAL(sp)                   :: TEMPNO2_GAS
+   REAL(sp)                   :: TEMPNO2_DIS
+   REAL(sp)                   :: TEMPNO_GAS_TMP
+   REAL(sp)                   :: TEMPNO_DIS_TMP
+   REAL(sp)                   :: TEMPNO2_GAS_TMP
+   REAL(sp)                   :: TEMPNO2_DIS_TMP
    REAL(sp)                   :: WEIGHT
    REAL(sp)                   :: TAIR
    REAL(sp)                   :: QAIR,QMOL,A,B
-   REAL(sp)                   :: NOXGAS,NOXDIS,NOXCORR
+   REAL(sp)                   :: NOXGAS,NOXDIS
 
    ! Interpolation variables, indices, and weights
    REAL(sp), DIMENSION(1)     :: VARS
@@ -891,27 +889,32 @@ CONTAINS
    ! METEMIS_LUT begins here!
    !=================================================================
 
-   !MetEmis Temperature Bins (Degrees Fahrenheit)
-   Inst%Tlev = (/ 0.0e0, 5.0e0, 10.0e0, 15.0e0, 20.0e0, 25.0e0, 30.0e0, &
-                  35.0e0, 40.0e0,  45.0e0,  50.0e0,  55.0e0,  60.0e0,  &
-                  65.0e0, 70.0e0,  75.0e0,  80.0e0,  85.0e0,  90.0e0,  &
-                  95.0e0, 100.0e0, 105.0e0, 110.0e0, 115.0e0, 120.0e0 /)
-
+   !MetEmis Temperature bins (Degrees Fahrenheit) = 10 from explicit nT
+   !e.g., 20 - 30, ... 110 - 120
+   Inst%Tlev = (/ 20.0e0, 30.0e0, 40.0e0, 50.0e0,  60.0e0,  &
+                  70.0e0, 80.0e0, 90.0e0, 100.0e0, 110.0e0 /)
 
 
    !Get 2-m air temperature, K
    TAIR = ExtState%T2M%Arr%Val(I,J)
    !Get 2-m air specific humidity, kg/kg
    QAIR = ExtState%QV2M%Arr%Val(I,J)
-!   print*, 'I=', I,  'J=', J
-!   print*, 'size1(ExtState%MEmisNO2_OR_120%Arr%Val)', size(ExtState%MEmisNO2_OR_120%Arr%Val,1)
-!   print*, 'size2(ExtState%MEmisNO2_OR_120%Arr%Val)', size(ExtState%MEmisNO2_OR_120%Arr%Val,2) 
+
    !========================================================================
    ! Load all variables into a single array
    !========================================================================
 
    ! Air Temperature, K --> Fahrenheit for MetEmis consistency
    VARS(1) = (TAIR - 273.15)*1.8 + 32.0
+
+   ! Check if outside bounds of MetEmis Temperature Bins and set , i.e., <= 20F or >=120 F
+   IF ( VARS(1) <= 20.0  ) THEN
+      VARS(1) = 20.0
+   ENDIF
+
+   IF ( VARS(1) >= 120.0  ) THEN
+      VARS(1) = 120.0
+   ENDIF
 
    !========================================================================
    ! Find the indices of nodes and their corresponding weights for the
@@ -926,111 +929,75 @@ CONTAINS
    !========================================================================
 
    ! Initialize
-   TEMPNO  = 0.0d0
-   TEMPNO2 = 0.0d0
+   TEMPNO      = 0.0d0
+   TEMPNO2     = 0.0d0
+   TEMPNO_GAS  = 0.0d0
+   TEMPNO_DIS  = 0.0d0
+   TEMPNO2_GAS = 0.0d0
+   TEMPNO2_DIS = 0.0d0
 
   ! Loop over temperature bins
    DO I1=1,2
       SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
-         CASE (  0 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_000%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_000%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE (  5 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_005%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_005%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 10 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_010%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_010%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 15 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_015%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_015%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
          CASE ( 20 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_020%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_020%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 25 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_025%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_025%Arr%Val(I,J)
+            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_030%Arr%Val(I,J)
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_030%Arr%Val(I,J) 
+            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_030%Arr%Val(I,J)
+            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_030%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 30 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_030%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_030%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 35 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_035%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_035%Arr%Val(I,J)
+            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_040%Arr%Val(I,J)
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_040%Arr%Val(I,J)
+            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_040%Arr%Val(I,J)
+            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_040%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 40 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_040%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_040%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 45 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_045%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_045%Arr%Val(I,J)
+            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_050%Arr%Val(I,J)
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_050%Arr%Val(I,J)
+            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_050%Arr%Val(I,J)
+            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_050%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 50 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_050%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_050%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 55 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_055%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_055%Arr%Val(I,J)
+            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_060%Arr%Val(I,J)
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_060%Arr%Val(I,J)
+            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_060%Arr%Val(I,J)
+            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_060%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 60 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_060%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_060%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 65 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_065%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_065%Arr%Val(I,J)
+            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_070%Arr%Val(I,J)
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_070%Arr%Val(I,J)
+            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_070%Arr%Val(I,J)
+            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_070%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 70 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_070%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_070%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 75 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_075%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_075%Arr%Val(I,J)
+            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_080%Arr%Val(I,J)
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_080%Arr%Val(I,J)
+            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_080%Arr%Val(I,J)
+            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_080%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 80 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_080%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_080%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 85 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_085%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_085%Arr%Val(I,J)
+            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_090%Arr%Val(I,J)
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_090%Arr%Val(I,J)
+            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_090%Arr%Val(I,J)
+            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_090%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 90 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_090%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_090%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 95 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_095%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_095%Arr%Val(I,J)
+            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_100%Arr%Val(I,J)
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_100%Arr%Val(I,J)
+            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_100%Arr%Val(I,J)
+            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_100%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 100 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_100%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_100%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 105 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_105%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_105%Arr%Val(I,J)
+            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_110%Arr%Val(I,J)
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_110%Arr%Val(I,J)
+            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_110%Arr%Val(I,J)
+            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_110%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 110 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_110%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_110%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 115 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_115%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_115%Arr%Val(I,J)
-            WEIGHT       = WTS(1,I1)
-         CASE ( 120 )
-            TEMPNO_TMP   =  ExtState%MEmisNO_OR_120%Arr%Val(I,J)
-            TEMPNO2_TMP  =  ExtState%MEmisNO2_OR_120%Arr%Val(I,J)
+            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_120%Arr%Val(I,J)
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_120%Arr%Val(I,J)
+            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_120%Arr%Val(I,J)
+            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_120%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE DEFAULT
              MSG = 'LUT error: Temperature interpolation error!'
@@ -1042,9 +1009,10 @@ CONTAINS
          ! Final interpolated values
          !-----------------------------------
          ! Weighted sum of TempNO from the LUT
-         TEMPNO = TEMPNO + TEMPNO_TMP * WEIGHT
-         TEMPNO2 = TEMPNO2 + TEMPNO2_TMP * WEIGHT
-
+         TEMPNO_GAS = TEMPNO_GAS + TEMPNO_GAS_TMP * WEIGHT
+         TEMPNO_DIS = TEMPNO_DIS + TEMPNO_DIS_TMP * WEIGHT
+         TEMPNO2_GAS = TEMPNO2_GAS + TEMPNO2_GAS_TMP * WEIGHT
+         TEMPNO2_DIS = TEMPNO2_DIS + TEMPNO2_DIS_TMP * WEIGHT
    END DO
 
    IF ( Inst%NOXGASDIS ) THEN
@@ -1061,14 +1029,15 @@ CONTAINS
       !::: These NOXGAS and NOXDIS correction factors can be multiplied with the 
       !estimated emissions between temperature bins to reflect the impact of humidity up to 20% (+/-)
 
-      !For now since we do not yet separate NOx Gas vs. Diesel fuels in MetEmis tables...
-      !  I arbitrarily take average of two factors..
-      NOXCORR = ( NOXGAS + NOXDIS )/2.0
-
-      !Apply humidity correction for NOx
-      TEMPNO  = NOXCORR * TEMPNO
-      TEMPNO2 = NOXCORR * TEMPNO2
+      !Apply humidity correction for temporary NOx GAS and DIESEL
+      TEMPNO_GAS   = NOXGAS * TEMPNO_GAS
+      TEMPNO_DIS   = NOXDIS * TEMPNO_DIS
+      TEMPNO2_GAS  = NOXGAS * TEMPNO2_GAS
+      TEMPNO2_DIS  = NOXDIS * TEMPNO2_DIS
    ENDIF
+      !Sum GAS and DIESEL for Output NOx
+      TEMPNO  = TEMPNO_GAS + TEMPNO_DIS
+      TEMPNO2 = TEMPNO2_GAS + TEMPNO2_DIS
 
    ! Return w/ success
    RC = HCO_SUCCESS
