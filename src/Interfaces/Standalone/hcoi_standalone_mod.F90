@@ -2327,12 +2327,12 @@ CONTAINS
     ENDIF
 
     !%%%%% Total snow storage (land) %%%%%
-    IF ( ExtState%SNOWHGT%DoUse ) THEN
+    IF ( ExtState%SNOMAS%DoUse ) THEN
        Name = 'SNOMAS'
-       CALL ExtDat_Set( HcoState,     ExtState%SNOWHGT,                      &
+       CALL ExtDat_Set( HcoState,     ExtState%SNOMAS,                      &
                         TRIM( Name ), RC,                  FIRST=FIRST      )
        IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Could not find quantity "SNOMAS" (aka "SNOWHGT") '    // &
+          ErrMsg = 'Could not find quantity "SNOMAS" (aka "SNOMAS") '    // &
                    'for the HEMCO standalone simulation!'
           CALL HCO_Error( ErrMsg, RC, ThisLoc )
           CALL HCO_Leave( HcoState%Config%Err, RC )
