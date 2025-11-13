@@ -680,7 +680,7 @@ CONTAINS
     ! NOTE: PS and PBLH will be taken from the HcoState%Grid object
     ExtState%GWETTOP%DoUse = .TRUE.
     ExtState%HFLUX%DoUse   = .TRUE.
-    ExtState%SNOWHGT%DoUse = .TRUE.
+    ExtState%SNOMAS%DoUse = .TRUE.
     ExtState%T2M%DoUse     = .TRUE.
     ExtState%TSKIN%DoUse   = .TRUE.
     ExtState%USTAR%DoUse   = .TRUE.
@@ -1607,9 +1607,9 @@ CONTAINS
        ! According to https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/FAQ/#Q2,
        ! because snwomass is relative to the gridbox area, we use snowmass
        ! instead of snow depth from the met field.
-       ! SNOWDEP = SNOWHGT / 1000 * (1000 / 100) = SNOWHGT / 100
-       snowdep(I,J) = ExtState%SNOWHGT%Arr%Val(I,J) / 100.0_hp
-       A_snow(I,J)  = snowdep(I,J)                  / snowdep_thr
+       ! SNOWDEP = SNOMAS / 1000 * (1000 / 100) = SNOMAS / 100
+       snowdep(I,J) = ExtState%SNOMAS%Arr%Val(I,J) / 100.0_hp
+       A_snow(I,J)  = snowdep(I,J)                 / snowdep_thr
        IF ( A_snow(I,J) > 1.0_hp .or. TSKIN(I,J) < T0 ) THEN
           A_snow(I,J) = 1.0_hp
        ENDIF

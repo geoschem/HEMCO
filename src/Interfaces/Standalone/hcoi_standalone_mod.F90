@@ -498,7 +498,7 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     ! Scalars
-    LOGICAL            :: notDryRun, found
+    LOGICAL            :: notDryRun
     INTEGER            :: CNT
     INTEGER            :: YR, MT, DY, HR, MN, SC
 

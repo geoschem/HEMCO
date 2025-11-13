@@ -21,12 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `HCO_Error` and `HCO_Warning` to call `HCO_WordWrapPrint` to wrap messages to 78 characters wide
 - Replaced terse error messages in `hcoio_read_std_mod.F90` with more descriptive ones
 - Updated error messages in routine `ExtStateInit` to be more descriptive
-- Changed call to `ExtDat_Set` for `ExtData%SNOWHGT` to read data from the GMAO `SNOMAS` field instead of `SNOWHGT`
+- Changed call to `ExtDat_Set` for `ExtData%SNOMAS` to read data from the GMAO `SNOMAS` field instead of `SNOWHGT`
 - Updated `run/HEMCO_sa_Spec.rc` to be consistent with the new dust species
 - Updated `run/createRunDir.sh` to copy the`cleanRunDir.sh` script to the run directory
 - Updated comment headers and removed GCHP-specific text in `run/cleanRunDir.sh`
-- Updated `DustL23M` extension to read the `C_tune` parameter from the HEMCO configuration file
-- Changed `SNOWHGT` container name to `SNOMAS` in `run/HEMCO_Config.rc.*.DustL23M` files for the HEMCO standalone
 
 ### Fixed
 - Fixed security issues in GitHub Actions
@@ -48,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.11.0] - 2025-04-18
 ### Added
 - Added option to enable `InvMEGAN` manual diagnostic output
-- Added supplemental guide dols
+- Added supplemental guide documentation updates in the `geos-chem-shared-docs` submodule
 cumentation updates in the `geos-chem-shared-docs` submodule
 - Added `Lons` and `Lats` to `FileData` type to store bounds of mask files
 - Added definition of 0.125x0.15625 grid resolution
