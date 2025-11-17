@@ -1,5 +1,5 @@
 # List here simulation start, end, and emission time step (seconds).
 # Dates must have format YYYY-MM-DD hh:mm:ss
-START:   2018-01-01 00:00:00
-END:     2019-01-01 00:00:00
+START:   2019-07-01 00:00:00
+END:     2019-08-01 00:00:00
 TS_EMIS: 3600

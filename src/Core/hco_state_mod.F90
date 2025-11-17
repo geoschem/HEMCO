@@ -369,8 +369,8 @@ CONTAINS
     CALL HCO_ArrInit( HcoState%Buffer3D, 0, 0, 0, RC )
     IF ( RC /= 0 ) RETURN
 
-    ! Dust bins (set default to 4)
-    HcoState%nDust = 7 ! (Extend to 7 dust bins)
+    ! Dust bins (set default to 7)
+    HcoState%nDust = 7
 
     ! Turn off marine POA by default
     HcoState%MarinePOA = .FALSE.

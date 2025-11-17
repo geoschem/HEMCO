@@ -680,7 +680,7 @@ CONTAINS
     ! NOTE: PS and PBLH will be taken from the HcoState%Grid object
     ExtState%GWETTOP%DoUse = .TRUE.
     ExtState%HFLUX%DoUse   = .TRUE.
-    ExtState%SNOMAS%DoUse = .TRUE.
+    ExtState%SNOMAS%DoUse  = .TRUE.
     ExtState%T2M%DoUse     = .TRUE.
     ExtState%TSKIN%DoUse   = .TRUE.
     ExtState%USTAR%DoUse   = .TRUE.

@@ -148,7 +148,6 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: SZAFACT     ! current SZA/total daily SZA
      TYPE(ExtDat_2R),  POINTER :: PARDR       ! direct photsyn radiation [W/m2]
      TYPE(ExtDat_2R),  POINTER :: PARDF       ! diffuse photsyn radiation [W/m2]
-     TYPE(ExtDat_2R),  POINTER :: PS          ! Surface pressure [hPa]
      TYPE(ExtDat_2R),  POINTER :: HFLUX       ! Sensible height flux due to turbulence [W m-2]
      TYPE(ExtDat_2R),  POINTER :: PSC2_WET    ! Interpolated sfc pressure [hPa]
      TYPE(ExtDat_2R),  POINTER :: RADSWG      ! surface radiation [W/m2]
@@ -456,13 +455,6 @@ CONTAINS
     CALL ExtDat_Init( ExtState%PARDR, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Could not allocate ExtState%PARDR'
-       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-       RETURN
-    ENDIF
-
-    CALL ExtDat_Init( ExtState%PS, RC )
-    IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Could not allocate ExtState%PS'
        CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
@@ -778,7 +770,6 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%SZAFACT    )
        CALL ExtDat_Cleanup( ExtState%PARDR      )
        CALL ExtDat_Cleanup( ExtState%PARDF      )
-       CALL ExtDat_Cleanup( ExtState%PS         )
        CALL ExtDat_Cleanup( ExtState%HFLUX      )
        CALL ExtDat_Cleanup( ExtState%PSC2_WET   )
        CALL ExtDat_Cleanup( ExtState%RADSWG     )

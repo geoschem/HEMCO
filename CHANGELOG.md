@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added function `IO_ErrMsg` to `hcoio_read_std_mod.F90` to generate a replacement error message for the "cannot find field for current simulation time" message
 - Added `DustL23M` extension module `src/Extensions/hcox_dustl23m_mod.F90`
 - Added call to `HCO_SetPBLm` in routine `HCOI_SA_RUN` so that the PBL height will evolve with time in the HEMCO standalone
+- Added `ExtState%TSKIN` for skin temperature and `ExtState%HFLUX` for sensible heat flux
 
 ### Changed
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
@@ -21,10 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `HCO_Error` and `HCO_Warning` to call `HCO_WordWrapPrint` to wrap messages to 78 characters wide
 - Replaced terse error messages in `hcoio_read_std_mod.F90` with more descriptive ones
 - Updated error messages in routine `ExtStateInit` to be more descriptive
+- Renamed `ExtState%SNOWHGT` to `ExtState%SNOMAS`
 - Changed call to `ExtDat_Set` for `ExtData%SNOMAS` to read data from the GMAO `SNOMAS` field instead of `SNOWHGT`
 - Updated `run/HEMCO_sa_Spec.rc` to be consistent with the new dust species
 - Updated `run/createRunDir.sh` to copy the`cleanRunDir.sh` script to the run directory
 - Updated comment headers and removed GCHP-specific text in `run/cleanRunDir.sh`
+- Replaced `DST{1..4}` with `DSTbin{1..7}` and renumbered lines accordingly in `run/HEMCO_sa_Spec.rc`
 
 ### Fixed
 - Fixed security issues in GitHub Actions
@@ -47,7 +50,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added option to enable `InvMEGAN` manual diagnostic output
 - Added supplemental guide documentation updates in the `geos-chem-shared-docs` submodule
-cumentation updates in the `geos-chem-shared-docs` submodule
 - Added `Lons` and `Lats` to `FileData` type to store bounds of mask files
 - Added definition of 0.125x0.15625 grid resolution
 

@@ -76,8 +76,8 @@ MODULE HCO_Unit_Mod
                                                'm2/m2      ',   &
                                                'm2m-2      ',   &
                                                'kg/kg      ',   &
-                                               'kg-soil/m3 ',   & ! for bulk density of topsoil (D. Zhang, 11 Mar 2025)
-                                               'kg-h2o/m2  ',   & ! for SNOMAS (D. Zhang, 11 Mar 2025)
+                                               'kg-soil/m3 ',   &
+                                               'kg-h2o/m2  ',   &
                                                'kgkg-1     ',   &
                                                'mg/m3      ',   &
                                                'mg/m2/d    ',   &
