@@ -2256,20 +2256,6 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% Surface pressure %%%%%
-    IF ( ExtState%PS%DoUse ) THEN
-       Name = 'PS'
-       CALL ExtDat_Set( HcoState,     ExtState%PS,                           &
-                        TRIM( Name ), RC,                   FIRST=FIRST     )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
-                   '" for the HEMCO standalone simulation!'
-          CALL HCO_Error( ErrMsg, RC, ThisLoc )
-          CALL HCO_Leave( HcoState%Config%Err, RC )
-          RETURN
-       ENDIF
-    ENDIF
-
     !%%%%% Skin temperature %%%%%
     IF ( ExtState%TSKIN%DoUse ) THEN
        Name = 'TS'

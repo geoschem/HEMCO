@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `DustL23M` extension module `src/Extensions/hcox_dustl23m_mod.F90`
 - Added call to `HCO_SetPBLm` in routine `HCOI_SA_RUN` so that the PBL height will evolve with time in the HEMCO standalone
 - Added `ExtState%TSKIN` for skin temperature and `ExtState%HFLUX` for sensible heat flux
+- Added `run/config_for_offline_emissions` folder to contain sample `HEMCO_Config.rc` files
 
 ### Changed
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
@@ -28,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `run/createRunDir.sh` to copy the`cleanRunDir.sh` script to the run directory
 - Updated comment headers and removed GCHP-specific text in `run/cleanRunDir.sh`
 - Replaced `DST{1..4}` with `DSTbin{1..7}` and renumbered lines accordingly in `run/HEMCO_sa_Spec.rc`
+- Updated link to current HEMCO Standalone documentation in `run/README`
 
 ### Fixed
 - Fixed security issues in GitHub Actions
