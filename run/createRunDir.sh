@@ -304,17 +304,18 @@ done
 mkdir -p ${rundir}
 
 # Copy run directory files and subdirectories
-cp -r ./OutputDir ${rundir}
+cp -r ./OutputDir                    ${rundir}
+cp -r ./config_for_offline_emissions ${rundir}
 mkdir -p ${rundir}/Restarts
-cp ./HEMCO_sa_Config.template       ${rundir}/HEMCO_sa_Config.rc
-cp ./HEMCO_sa_Time.rc               ${rundir}
-cp ./HEMCO_sa_Spec.rc               ${rundir}
-cp ./${grid_file}                   ${rundir}
-cp ./runHEMCO.sh                    ${rundir}
-cp ./README                         ${rundir}
-cp ./download_data*                 ${rundir}
-cp ./cleanRunDir.sh                 ${rundir}
-cp ${hco_config_dir}/HEMCO_Config.* ${rundir}
+cp ./HEMCO_sa_Config.template        ${rundir}/HEMCO_sa_Config.rc
+cp ./HEMCO_sa_Time.rc                ${rundir}
+cp ./HEMCO_sa_Spec.rc                ${rundir}
+cp ./${grid_file}                    ${rundir}
+cp ./runHEMCO.sh                     ${rundir}
+cp ./README                          ${rundir}
+cp ./download_data*                  ${rundir}
+cp ./cleanRunDir.sh                  ${rundir}
+cp ${hco_config_dir}/HEMCO_Config.*  ${rundir}
 if  [[ -f ${hco_config_dir}/HEMCO_Diagn.rc ]]; then
     cp ${hco_config_dir}/HEMCO_Diagn.rc ${rundir}
 else
