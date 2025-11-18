@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed security issues in GitHub Actions
+- Fixed bug in routine `Register_Species` caused by a null string being passed to `HCO_Msg`
 
 ### Removed
 - Removed Microsoft Azure Dev Pipeline continuous integration tests
