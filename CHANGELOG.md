@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the functionality of selectively applying gridded scaling factor based on the value of mask ID from a gridded file
 - Added functions `HCO_WordWrapPrint` and `HCO_CountMatches` as `PRIVATE` routines to `hco_error_mod.F90`
 - Added function `IO_ErrMsg` to `hcoio_read_std_mod.F90` to generate a replacement error message for the "cannot find field for current simulation time" message
+- Added GNU compiler collection version 15 to the GitHub action that builds HEMCO on MacOS
 
 ### Changed
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
@@ -24,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Removed Microsoft Azure Dev Pipeline continuous integration tests
+- Removed GNU Compiler Collection version 12 from the GitHub action that builds HEMCO on MacOS
 
 ## [3.11.2] - 2025-07-28
 ### Changed
