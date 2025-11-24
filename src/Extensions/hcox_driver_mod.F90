@@ -101,8 +101,6 @@ CONTAINS
     USE HCOX_LightNox_Mod,      ONLY : HCOX_LightNox_Init
     USE HCOX_SoilNox_Mod,       ONLY : HCOX_SoilNox_Init
     USE HCOX_DustL23M_Mod,      ONLY : HCOX_DustL23M_Init
-    USE HCOX_DustDead_Mod,      ONLY : HCOX_DustDead_Init
-    USE HCOX_DustGinoux_Mod,    ONLY : HCOX_DustGinoux_Init
     USE HCOX_SeaSalt_Mod,       ONLY : HCOX_SeaSalt_Init
     USE HCOX_GFED_Mod,          ONLY : HCOX_GFED_Init
     USE HCOX_MEGAN_Mod,         ONLY : HCOX_MEGAN_Init
@@ -235,7 +233,7 @@ CONTAINS
        ENDIF
 
        !--------------------------------------------------------------------
-       ! SoilNox
+       ! SoilNOx
        !--------------------------------------------------------------------
        CALL HCOX_SoilNox_Init( HcoState, 'SoilNOx', ExtState, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -250,35 +248,6 @@ CONTAINS
        CALL HCOX_DustL23M_Init( HcoState, 'DustL23M', ExtState,  RC )
        IF ( RC /= HCO_SUCCESS ) THEN
           ErrMsg = 'Error encountered in "HCOX_DustL23M_Init"!'
-          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
-          RETURN
-       ENDIF
-
-       !--------------------------------------------------------------------
-       ! Dust emissions (DEAD model)
-       !--------------------------------------------------------------------
-       CALL HCOX_DustDead_Init( HcoState, 'DustDead', ExtState,  RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in "HCOX_DustDead_Init"!'
-          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
-          RETURN
-       ENDIF
-#if defined( TOMAS )
-       CALL HCOX_TOMAS_DustDead_Init( HcoState, 'TOMAS_DustDead', &
-                                      ExtState, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in "HCOX_TOMAS_DustDead_Init"!'
-          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
-          RETURN
-       ENDIF
-#endif
-
-       !--------------------------------------------------------------------
-       ! Dust Ginoux emissions
-       !--------------------------------------------------------------------
-       CALL HCOX_DustGinoux_Init( HcoState, 'DustGinoux', ExtState, RC )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ErrMsg = 'Error encountered in "HCOX_DustGinoux_Init"!'
           CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
           RETURN
        ENDIF
@@ -355,6 +324,17 @@ CONTAINS
 
 #if defined( TOMAS )
        !--------------------------------------------------------------------
+       ! TOMAS sectional dust emissions (based on the DEAD model)
+       !--------------------------------------------------------------------
+       CALL HCOX_TOMAS_DustDead_Init( HcoState, 'TOMAS_DustDead', &
+                                      ExtState, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error encountered in "HCOX_TOMAS_DustDead_Init"!'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
+       ENDIF
+
+       !--------------------------------------------------------------------
        ! TOMAS sectional sea salt aerosol emissions
        !--------------------------------------------------------------------
        CALL HCOX_TOMAS_Jeagle_Init( HcoState, 'TOMAS_Jeagle', ExtState,  RC )
@@ -428,8 +408,6 @@ CONTAINS
     USE HCOX_LightNox_Mod,      ONLY : HCOX_LightNox_Run
     USE HCOX_SoilNox_Mod,       ONLY : HCOX_SoilNox_Run
     USE HCOX_DustL23M_Mod,      ONLY : HCOX_DustL23M_Run
-    USE HCOX_DustDead_Mod,      ONLY : HCOX_DustDead_Run
-    USE HCOX_DustGinoux_Mod,    ONLY : HCOX_DustGinoux_Run
     USE HCOX_SeaSalt_Mod,       ONLY : HCOX_SeaSalt_Run
     USE HCOX_Megan_Mod,         ONLY : HCOX_Megan_Run
     USE HCOX_GFED_Mod,          ONLY : HCOX_GFED_Run
@@ -598,42 +576,6 @@ CONTAINS
        ENDIF
 
        !--------------------------------------------------------------------
-       ! Dust emissions (DEAD model)
-       !--------------------------------------------------------------------
-       IF ( ExtState%DustDead > 0 ) THEN
-          CALL HCOX_DustDead_Run( ExtState, HcoState, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-             ErrMsg = 'Error encountered in "HCOX_DustDead_Run"!'
-             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
-             RETURN
-          ENDIF
-       ENDIF
-
-#ifdef TOMAS
-       IF ( ExtState%TOMAS_DustDead > 0 ) THEN
-          !print*, 'JACK TOMAS_DustDead is on'
-          CALL HCOX_TOMAS_DustDead_Run( ExtState, HcoState, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-             ErrMsg = 'Error encountered in "HCOX_TOMAS_DustDead_Run"!'
-             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
-             RETURN
-          ENDIF
-       ENDIF
-#endif
-
-       !--------------------------------------------------------------------
-       ! Dust emissions (Ginoux)
-       !--------------------------------------------------------------------
-       IF ( ExtState%DustGinoux > 0 ) THEN
-          CALL HCOX_DustGinoux_Run( ExtState, HcoState, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-             ErrMsg = 'Error encountered in "HCOX_DustGinoux_Run"!'
-             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
-             RETURN
-          ENDIF
-       ENDIF
-
-       !--------------------------------------------------------------------
        ! Sea salt aerosols
        !--------------------------------------------------------------------
        IF ( ExtState%SeaSalt > 0 ) THEN
@@ -708,6 +650,18 @@ CONTAINS
 #ifdef TOMAS
        !--------------------------------------------------------------------
        ! TOMAS sectional sea salt emissions
+       !--------------------------------------------------------------------
+       IF ( ExtState%TOMAS_DustDead > 0 ) THEN
+          CALL HCOX_TOMAS_DustDead_Run( ExtState, HcoState, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in "HCOX_TOMAS_DustDead_Run"!'
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
+       ENDIF
+
+       !--------------------------------------------------------------------
+       ! TOMAS sectional dust emissions (based on the DEAD model)
        !--------------------------------------------------------------------
        IF ( ExtState%TOMAS_Jeagle > 0 ) THEN
           CALL HCOX_TOMAS_Jeagle_Run( ExtState, HcoState, RC )
@@ -784,8 +738,6 @@ CONTAINS
     USE HCOX_LightNox_Mod,      ONLY : HCOX_LightNox_Final
     USE HCOX_SoilNox_Mod,       ONLY : HCOX_SoilNox_Final
     USE HCOX_DustL23M_Mod,      ONLY : HCOX_DustL23M_Final
-    USE HCOX_DustDead_Mod,      ONLY : HCOX_DustDead_Final
-    USE HCOX_DustGinoux_Mod,    ONLY : HCOX_DustGinoux_Final
     USE HCOX_SeaSalt_Mod,       ONLY : HCOX_SeaSalt_Final
     USE HCOX_MEGAN_Mod,         ONLY : HCOX_MEGAN_Final
     USE HCOX_GFED_Mod,          ONLY : HCOX_GFED_Final
@@ -854,23 +806,6 @@ CONTAINS
              CALL HCOX_DustL23M_Final( ExtState )
           ENDIF
 
-          IF ( ExtState%DustDead > 0 ) THEN
-             CALL HCOX_DustDead_Final( ExtState )
-          ENDIF
-
-#ifdef TOMAS
-          IF ( ExtState%TOMAS_DustDead > 0 ) THEN
-             CALL HCOX_TOMAS_DustDead_Final( ExtState )
-          ENDIF
-
-          IF ( ExtState%TOMAS_Jeagle > 0  ) THEN
-             CALL HCOX_TOMAS_Jeagle_Final( ExtState )
-          ENDIF
-#endif
-          IF ( ExtState%DustGinoux > 0 ) THEN
-             CALL HCOX_DustGinoux_Final( ExtState )
-          ENDIF
-
           IF ( ExtState%SeaSalt > 0  ) THEN
              CALL HCOX_SeaSalt_Final( ExtState )
           ENDIF
@@ -906,6 +841,16 @@ CONTAINS
           IF ( ExtState%Inorg_Iodine > 0 ) THEN
              CALL HCOX_Iodine_Final( ExtState )
           ENDIF
+
+#ifdef TOMAS
+          IF ( ExtState%TOMAS_DustDead > 0 ) THEN
+             CALL HCOX_TOMAS_DustDead_Final( ExtState )
+          ENDIF
+
+          IF ( ExtState%TOMAS_Jeagle > 0  ) THEN
+             CALL HCOX_TOMAS_Jeagle_Final( ExtState )
+          ENDIF
+#endif
 
        ENDIF
 

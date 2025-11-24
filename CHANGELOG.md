@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated comment headers and removed GCHP-specific text in `run/cleanRunDir.sh`
 - Replaced `DST{1..4}` with `DSTbin{1..7}` and renumbered lines accordingly in `run/HEMCO_sa_Spec.rc`
 - Updated link to current HEMCO Standalone documentation in `run/README`
+- Updated ReadTheDocs documentation for the addition of `DustL23M` and removal of `DustDead` and DustGinoux` extensions
 
 ### Fixed
 - Fixed security issues in GitHub Actions
@@ -38,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Removed Microsoft Azure Dev Pipeline continuous integration tests
 - Removed `ExtState%PBLH` (and code that referenced this), as PBL height may be obtained from `HcoState%Grid%PBLHEIGHT`.
+- Removed `DustDead` source code (`src/Extensions/hcox_dustdead_mod.F`)
+- Removed `DustGinoux` source code (`src/Extensions/hcox_dustginoux_mod.F90`)
 
 ## [3.11.2] - 2025-07-28
 ### Changed
