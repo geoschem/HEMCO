@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - TBD
 ### Added
-- Added ReadTheDocs documentation formatting updates
+- Added `docs/read_the_docs_environment.yml` Conda environment file
+
+### Changed
+- Updated `geos-chem-shared-docs/editing_these_docs.rst` with instructions for using a Conda environment to build RTD doc
 
 ## [3.11.2] - 2025-07-28
 ### Changed
