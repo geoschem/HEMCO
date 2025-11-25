@@ -33,28 +33,19 @@ be considered.
 DustAlk
 -------
 
-- **Species**: DSTAL1, DSTAL2, DSTAL3, DSTAL4
+- **Species**: DSTALbin1, DSTALbin2, DSTALbin3, DSTALbin4, DSTALbin5,
+  DSTALbin6, DSTALbin7
 - **Reference**: Fairlie et al (check)
 
-.. _hco-ext-list-dustdead:
+.. _hco-ext-list-dustl23m:
 
-DustDead
+DustL23M
 --------
 
-Emissions of mineral dust from the DEAD dust mobilization model.
+Emissions of mineral dust from the DustL23M model.
 
-- **Species**: DST1, DST2, DST3, DST4
-- **Reference**: :cite:t:`Zender_et_al._2003`
-
-.. _hco-ext-list-dustginoux:
-
-DustGinoux
-----------
-
-Emissions of mineral dust from the P. Ginoux dust mobilization model.
-
-- **Species**: DST1, DST2, DST3, DST4
-- **Reference**: :cite:t:`Ginoux_et_al._2001`
+- **Species**: DSTbin1, DSTbin2, DSTbin3, DSTbin4, DSTbin5, DSTbin6, DSTbin7
+- **Reference**: :cite:t:`Zhang_et_al._2025`
 
 .. _hco-ext-list-gcrnpbbe:
 
@@ -360,7 +351,16 @@ Top soil moisture.
 
 - **Dim**: xy
 - **Units**: unitless
-- **Used by**: :ref:`hco-ext-list-megan`
+- **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-megan`
+
+HFLUX
+-----
+
+Sensible heat flux (from turbulence).
+
+- **Dim**: xy
+- **Units**: W/m2
+- **Used by**: :ref:`hco-ext-list-dustl23m`
 
 HNO3
 ----
@@ -452,14 +452,14 @@ Short-wave incident surface radiation
 - **Units**: W/m2
 - **Used by**: :ref:`hco-ext-list-soilnox`
 
-SNOWHGT
--------
+SNOMAS
+------
 
-Snow height (mm of H2O equivalent).
+Total snow storage on land.
 
 - **Dim**: xy
 - **Units**: kg H2O/m2
-- **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-tomas-dustdead`
+- **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-tomas-dustdead`
 
 SPHU
 ----
@@ -468,8 +468,7 @@ Specific humidity
 
 - **Dim**: xyz
 - **Units**: kg H2O/kg air
-- **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-paranox`,
-  :ref:`hco-ext-list-tomas-dustdead`
+- **Used by**: :ref:`hco-ext-list-paranox`, :ref:`hco-ext-list-tomas-dustdead`
 
 SZAFACT
 -------
@@ -480,6 +479,15 @@ Cosine of the solar zenith angle.
 - **Units**: unitless
 - **Used by**: :ref:`hco-ext-list-megan`
 
+T2M
+---
+
+Temperature at 2 meters above surface (proxy for surface temperature).
+
+- **Dim**: xy
+- **Units**: K
+- **Used by**: :ref:`hco-ext-list-dustl23m`
+  
 TK
 ---
 
@@ -487,8 +495,7 @@ Temperature.
 
 - **Dim**: xyz
 - **Units**: K
-- **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-lightnox`,
-  :ref:`hco-ext-list-tomas-dustdead`
+- **Used by**: :ref:`hco-ext-list-lightnox`, :ref:`hco-ext-list-tomas-dustdead`
 
 TROPP
 -----
@@ -506,7 +513,7 @@ Surface skin temperature
 
 - **Dim**: xy
 - **Units**: K
-- **Used by**: :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`
+- **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`
 
 U10M
 ----
@@ -515,8 +522,7 @@ E/W wind speed @ 10 meters above surface.
 
 - **Dim**: xy
 - **Units**: m/s
-- **Used by**:  :ref:`hco-ext-list-dustalk`,  :ref:`hco-ext-list-dustdead`,
-  :ref:`hco-ext-list-dustginoux`, :ref:`hco-ext-list-paranox`,
+- **Used by**:  :ref:`hco-ext-list-dustalk`, :ref:`hco-ext-list-paranox`,
   :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`,
   :ref:`hco-ext-list-soilnox`, :ref:`hco-ext-list-tomas-dustdead`,
   :ref:`hco-ext-list-tomas-jeagle`
@@ -528,7 +534,7 @@ Friction velocity.
 
 - **Dim**: xy
 - **Units**: m/s
-- **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-tomas-dustdead`
+- **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-tomas-dustdead`
 
 V10M
 ----
@@ -538,7 +544,6 @@ N/S wind speed @ 10 meters above surface.
 - **Dim**: xy
 - **Units**: m/s
 - **Used by**:  :ref:`hco-ext-list-dustalk`,
-  :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-dustginoux`,
   :ref:`hco-ext-list-paranox`,  :ref:`hco-ext-list-seaflux`,
   :ref:`hco-ext-list-seasalt`, :ref:`hco-ext-list-soilnox`,
   :ref:`hco-ext-list-tomas-dustdead`, :ref:`hco-ext-list-tomas-jeagle`
@@ -560,7 +565,7 @@ Roughness height.
 
 - **Dim**: xy
 - **Units**: m
-- **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-tomas-dustdead`
+- **Used by**: :ref:`hco-ext-list-tomas-dustdead`
 
 .. _hco-ext-rst-vars:
 
