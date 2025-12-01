@@ -55,36 +55,32 @@ standalone will need to perform the corresponding "production"
 simulation. You will download data from the :ref:`GEOS-Chem Input Data
 <gcid>` portal.
 
-.. important::
+Initialize the GCPy Python environment
+--------------------------------------
 
-   Before you use the :file:`download_data.py` script, make sure to
-   initialize a Mamba or Conda environment with the relevant command
-   shown below:
+Before you use the :file:`download_data.py` script, you will need to
+load a Python environment.  We recommend using the Python environment
+for GCPy (aka :file:`gcpy_env`), which contains all of the relevant
+packages. For more information about how to install this environment,
+please see `gcpy.readthedocs.io <gcpy.readthedocs.io.>`_.
 
-   .. code-block:: console
-
-      $ mamba activate ENV-NAME   # If using Mamba
-
-      $ conda activate ENV-NAME   # If using Conda
-
-   Here :literal:`ENV-NAME` is the name of your environment.
-
-   Also make sure that you have installed the PyYAML module to your
-   conda environment.  PyYAML will allow the :file:`download_data.py`
-   script to read certain configurable settings from a YAML file in
-   your run directory.
-
-   The Python environment for GCPy has all of the proper packages
-   that you need to download data from a dry-run simulation.  For
-   more information, please see `gcpy.readthedocs.io
-   <gcpy.readthedocs.io.>`_.
-
-Navigate to your HEMCO run directory where you executed the dry-run
-and type.
+Initialize the Python environment for GCPy with this command:
 
 .. code-block:: console
 
-   $ ./download_data.py log.dryrun PORTAL-NAME
+   $ conda activate gcpy_env
+
+Run the download_data.py script
+-------------------------------
+
+Navigate to your HEMCO run directory where you executed the dry-run
+simulation.  You will use the :file:`download_data.py` script to
+transfer data to your machine.  The command you will use takes this
+form:
+
+.. code-block:: console
+
+   (gcpy_env) $ ./download_data.py log.dryrun PORTAL-NAME
 
 where:
 
@@ -121,23 +117,32 @@ where:
        - :ref:`GCAP 2.0 met data @ Rochester <gcid-special-portals-gcap2>`
        - :command:`wget`
        - HTTP
+     * - skip-download
+       - Skips data download altogether
+       - N/A
+       - N/A
 
 For example, to download data from the :ref:`GEOS-Chem Input Data
-<gcid-data>` portal using the AWS CLI download (which is faster than
-HTTP download), use this command:
+<gcid-data>` portal, use this command:
 
 .. code-block:: console
 
-   $ ./download_data.py log.dryrun geoschem+s3
+   (gcpy_env) $ ./download_data.py log.dryrun geoschem+http
 
-.. note::
+But if you have `AWS CLI (command-line interface)
+<https://aws.amazon.com/cli/>`_ set up on your machine, use
+this command instead:
 
-   You must have the `AWS CLI (command-line interface)
-   <https://aws.amazon.com/cli/>`_ software installed on your system
-   before in order to use the :literal:`geoschem+aws` or
-   :literal:`nested+aws` options in the table listed above.
+.. code-block:: console
 
-The :file:`download_data.py` program will generate a **log of
+   (gcpy_env) $ ./download_data.py log.dryrun geoschem+aws
+
+This will result in a much faster data transfer than by HTTP.
+
+(Optional) Examine the log of unique data files
+-----------------------------------------------
+
+The :file:`download_data.py` script will generate a **log of
 unique data files** (i.e. with all duplicate listings removed), which
 looks similar to this:
 
@@ -176,24 +181,34 @@ example, we passed :file:`log.dryrun` to :file:`download_data.py`, so
 the "unique" log file will be named :file:`log.dryrun.unique`. This
 "unique" log file can be very useful for documentation purposes.
 
+Deactivate the GCPy Python environment
+--------------------------------------
+
+You can then deactivate the GCPy Python environment after all data
+files have been downloaded:
+
+.. code-block:: console
+
+   (gcpy_env) $ conda deactivate
+
 =============================================
 Skip download, but create log of unique files
 =============================================
 
-If you wish to only produce the \*log of unique data files without
-downloading any data, then type the following command from within your
-HEMCO-standalone run directory:
+If you wish to only produce the **log of unique data files** without
+downloading any data, then use :literal:`skip-download` in place of
+the :literal:`PORTAL-NAME` when running :file:`donwload_data.py`:
 
 .. code-block:: console
 
-   $ ./download_data.py log.dryrun skip-download
+   (gcpy_env) $ ./download_data.py log.dryrun skip-download
 
-or for short:
+You can also abbreviate the command to:
 
 .. code-block:: console
 
-  $ ./download_data.py log.dryrun skip
+   (gcpy_env) $ ./download_data.py log.dryrun skip
 
 This can be useful if you already have the necessary data downloaded to
 your system but wish to create the log of unique files for documentation
-purposes (such as for benchmark simulations, etc.)
+purposes.
