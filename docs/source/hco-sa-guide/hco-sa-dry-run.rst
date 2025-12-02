@@ -58,17 +58,25 @@ simulation. You will download data from the :ref:`GEOS-Chem Input Data
 Initialize the GCPy Python environment
 --------------------------------------
 
-Before you use the :file:`download_data.py` script, you will need to
-load a Python environment.  We recommend using the Python environment
-for GCPy (aka :file:`gcpy_env`), which contains all of the relevant
-packages. For more information about how to install this environment,
-please see `gcpy.readthedocs.io <gcpy.readthedocs.io.>`_.
-
-Initialize the Python environment for GCPy with this command:
+You will need to activate a Python environment before you can start
+downloading data.  We recommend using the Python environment for `GCPy
+<https://gcpy.readthedocs.io>`_, as it has all of the relevant
+packages installed. If you `installed GCPy from PyPI
+<https://gcpy.readthedocs.io/en/stable/Getting-Started-with-GCPy.html#install-gcpy-from-pypi>`_,
+then no further action is needed.  On the other hand, if you
+`installed GCPy from conda-forge
+<https://gcpy.readthedocs.io/en/stable/Getting-Started-with-GCPy.html#install-gcpy-from-conda-forge>`_,
+you will need to activate the GCPy Python environment with this
+command:
 
 .. code-block:: console
 
    $ conda activate gcpy_env
+   (gcpy_env) $
+
+The prefix :literal:`(gcpy_env)` will be added to the command prompt,
+which lets you know that the Python environment is active.  (If you
+installed GCPy from PyPI, you will not see this prefix.)
 
 Run the download_data.py script
 -------------------------------
@@ -114,7 +122,8 @@ where:
        - :command:`wget`
        - HTTP
      * - rochester
-       - :ref:`GCAP 2.0 met data @ Rochester <gcid-special-portals-gcap2>`
+       - :ref:`GCAP 2.0 met data @ Rochester
+	 <gcid-special-portals-gcap2> `
        - :command:`wget`
        - HTTP
      * - skip-download
@@ -137,7 +146,9 @@ this command instead:
 
    (gcpy_env) $ ./download_data.py log.dryrun geoschem+aws
 
-This will result in a much faster data transfer than by HTTP.
+This will result in a much faster data transfer than by HTTP.  This is
+also the command you will use if you are running HEMCO Standalone on
+an AWS EC2 cloud instance.
 
 (Optional) Examine the log of unique data files
 -----------------------------------------------
@@ -181,20 +192,6 @@ example, we passed :file:`log.dryrun` to :file:`download_data.py`, so
 the "unique" log file will be named :file:`log.dryrun.unique`. This
 "unique" log file can be very useful for documentation purposes.
 
-Deactivate the GCPy Python environment
---------------------------------------
-
-You can then deactivate the GCPy Python environment after all data
-files have been downloaded:
-
-.. code-block:: console
-
-   (gcpy_env) $ conda deactivate
-
-=============================================
-Skip download, but create log of unique files
-=============================================
-
 If you wish to only produce the **log of unique data files** without
 downloading any data, then use :literal:`skip-download` in place of
 the :literal:`PORTAL-NAME` when running :file:`donwload_data.py`:
@@ -212,3 +209,17 @@ You can also abbreviate the command to:
 This can be useful if you already have the necessary data downloaded to
 your system but wish to create the log of unique files for documentation
 purposes.
+
+Deactivate the GCPy Python environment
+--------------------------------------
+
+Once you have downloaded all of the data needed for your GEOS-Chem
+Classic simulation, you can deactivate the GCPy Python environment.
+
+.. code-block:: console
+
+   (gcpy_env) $ conda deactivate
+   $
+
+This will remove the :literal:`(gcpy_env)` prefix from the command
+prompt.
