@@ -1,10 +1,10 @@
 .. _hco-ref-guide:
 
-##########################
-Introduction to this Guide
-##########################
+#####################
+Introduction to HEMCO
+#####################
 
-In this **HEMCO Reference Guide**, you will learn about HEMCO
+In this :program:`HEMCO Reference Guide`, you will learn about HEMCO
 configuration files, HEMCO extensions, HEMCO interfaces, and other
 technical information.
 
@@ -17,7 +17,7 @@ Contents
 
 .. toctree::
    :maxdepth: 1
-	     
+
    basic-examples.rst
    hemco-config.rst
    extensions.rst

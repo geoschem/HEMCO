@@ -74,14 +74,14 @@ command:
    $ conda activate gcpy_env
    (gcpy_env) $
 
-The prefix :literal:`(gcpy_env)` will be added to the command prompt,
-which lets you know that the Python environment is active.  (If you
-installed GCPy from PyPI, you will not see this prefix.)
+Activating the environment adds the prefix :literal:`(gcpy_env)` to
+the command prompt.  This is a visual cue to remind you that the
+environment is active.
 
 Run the download_data.py script
 -------------------------------
 
-Navigate to your HEMCO run directory where you executed the dry-run
+Navigate to the HEMCO run directory where you executed the dry-run
 simulation.  You will use the :file:`download_data.py` script to
 transfer data to your machine.  The command you will use takes this
 form:
@@ -123,7 +123,7 @@ where:
        - HTTP
      * - rochester
        - :ref:`GCAP 2.0 met data @ Rochester
-	 <gcid-special-portals-gcap2> `
+	 <gcid-special-portals-gcap2>`
        - :command:`wget`
        - HTTP
      * - skip-download
