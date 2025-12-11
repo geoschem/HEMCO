@@ -1192,7 +1192,7 @@ CONTAINS
       QAIR = QAIR*1000.0   !convert from kg water/kg dry air to g/kg
       A = MIN( QAIR, 17.71 )
       B = MAX( 3.0, A )
-      RHUMGAS = 1.0 - 0.0329 * ( B - 10.71 )   ! NOx humidity correction for Gasoline fuel
+      RHUMGAS = 1.0 - 0.0329 * ( B - 10.71 )   ! RH humidity correction for Gasoline fuel
       QMOL = QAIR * 0.001607524  ! convert from g of water/kg of dry air to moles of water/moles of dry air
       A = MIN( QMOL, 0.035 )
       B = MAX( 0.002, A )
