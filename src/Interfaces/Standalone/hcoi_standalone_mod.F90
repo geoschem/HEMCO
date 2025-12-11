@@ -3475,7 +3475,7 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% MetEmis NO GAS onroad emissions at 70 degrees F %%%%%
+    !%%%%% MetEmis CO onroad emissions at 70 degrees F %%%%%
     IF ( ExtState%MEmisCO_OR_070%DoUse ) THEN
        Name = 'MEmisCO_OR_070'
        CALL ExtDat_Set( HcoState,     ExtState%MEmisCO_OR_070,               &
