@@ -1196,7 +1196,7 @@ CONTAINS
       QMOL = QAIR * 0.001607524  ! convert from g of water/kg of dry air to moles of water/moles of dry air
       A = MIN( QMOL, 0.035 )
       B = MAX( 0.002, A )
-      RHUMDIS = 1.0 / ( 9.953 * B  + 0.832 )  ! Nox humidity correction for Diesel fuel
+      RHUMDIS = 1.0 / ( 9.953 * B  + 0.832 )  ! RH humidity correction for Diesel fuel
 
       !::: These RHUMGAS and RHUMDIS correction factors can be multiplied with the
       !estimated emissions between temperature bins to reflect the impact of humidity up to 20% (+/-)
