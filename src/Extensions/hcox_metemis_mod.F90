@@ -1188,7 +1188,7 @@ CONTAINS
    END DO
 
    IF ( Inst%RHUMGASDIS ) THEN
-      !Calculate and apply humidity correction For NOx across split gas vs. diesel fuels
+      !Calculate and apply humidity correction for NOx and HONO across split gas vs. diesel fuels
       QAIR = QAIR*1000.0   !convert from kg water/kg dry air to g/kg
       A = MIN( QAIR, 17.71 )
       B = MAX( 3.0, A )
