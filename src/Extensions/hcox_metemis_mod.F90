@@ -273,7 +273,7 @@ CONTAINS
     REAL(hp), TARGET         :: FLUXNO   (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: FLUXNO2  (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: FLUXHONO (HcoState%NX,HcoState%NY)
-    REAL(hp), TARGET         :: FLUXCO   (HcoState%NX,HcoState%NY) ! IVAI
+    REAL(hp), TARGET         :: FLUXCO   (HcoState%NX,HcoState%NY)
 
     ! Pointers
     REAL(hp), POINTER        :: Arr2D(:,:)
