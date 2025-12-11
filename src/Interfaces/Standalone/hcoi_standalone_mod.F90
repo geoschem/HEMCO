@@ -3405,7 +3405,7 @@ CONTAINS
        ENDIF
     ENDIF
 
-    !%%%%% MetEmis HONO DIS onroad emissions at 30 degrees F %%%%%
+    !%%%%% MetEmis HONO DIS onroad emissions at 120 degrees F %%%%%
     IF ( ExtState%MEmisHONO_DIS_OR_120%DoUse ) THEN
        Name = 'MEmisHONO_DIS_OR_120'
        CALL ExtDat_Set( HcoState,     ExtState%MEmisHONO_DIS_OR_120,         &
