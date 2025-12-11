@@ -223,7 +223,7 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_090  ! MetEmis HONO DIS Onroad Table 90F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_100  ! MetEmis HONO DIS Onroad Table 100F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_110  ! MetEmis HONO DIS Onroad Table 110F [kg/m2/s]
-     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_120  ! MetEmis HPNO DIS Onroad Table 120F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_120  ! MetEmis HONO DIS Onroad Table 120F [kg/m2/s]
 
      TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_030  ! MetEmis CO  Onroad Table 30F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_040  ! MetEmis CO  Onroad Table 40F [kg/m2/s]
