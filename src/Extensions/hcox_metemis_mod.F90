@@ -279,7 +279,7 @@ CONTAINS
     REAL(hp), POINTER        :: Arr2D(:,:)
 
     ! For diagnostics
-    REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,3)  ! changed dim to 3 from formerly 2
+    REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,4)  ! changed dim to 4 to store NO, NO2, HONO, CO
     LOGICAL, SAVE            :: DODIAGN = .FALSE.
     CHARACTER(LEN=31)        :: DiagnName
     TYPE(DiagnCont), POINTER :: TmpCnt
