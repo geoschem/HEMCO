@@ -6,7 +6,7 @@
 ! !MODULE: hcox_metemis_mod.F90
 !
 ! !DESCRIPTION: Module HCOX\_METEMIS\_MOD contains routines to
-! compute mobile souce emissions based on inputs from the U.S. EPA MOVES
+! compute mobile source emissions based on inputs from the U.S. EPA MOVES
 ! model and associated 2-meter temperature dependence look-up table.
 ! This code is adapted from the MetEmis codes in U.S. EPA CMAQ Version 5.3.1.
 !\\
