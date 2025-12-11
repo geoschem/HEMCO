@@ -536,7 +536,7 @@ CONTAINS
     ! Eventually update manual diagnostics
     IF ( DoDiagn ) THEN
         DiagnName =  'MetEmis_CO'
-       Arr2D     => DIAGN(:,:,3)
+       Arr2D     => DIAGN(:,:,4)
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
