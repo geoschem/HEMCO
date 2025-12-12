@@ -446,9 +446,9 @@
             ! Ocean is 0; land is 1; ice is 2
             ORO(I)         = REAL(OROGRAPHY(I,J),KIND=8)
 
-            ! Snow [m H2O]. SNOWHGT is in kg H2O/m2, which is equivalent to
+            ! Snow [m H2O]. SNOMAS is in kg H2O/m2, which is equivalent to
             ! mm H2O. Convert to m H2O here.
-            SNW_HGT_LQD(I) = ExtState%SNOWHGT%Arr%Val(I,J) / 1000.d0
+            SNW_HGT_LQD(I) = ExtState%SNOMAS%Arr%Val(I,J) / 1000.d0
 
             ! Dust tracer and increments
             DSRC(I,:) = 0.0d0
@@ -1094,7 +1094,7 @@
       ExtState%V10M%DoUse    = .TRUE.
       ExtState%T2M%DoUse     = .TRUE.
       ExtState%GWETTOP%DoUse = .TRUE.
-      ExtState%SNOWHGT%DoUse = .TRUE.
+      ExtState%SNOMAS%DoUse  = .TRUE.
       ExtState%USTAR%DoUse   = .TRUE.
       ExtState%Z0%DoUse      = .TRUE.
       ExtState%FRLAND%DoUse  = .TRUE.

@@ -1684,7 +1684,7 @@ CONTAINS
        !---------------------------------------------------------------------
        ! Case 2: Other files
        !---------------------------------------------------------------------
-       errMsg = "Cannot find the "// fldName // "field in file "          // &
+       errMsg = "Cannot find the "// fldName // " field in file "         // &
                 srcFile // "! Please doublecheck the name, time, and "    // &
                 "time cycle flag settings for field " // fldName          // &
                 " in your 'HEMCO_Config.rc' file.  Please refer to "      // &

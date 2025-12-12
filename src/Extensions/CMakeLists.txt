@@ -1,11 +1,10 @@
 # Extensions/CMakeLists.txt
 
 add_library(HCOX STATIC EXCLUDE_FROM_ALL
-	drydep_toolbox_mod.F90
-	hcox_custom_mod.F90
+        drydep_toolbox_mod.F90
+        hcox_custom_mod.F90
 	hcox_driver_mod.F90
-	hcox_dustdead_mod.F
-	hcox_dustginoux_mod.F90
+        hcox_dustl23m_mod.F90
 	hcox_finn_include.FINNv16
 	hcox_finn_mod.F90
 	hcox_finn_mod.FINNv16
@@ -20,7 +19,6 @@ add_library(HCOX STATIC EXCLUDE_FROM_ALL
 	hcox_seasalt_mod.F90
 	hcox_soilnox_mod.F90
 	hcox_state_mod.F90
-	hcox_template_mod.F90x
 	$<$<BOOL:${TOMAS}>:hcox_tomas_jeagle_mod.F90 hcox_tomas_dustdead_mod.F>
 	hcox_tools_mod.F90
 	hcox_volcano_mod.F90
