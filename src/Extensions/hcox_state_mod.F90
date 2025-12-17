@@ -182,6 +182,7 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_DIS_OR_100  ! MetEmis NO DIS Onroad Table 100F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_DIS_OR_110  ! MetEmis NO DIS Onroad Table 110F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_DIS_OR_120  ! MetEmis NO DIS Onroad Table 120F [kg/m2/s]
+
      TYPE(ExtDat_2R),  POINTER :: MEmisNO2_GAS_OR_030  ! MetEmis NO2 GAS Onroad Table 30F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO2_GAS_OR_040  ! MetEmis NO2 GAS Onroad Table 40F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO2_GAS_OR_050  ! MetEmis NO2 GAS Onroad Table 50F [kg/m2/s]
@@ -202,6 +203,39 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: MEmisNO2_DIS_OR_100  ! MetEmis NO2 DIS Onroad Table 100F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO2_DIS_OR_110  ! MetEmis NO2 DIS Onroad Table 110F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO2_DIS_OR_120  ! MetEmis NO2 DIS Onroad Table 120F [kg/m2/s]
+
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_GAS_OR_030  ! MetEmis HONO GAS Onroad Table 30F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_GAS_OR_040  ! MetEmis HONO GAS Onroad Table 40F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_GAS_OR_050  ! MetEmis HONO GAS Onroad Table 50F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_GAS_OR_060  ! MetEmis HONO GAS Onroad Table 60F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_GAS_OR_070  ! MetEmis HONO GAS Onroad Table 70F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_GAS_OR_080  ! MetEmis HONO GAS Onroad Table 80F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_GAS_OR_090  ! MetEmis HONO GAS Onroad Table 90F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_GAS_OR_100  ! MetEmis HONO GAS Onroad Table 100F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_GAS_OR_110  ! MetEmis HONO GAS Onroad Table 110F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_GAS_OR_120  ! MetEmis HONO GAS Onroad Table 120F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_030  ! MetEmis HONO DIS Onroad Table 30F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_040  ! MetEmis HONO DIS Onroad Table 40F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_050  ! MetEmis HONO DIS Onroad Table 50F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_060  ! MetEmis HONO DIS Onroad Table 60F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_070  ! MetEmis HONO DIS Onroad Table 70F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_080  ! MetEmis HONO DIS Onroad Table 80F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_090  ! MetEmis HONO DIS Onroad Table 90F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_100  ! MetEmis HONO DIS Onroad Table 100F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_110  ! MetEmis HONO DIS Onroad Table 110F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_DIS_OR_120  ! MetEmis HONO DIS Onroad Table 120F [kg/m2/s]
+
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_030  ! MetEmis CO  Onroad Table 30F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_040  ! MetEmis CO  Onroad Table 40F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_050  ! MetEmis CO  Onroad Table 50F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_060  ! MetEmis CO  Onroad Table 60F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_070  ! MetEmis CO  Onroad Table 70F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_080  ! MetEmis CO  Onroad Table 80F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_090  ! MetEmis CO  Onroad Table 90F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_100  ! MetEmis CO  Onroad Table 100F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_110  ! MetEmis CO  Onroad Table 110F [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_OR_120  ! MetEmis CO  Onroad Table 120F [kg/m2/s]
+
      INTEGER,          POINTER :: PBL_MAX     ! Max height of PBL [level]
      TYPE(ExtDat_3R),  POINTER :: CNV_MFC     ! Convective cloud mass flux [kg/m2/s]
      TYPE(ExtDat_3R),  POINTER :: FRAC_OF_PBL ! Fraction of grid box in PBL
@@ -210,8 +244,8 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_3R),  POINTER :: AIR         ! Dry air mass [kg]
      TYPE(ExtDat_3R),  POINTER :: AIRVOL      ! Air volume [m3]
      TYPE(ExtDat_3R),  POINTER :: AIRDEN      ! Dry air density [kg/m3]
-     TYPE(ExtDat_3R),  POINTER :: O3          ! O3 mass [kg/kg dry air]
-     TYPE(ExtDat_3R),  POINTER :: NO          ! NO mass [kg/kg dry air]
+     TYPE(ExtDat_3R),  POINTER :: O3          ! O3  mass [kg/kg dry air]
+     TYPE(ExtDat_3R),  POINTER :: NO          ! NO  mass [kg/kg dry air]
      TYPE(ExtDat_3R),  POINTER :: NO2         ! NO2 mass [kg/kg dry air]
      TYPE(ExtDat_3R),  POINTER :: HNO3        ! HNO3 mass [kg/kg dry air]
      TYPE(ExtDat_3R),  POINTER :: POPG        ! POPG mass [kg/kg dry air]
@@ -694,217 +728,218 @@ CONTAINS
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_030, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_040, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 54', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_030, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_040, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 55', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_040, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_050, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 56', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_040, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_050, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 57', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_040, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_060, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 58', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_040, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_060, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 59', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_050, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_070, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 60', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_050, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_070, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 61', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_050, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_080, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 62', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_050, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_080, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 63', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_060, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_090, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 64', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_060, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_090, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 65', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_060, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_100, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 66', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-     CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_060, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_100, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 67', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_070, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_110, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 68', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_070, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_110, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 69', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_070, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_120, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 70', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_070, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_120, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 71', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_080, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_030, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 72', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_080, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_030, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 73', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_080, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_040, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 74', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_080, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_040, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 75', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_090, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_050, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 76', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_090, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_050, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 77', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_090, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_060, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 78', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_090, RC )
+     CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_060, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 79', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_100, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_070, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 80', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_100, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_070, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 81', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_100, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_080, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 82', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_100, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_080, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 83', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_110, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_090, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 84', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_110, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_090, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 85', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_110, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_100, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 86', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_110, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_100, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 87', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_120, RC )
+
+    CALL ExtDat_Init ( ExtState%MEmisNO2_GAS_OR_110, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 88', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
-    CALL ExtDat_Init ( ExtState%MEmisNO_DIS_OR_120, RC )
+    CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_110, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 89', RC, THISLOC=LOC )
         RETURN
@@ -919,6 +954,186 @@ CONTAINS
     CALL ExtDat_Init ( ExtState%MEmisNO2_DIS_OR_120, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 91', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_GAS_OR_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 92', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_DIS_OR_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 93', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_GAS_OR_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 94', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_DIS_OR_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 95', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_GAS_OR_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 96', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_DIS_OR_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 97', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_GAS_OR_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 98', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+     CALL ExtDat_Init ( ExtState%MEmisHONO_DIS_OR_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 99', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_GAS_OR_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 100', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_DIS_OR_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 101', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_GAS_OR_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 102', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_DIS_OR_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 103', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_GAS_OR_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 104', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_DIS_OR_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 105', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_GAS_OR_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 106', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_DIS_OR_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 107', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_GAS_OR_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 108', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_DIS_OR_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 109', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_GAS_OR_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 110', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_DIS_OR_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 111', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_OR_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 112', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_OR_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 113', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_OR_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 114', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_OR_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 115', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_OR_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 116', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_OR_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 117', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_OR_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 118', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_OR_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 119', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_OR_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 120', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_OR_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 121', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -1032,6 +1247,7 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%MEmisNO_DIS_OR_100 )
        CALL ExtDat_Cleanup( ExtState%MEmisNO_DIS_OR_110 )
        CALL ExtDat_Cleanup( ExtState%MEmisNO_DIS_OR_120 )
+
        CALL ExtDat_Cleanup( ExtState%MEmisNO2_GAS_OR_030 )
        CALL ExtDat_Cleanup( ExtState%MEmisNO2_GAS_OR_040 )
        CALL ExtDat_Cleanup( ExtState%MEmisNO2_GAS_OR_050 )
@@ -1052,6 +1268,39 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%MEmisNO2_DIS_OR_100 )
        CALL ExtDat_Cleanup( ExtState%MEmisNO2_DIS_OR_110 )
        CALL ExtDat_Cleanup( ExtState%MEmisNO2_DIS_OR_120 )
+
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_GAS_OR_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_GAS_OR_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_GAS_OR_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_GAS_OR_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_GAS_OR_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_GAS_OR_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_GAS_OR_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_GAS_OR_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_GAS_OR_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_GAS_OR_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_DIS_OR_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_DIS_OR_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_DIS_OR_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_DIS_OR_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_DIS_OR_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_DIS_OR_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_DIS_OR_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_DIS_OR_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_DIS_OR_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_DIS_OR_120 )
+
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_OR_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_OR_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_OR_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_OR_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_OR_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_OR_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_OR_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_OR_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_OR_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_OR_120 )
+
        ExtState%DRYCOEFF   => NULL()
        ExtState%PBL_MAX    => NULL()
 

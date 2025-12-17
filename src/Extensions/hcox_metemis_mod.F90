@@ -6,45 +6,45 @@
 ! !MODULE: hcox_metemis_mod.F90
 !
 ! !DESCRIPTION: Module HCOX\_METEMIS\_MOD contains routines to
-! compute mobile souce emissions based on inputs from the U.S. EPA MOVES 
-! model and associated 2-meter temperature dependence look-up table. 
+! compute mobile source emissions based on inputs from the U.S. EPA MOVES
+! model and associated 2-meter temperature dependence look-up table.
 ! This code is adapted from the MetEmis codes in U.S. EPA CMAQ Version 5.3.1.
 !\\
 !\\
-!Mobile emissions from the on-road and off-network (e.g., vehicle start-up, 
-! running exhaust, brake–tire wear, hot soak, and extended idling) are sensitive 
-! to temperature and humidity due to various factors, including (1) cold engine 
-! starts that enhance emissions at lower ambient temperatures due to incomplete 
-! fuel combustion, (2) evaporative losses of volatile organic compounds (VOCs) 
-! due to expansion and contraction caused by ambient diurnal temperature variations, 
-! (3) enhanced running emissions at higher ambient temperatures, (4) atmospheric 
-! moisture suppression of high combustion temperatures that lower nitrogen oxide 
-! emissions at higher humidity, and (5) indirect increased emissions from air 
-! conditioning at higher ambient temperatures (Choi et al., 2010; Iodice and 
-! Senatore, 2014; Lindhjem et al., 2004; Mellios et al., 2019; U.S. EPA, 2015). 
-! McDonald et al. (2018) found that NOx emissions from the National Emissions 
-! Inventory (NEI) estimated from the U.S. EPA's MOVES are underestimated, 
+!Mobile emissions from the on-road and off-network (e.g., vehicle start-up,
+! running exhaust, brake–tire wear, hot soak, and extended idling) are sensitive
+! to temperature and humidity due to various factors, including (1) cold engine
+! starts that enhance emissions at lower ambient temperatures due to incomplete
+! fuel combustion, (2) evaporative losses of volatile organic compounds (VOCs)
+! due to expansion and contraction caused by ambient diurnal temperature variations,
+! (3) enhanced running emissions at higher ambient temperatures, (4) atmospheric
+! moisture suppression of high combustion temperatures that lower nitrogen oxide
+! emissions at higher humidity, and (5) indirect increased emissions from air
+! conditioning at higher ambient temperatures (Choi et al., 2010; Iodice and
+! Senatore, 2014; Lindhjem et al., 2004; Mellios et al., 2019; U.S. EPA, 2015).
+! McDonald et al. (2018) found that NOx emissions from the National Emissions
+! Inventory (NEI) estimated from the U.S. EPA's MOVES are underestimated,
 ! leading to a failure regarding the prediction of high ozone days (8 h max ozone >70 ppb; McDonald et al., 2018).
 
-! The dependency of mobile emissions on local meteorology can vary by vehicle type 
-! (light duty, heavy duty, truck and bus), fuel type (gasoline, diesel, hybrid, and electric), 
-! road type (interstate, freeway, and local roads), process (vehicle start-up, running exhaust, 
-! brake–tire wear, hot soak, and extended idling), vehicle speed for on-road vehicles, 
-! and hour of the day for off-network vehicles, as well as by pollutants such as CO, 
-! NOX, SO2, NH3, VOCs, and particulate matter (PM). Figure 1 shows the dependency of the 
-! MOVES emission factors of CO, NOx, VOCs, and PM2.5 from gasoline-fueled vehicles on 
-! ambient temperature from the on-road and off-network vehicles, respectively. All 
-! pollutant emissions vary with the temperature, particularly under lower speeds. 
-! The CO, VOCs, and NOx emissions increase with temperature, while the opposite 
-! relationship is suggested between PM2.5 emissions and temperature, implying the complexity 
-! of meteorology impacts on different pollutant emissions. For off-network emissions from 
-! gasoline-fueled vehicles, CO, NOx, and PM2.5 show negative correlations with temperature, 
-! while the VOCs exhibit a nonlinear response to the temperature variation. The largest 
-! meteorology dependency occurs in the daytime when emissions are the greatest. 
+! The dependency of mobile emissions on local meteorology can vary by vehicle type
+! (light duty, heavy duty, truck and bus), fuel type (gasoline, diesel, hybrid, and electric),
+! road type (interstate, freeway, and local roads), process (vehicle start-up, running exhaust,
+! brake–tire wear, hot soak, and extended idling), vehicle speed for on-road vehicles,
+! and hour of the day for off-network vehicles, as well as by pollutants such as CO,
+! NOX, SO2, NH3, VOCs, and particulate matter (PM). Figure 1 shows the dependency of the
+! MOVES emission factors of CO, NOx, VOCs, and PM2.5 from gasoline-fueled vehicles on
+! ambient temperature from the on-road and off-network vehicles, respectively. All
+! pollutant emissions vary with the temperature, particularly under lower speeds.
+! The CO, VOCs, and NOx emissions increase with temperature, while the opposite
+! relationship is suggested between PM2.5 emissions and temperature, implying the complexity
+! of meteorology impacts on different pollutant emissions. For off-network emissions from
+! gasoline-fueled vehicles, CO, NOx, and PM2.5 show negative correlations with temperature,
+! while the VOCs exhibit a nonlinear response to the temperature variation. The largest
+! meteorology dependency occurs in the daytime when emissions are the greatest.
 ! A further, detailed meteorology dependency of MOVES emission factors on local meteorology can be found in Choi et al. (2010).
 
-! This module can dynamically estimate meteorology-induced hourly gridded 
-! on-road mobile emissions using simulated meteorology 
+! This module can dynamically estimate meteorology-induced hourly gridded
+! on-road mobile emissions using simulated meteorology
 ! without any computational burden to the modeling system.
 !\\
 !\\
@@ -53,9 +53,9 @@
 !\\
 ! References:
 ! \begin{itemize}
-! Baek, B. H., Coats, C., Ma, S., Wang, C.-T., Li, Y., Xing, J., Tong, D., 
-! Kim, S., and Woo, J.-H.: Dynamic Meteorology-induced Emissions Coupler (MetEmis) 
-! development in the Community Multiscale Air Quality (CMAQ): CMAQ-MetEmis, 
+! Baek, B. H., Coats, C., Ma, S., Wang, C.-T., Li, Y., Xing, J., Tong, D.,
+! Kim, S., and Woo, J.-H.: Dynamic Meteorology-induced Emissions Coupler (MetEmis)
+! development in the Community Multiscale Air Quality (CMAQ): CMAQ-MetEmis,
 ! Geosci. Model Dev., 16, 4659–4676, https://doi.org/10.5194/gmd-16-4659-2023, 2023.
 ! \end{itemize}
 
@@ -108,8 +108,10 @@ MODULE HCOX_MetEmis_MOD
      INTEGER               :: ExtNr
      INTEGER               :: IDTNO
      INTEGER               :: IDTNO2
-     LOGICAL               :: NOXGASDIS  ! Apply humidity correction for split
-                                         ! NOx gas and diesel fuels
+     INTEGER               :: IDTHONO
+     INTEGER               :: IDTCO
+     LOGICAL               :: RHUMGASDIS  ! Apply humidity correction for split
+                                          ! of NOx and HONO gas and diesel fuels
      ! Arrays
 
      ! Reference temperature values of variables in the MetEmis look-up tables
@@ -224,8 +226,8 @@ CONTAINS
 !
 ! !IROUTINE: Calc_MetEmis
 !
-! !DESCRIPTION: Subroutine Calc_MetEmis performs linear interpolation of 
-! temperature binned onroad emissions for every grid box based on 
+! !DESCRIPTION: Subroutine Calc_MetEmis performs linear interpolation of
+! temperature binned onroad emissions for every grid box based on
 ! HEMCO model state near-surface temperature (e.g., 2-meter temperature)
 ! and writes the resulting emission rates into State\_Chm%NomixS.
 !\\
@@ -270,12 +272,14 @@ CONTAINS
     ! Arrays
     REAL(hp), TARGET         :: FLUXNO   (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: FLUXNO2  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXHONO (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXCO   (HcoState%NX,HcoState%NY)
 
     ! Pointers
     REAL(hp), POINTER        :: Arr2D(:,:)
 
     ! For diagnostics
-    REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,2)
+    REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,4)  ! changed dim to 4 to store NO, NO2, HONO, CO
     LOGICAL, SAVE            :: DODIAGN = .FALSE.
     CHARACTER(LEN=31)        :: DiagnName
     TYPE(DiagnCont), POINTER :: TmpCnt
@@ -283,6 +287,8 @@ CONTAINS
     !MetEmis Diag Update
     REAL(dp)                 :: TEMP_NO
     REAL(dp)                 :: TEMP_NO2
+    REAL(dp)                 :: TEMP_HONO
+    REAL(dp)                 :: TEMP_CO
 
     !=================================================================
     ! MetEmis begins here!
@@ -305,6 +311,16 @@ CONTAINS
      IF ( Inst%IDTNO2 <= 0) THEN  !NO2
        RC = HCO_SUCCESS
        RETURN
+    ENDIF
+
+     IF ( Inst%IDTHONO <= 0) THEN  !HONO
+       RC = HCO_SUCCESS
+       RETURN
+    ENDIF
+
+    IF ( Inst%IDTCO  <= 0) THEN  !CO
+      RC = HCO_SUCCESS
+      RETURN
     ENDIF
 
 
@@ -332,6 +348,20 @@ CONTAINS
           TmpCnt => NULL()
        ENDIF
 
+        IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_HONO'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_CO'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
     ENDIF
 
     IF ( DoDiagn ) DIAGN(:,:,:) = 0.0_hp
@@ -342,19 +372,24 @@ CONTAINS
     ! Initialize
     FLUXNO        = 0.0_hp
     FLUXNO2       = 0.0_hp
+    FLUXHONO      = 0.0_hp
+    FLUXCO        = 0.0_hp
 
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
        TEMP_NO     = 0.0_hp
        TEMP_NO2    = 0.0_hp
-    
+       TEMP_HONO   = 0.0_hp
+       TEMP_CO     = 0.0_hp
+
        !---------------------------------------------------------------------
-       ! MetEmis lookup table for emissions based on temperature 
+       ! MetEmis lookup table for emissions based on temperature
        ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
        CALL METEMIS_LUT( ExtState,  HcoState,  Inst,      I,                  &
-                         J,         RC,        TEMP_NO, TEMP_NO2 )
+                         J,         RC,        TEMP_NO, TEMP_NO2,             &
+                         TEMP_HONO, TEMP_CO )
 
        IF ( RC /= HCO_SUCCESS ) THEN
           ERR = .TRUE.; EXIT
@@ -372,14 +407,26 @@ CONTAINS
 !           ! Unit: kg/m2/s
            FLUXNO2(I,J) = TEMP_NO2
        ENDIF
+!
+       IF ( Inst%IDTHONO > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXHONO(I,J) = TEMP_HONO
+       ENDIF
+!
+       IF ( Inst%IDTCO  > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXCO (I,J) = TEMP_CO
+       ENDIF
 
 !
        !---------------------------------------------------------------------
        ! Eventually write out into diagnostics array
        !---------------------------------------------------------------------
        IF ( DoDiagn ) THEN
-           DIAGN(I,J,1) =  FLUXNO(I,J)
+           DIAGN(I,J,1) =  FLUXNO (I,J)
            DIAGN(I,J,2) =  FLUXNO2(I,J)
+           DIAGN(I,J,3) =  FLUXHONO(I,J)
+           DIAGN(I,J,4) =  FLUXCO (I,J)
        ENDIF
 
     ENDDO !I
@@ -425,6 +472,27 @@ CONTAINS
        ENDIF
     ENDIF
 
+    IF ( Inst%IDTHONO > 0 ) THEN
+
+       ! Add flux to emission array
+       CALL HCO_EmisAdd( HcoState, FLUXHONO, Inst%IDTHONO, &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXHONO', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTCO  > 0 ) THEN
+
+       ! Add flux to emission array
+       CALL HCO_EmisAdd( HcoState, FLUXCO , Inst%IDTCO , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXCO ', RC )
+          RETURN
+       ENDIF
+    ENDIF
 
     ! Eventually update manual diagnostics
     IF ( DoDiagn ) THEN
@@ -447,6 +515,32 @@ CONTAINS
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
            CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_HONO'
+       Arr2D     => DIAGN(:,:,3)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_CO'
+       Arr2D     => DIAGN(:,:,4)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
            RETURN
        ENDIF
 
@@ -552,6 +646,8 @@ CONTAINS
       !---------------------------------------------------------------------
       Inst%IDTNO          = -1
       Inst%IDTNO2         = -1
+      Inst%IDTHONO        = -1
+      Inst%IDTCO          = -1
       Inst%Tlev           =  0.0e0
 
       !------------------------------------------------------------------------
@@ -572,6 +668,10 @@ CONTAINS
                Inst%IDTNO = HcoIDs(I)
             CASE ( "NO2" )
                Inst%IDTNO2 = HcoIDs(I)
+            CASE ( "HONO" )
+               Inst%IDTHONO = HcoIDs(I)
+            CASE ( "CO" )
+               Inst%IDTCO  = HcoIDs(I)
             CASE DEFAULT
                ! leave empty
          END SELECT
@@ -598,8 +698,8 @@ CONTAINS
     !       the config. file!
 
 
-    CALL GetExtOpt( HcoState%Config, ExtNr, 'NOx Gas Diesel', &
-                    OptValBool=Inst%NOXGASDIS, Found=FOUND, RC=RC )
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'RH Gas Diesel', &
+                    OptValBool=Inst%RHUMGASDIS, Found=FOUND, RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
         RETURN
@@ -607,7 +707,7 @@ CONTAINS
 
      ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
-       WRITE(MSG,*) ' --> MetEmis NOx Gas Diesel Split option is ',Inst%NOXGASDIS
+       WRITE(MSG,*) ' --> MetEmis Relative Humidity Gas Diesel Split option is ',Inst%RHUMGASDIS
        CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
@@ -669,6 +769,39 @@ CONTAINS
    ExtState%MEmisNO2_DIS_OR_100%DoUse          = .TRUE.
    ExtState%MEmisNO2_DIS_OR_110%DoUse          = .TRUE.
    ExtState%MEmisNO2_DIS_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisHONO_GAS_OR_030%DoUse         = .TRUE.
+   ExtState%MEmisHONO_GAS_OR_040%DoUse         = .TRUE.
+   ExtState%MEmisHONO_GAS_OR_050%DoUse         = .TRUE.
+   ExtState%MEmisHONO_GAS_OR_060%DoUse         = .TRUE.
+   ExtState%MEmisHONO_GAS_OR_070%DoUse         = .TRUE.
+   ExtState%MEmisHONO_GAS_OR_080%DoUse         = .TRUE.
+   ExtState%MEmisHONO_GAS_OR_090%DoUse         = .TRUE.
+   ExtState%MEmisHONO_GAS_OR_100%DoUse         = .TRUE.
+   ExtState%MEmisHONO_GAS_OR_110%DoUse         = .TRUE.
+   ExtState%MEmisHONO_GAS_OR_120%DoUse         = .TRUE.
+
+   ExtState%MEmisHONO_DIS_OR_030%DoUse         = .TRUE.
+   ExtState%MEmisHONO_DIS_OR_040%DoUse         = .TRUE.
+   ExtState%MEmisHONO_DIS_OR_050%DoUse         = .TRUE.
+   ExtState%MEmisHONO_DIS_OR_060%DoUse         = .TRUE.
+   ExtState%MEmisHONO_DIS_OR_070%DoUse         = .TRUE.
+   ExtState%MEmisHONO_DIS_OR_080%DoUse         = .TRUE.
+   ExtState%MEmisHONO_DIS_OR_090%DoUse         = .TRUE.
+   ExtState%MEmisHONO_DIS_OR_100%DoUse         = .TRUE.
+   ExtState%MEmisHONO_DIS_OR_110%DoUse         = .TRUE.
+   ExtState%MEmisHONO_DIS_OR_120%DoUse         = .TRUE.
+
+   ExtState%MEmisCO_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisCO_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisCO_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisCO_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisCO_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisCO_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisCO_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisCO_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisCO_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisCO_OR_120%DoUse          = .TRUE.
 
    !------------------------------------------------------------------------
    ! Leave w/ success
@@ -819,10 +952,10 @@ CONTAINS
 !
 ! !IROUTINE: metemis_lut
 !
-! !DESCRIPTION:  Subroutine METEMIS_LUT returns NO emissions 
+! !DESCRIPTION:  Subroutine METEMIS_LUT returns NO emissions
 ! based on temperature LUT (TEMPNO), Values are taken taken from a
 ! lookup table using piecewise linear interpolation. The look-up table is derived
-! from the EPA MOVES model involving work by (Baek et al. 2023; 
+! from the EPA MOVES model involving work by (Baek et al. 2023;
 ! https://doi.org/10.5194/gmd-16-4659-2023)
 !
 ! The lookup table uses 1 input variable:
@@ -831,7 +964,7 @@ CONTAINS
 ! !INTERFACE:
 !
  SUBROUTINE METEMIS_LUT( ExtState,  HcoState, Inst, &
-                         I, J, RC,  TEMPNO, TEMPNO2 )
+                         I, J, RC,  TEMPNO, TEMPNO2, TEMPHONO ,TEMPCO )
 !
 ! !USES:
 !
@@ -849,6 +982,8 @@ CONTAINS
 !
    REAL*8, INTENT(OUT)           :: TEMPNO   ! Temp dependent NO emissions, kg/m2/s
    REAL*8, INTENT(OUT)           :: TEMPNO2  ! Temp dependent NO2 emissions, kg/m2/s
+   REAL*8, INTENT(OUT)           :: TEMPHONO ! Temp dependent HONO emissions, kg/m2/s
+   REAL*8, INTENT(OUT)           :: TEMPCO   ! Temp dependent CO  emissions, kg/m2/s
 
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -864,18 +999,18 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
    INTEGER                    :: I1
-   REAL(sp)                   :: TEMPNO_GAS
-   REAL(sp)                   :: TEMPNO_DIS
-   REAL(sp)                   :: TEMPNO2_GAS
-   REAL(sp)                   :: TEMPNO2_DIS
-   REAL(sp)                   :: TEMPNO_GAS_TMP
-   REAL(sp)                   :: TEMPNO_DIS_TMP
-   REAL(sp)                   :: TEMPNO2_GAS_TMP
-   REAL(sp)                   :: TEMPNO2_DIS_TMP
+   REAL(sp)                   :: TEMPNO_GAS,   TEMPNO_GAS_TMP
+   REAL(sp)                   :: TEMPNO_DIS,   TEMPNO_DIS_TMP
+   REAL(sp)                   :: TEMPNO2_GAS,  TEMPNO2_GAS_TMP
+   REAL(sp)                   :: TEMPNO2_DIS,  TEMPNO2_DIS_TMP
+   REAL(sp)                   :: TEMPHONO_GAS, TEMPHONO_GAS_TMP
+   REAL(sp)                   :: TEMPHONO_DIS, TEMPHONO_DIS_TMP
+   REAL(sp)                   :: RHUMGAS,RHUMDIS
+   REAL(sp)                   :: TEMPCO_TMP
+
    REAL(sp)                   :: WEIGHT
    REAL(sp)                   :: TAIR
    REAL(sp)                   :: QAIR,QMOL,A,B
-   REAL(sp)                   :: NOXGAS,NOXDIS
 
    ! Interpolation variables, indices, and weights
    REAL(sp), DIMENSION(1)     :: VARS
@@ -930,114 +1065,156 @@ CONTAINS
 
    ! Initialize
    TEMPNO      = 0.0d0
-   TEMPNO2     = 0.0d0
    TEMPNO_GAS  = 0.0d0
    TEMPNO_DIS  = 0.0d0
+   TEMPNO2     = 0.0d0
    TEMPNO2_GAS = 0.0d0
    TEMPNO2_DIS = 0.0d0
+   TEMPHONO    = 0.0d0
+   TEMPHONO_GAS= 0.0d0
+   TEMPHONO_DIS= 0.0d0
+   TEMPCO      = 0.0d0
 
   ! Loop over temperature bins
    DO I1=1,2
       SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
          CASE ( 20 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_030%Arr%Val(I,J)
-            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_030%Arr%Val(I,J) 
+            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_030%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_030%Arr%Val(I,J)
             TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_030%Arr%Val(I,J)
+            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_030%Arr%Val(I,J)
+            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_030%Arr%Val(I,J)
+            TEMPCO_TMP       =  ExtState%MEmisCO_OR_030%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 30 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_040%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_040%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_040%Arr%Val(I,J)
             TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_040%Arr%Val(I,J)
+            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_040%Arr%Val(I,J)
+            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_040%Arr%Val(I,J)
+            TEMPCO_TMP       =  ExtState%MEmisCO_OR_040%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 40 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_050%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_050%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_050%Arr%Val(I,J)
             TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_050%Arr%Val(I,J)
+            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_050%Arr%Val(I,J)
+            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_050%Arr%Val(I,J)
+            TEMPCO_TMP       =  ExtState%MEmisCO_OR_050%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 50 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_060%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_060%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_060%Arr%Val(I,J)
             TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_060%Arr%Val(I,J)
+            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_060%Arr%Val(I,J)
+            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_060%Arr%Val(I,J)
+            TEMPCO_TMP       =  ExtState%MEmisCO_OR_060%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 60 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_070%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_070%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_070%Arr%Val(I,J)
             TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_070%Arr%Val(I,J)
+            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_070%Arr%Val(I,J)
+            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_070%Arr%Val(I,J)
+            TEMPCO_TMP       =  ExtState%MEmisCO_OR_070%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 70 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_080%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_080%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_080%Arr%Val(I,J)
             TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_080%Arr%Val(I,J)
+            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_080%Arr%Val(I,J)
+            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_080%Arr%Val(I,J)
+            TEMPCO_TMP       =  ExtState%MEmisCO_OR_080%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 80 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_090%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_090%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_090%Arr%Val(I,J)
             TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_090%Arr%Val(I,J)
+            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_090%Arr%Val(I,J)
+            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_090%Arr%Val(I,J)
+            TEMPCO_TMP       =  ExtState%MEmisCO_OR_090%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 90 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_100%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_100%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_100%Arr%Val(I,J)
             TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_100%Arr%Val(I,J)
+            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_100%Arr%Val(I,J)
+            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_100%Arr%Val(I,J)
+            TEMPCO_TMP       =  ExtState%MEmisCO_OR_100%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 100 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_110%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_110%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_110%Arr%Val(I,J)
             TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_110%Arr%Val(I,J)
+            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_110%Arr%Val(I,J)
+            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_110%Arr%Val(I,J)
+            TEMPCO_TMP       =  ExtState%MEmisCO_OR_110%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE ( 110 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_120%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_120%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_120%Arr%Val(I,J)
             TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_120%Arr%Val(I,J)
+            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_120%Arr%Val(I,J)
+            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_120%Arr%Val(I,J)
+            TEMPCO_TMP       =  ExtState%MEmisCO_OR_120%Arr%Val(I,J)
             WEIGHT       = WTS(1,I1)
          CASE DEFAULT
              MSG = 'LUT error: Temperature interpolation error!'
              CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
       END SELECT
-         
+
          !-----------------------------------
          ! Final interpolated values
          !-----------------------------------
          ! Weighted sum of TempNO from the LUT
-         TEMPNO_GAS = TEMPNO_GAS + TEMPNO_GAS_TMP * WEIGHT
-         TEMPNO_DIS = TEMPNO_DIS + TEMPNO_DIS_TMP * WEIGHT
+         TEMPNO_GAS  = TEMPNO_GAS  + TEMPNO_GAS_TMP  * WEIGHT
+         TEMPNO_DIS  = TEMPNO_DIS  + TEMPNO_DIS_TMP  * WEIGHT
          TEMPNO2_GAS = TEMPNO2_GAS + TEMPNO2_GAS_TMP * WEIGHT
          TEMPNO2_DIS = TEMPNO2_DIS + TEMPNO2_DIS_TMP * WEIGHT
+         TEMPHONO_GAS= TEMPHONO_GAS+ TEMPHONO_GAS_TMP* WEIGHT
+         TEMPHONO_DIS= TEMPHONO_DIS+ TEMPHONO_DIS_TMP* WEIGHT
+         TEMPCO      = TEMPCO      + TEMPCO_TMP      * WEIGHT
    END DO
 
-   IF ( Inst%NOXGASDIS ) THEN
-      !Calculate and apply humidity correction For NOx across split gas vs. diesel fuels
+   IF ( Inst%RHUMGASDIS ) THEN
+      !Calculate and apply humidity correction for NOx and HONO across split gas vs. diesel fuels
       QAIR = QAIR*1000.0   !convert from kg water/kg dry air to g/kg
       A = MIN( QAIR, 17.71 )
       B = MAX( 3.0, A )
-      NOXGAS = 1.0 - 0.0329 * ( B - 10.71 )   ! NOx humidity correction for Gasoline fuel
+      RHUMGAS = 1.0 - 0.0329 * ( B - 10.71 )   ! RH humidity correction for Gasoline fuel
       QMOL = QAIR * 0.001607524  ! convert from g of water/kg of dry air to moles of water/moles of dry air
       A = MIN( QMOL, 0.035 )
       B = MAX( 0.002, A )
-      NOXDIS = 1.0 / ( 9.953 * B  + 0.832 )  ! Nox humidity correction for Diesel fuel
+      RHUMDIS = 1.0 / ( 9.953 * B  + 0.832 )  ! RH humidity correction for Diesel fuel
 
-      !::: These NOXGAS and NOXDIS correction factors can be multiplied with the 
+      !::: These RHUMGAS and RHUMDIS correction factors can be multiplied with the
       !estimated emissions between temperature bins to reflect the impact of humidity up to 20% (+/-)
 
-      !Apply humidity correction for temporary NOx GAS and DIESEL
-      TEMPNO_GAS   = NOXGAS * TEMPNO_GAS
-      TEMPNO_DIS   = NOXDIS * TEMPNO_DIS
-      TEMPNO2_GAS  = NOXGAS * TEMPNO2_GAS
-      TEMPNO2_DIS  = NOXDIS * TEMPNO2_DIS
+      !Apply humidity correction to temperature-depended NOx GAS and DIESEL
+      TEMPNO_GAS   = RHUMGAS * TEMPNO_GAS
+      TEMPNO_DIS   = RHUMDIS * TEMPNO_DIS
+      TEMPNO2_GAS  = RHUMGAS * TEMPNO2_GAS
+      TEMPNO2_DIS  = RHUMDIS * TEMPNO2_DIS
+
+      !Apply humidity correction to temperature-depended HONO GAS and DIESEL
+      TEMPHONO_GAS = RHUMGAS * TEMPHONO_GAS
+      TEMPHONO_DIS = RHUMDIS * TEMPHONO_DIS
    ENDIF
-      !Sum GAS and DIESEL for Output NOx
-      TEMPNO  = TEMPNO_GAS + TEMPNO_DIS
-      TEMPNO2 = TEMPNO2_GAS + TEMPNO2_DIS
+      !Sum GAS and DIESEL for Output NOx and HONO
+      TEMPNO   = TEMPNO_GAS   + TEMPNO_DIS
+      TEMPNO2  = TEMPNO2_GAS  + TEMPNO2_DIS
+      TEMPHONO = TEMPHONO_GAS + TEMPHONO_DIS
 
    ! Return w/ success
    RC = HCO_SUCCESS
