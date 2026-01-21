@@ -590,7 +590,7 @@ CONTAINS
     INTEGER                 :: L, T, NL, I
     INTEGER                 :: OS
     LOGICAL                 :: verb, infl, clps
-    LOGICAL                 :: DONE
+    LOGICAL                 :: DONE, do_sum
     CHARACTER(LEN=255)      :: MSG, LOC
 
     !=================================================================
@@ -684,6 +684,12 @@ CONTAINS
     IF ( .NOT. DONE ) THEN
 
        !----------------------------------------------------------------
+       ! Determine if the variable (e.g. Met_DELPDRY) needs
+       ! to be summed in the vertical instead of averaged.
+       !----------------------------------------------------------------
+       do_sum = ( INDEX( TRIM( Lct%Dct%cName ), "DELPDRY" ) > 0 )
+
+       !----------------------------------------------------------------
        ! Native to reduced GEOS-5 levels
        !----------------------------------------------------------------
        IF ( nz == 47 ) THEN
@@ -725,18 +731,18 @@ CONTAINS
             ! If remapping model grid layers, collapse layers 
              IF ( nlev == 72 ) THEN
                ! Collapse two levels (e.g. levels 37-38 into level 37):
-               CALL COLLAPSE( Lct, REGR_4D, 37, 37, 2, T, 5, RC )
-               CALL COLLAPSE( Lct, REGR_4D, 38, 39, 2, T, 5, RC )
-               CALL COLLAPSE( Lct, REGR_4D, 39, 41, 2, T, 5, RC )
-               CALL COLLAPSE( Lct, REGR_4D, 40, 43, 2, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 37, 37, 2, T, 5, do_sum, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 38, 39, 2, T, 5, do_sum, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 39, 41, 2, T, 5, do_sum, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 40, 43, 2, T, 5, do_sum, RC )
                ! Collapse four levels:
-               CALL COLLAPSE( Lct, REGR_4D, 41, 45, 4, T, 5, RC )
-               CALL COLLAPSE( Lct, REGR_4D, 42, 49, 4, T, 5, RC )
-               CALL COLLAPSE( Lct, REGR_4D, 43, 53, 4, T, 5, RC )
-               CALL COLLAPSE( Lct, REGR_4D, 44, 57, 4, T, 5, RC )
-               CALL COLLAPSE( Lct, REGR_4D, 45, 61, 4, T, 5, RC )
-               CALL COLLAPSE( Lct, REGR_4D, 46, 65, 4, T, 5, RC )
-               CALL COLLAPSE( Lct, REGR_4D, 47, 69, 4, T, 5, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 41, 45, 4, T, 5, do_sum, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 42, 49, 4, T, 5, do_sum, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 43, 53, 4, T, 5, do_sum, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 44, 57, 4, T, 5, do_sum, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 45, 61, 4, T, 5, do_sum, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 46, 65, 4, T, 5, do_sum, RC )
+               CALL COLLAPSE( Lct, REGR_4D, 47, 69, 4, T, 5, do_sum, RC )
              ! If remapping model grid edges, sample at edges
              ELSEIF ( nlev == 73 ) THEN
                Lct%Dct%Dta%V3(T)%Val(:,:,38) = REGR_4D(:,:,39,T)
@@ -815,21 +821,21 @@ CONTAINS
              ! If remapping model grid layers, collapse layers
              IF ( nlev == 102 ) THEN
                 ! Collapse two levels (e.g. levels 61-62 into level 61):
-                CALL COLLAPSE( Lct, REGR_4D, 61, 61, 2, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 62, 63, 2, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 63, 65, 2, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 64, 67, 2, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 65, 69, 2, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 66, 71, 2, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 67, 73, 2, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 61, 61, 2, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 62, 63, 2, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 63, 65, 2, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 64, 67, 2, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 65, 69, 2, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 66, 71, 2, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 67, 73, 2, T, 22, do_sum, RC )
                 ! Collapse four levels:
-                CALL COLLAPSE( Lct, REGR_4D, 68, 75, 4, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 69, 79, 4, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 70, 83, 4, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 71, 87, 4, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 72, 91, 4, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 73, 95, 4, T, 22, RC )
-                CALL COLLAPSE( Lct, REGR_4D, 74, 99, 4, T, 22, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 68, 75, 4, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 69, 79, 4, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 70, 83, 4, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 71, 87, 4, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 72, 91, 4, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 73, 95, 4, T, 22, do_sum, RC )
+                CALL COLLAPSE( Lct, REGR_4D, 74, 99, 4, T, 22, do_sum, RC )
              ! If remapping model grid edges, sample at the edges
              ELSE
                 Lct%Dct%Dta%V3(T)%Val(:,:,62) = REGR_4D(:,:,63,T)
@@ -1020,21 +1026,25 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE COLLAPSE ( Lct, REGR_4D, OutLev, InLev1, NLEV, T, MET, RC )
+  SUBROUTINE COLLAPSE( Lct,    REGR_4D, OutLev,                              &
+                       InLev1, NLEV,    T,                                   &
+                       MET,    do_sum,  RC                                  )
 !
 ! !INPUT PARAMETERS:
 !
-    REAL(sp),         POINTER        :: REGR_4D(:,:,:,:)  ! 4D input data
-    INTEGER,          INTENT(IN)     :: OutLev
-    INTEGER,          INTENT(IN)     :: InLev1
-    INTEGER,          INTENT(IN)     :: NLEV
-    INTEGER,          INTENT(IN)     :: T
-    INTEGER,          INTENT(IN)     :: MET               ! 22=GISS E2.2, else GEOS-5
+    REAL(sp),         POINTER        :: REGR_4D(:,:,:,:) ! 4D input data
+    INTEGER,          INTENT(IN)     :: OutLev           ! Output level
+    INTEGER,          INTENT(IN)     :: InLev1           ! 1st input level
+    INTEGER,          INTENT(IN)     :: NLEV             ! # of levels
+    INTEGER,          INTENT(IN)     :: T                ! Time index
+    LOGICAL,          INTENT(IN)     :: do_sum           ! Sum instead of avg?
+    INTEGER,          INTENT(IN)     :: MET              ! 22=GISS E2.2,
+                                                         !  otherwise GMAO
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
-    TYPE(ListCont),   POINTER        :: Lct               ! HEMCO list container
-    INTEGER,          INTENT(INOUT)  :: RC                ! Success or failure?
+    TYPE(ListCont),   POINTER        :: Lct              ! HEMCO list container
+    INTEGER,          INTENT(INOUT)  :: RC               ! Success or failure?
 !
 ! !REVISION HISTORY:
 !  30 Dec 2014 - C. Keller   - Initial version
@@ -1080,12 +1090,17 @@ CONTAINS
     ! Thickness of output level
     THICK = EDG(1) - EDG(NLEV+1)
 
-    ! Get level weights
+    ! Get level weights.  If DO_SUM = T, then we will sum
+    ! the variable in the vertical instead of averaging.
     ALLOCATE(WGT(NLEV))
-    WGT = 0.0
-    DO I = 1, NLEV
-       WGT(I) = ( EDG(I) - EDG(I+1) ) / THICK
-    ENDDO
+    IF ( do_sum ) THEN
+       WGT = 1.0
+    ELSE
+       WGT = 0.0
+       DO I = 1, NLEV
+          WGT(I) = ( EDG(I) - EDG(I+1) ) / THICK
+       ENDDO
+    ENDIF
 
     ! Pass levels to output data, one after each other
     Lct%Dct%Dta%V3(T)%Val(:,:,OutLev) = REGR_4D(:,:,InLev1,T) * WGT(1)

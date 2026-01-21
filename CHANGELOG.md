@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added call to `HCO_SetPBLm` in routine `HCOI_SA_RUN` so that the PBL height will evolve with time in the HEMCO standalone
 - Added `ExtState%TSKIN` for skin temperature and `ExtState%HFLUX` for sensible heat flux
 - Added `run/config_for_offline_emissions` folder to contain sample `HEMCO_Config.rc` files
+- Added `do_sum` argument to routine `Collapse` in `src/Core/hco_interp_mod.F90`
 
 ### Changed
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
@@ -36,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed security issues in GitHub Actions
 - Fixed bug in routine `Register_Species` caused by a null string being passed to `HCO_Msg`
+- Fixed bug in `hco_interp_mod.F90` where `Met_DELPDRY` was being averaged in the vertical instead of summed
 
 ### Removed
 - Removed Microsoft Azure Dev Pipeline continuous integration tests
