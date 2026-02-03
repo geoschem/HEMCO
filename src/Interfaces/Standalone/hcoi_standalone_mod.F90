@@ -3559,6 +3559,286 @@ CONTAINS
        ENDIF
     ENDIF
 
+    !%%%%% MetEmis SO2 onroad emissions at 30 degrees F %%%%%
+    IF ( ExtState%MEmisSO2_OR_030%DoUse ) THEN
+       Name = 'MEmisSO2_OR_030'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisSO2_OR_030,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis SO2 onroad emissions at 40 degrees F %%%%%
+    IF ( ExtState%MEmisSO2_OR_040%DoUse ) THEN
+       Name = 'MEmisSO2_OR_040'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisSO2_OR_040,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis SO2 onroad emissions at 50 degrees F %%%%%
+    IF ( ExtState%MEmisSO2_OR_050%DoUse ) THEN
+       Name = 'MEmisSO2_OR_050'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisSO2_OR_050,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis SO2 onroad emissions at 60 degrees F %%%%%
+    IF ( ExtState%MEmisSO2_OR_060%DoUse ) THEN
+       Name = 'MEmisSO2_OR_060'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisSO2_OR_060,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis SO2 onroad emissions at 70 degrees F %%%%%
+    IF ( ExtState%MEmisSO2_OR_070%DoUse ) THEN
+       Name = 'MEmisSO2_OR_070'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisSO2_OR_070,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis SO2 onroad emissions at 80 degrees F %%%%%
+    IF ( ExtState%MEmisSO2_OR_080%DoUse ) THEN
+       Name = 'MEmisSO2_OR_080'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisSO2_OR_080,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis SO2 onroad emissions at 90 degrees F %%%%%
+    IF ( ExtState%MEmisSO2_OR_090%DoUse ) THEN
+       Name = 'MEmisSO2_OR_090'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisSO2_OR_090,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis SO2 onroad emissions at 100 degrees F %%%%%
+    IF ( ExtState%MEmisSO2_OR_100%DoUse ) THEN
+       Name = 'MEmisSO2_OR_100'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisSO2_OR_100,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis SO2 onroad emissions at 110 degrees F %%%%%
+    IF ( ExtState%MEmisSO2_OR_110%DoUse ) THEN
+       Name = 'MEmisSO2_OR_110'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisSO2_OR_110,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis SO2 onroad emissions at 120 degrees F %%%%%
+    IF ( ExtState%MEmisSO2_OR_120%DoUse ) THEN
+       Name = 'MEmisSO2_OR_120'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisSO2_OR_120,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis NH3 onroad emissions at 30 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_OR_030%DoUse ) THEN
+       Name = 'MEmisNH3_OR_030'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_OR_030,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis NH3 onroad emissions at 40 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_OR_040%DoUse ) THEN
+       Name = 'MEmisNH3_OR_040'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_OR_040,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis NH3 onroad emissions at 50 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_OR_050%DoUse ) THEN
+       Name = 'MEmisNH3_OR_050'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_OR_050,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis NH3 onroad emissions at 60 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_OR_060%DoUse ) THEN
+       Name = 'MEmisNH3_OR_060'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_OR_060,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis NH3 onroad emissions at 70 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_OR_070%DoUse ) THEN
+       Name = 'MEmisNH3_OR_070'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_OR_070,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis NH3 onroad emissions at 80 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_OR_080%DoUse ) THEN
+       Name = 'MEmisNH3_OR_080'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_OR_080,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis NH3 onroad emissions at 90 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_OR_090%DoUse ) THEN
+       Name = 'MEmisNH3_OR_090'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_OR_090,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis NH3 onroad emissions at 100 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_OR_100%DoUse ) THEN
+       Name = 'MEmisNH3_OR_100'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_OR_100,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis NH3 onroad emissions at 110 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_OR_110%DoUse ) THEN
+       Name = 'MEmisNH3_OR_110'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_OR_110,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    !%%%%% MetEmis NH3 onroad emissions at 120 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_OR_120%DoUse ) THEN
+       Name = 'MEmisNH3_OR_120'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_OR_120,               &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
     !-----------------------------------------------------------------
     ! %%%%% 3D fields %%%%%
     ! (1) Now use the same met field names as are specified in the
