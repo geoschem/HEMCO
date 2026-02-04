@@ -3911,6 +3911,8 @@ CONTAINS
 !
 ! !OUTPUT PARAMETERS:
 !
+! Temp dependent MetEmis emission species 51 in total , kg/m2/s
+!
    REAL*8, INTENT(OUT)           :: TEMPNO   ! Temp dependent NO emissions, kg/m2/s
    REAL*8, INTENT(OUT)           :: TEMPNO2  ! Temp dependent NO2 emissions, kg/m2/s
    REAL*8, INTENT(OUT)           :: TEMPHONO ! Temp dependent HONO emissions, kg/m2/s
