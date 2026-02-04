@@ -1629,6 +1629,17 @@ CONTAINS
        ENDIF
     ENDIF
 
+    IF ( Inst%IDTNH3 > 0 ) THEN
+
+       ! Add flux to emission array NH3
+       CALL HCO_EmisAdd( HcoState, FLUXNH3 , Inst%IDTNH3 , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXNH3 ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
     IF ( Inst%IDTCH4 > 0 ) THEN
 
        ! Add flux to emission array CH4
@@ -4211,7 +4222,7 @@ CONTAINS
             TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_030%Arr%Val(I,J)
             TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_030%Arr%Val(I,J)
             TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_030%Arr%Val(I,J)
-            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_030%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_030%Arr%Val(I,J)
             TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_030%Arr%Val(I,J)
 
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_030%Arr%Val(I,J)
@@ -4273,7 +4284,7 @@ CONTAINS
             TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_040%Arr%Val(I,J)
             TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_040%Arr%Val(I,J)
             TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_040%Arr%Val(I,J)
-            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_040%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_040%Arr%Val(I,J)
             TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_040%Arr%Val(I,J)
 
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_040%Arr%Val(I,J)
@@ -4335,7 +4346,7 @@ CONTAINS
             TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_050%Arr%Val(I,J)
             TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_050%Arr%Val(I,J)
             TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_050%Arr%Val(I,J)
-            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_050%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_050%Arr%Val(I,J)
             TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_050%Arr%Val(I,J)
 
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_050%Arr%Val(I,J)
@@ -4397,7 +4408,7 @@ CONTAINS
             TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_060%Arr%Val(I,J)
             TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_060%Arr%Val(I,J)
             TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_060%Arr%Val(I,J)
-            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_060%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_060%Arr%Val(I,J)
             TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_060%Arr%Val(I,J)
 
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_060%Arr%Val(I,J)
@@ -4459,7 +4470,7 @@ CONTAINS
             TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_070%Arr%Val(I,J)
             TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_070%Arr%Val(I,J)
             TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_070%Arr%Val(I,J)
-            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_070%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_070%Arr%Val(I,J)
             TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_070%Arr%Val(I,J)
 
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_070%Arr%Val(I,J)
@@ -4521,7 +4532,7 @@ CONTAINS
             TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_080%Arr%Val(I,J)
             TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_080%Arr%Val(I,J)
             TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_080%Arr%Val(I,J)
-            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_080%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_080%Arr%Val(I,J)
             TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_080%Arr%Val(I,J)
 
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_080%Arr%Val(I,J)
@@ -4583,7 +4594,7 @@ CONTAINS
             TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_090%Arr%Val(I,J)
             TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_090%Arr%Val(I,J)
             TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_090%Arr%Val(I,J)
-            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_090%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_090%Arr%Val(I,J)
             TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_090%Arr%Val(I,J)
 
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_090%Arr%Val(I,J)
@@ -4645,7 +4656,7 @@ CONTAINS
             TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_100%Arr%Val(I,J)
             TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_100%Arr%Val(I,J)
             TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_100%Arr%Val(I,J)
-            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_100%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_100%Arr%Val(I,J)
             TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_100%Arr%Val(I,J)
 
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_100%Arr%Val(I,J)
@@ -4707,7 +4718,7 @@ CONTAINS
             TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_110%Arr%Val(I,J)
             TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_110%Arr%Val(I,J)
             TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_110%Arr%Val(I,J)
-            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_110%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_110%Arr%Val(I,J)
             TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_110%Arr%Val(I,J)
 
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_110%Arr%Val(I,J)
