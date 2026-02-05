@@ -1193,32 +1193,6 @@ CONTAINS
              ! Continue to end of loop if an error has occurred
              ! (we cannot exit from a parallel loop)
              IF ( error > 0 ) CYCLE
-
-             !---------------------------------------------------------------
-             ! If there is a mask associated with this scale factors, check
-             ! if this grid box is within or outside of the mask region.
-             ! Values that partially fall into the mask region are either
-             ! treated as binary (100% inside or outside), or partially
-             ! (using the real grid area fractions), depending on the
-             ! HEMCO options.
-             !---------------------------------------------------------------
-
-             ! Default mask scaling is 1.0 (no mask applied)
-             maskScale = 1.0_sp
-
-             ! If there is a mask applied to this scale factor ...
-             IF ( isMaskDct ) THEN
-                CALL GetMaskVal ( MaskDct,   I,             J,               &
-                                  MaskScale, MaskFractions, EC              )
-                IF ( EC /= HCO_SUCCESS ) THEN
-                   error = 4
-                   CYCLE
-                ENDIF
-             ENDIF
-
-             ! We continue an skip this grid box if mask is completely zero
-             IF ( maskScale <= 0.0_sp ) CYCLE
-
              ! Get current time index for this container and at this location
              tIDx = tIDx_GetIndx( HcoState, ScalDct%Dta, I, J )
              IF ( tIDx < 1 ) THEN
@@ -1293,13 +1267,27 @@ CONTAINS
                 ! value if it's a scalar field.
                 !------------------------------------------------------------
                 tmpVal = Get_Value_From_DataCont( I, J, L, tIdX, ScalDct )
+                
+                !---------------------------------------------------------------
+                ! If there is srcGMaskID defined with this scale factors, check
+                ! if scale (mask) in this grid box is equal to srcGMaskID or not.
+                ! if scale(mask) == srcGMaskID, scale = 1, else = 0.
+                !---------------------------------------------------------------
 
-                ! Set missing value to one
-                IF ( tmpVal == HCO_MISSVAL ) tmpVal = 1.0_sp
-
-                ! Eventually apply mask scaling
-                IF ( maskScale /= 1.0_sp ) THEN
-                   tmpVal = tmpVal * MaskScale
+                ! Eventually apply srcGmaskID to set to scale (mask) to binary
+                ! If there is a srcGMaskID applied to this scale factor, 
+                ! then this scale factor is actually a global mask ...
+                IF ( ScalDct%srcGMaskID > 0 ) THEN
+                  ! Set missing mask to 0
+                  IF ( tmpVal == HCO_MISSVAL ) tmpVal = 0.0_sp
+                  IF ( abs(TMPVAL - ScalDct%srcGMaskID) < 0.01_sp ) THEN
+                     tmpval = 1.0_sp
+                  ELSE
+                     tmpval = 0.0_sp
+                  ENDIF
+                ELSE
+                  ! Set missing value to one
+                  IF ( tmpVal == HCO_MISSVAL ) tmpVal = 1.0_sp
                 ENDIF
 
                 !------------------------------------------------------------
@@ -3108,22 +3096,6 @@ END FUNCTION GetEmisLUnit
           ! HEMCO options.
           ! ------------------------------------------------------------
 
-          ! Default mask scaling is 1.0 (no mask applied)
-          MaskScale = 1.0_sp
-
-          ! If there is a mask applied to this scale factor ...
-          IF ( ASSOCIATED(MaskDct) ) THEN
-             CALL GetMaskVal ( MaskDct, I, J, &
-                               MaskScale, MaskFractions, RC )
-             IF ( RC /= HCO_SUCCESS ) THEN
-                ERROR = 4
-                EXIT
-             ENDIF
-          ENDIF
-
-          ! We can skip this grid box if mask is completely zero
-          IF ( MaskScale <= 0.0_sp ) CYCLE
-
           ! Get current time index for this container and at this location
           tIDx = tIDx_GetIndx( HcoState, ScalDct%Dta, I, J )
           IF ( tIDx < 1 ) THEN
@@ -3202,12 +3174,26 @@ END FUNCTION GetEmisLUnit
                 TMPVAL = ScalDct%Dta%V3(tidx)%Val(I,J,TmpLL)
              ENDIF
 
-             ! Set missing value to one
-             IF ( TMPVAL == HCO_MISSVAL ) TMPVAL = 1.0_sp
-
-             ! Eventually apply mask scaling
-             IF ( MaskScale /= 1.0_sp ) THEN
-                TMPVAL = TMPVAL * MaskScale
+             !------------------------------------------------------------
+             ! Get scale factor for this grid box. Use same uniform
+             ! value if it's a scalar field.
+             !------------------------------------------------------------
+             tmpVal = Get_Value_From_DataCont( I, J, L, tIdX, ScalDct )
+            
+             ! Eventually apply srcGmaskID to set to scale (mask) to binary
+             ! If there is a srcGMaskID applied to this scale factor, 
+             ! then this scale factor is actually a global mask ...
+             IF ( ScalDct%srcGMaskID > 0 ) THEN
+               ! Set missing mask to 0
+               IF ( tmpVal == HCO_MISSVAL ) tmpVal = 0.0_sp
+               IF ( abs(TMPVAL - ScalDct%srcGMaskID) < 0.01_sp ) THEN
+                 tmpval = 1.0_sp
+               ELSE
+                 tmpval = 0.0_sp
+               ENDIF
+             ELSE
+               ! Set missing value to one
+               IF ( tmpVal == HCO_MISSVAL ) tmpVal = 1.0_sp
              ENDIF
 
              ! For negative scale factor, proceed according to the

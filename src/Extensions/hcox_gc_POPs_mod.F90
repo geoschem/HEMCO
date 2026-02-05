@@ -649,7 +649,7 @@ CONTAINS
                             ( IS_ICE (I,J,ExtState) ) )
          IS_SNOW_OR_ICE = ( ( IS_ICE (I,J,ExtState) ) .OR.  &
                             ( IS_LAND(I,J,ExtState)   .AND. &
-                              ExtState%SNOWHGT%Arr%Val(I,J) > 10e+0_hp ) )
+                              ExtState%SNOMAS%Arr%Val(I,J) > 10e+0_hp ) )
 
          ! Do soils routine only if we are on land that is not covered with
          ! snow or ice
@@ -968,7 +968,7 @@ CONTAINS
                             ( IS_ICE (I,J,ExtState) ) )
          IS_SNOW_OR_ICE = ( ( IS_ICE (I,J,ExtState) ) .OR.  &
                             ( IS_LAND(I,J,ExtState)   .AND. &
-                              ExtState%SNOWHGT%Arr%Val(I,J) > 10e+0_hp ) )
+                              ExtState%SNOMAS%Arr%Val(I,J) > 10e+0_hp ) )
 
          ! Do soils routine only if we are on land that is not covered with
          ! snow or ice
@@ -1306,7 +1306,7 @@ CONTAINS
                             (IS_ICE (I,J,ExtState)) )
          IS_SNOW_OR_ICE = ( (IS_ICE (I,J,ExtState)) .OR.  &
                             (IS_LAND(I,J,ExtState)  .AND. &
-                             ExtState%SNOWHGT%Arr%Val(I,J) > 10e+0_hp ) )
+                             ExtState%SNOMAS%Arr%Val(I,J) > 10e+0_hp ) )
 
          ! Do soils routine only if we are on land that is not covered with
          ! snow or ice
@@ -1739,7 +1739,7 @@ CONTAINS
     ExtState%FRAC_OF_PBL%DoUse = .TRUE.
     ExtState%LAI%DoUse         = .TRUE.
     ExtState%PSC2_WET%DoUse    = .TRUE.
-    ExtState%SNOWHGT%DoUse     = .TRUE.
+    ExtState%SNOMAS%DoUse      = .TRUE.
     ExtState%TK%DoUse          = .TRUE.
     ExtState%TSKIN%DoUse       = .TRUE.
     ExtState%U10M%DoUse        = .TRUE.

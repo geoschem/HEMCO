@@ -36,25 +36,16 @@ DustAlk
 - **Species**: DSTAL1, DSTAL2, DSTAL3, DSTAL4
 - **Reference**: Fairlie et al (check)
 
-.. _hco-ext-list-dustdead:
+.. _hco-ext-list-dustl23m:
 
-DustDead
+DustL23M
 --------
 
-Emissions of mineral dust from the DEAD dust mobilization model.
+Emissions of mineral dust.
 
-- **Species**: DST1, DST2, DST3, DST4
-- **Reference**: :cite:t:`Zender_et_al._2003`
-
-.. _hco-ext-list-dustginoux:
-
-DustGinoux
-----------
-
-Emissions of mineral dust from the P. Ginoux dust mobilization model.
-
-- **Species**: DST1, DST2, DST3, DST4
-- **Reference**: :cite:t:`Ginoux_et_al._2001`
+- **Species**: DSTbin1, DSTbin2, DSTbin3, DSTbin4, DSTbin5, DSTbin6,
+  DSTbin7, TDST
+- **Reference**: :cite:t:`Zhang_et_al._2025`
 
 .. _hco-ext-list-gcrnpbbe:
 
@@ -67,7 +58,7 @@ Emissions of radionuclide species as used in the `GEOS-Chem
 - **Species**: Rn222, Be7, Be7Strat, Be10, Be10Strat
 
 If :literal:`ZHANG_Rn222` is :literal:`on`, then Rn222 emissions
-   will be computed according to :cite:t:`Zhang_et_al._2021`.
+will be computed according to :cite:t:`Zhang_et_al._2021`.
 
 If :literal:`ZHANG_Rn222` is :literal:`off`, then Rn222 emissions
 will be computed according to :cite:t:`Jacob_et_al._1997`.
@@ -351,7 +342,16 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: unitless
-   - **Used by**: :ref:`hco-ext-list-megan`
+   - **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-megan`
+
+.. option:: HFLUX
+
+   Sensible heat flux from turbulence.
+
+   - **Dim**: xy
+   - **Units**: W/m2
+   - **Used by**: :ref:`hco-ext-list-dustl23m`,  :ref:`hco-ext-list-paranox`
+
 
 .. option:: HNO3
 
@@ -433,13 +433,14 @@ for use by the various extensions:
    - **Units**: W/m2
    - **Used by**: :ref:`hco-ext-list-soilnox`
 
-.. option:: SNOWHGT
+.. option:: SNOMAS
 
-   Snow height (mm of H2O equivalent).
+   Total snow storage, on land
 
    - **Dim**: xy
    - **Units**: kg H2O/m2
-   - **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-tomas-dustdead`
+   - **Used by**: :ref:`hco-ext-list-dustl23m`,
+     :ref:`hco-ext-list-tomas-dustdead`
 
 .. option:: SPHU
 
@@ -447,7 +448,7 @@ for use by the various extensions:
 
    - **Dim**: xyz
    - **Units**: kg H2O/kg air
-   - **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-paranox`,
+   - **Used by**: :ref:`hco-ext-list-paranox`,
      :ref:`hco-ext-list-tomas-dustdead`
 
 .. option:: SZAFACT
@@ -458,13 +459,21 @@ for use by the various extensions:
    - **Units**: unitless
    - **Used by**: :ref:`hco-ext-list-megan`
 
+.. option:: T2M
+
+   2-meter air temperature (used as a proxy for surface temperature).
+
+   - **Dim**: xy
+   - **Units**: K
+   - **Used by**: :ref:`hco-ext-list-dustl23m`
+
 .. option:: TK
 
    Temperature.
 
    - **Dim**: xyz
    - **Units**: K
-   - **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-lightnox`,
+   - **Used by**: :ref:`hco-ext-list-lightnox`,
      :ref:`hco-ext-list-tomas-dustdead`
 
 .. option:: TROPP
@@ -481,7 +490,8 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: K
-   - **Used by**: :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`
+   - **Used by**: :ref:`hco-ext-list-dustl23m`,
+     :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`
 
 .. option:: U10M
 
@@ -489,11 +499,10 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: m/s
-   - **Used by**:  :ref:`hco-ext-list-dustalk`,  :ref:`hco-ext-list-dustdead`,
-     :ref:`hco-ext-list-dustginoux`, :ref:`hco-ext-list-paranox`,
-     :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`,
-     :ref:`hco-ext-list-soilnox`, :ref:`hco-ext-list-tomas-dustdead`,
-     :ref:`hco-ext-list-tomas-jeagle`
+   - **Used by**:  :ref:`hco-ext-list-dustalk`,
+     :ref:`hco-ext-list-paranox`, :ref:`hco-ext-list-seaflux`,
+     :ref:`hco-ext-list-seasalt`, :ref:`hco-ext-list-soilnox`,
+     :ref:`hco-ext-list-tomas-dustdead`, :ref:`hco-ext-list-tomas-jeagle`
 
 .. option:: USTAR
 
@@ -501,7 +510,8 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: m/s
-   - **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-tomas-dustdead`
+   - **Used by**: :ref:`hco-ext-list-dustl23m`,
+     :ref:`hco-ext-list-tomas-dustdead`
 
 .. option:: V10M
 
@@ -510,7 +520,6 @@ for use by the various extensions:
    - **Dim**: xy
    - **Units**: m/s
    - **Used by**:  :ref:`hco-ext-list-dustalk`,
-     :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-dustginoux`,
      :ref:`hco-ext-list-paranox`,  :ref:`hco-ext-list-seaflux`,
      :ref:`hco-ext-list-seasalt`, :ref:`hco-ext-list-soilnox`,
      :ref:`hco-ext-list-tomas-dustdead`, :ref:`hco-ext-list-tomas-jeagle`
@@ -530,7 +539,7 @@ for use by the various extensions:
 
    - **Dim**: xy
    - **Units**: m
-   - **Used by**: :ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-tomas-dustdead`
+   - **Used by**: :ref:`hco-ext-list-tomas-dustdead`
 
 .. _hco-ext-rst-vars:
 

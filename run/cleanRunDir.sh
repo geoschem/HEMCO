@@ -1,17 +1,19 @@
 #!/bin/bash
 
 #============================================================================
-# cleanRunDir.sh: Removes files created by GEOS-Chem from a run directory
+# cleanRunDir.sh: Removes files created by HEMCO standalone from a run dir.
 #
 # Usage:
 # ------
-# $ ./cleanRunDir.sh     # Removes model output files in the run directory.
-#                        # Also prompts the user before removing diagnostic
-#                        # output files in OutputDir/.
+# $ ./cleanRunDir.sh          # Removes model output files in the run
+#                             # directory.  Also prompts the user before
+#                             # removing diagnostic output files from
+#                             # from OutputDir/.
 #
-# $ ./cleanRunDir.sh 1   # Removes model ouptut files in the run directory,
-#                        # but will remove diagnostic output files without
-#                        # prompting first.  USE WITH CAUTION!
+# $ ./cleanRunDir.sh --force  # Removes model output files in the run
+#                             # directory, but will remove diagnostic
+#                             # output files without prompting first.
+#                             # USE WITH CAUTION!
 #============================================================================
 
 # Clean model output files in the run directory
@@ -33,8 +35,3 @@ else                               # User Confirmation not required
     rm -fv ./OutputDir/*.nc*
     rm -fv ./OutputDir/*.txt*
 fi
-
-#---------------------------------------------------------------------------
-# Give instruction to reset start date if using GCHP
-#---------------------------------------------------------------------------
-echo "Reset simulation start date in cap_restart if using GCHP"

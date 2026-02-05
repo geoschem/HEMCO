@@ -224,8 +224,9 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in routine "HCO_Enter"!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Initialize pointers
@@ -301,10 +302,9 @@ CONTAINS
     ! ----------------------------------------------------------------
     CALL SrcFile_Parse( HcoState, Lct, srcFile, FOUND, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Error encountered in routine "SrcFile_Parse", located '     // &
-             'module src/Core/hcoio_read_std_mod.F90!'
-        CALL HCO_ERROR( MSG, RC )
-        RETURN
+       MSG = 'Error encountered in routine "SrcFile_Parse" (#1)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Handle found or not in the standard way if HEMCO is in regular run mode.
@@ -320,13 +320,10 @@ CONTAINS
           IF ( ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_RANGE ) .OR.      &
                ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_EXACT )     ) THEN
 
-             ! If MustFind flag is enabled, return with error if field is not
-             ! found
+             ! If MustFind flag is enabled, return with error if field isn't
+             ! found. Generate explicit error messages to reduce confusion.
              IF ( Lct%Dct%Dta%MustFind ) THEN
-                MSG = 'Cannot find file for current simulation time: ' // &
-                     TRIM(srcFile) // ' - Cannot get field ' // &
-                     TRIM(Lct%Dct%cName) // '. Please check file name ' // &
-                     'and time (incl. time range flag) in the config. file'
+                MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile) )
                 CALL HCO_ERROR( MSG, RC )
                 RETURN
 
@@ -342,10 +339,7 @@ CONTAINS
              ENDIF
 
           ELSE
-             MSG = 'Cannot find file for current simulation time: ' // &
-                  TRIM(srcFile) // ' - Cannot get field ' // &
-                  TRIM(Lct%Dct%cName) // '. Please check file name ' // &
-                  'and time (incl. time range flag) in the config. file'
+             MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile) )
              CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
@@ -373,10 +367,7 @@ CONTAINS
              ! If MustFind flag is enabled, return with error if field is not
              ! found
              IF ( Lct%Dct%Dta%MustFind ) THEN
-                MSG = 'Cannot find file for current simulation time: '    // &
-                     TRIM(srcFile) // ' - Cannot get field '              // &
-                     TRIM(Lct%Dct%cName) // '. Please check file name '   // &
-                     'and time (incl. time range flag) in the config. file'
+                MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile) )
                 IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
 
                 ! Write a msg to stdout (NOT FOUND)
@@ -400,10 +391,7 @@ CONTAINS
 
           ! Not range or exact
           ELSE
-             MSG = 'Cannot find file for current simulation time: '       // &
-                  TRIM(srcFile) // ' - Cannot get field '                 // &
-                  TRIM(Lct%Dct%cName) // '. Please check file name '      // &
-                  'and time (incl. time range flag) in the config. file'
+             MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile) )
              IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
 
              ! Write a msg to stdout (NOT FOUND)
@@ -495,8 +483,9 @@ CONTAINS
                        wgt1,      wgt2,     oYMDhm1,  &
                        YMDhma,    YMDhm1,   RC        )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in routine "Get_TimeIdx" (#1)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     !-----------------------------------------------------------------
@@ -518,10 +507,7 @@ CONTAINS
        ELSEIF ( ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_RANGE ) .OR.      &
                 ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_EXACT )     ) THEN
           IF ( Lct%Dct%Dta%MustFind ) THEN
-             MSG = 'Cannot find field with valid time stamp in ' // &
-                   TRIM(srcFile) // ' - Cannot get field ' // &
-                   TRIM(Lct%Dct%cName) // '. Please check file name ' // &
-                   'and time (incl. time range flag) in the config. file'
+             MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile) )
              CALL HCO_ERROR( MSG, RC )
              DoReturn = .TRUE.
           ELSE
@@ -573,7 +559,8 @@ CONTAINS
     ! Extract longitude midpoints
     CALL NC_READ_VAR ( ncLun, 'lon', nlon, thisUnit, LonMid, NCRC )
     IF ( NCRC /= 0 ) THEN
-       CALL HCO_ERROR( 'NC_READ_VAR: lon', RC )
+       MSG = 'Error encountered in routine "NC_READ_VAR" (lon)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -581,7 +568,8 @@ CONTAINS
        CALL NC_READ_VAR ( ncLun, 'longitude', nlon, thisUnit, LonMid, NCRC )
     ENDIF
     IF ( NCRC /= 0 ) THEN
-       CALL HCO_ERROR( 'NC_READ_VAR: longitude', RC )
+       MSG = 'Error encountered in routine "NC_READ_VAR" (longitude)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -589,7 +577,8 @@ CONTAINS
        CALL NC_READ_VAR ( ncLun, 'Longitude', nlon, thisUnit, LonMid, NCRC )
     ENDIF
     IF ( NCRC /= 0 ) THEN
-       CALL HCO_ERROR( 'NC_READ_LON: Longitude', RC )
+       MSG = 'Error encountered in routine "NC_READ_VAR" (Longitude)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -612,14 +601,16 @@ CONTAINS
     ! Make sure longitude is steadily increasing.
     CALL HCO_ValidateLon( HcoState, nlon, LonMid, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in routine "HCO_ValidateLon" (#2)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Extract latitude midpoints
     CALL NC_READ_VAR ( ncLun, 'lat', nlat, thisUnit, LatMid, NCRC )
     IF ( NCRC /= 0 ) THEN
-       CALL HCO_ERROR( 'NC_READ_LON: lat', RC )
+       MSG = 'Error encountered in routine "NC_READ_VAR" (lat)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -627,7 +618,8 @@ CONTAINS
        CALL NC_READ_VAR ( ncLun, 'latitude', nlat, thisUnit, LatMid, NCRC )
     ENDIF
     IF ( NCRC /= 0 ) THEN
-       CALL HCO_ERROR( 'NC_READ_LON: latitude', RC )
+       MSG = 'Error encountered in routine "NC_READ_VAR" (latitude)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -635,7 +627,8 @@ CONTAINS
        CALL NC_READ_VAR ( ncLun, 'Latitude', nlat, thisUnit, LatMid, NCRC )
     ENDIF
     IF ( NCRC /= 0 ) THEN
-       CALL HCO_ERROR( 'NC_READ_LON: Latitude', RC )
+       MSG = 'Error encountered in routine "NC_READ_VAR" (Latitude)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -662,14 +655,16 @@ CONTAINS
        LevName = 'lev'
        CALL NC_READ_VAR ( ncLun, LevName, nlev, LevUnit, LevMid, NCRC )
        IF ( NCRC /= 0 ) THEN
-          CALL HCO_ERROR( 'NC_READ_VAR: lev', RC )
+          MSG = 'Error encountered in routine "NC_READ_VAR" (lev)!'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
           RETURN
        ENDIF
        IF ( nlev == 0 ) THEN
           LevName = 'height'
           CALL NC_READ_VAR ( ncLun, LevName, nlev, LevUnit, LevMid, NCRC )
           IF ( NCRC /= 0 ) THEN
-             CALL HCO_ERROR( 'NC_READ_VAR: height', RC )
+             MSG = 'Error encountered in routine "NC_READ_VAR" (height)!'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
        ENDIF
@@ -677,7 +672,8 @@ CONTAINS
           LevName = 'level'
           CALL NC_READ_VAR ( ncLun, LevName, nlev, LevUnit, LevMid, NCRC )
           IF ( NCRC /= 0 ) THEN
-             CALL HCO_ERROR( 'NC_READ_VAR: level', RC )
+             MSG = 'Error encountered in routine "NC_READ_VAR" (level)!'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
        ENDIF
@@ -724,8 +720,9 @@ CONTAINS
 
           CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-              RETURN
+             MSG = 'Error encountered in routine "ModelLev_Check"!'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+             RETURN
           ENDIF
 
 #endif
@@ -788,8 +785,9 @@ CONTAINS
     ! ----------------------------------------------------------------
     CALL GetArbDimIndex( HcoState, ncLun, Lct, ArbIdx, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in routine "GetArbDimIndex"!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! ----------------------------------------------------------------
@@ -821,7 +819,8 @@ CONTAINS
                       RC      = NCRC                 )
 
     IF ( NCRC /= 0 ) THEN
-       CALL HCO_ERROR( 'NC_READ_ARRAY', RC )
+       MSG = 'Error encountered in routine "NC_Read_Arr" (#1)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -857,8 +856,9 @@ CONTAINS
           CALL SrcFile_Parse ( HcoState,  Lct, srcFile2, &
                                FOUND, RC, Direction = Direction )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
-              RETURN
+             MSG = 'Error encountered in routine "SrcFile_Parse" (#2)!'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+             RETURN
           ENDIF
        ENDIF
 
@@ -876,8 +876,9 @@ CONTAINS
                              wgt1,      wgt2,     oYMDhm2, &
                              YMDhmb,    YMDhm1,   RC       )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
-              RETURN
+             MSG = 'Error encountered in routine "Get_TimeIdx" (#2)!'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+             RETURN
           ENDIF
 
           ! Always read first time slice
@@ -905,7 +906,7 @@ CONTAINS
                             ArbIdx  = ArbIdx,             &
                             RC      = NCRC                 )
           IF ( NCRC /= 0 ) THEN
-             CALL HCO_ERROR( 'NC_READ_ARRAY (2)', RC )
+             MSG = 'Error encountered in routine "NC_Read_Arr" (#2)!'
              RETURN
           ENDIF
 
@@ -968,8 +969,9 @@ CONTAINS
        CALL HcoClock_Get( HcoState%Clock, cYYYY=cYr, cMM=cMt, cDD=cDy, &
                           cH=cHr, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error encountered in routine "HcoClock_Get" (#1)!'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
 
        ! Determine year range to be read:
@@ -1005,8 +1007,9 @@ CONTAINS
              CALL SrcFile_Parse ( HcoState, Lct, srcFile2, &
                                   FOUND, RC, Year=iYear )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
-                 RETURN
+                MSG = 'Error encountered in routine "SrcFile_Parse" (#3)!'
+                CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+                RETURN
              ENDIF
 
              ! If found, read data. Assume that all meta-data is the same.
@@ -1027,8 +1030,9 @@ CONTAINS
                                 YMDhmb,    YMDhm1,   RC,      &
                                 Year=iYear                    )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
-                 RETURN
+                MSG = 'Error encountered in routine "Get_TimeIdx" (#3)'
+                CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+                RETURN
              ENDIF
 
              ! Do not perform weights
@@ -1187,15 +1191,17 @@ CONTAINS
        IF ( ncYr == 0 ) THEN
           CALL HcoClock_Get( HcoState%Clock, cYYYY = ncYr, RC=RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
-              RETURN
+             MSG = 'Error encountered in routine "HcoClock_Get" (#2)!'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+             RETURN
           ENDIF
        ENDIF
        IF ( ncMt == 0 ) THEN
           CALL HcoClock_Get( HcoState%Clock, cMM   = ncMt, RC=RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
-              RETURN
+             MSG = 'Error encountered in routine "HcoClock_Get" (#3)!'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+             RETURN
           ENDIF
        ENDIF
 
@@ -1292,8 +1298,9 @@ CONTAINS
           CALL NORMALIZE_AREA( HcoState, ncArr,   nlon, &
                                LatEdge,  srcFile, RC     )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
-              RETURN
+             MSG = 'Error encountered in routine "NORMALIZE_AREA"!'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+             RETURN
           ENDIF
 
        ! All other combinations are invalid
@@ -1319,8 +1326,9 @@ CONTAINS
     ENDIF
     CALL HCO_ValidateLon( HcoState, nlonEdge, LonEdge, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 13', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in routine "HCO_ValidateLon" (#2)!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Get latitude edges (only if they have not been read yet
@@ -1410,13 +1418,12 @@ CONTAINS
        ! of the GEOS-Chem levels (sigma = p/ps on INTERFACE)
        !
        ! There are caveats with this. This is essentially a copy of the
-       ! hardcoded hPa lists from
-       ! http://wiki.seas.harvard.edu/geos-chem/index.php/GEOS-Chem_vertical_grids
-       ! hard-coded by hand, and we only assume that the data is either
-       ! 47-levels or 72-levels.
+       ! hardcoded hPa lists from the "GEOS-Chem vertical grids"
+       ! chapter of geos-chem.readthedocs.io hard-coded by hand, and we 
+       ! only assume that the data is either 47-levels or 72-levels.
        !
-       ! Parse the 72 list using regex like so: ^ ?\d{1,2} then remove the lines
-       ! Then you have the 73 edges.
+       ! Parse the 72 list using regex like so: ^ ?\d{1,2} 
+       ! then remove the lines.  Then you have the 73 edges with:
        !
        ! psfc = PEDGE(0) = 1013.250 hPa
        !
@@ -1477,8 +1484,9 @@ CONTAINS
           ! Interpolate onto edges
           CALL SigmaMidToEdges ( HcoState, SigLev, SigEdge, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 14', RC, THISLOC=LOC )
-              RETURN
+             MSG = 'Error encountered in routine "SigmaMidToEdges"!'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+             RETURN
           ENDIF
 
           ! Sigma levels are not needed anymore
@@ -1509,8 +1517,8 @@ CONTAINS
                                LonEdge,   LatEdge,      SigEdge, &
                                Lct,       IsModelLevel, RC        )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( 'ERROR 15', RC, THISLOC=LOC )
-          RETURN
+          MSG = 'Error encountered in routine "HCO_MESSY_REGRID"!'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        ENDIF
 
        ! Cleanup
@@ -1527,8 +1535,9 @@ CONTAINS
 
        CALL REGRID_MAPA2A ( HcoState, NcArr, LonEdge, LatEdge, Lct, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 16', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error encountered in routine "REGRID_MAPA2A"!'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
 
     ENDIF
@@ -1542,8 +1551,9 @@ CONTAINS
              CALL Diagn_Update ( HcoState, cName=TRIM(Lct%Dct%cName), &
                                  Array3D=Lct%Dct%Dta%V3(1)%Val, COL=-1, RC=RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
-                 RETURN
+                MSG = 'Error encountered in routine "DIAGN_UPDATE" (#1)!'
+                CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+                RETURN
              ENDIF
           ENDIF
        ELSEIF ( Lct%Dct%Dta%SpaceDim == 2 .AND. ASSOCIATED(Lct%Dct%Dta%V2) ) THEN
@@ -1551,8 +1561,9 @@ CONTAINS
              CALL Diagn_Update ( HcoState, cName=TRIM(Lct%Dct%cName), &
                                  Array2D=Lct%Dct%Dta%V2(1)%Val, COL=-1, RC=RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                 CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
-                 RETURN
+                MSG = 'Error encountered in routine "DIAGN_UPDATE" (#2)!'
+                CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+                RETURN
              ENDIF
           ENDIF
        ENDIF
@@ -1621,6 +1632,68 @@ CONTAINS
     RC = HCO_SUCCESS
 
   END SUBROUTINE HCOIO_CloseAll
+!EOC
+!------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: IO_ErrMsg
+!
+! !DESCRIPTION: Returns an error message string when HEMCO cannot find
+!  a field for the current simulation time.
+!\\
+!\\
+! !INTERFACE:
+!
+  FUNCTION IO_ErrMsg( fldName, srcFile ) RESULT( errMsg )
+!
+! !INPUT PARAMETERS: 
+!
+    CHARACTER(LEN=*),   INTENT(IN) :: fldName
+    CHARACTER(LEN=*),   INTENT(IN) :: srcFile
+!
+! !RETURN VALUE:
+!
+    CHARACTER(LEN=1023)            :: errMsg
+!
+! !REVISION HISTORY:
+!  20 Oct 2015 - R. Yantosca - Initial version
+!  See the subsequent Git history with the gitk browser!
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+    IF ( fldName(1:4) == "SPC_" .and. INDEX( srcFile, "Restart" ) > 0 ) THEN
+
+       !---------------------------------------------------------------------
+       ! Case 1: GEOS-Chem Classic restart file
+       !---------------------------------------------------------------------
+       errMsg = "Cannot find the " // fldName // " field in the "         // &
+                "GEOS-Chem restart file " // srcFile // "! This "         // &
+                "indicates that either (1) the timestamp in the restart " // &
+                "file does not match the simulation start date, or (2) "  // &
+                "that the restart file does not contain initial "         // &
+                "conditions for all species in the simulation. You may "  // &
+                "allow your simulation to proceed by changing the time "  // &
+                "cycle flag for the 'SPC_' entry in your "                // &
+                "'HEMCO_Config.rc' file from `EFYO` to either 'CYS' or "  // &
+                "'EY'. Please refer to hemco.readthedocs.io for more "    // &
+                "information about 'HEMCO_Config.rc' settings."
+    ELSE
+
+       !---------------------------------------------------------------------
+       ! Case 2: Other files
+       !---------------------------------------------------------------------
+       errMsg = "Cannot find the "// fldName // " field in file "         // &
+                srcFile // "! Please doublecheck the name, time, and "    // &
+                "time cycle flag settings for field " // fldName          // &
+                " in your 'HEMCO_Config.rc' file.  Please refer to "      // &
+                "hemco.readthedocs.io for more information about "        // &
+                "'HEMCO_Config.rc' settings."
+
+    ENDIF
+
+ END FUNCTION IO_ErrMsg
 !EOC
 END MODULE HCOIO_Read_Mod
 #endif
