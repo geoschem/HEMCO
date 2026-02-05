@@ -305,8 +305,8 @@ Initialization:
    horizontal mid points and edges (all 2D fields), the hybrid sigma
    coordinate edges (3D), the grid box areas (2D), and the grid box
    heights. The latter is only used by some extensions
-   (:ref:`hco-ext-list-dustdead`, :ref:`hco-ext-list-lightnox`) and
-   may be left undefined if those are not used. |br|
+   (:ref:`hco-ext-list-lightnox`) and may be left undefined if those
+   are not used. |br|
    |br|
 
 -  Define emission species. Species definitions are stored in vector

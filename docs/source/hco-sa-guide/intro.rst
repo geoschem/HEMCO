@@ -1,8 +1,8 @@
 .. _hco-sa-guide:
 
-##########################
-Introduction to this Guide
-##########################
+####################################
+Introduction to the HEMCO Standalone
+####################################
 
 In this **HEMCO Standalone User Guide**, you will learn how to run
 HEMCO in **standalone mode** (i.e. not connected to an external model).

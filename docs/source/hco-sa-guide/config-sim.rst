@@ -16,80 +16,116 @@ Navigate to your new directory, and examine the contents:
 
    $ cd /path/to/hemco/run/dir
    $ ls
-   build/           HEMCO_Diagn.rc        HEMCO_sa_Spec.rc  README
-   CodeDir@         HEMCO_sa_Config.rc    HEMCO_sa_Time.rc  rundir.version
-   HEMCO_Config.rc  HEMCO_sa_Grid.4x5.rc  OutputDir/        runHEMCO.sh*
+   build/                         download_data.yml               HEMCO_sa_Grid.4x5.rc  Restarts/
+   cleanRunDir.sh*                HEMCO_Config.rc                 HEMCO_sa_Spec.rc      rundir.version
+   CodeDir@                       HEMCO_Config.rc.gmao_metfields  HEMCO_sa_Time.rc      runHEMCO.sh*
+   config_for_offline_emissions/  HEMCO_Diagn.rc                  OutputDir/
+   download_data.py*              HEMCO_sa_Config.rc              README
+
+.. _hco-sa-sim-config-rundir:
+
+=================================
+Run directory configuration files
+=================================
 
 The following files can be modified to set up your HEMCO standalone simulation.
 
-.. option:: HEMCO_sa_Config.rc
+.. _hco-sa-sim-config-rundir-sa:
 
-   Main configuration file for the HEMCO standalone simulation. This
-   file points to the other configuration files used to set up your
-   simulation (e.g. :option:`HEMCO_sa_Grid.4x5.rc`,
-   :option:`HEMCO_sa_Time.rc`).
+HEMCO_sa_Config.rc
+------------------
 
-   This file typically references a :option:`HEMCO_Config.rc` file
-   using
+Main configuration file for the HEMCO standalone simulation. This
+file points to the other configuration files used to set up your
+simulation (e.g. :ref:`hco-sa-sim-config-rundir-sa-grid`,
+:ref:`hco-sa-sim-config-rundir-sa-time`, etc):.
 
-   .. code-block:: none
+This file typically references a
+:ref:`hco-sa-sim-config-rundir-sa-hcorc` file using
 
-      >>>include HEMCO_Config.rc
+.. code-block:: none
 
-   which contains the emissions settings. Settings in
-   :option:`HEMCO_sa_Config.rc` will always override any settings in
-   the included :option:`HEMCO_Config.rc` file.
+   >>>include HEMCO_Config.rc
 
-.. option:: HEMCO_Config.rc
+which contains the emissions settings. Settings in
+:file:`HEMCO_sa_Config.rc` will always override any settings in
+the included :ref:`hco-sa-sim-config-rundir-sa-hcorc`.
 
-   Contains emissions settings. :option:`HEMCO_Config.rc` can be taken
-   from a another model (such as GEOS-Chem), or can be built from a
-   sample file.
+.. _hco-sa-sim-config-rundir-sa-hcorc:
 
-   For more information on editing :option:`HEMCO_Config.rc`, please
-   see the following chapters: :ref:`hco-cfg`, :ref:`edit-hco-cfg`,
-   and :ref:`cfg-ex`.
+HEMCO_Config.rc
+---------------
 
-   .. important::
+Contains emissions settings. :file:`HEMCO_Config.rc` can be taken
+from a another model (such as GEOS-Chem), or can be built from a
+sample file.
 
-      Make sure that the path to your data directory in the
-      :option:`HEMCO_Config.rc` file is correct.  Otherwise, HEMCO
-      standalone will not be able read data from disk.
+For more information on editing :file:`HEMCO_Config.rc`, please
+see the following chapters: :ref:`hco-cfg`, :ref:`edit-hco-cfg`,
+and :ref:`cfg-ex`.
 
-.. option:: HEMCO_Diagn.rc
+.. important::
 
-   Specifies which fields to save out to the HEMCO diagnostics file
-   saved in :file:`OutputDir` by default. The frequency to save out
-   diagnostics is controlled by the :ref:`hco-cfg-set-diagnfreq`
-   setting in :option:`HEMCO_sa_Config.rc`
+   Make sure that the path to your data directory in the
+   :file:`HEMCO_Config.rc` file is correct.  Otherwise, HEMCO
+   standalone will not be able read data from disk.
 
-   For more information, please see the chapter entitled
-   :ref:`hco-diag-configfile`.
+.. _hco-sa-sim-config-rundir-sa-hcodg:
 
-.. option:: HEMCO_sa_Grid.4x5.rc
+HEMCO_Diagn.rc
+--------------
 
-   Defines the grid specification. Sample files are provided for 4.0 x
-   5.0, 2.0 x 2.5, 0.5 x 0.625, and 0.25 x 0.3125 global grids in
-   :file:`HEMCO/run/` and are automatically copied to the run
-   directory based on options chosen when running
-   :file:`createRunDir.sh`.  you choose to run with a custom grid or
-   over a regional domain, you will need to modify this file
-   manually.
+Specifies which fields to save out to the HEMCO diagnostics file
+saved in :file:`OutputDir` by default. The frequency to save out
+diagnostics is controlled by the :ref:`hco-cfg-set-diagnfreq`
+setting in :ref:`hco-sa-sim-config-rundir-sa`.
 
-.. option:: HEMCO_sa_Spec.rc
+For more information, please see the chapter entitled
+:ref:`hco-diag-configfile`.
 
-   Defines the species to include in the HEMCO standalone
-   simulation. By default, the species in a GEOS-Chem full-chemistry
-   simulation are defined. To include other species, you can modify
-   this file by providing the species name, molecular weight, and
-   other properties.
+.. _hco-sa-sim-config-rundir-sa-grid:
 
-.. option:: HEMCO_sa_Time.rc
+HEMCO_sa_Grid.$RES.rc
+---------------------
 
-   Defines the start and end times of the HEMCO standalone simulation
-   as well as the emissions timestep (s).
+Defines the grid specification for resolution :literal:`$RES`. Sample
+files for several horizontal resolutions (4.0 x 5.0, 2.0 x 2.5, 0.5 x
+0.625, and 0.25 x 0.3125 global grids) are stored in the in
+:file:`HEMCO/run/` folder.  These are are automatically copied to the
+run directory based on options chosen when running
+:file:`createRunDir.sh`.
 
-.. option:: runHEMCO.sh
+If you choose to run with a custom grid or over a regional domain, you
+will need to modify this file manually.
 
-   Sample run script for submitting a HEMCO standalone simulation via
-   SLURM.
+.. _hco-sa-sim-config-rundir-sa-spec:
+
+HEMCO_sa_Spec.rc
+----------------
+
+Defines the species to include in the HEMCO standalone
+simulation. By default, the species in a GEOS-Chem full-chemistry
+"standard" simulation are included.
+
+You may easily generate a :file:`HEMCO_sa_Spec.rc` corresponding to a
+different GEOS-Chem simulation with the GCPy example script
+:file:`make_hemco_sa_spec.py`.  For usage details, see the `Generate a
+HEMCO_sa_Spec.rc for HEMCO Standalone
+<https://gcpy.readthedocs.io/en/latest/Hemco-Examples.html#generate-a-hemco-sa-spec-rc-file-for-hemco-standalone>`_
+documentation at gcpy.readthedocs.io.
+
+.. _hco-sa-sim-config-rundir-sa-time:
+
+HEMCO_sa_Time.rc
+----------------
+
+Defines the start and end times of the HEMCO standalone simulation
+as well as the emissions timestep (s).
+
+.. _hco-sa-sim-config-rundir-sa-run:
+
+runHEMCO.sh
+-----------
+
+Sample run script for submitting a HEMCO standalone simulation via
+SLURM.

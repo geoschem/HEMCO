@@ -33,7 +33,8 @@ be considered.
 DustAlk
 -------
 
-- **Species**: DSTAL1, DSTAL2, DSTAL3, DSTAL4
+- **Species**: DSTALbin1, DSTALbin2, DSTALbin3, DSTALbin4, DSTALbin5,
+  DSTALbin6, DSTALbin7
 - **Reference**: Fairlie et al (check)
 
 .. _hco-ext-list-dustl23m:
@@ -271,275 +272,302 @@ Environmental fields used by HEMCO
 The following fields can be passed from the atmospheric model to HEMCO
 for use by the various extensions:
 
-.. option:: AIR
+AIR
+---
 
-   Air mass.
+Air mass.
 
-   - **Dim**: xyz
-   - **Units**: kg
-   - **Used by**: :ref:`hco-ext-list-gcrnpbbe`, :ref:`hco-ext-list-paranox`
+- **Dim**: xyz
+- **Units**: kg
+- **Used by**: :ref:`hco-ext-list-gcrnpbbe`, :ref:`hco-ext-list-paranox`
 
-.. option:: AIRVOL
+AIRVOL
+------
 
-   Air volume (i.e. volume of grid box).
+Air volume (i.e. volume of grid box).
 
-   - **Dim**: xyz
-   - **Units**: kg
-   - **Used by**: :ref:`hco-ext-list-paranox`
+- **Dim**: xyz
+- **Units**: kg
+- **Used by**: :ref:`hco-ext-list-paranox`
 
-.. option:: ALBD
+ALBD
+----
 
-   Surface albedo.
+Surface albedo.
 
-   - **Dim**: xy
-   - **Units**: unitless
-   - **Used by**: :ref:`hco-ext-list-soilnox`, :ref:`hco-ext-list-seaflux`
+- **Dim**: xy
+- **Units**: unitless
+- **Used by**: :ref:`hco-ext-list-soilnox`, :ref:`hco-ext-list-seaflux`
 
-.. option:: CLDFRC
+CLDFRC
+------
 
-   Cloud fraction
+Cloud fraction
 
-   - **Dim**: xy
-   - **Units**: unitless
-   - **Used by**: :ref:`hco-ext-list-megan`
+- **Dim**: xy
+- **Units**: unitless
+- **Used by**: :ref:`hco-ext-list-megan`
 
-.. option:: CNV_MFC
+CNV_MFC
+-------
 
-   Convective mass flux.
+Convective mass flux.
 
-   - **Dim**: xyz
-   - **Units**: kg/m2/s
-   - **Used by**: :ref:`hco-ext-list-lightnox`
+- **Dim**: xyz
+- **Units**: kg/m2/s
+- **Used by**: :ref:`hco-ext-list-lightnox`
 
-.. option:: FRAC_OF_PBL
+FRAC_OF_PBL
+-----------
 
-   Fraction of grid box within the planetary boundary layer (PBL).
+Fraction of grid box within the planetary boundary layer (PBL).
 
-   - **Dim**: xyz
-   - **Units**: unitless
-   - **Used by**: :ref:`hco-ext-list-paranox`, :ref:`hco-ext-list-seaflux`
+- **Dim**: xyz
+- **Units**: unitless
+- **Used by**: :ref:`hco-ext-list-paranox`, :ref:`hco-ext-list-seaflux`
 
-.. option:: FRCLND
+FRCLND
+------
 
-   Land fraction
+Land fraction
 
-   - **Dim**: xy
-   - **Units**: unitless
-   - **Used by**: :ref:`hco-ext-list-gcrnpbbe`, :ref:`hco-ext-list-seaflux`
+- **Dim**: xy
+- **Units**: unitless
+- **Used by**: :ref:`hco-ext-list-gcrnpbbe`, :ref:`hco-ext-list-seaflux`
 
-.. option:: GWETROOT
+GWETROOT
+--------
 
-   Root soil moisture.
+Root soil moisture.
 
+- **Dim**: xy
+- **Units**: unitless
+- **Used by**: :ref:`hco-ext-list-megan`
 
-   - **Dim**: xy
-   - **Units**: unitless
-   - **Used by**: :ref:`hco-ext-list-megan`
+GWETTOP
+-------
 
-.. option:: GWETTOP
-
-   Top soil moisture.
+Top soil moisture.
 
    - **Dim**: xy
    - **Units**: unitless
    - **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-megan`
 
-.. option:: HFLUX
+HFLUX
+-----
 
-   Sensible heat flux from turbulence.
+Sensible heat flux (from turbulence).
 
-   - **Dim**: xy
-   - **Units**: W/m2
-   - **Used by**: :ref:`hco-ext-list-dustl23m`,  :ref:`hco-ext-list-paranox`
+- **Dim**: xy
+- **Units**: W/m2
+- **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-megan`
 
+HNO3
+----
 
-.. option:: HNO3
+HNO3 mass.
 
-   HNO3 mass.
+- **Dim**: xyz
+- **Units**: kg
+- **Used by**: :ref:`hco-ext-list-paranox`
 
-   - **Dim**: xyz
-   - **Units**: kg
-   - **Used by**: :ref:`hco-ext-list-paranox`
+JO1D
+----
 
-.. option:: JO1D
+Photolysis J-value for O1D.
 
-   Photolysis J-value for O1D.
+- **Dim**: xy
+- **Units**: 1/s
+- **Used by**: :ref:`hco-ext-list-paranox`
 
-   - **Dim**: xy
-   - **Units**: 1/s
-   - **Used by**: :ref:`hco-ext-list-paranox`
+JNO2
+----
 
-.. option:: JNO2
+Photolysis J-value for NO2.
 
-   Photolysis J-value for NO2.
+- **Dim**: xy
+- **Units**: 1/s
+- **Used by**: :ref:`hco-ext-list-paranox`
 
-   - **Dim**: xy
-   - **Units**: 1/s
-   - **Used by**: :ref:`hco-ext-list-paranox`
+LAI
+---
 
-.. option:: LAI
+Leaf area index.
 
-   Leaf area index.
+- **Dim**: xy
+- **Units**: cm2 leaf/cm2 grid box
+- **Used by**: :ref:`hco-ext-list-megan`
 
-   - **Dim**: xy
-   - **Units**: cm2 leaf/cm2 grid box
-   - **Used by**: :ref:`hco-ext-list-megan`
+NO
+--
 
-.. option:: NO
+NO mass.
 
-   NO mass.
+- **Dim**: xyz
+- **Units**: kg
+- **Used by**: :ref:`hco-ext-list-paranox`
 
-   - **Dim**: xyz
-   - **Units**: kg
-   - **Used by**: :ref:`hco-ext-list-paranox`
+NO2
+---
 
-.. option:: NO2
+NO2 mass.
 
-   NO2 mass.
+- **Dim**: xyz
+- **Units**: kg
+- **Used by**: :ref:`hco-ext-list-paranox`
 
-   - **Dim**: xyz
-   - **Units**: kg
-   - **Used by**: :ref:`hco-ext-list-paranox`
+O3
+--
 
-.. option:: O3
+O3 mass.
 
-   O3 mass.
+- **Dim**: xyz
+- **Units**: kg
+- **Used by**: :ref:`hco-ext-list-paranox`
 
-   - **Dim**: xyz
-   - **Units**: kg
-   - **Used by**: :ref:`hco-ext-list-paranox`
+PARDF
+-----
 
-.. option:: PARDF
+Diffuse photosynthetic active radiation
 
-   Diffuse photosynthetic active radiation
+- **Dim**: xy
+- **Units**: W/m2
+- **Used by**: :ref:`hco-ext-list-megan`
 
-   - **Dim**: xy
-   - **Units**: W/m2
-   - **Used by**: :ref:`hco-ext-list-megan`
+PARDR
+-----
 
-.. option:: PARDR
+Direct photosynthetic active radiation
 
-   Direct photosynthetic active radiation
+- **Dim**: xy
+- **Units**: W/m2
+- **Used by**: :ref:`hco-ext-list-megan`
 
-   - **Dim**: xy
-   - **Units**: W/m2
-   - **Used by**: :ref:`hco-ext-list-megan`
+RADSWG
+------
 
-.. option:: RADSWG
+Short-wave incident surface radiation
 
-   Short-wave incident surface radiation
+- **Dim**: xy
+- **Units**: W/m2
+- **Used by**: :ref:`hco-ext-list-soilnox`
 
-   - **Dim**: xy
-   - **Units**: W/m2
-   - **Used by**: :ref:`hco-ext-list-soilnox`
+SNOMAS
+------
 
-.. option:: SNOMAS
+Total snow storage on land.
 
-   Total snow storage, on land
+- **Dim**: xy
+- **Units**: kg H2O/m2
+- **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-tomas-dustdead`
 
-   - **Dim**: xy
-   - **Units**: kg H2O/m2
-   - **Used by**: :ref:`hco-ext-list-dustl23m`,
-     :ref:`hco-ext-list-tomas-dustdead`
+SPHU
+----
 
-.. option:: SPHU
+Specific humidity
 
-   Specific humidity
+- **Dim**: xyz
+- **Units**: kg H2O/kg air
+- **Used by**: :ref:`hco-ext-list-paranox`, :ref:`hco-ext-list-tomas-dustdead`
 
-   - **Dim**: xyz
-   - **Units**: kg H2O/kg air
-   - **Used by**: :ref:`hco-ext-list-paranox`,
-     :ref:`hco-ext-list-tomas-dustdead`
+SZAFACT
+-------
 
-.. option:: SZAFACT
+Cosine of the solar zenith angle.
 
-   Cosine of the solar zenith angle.
+- **Dim**: xy
+- **Units**: unitless
+- **Used by**: :ref:`hco-ext-list-megan`
 
-   - **Dim**: xy
-   - **Units**: unitless
-   - **Used by**: :ref:`hco-ext-list-megan`
+T2M
+---
 
-.. option:: T2M
+Temperature at 2 meters above surface (proxy for surface temperature).
 
-   2-meter air temperature (used as a proxy for surface temperature).
+- **Dim**: xy
+- **Units**: K
+- **Used by**: :ref:`hco-ext-list-dustl23m`
+  
+TK
+---
 
-   - **Dim**: xy
-   - **Units**: K
-   - **Used by**: :ref:`hco-ext-list-dustl23m`
+Temperature.
 
-.. option:: TK
+- **Dim**: xyz
+- **Units**: K
+- **Used by**: :ref:`hco-ext-list-lightnox`, :ref:`hco-ext-list-tomas-dustdead`
 
-   Temperature.
+TROPP
+-----
 
-   - **Dim**: xyz
-   - **Units**: K
-   - **Used by**: :ref:`hco-ext-list-lightnox`,
-     :ref:`hco-ext-list-tomas-dustdead`
+Tropopause pressure.
 
-.. option:: TROPP
+- **Dim**: xy
+- **Units**: Pa
+- **Used by**: :ref:`hco-ext-list-gcrnpbbe`, :ref:`hco-ext-list-lightnox`
 
-   Tropopause pressure.
+TSKIN
+-----
 
-   - **Dim**: xy
-   - **Units**: Pa
-   - **Used by**: :ref:`hco-ext-list-gcrnpbbe`, :ref:`hco-ext-list-lightnox`
+Surface skin temperature
 
-.. option:: TSKIN
+- **Dim**: xy
+- **Units**: K
+- **Used by**: :ref:`hco-ext-list-dustl23m`,
+  :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`
+  
+U10M
+----
 
-   Surface skin temperature
+E/W wind speed @ 10 meters above surface.
 
-   - **Dim**: xy
-   - **Units**: K
-   - **Used by**: :ref:`hco-ext-list-dustl23m`,
-     :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`
+- **Dim**: xy
+- **Units**: m/s
+- **Used by**:  :ref:`hco-ext-list-dustalk`, :ref:`hco-ext-list-paranox`,
+  :ref:`hco-ext-list-seaflux`, :ref:`hco-ext-list-seasalt`,
+  :ref:`hco-ext-list-soilnox`, :ref:`hco-ext-list-tomas-dustdead`,
+  :ref:`hco-ext-list-tomas-jeagle`
 
-.. option:: U10M
+USTAR
+-----
 
-   E/W wind speed @ 10 meters above surface.
+Friction velocity.
 
-   - **Dim**: xy
-   - **Units**: m/s
-   - **Used by**:  :ref:`hco-ext-list-dustalk`,
-     :ref:`hco-ext-list-paranox`, :ref:`hco-ext-list-seaflux`,
-     :ref:`hco-ext-list-seasalt`, :ref:`hco-ext-list-soilnox`,
-     :ref:`hco-ext-list-tomas-dustdead`, :ref:`hco-ext-list-tomas-jeagle`
+- **Dim**: xy
+- **Units**: m/s
+- **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-tomas-dustdead`
 
-.. option:: USTAR
+V10M
+----
 
-   Friction velocity.
+N/S wind speed @ 10 meters above surface.
 
-   - **Dim**: xy
-   - **Units**: m/s
-   - **Used by**: :ref:`hco-ext-list-dustl23m`,
-     :ref:`hco-ext-list-tomas-dustdead`
+- **Dim**: xy
+- **Units**: m/s
+- **Used by**:  :ref:`hco-ext-list-dustalk`,
+  :ref:`hco-ext-list-paranox`,  :ref:`hco-ext-list-seaflux`,
+  :ref:`hco-ext-list-seasalt`, :ref:`hco-ext-list-soilnox`,
+  :ref:`hco-ext-list-tomas-dustdead`, :ref:`hco-ext-list-tomas-jeagle`
 
-.. option:: V10M
+WLI
+---
 
-   N/S wind speed @ 10 meters above surface.
+Water-land-ice flags (:literal:`0` = water, :literal:`1` = land,
+:literal:`2` =  ice).
 
-   - **Dim**: xy
-   - **Units**: m/s
-   - **Used by**:  :ref:`hco-ext-list-dustalk`,
-     :ref:`hco-ext-list-paranox`,  :ref:`hco-ext-list-seaflux`,
-     :ref:`hco-ext-list-seasalt`, :ref:`hco-ext-list-soilnox`,
-     :ref:`hco-ext-list-tomas-dustdead`, :ref:`hco-ext-list-tomas-jeagle`
+- **Dim**: xy
+- **Units**: unitless
+- **Used by**: Almost every extension
 
-.. option:: WLI
+Z0
+---
 
-   Water-land-ice flags (:literal:`0` = water, :literal:`1` = land,
-   :literal:`2` =  ice).
+Roughness height.
 
-   - **Dim**: xy
-   - **Units**: unitless
-   - **Used by**: Almost every extension
-
-.. option:: Z0
-
-   Roughness height.
-
-   - **Dim**: xy
-   - **Units**: m
-   - **Used by**: :ref:`hco-ext-list-tomas-dustdead`
+- **Dim**: xy
+- **Units**: m
+- **Used by**: :ref:`hco-ext-list-tomas-dustdead`
+>>>>>>> docs/dev
 
 .. _hco-ext-rst-vars:
 

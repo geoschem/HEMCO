@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added call to `HCO_SetPBLm` in routine `HCOI_SA_RUN` so that the PBL height will evolve with time in the HEMCO standalone
 - Added `ExtState%TSKIN` for skin temperature and `ExtState%HFLUX` for sensible heat flux
 - Added `run/config_for_offline_emissions` folder to contain sample `HEMCO_Config.rc` files
-- Added `do_sum` argument to routine `Collapse` in `src/Core/hco_interp_mod.F90`
+- Added `do_sum` argument to routine `Collapse` in`src/Core/hco_interp_mod.F90`
+- Added `docs/read_the_docs_environment.yml` Conda environment file
 
 ### Changed
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
@@ -33,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced `DST{1..4}` with `DSTbin{1..7}` and renumbered lines accordingly in `run/HEMCO_sa_Spec.rc`
 - Updated link to current HEMCO Standalone documentation in `run/README`
 - Updated ReadTheDocs documentation for the addition of `DustL23M` and removal of `DustDead` and DustGinoux` extensions
+- Updated `geos-chem-shared-docs/editing_these_docs.rst` with instructions for using a Conda environment to build RTD doc
 
 ### Fixed
 - Fixed security issues in GitHub Actions

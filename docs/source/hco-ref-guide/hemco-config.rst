@@ -1118,51 +1118,49 @@ Specifies the spatial dimension of the input data and/or the
 model levels into which emissions will be placed.  Here are some
 examples that illustrate its use.
 
-+------------------------+--------------------------------------------------+
-| SrcDim setting         | What this does                                   |
-+========================+==================================================+
-| ``xy``                 | Specifies 2-dimensional input data               |
-+------------------------+--------------------------------------------------+
-| ``xyz``                | Specifies 3-dimensional input data               |
-+------------------------+--------------------------------------------------+
-| ``xy5``                | Emits the lowest 5 levels of the input data      |
-|                        | into HEMCO levels 1 through 5.                   |
-+------------------------+--------------------------------------------------+
-| ``xy-5``               | Emits the tompmost 5 levels of the input data    |
-|                        | into HEMCO levels 1 through 5 (i.e. in           |
-|                        | reversed order, so that the topmost level is     |
-|                        | placed into HEMCO level 1, etc.)                 |
-+------------------------+--------------------------------------------------+
-| ``xyL=5``              | Emits a 2-D input data field into HEMCO          |
-|                        | level 5.                                         |
-+------------------------+--------------------------------------------------+
-| ``xyL=2000m``          | Emits a 2-D input data field into the model      |
-|                        | level corresponding to 2000m above the surface.  |
-+------------------------+--------------------------------------------------+
-| ``xyL=2:5000m``        | Emits between HEMCO level 2 and 5000m            |
-+------------------------+--------------------------------------------------+
-| ``xyL=1:PBL``          | Emits from the surface (HEMCO level 1) up to the |
-|                        | HEMCO level containing the PBL top.              |
-+------------------------+--------------------------------------------------+
-| ``xyL=PBL:5500m``      | Emits from the PBL top level up to 5500m.        |
-+------------------------+--------------------------------------------------+
-| ``xyL*``               | Emit same value to all emission levels.  A scale |
-|                        | scale factor should be applied to distribute the |
-|                        | emissions vertically.                            |
-+------------------------+--------------------------------------------------+
-| ``xyL=1:scal300``      | Emit from the surface (HEMCO level 1) to the     |
-|                        | injection height that is listed under scale      |
-|                        | factor 300.  This scale factor may be read from  |
-|                        | a netCDF file.                                   |
-+------------------------+--------------------------------------------------+
-| ``xyz+"ensemble=3"``   | Read a netCDF file containing ensemble data (xyz |
-|                        | plus an additional dimension named               |
-|                        | ``ensemble``), using the 3rd ensemble member.    |
-+------------------------+--------------------------------------------------+
-| ``xyz+"ensemble=$EN"`` | Similar to the previous example, but using a     |
-|                        | :ref:`token <hco-cfg-settings-usrdef>` to denote |
-|                        | which ensemble member to use. [#A]_              |
-+------------------------+--------------------------------------------------+
+.. list-table::
+   :header-rows: 1
+
+   * - SrcDim setting
+     - What this does
+   * - :literal:`xy`
+     - Specifies 2-dimensional input data
+   * - :literal:`xyz`
+     - Specifies 3-dimensional input data
+   * - :literal:`xy5`
+     - Emits the lowest 5 levels of the input data into HEMCO levels 1
+       through 5.
+   * - :literal:`xy-5`
+     - Emits the tompmost 5 levels of the input data into HEMCO levels
+       1 through 5 (i.e. in reversed order, so that the topmost level
+       is placed into HEMCO level 1, etc.)
+   * - :literal:`xyL=5`
+     - Emits a 2-D input data field into HEMCO level 5.
+   * - :literal:`xyL=2000m`
+     - Emits a 2-D input data field into the model level corresponding
+       to 2000m above the surface.
+   * - :literal:`xyL=2:5000m`
+     - Emits between HEMCO level 2 and 5000m
+   * - :literal:`xyL=1:PBL`
+     - Emits from the surface (HEMCO level 1) up to the HEMCO level
+       containing the PBL top.
+   * - :literal:`xyL=PBL:5500m`
+     - Emits from the PBL top level up to 5500m.
+   * - :literal:`xyL*`
+     - Emit same value to all emission levels.  A scalefactor should
+       be applied to distribute the emissions vertically.
+   * - :literal:`xyL=1:scal300`
+     - Emit from the surface (HEMCO level 1) to the injection height
+       that is listed under scale factor 300.  This scale factor may
+       be read from a netCDF file.
+   * - :literal:`xyz+"ensemble=3"`
+     - Read a netCDF file containing ensemble data (:literal:`xyz`
+       plus an additional dimension named :literal:`ensemble`), using
+       the 3rd ensemble member.
+   * - :literal:`xyz+"ensemble=$EN"`
+     - Similar to the previous example, but using a :ref:`token
+       <hco-cfg-settings-usrdef>` to denote which ensemble member to
+       use. [#A]_
 
 .. rubric:: Notes for SrcDim
 
@@ -1198,20 +1196,29 @@ to it. This can be useful for extensions that import some
 ScalIDs
 -------
 
+.. note::
+
+   ScalIDs only affect fields that are assigned to the base extension
+   (:literal:`ExtNr = 0`).
+
 Identification numbers of all scale factors and masks that shall be
 applied to this base emission field. Multiple entries must be
 separated by the separator character. ScalIDs must csorrespond to the
 numbers provided in the :ref:`hco-cfg-scalefac` and
+:ref:`hco-cfg-masks` sections.
 
-.. note::
-
-   This option only takes effect for fields that are assigned to the
-   base extension (:literal:`ExtNr = 0`).
+If you do not wish to apply any scale factors or masks, leave a
+:literal:`-` in the ScalIDs column.
 
 .. _hco-cfg-base-cat:
 
 Cat
 ---
+
+.. note::
+
+   Cat only affects fields that are assigned to the base extension
+   (:literal:`ExtNr = 0`).
 
 Emission category. Used to distinguish different, independent
 emission sources. Emissions of different categories are always
@@ -1234,26 +1241,21 @@ means "Put everything into the first listed category
 (1=anthropogenic), and set the other listed categories (2=biofuels,
 12=trash) to zero.
 
-.. note::
-
-   This option only takes effect for fields that are assigned to the
-   base extension (:literal:`ExtNr = 0`).
-
 .. _hco-cfg-base-hier:
 
 Hier
 ----
+
+.. note::
+
+   Hier only affects fields that are assigned to the base extension
+   (:literal:`ExtNr = 0`).
 
 Emission hierarchy. Used to prioritize emission fields within the
 same emission category.  Emissions of higher hierarchy overwrite
 lower hierarchy data. Fields are only considered within their
 defined domain, i.e. regional inventories are only considered
 within their mask boundaries.
-
-.. note::
-
-   This option only takes effect for fields that are assigned to the
-   base extension (:literal:`ExtNr = 0`).
 
 .. _hco-cfg-scalefac:
 
