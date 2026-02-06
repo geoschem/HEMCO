@@ -271,7 +271,7 @@ system) into a file named :file:`~/intel23.env`.
    echo ""
    echo "Done sourcing ${BASH_SOURCE[0]}"
 
-   
+
 .. tip::
 
    Ask your sysadmin how to load software libraries.  If you
@@ -347,42 +347,48 @@ shared-memory (aka serial) parallelization.
 Add the following environment variables to your environment file to
 control the OpenMP parallelization settings:
 
-.. option:: OMP_NUM_THREADS
+.. _hco-sa-envvar-parallel-threads:
 
-   The :envvar:`OMP_NUM_THREADS` environment variable sets the number of
-   computational cores (aka threads) to use.
+OMP_NUM_THREADS
+---------------
 
-   For example, the command below will tell HEMCO standalone to use 8
-   cores within parallel sections of code:
+The :envvar:`OMP_NUM_THREADS` environment variable sets the number of
+computational cores (aka threads) to use.
 
-   .. code:: console
+For example, the command below will tell HEMCO standalone to use 8
+cores within parallel sections of code:
 
-      $ export OMP_NUM_THREADS=8
+.. code:: console
 
-.. option:: OMP_STACKSIZE
+   $ export OMP_NUM_THREADS=8
 
-   In order to use HEMCO standalone with `OpenMP
-   parallelization <Parallelizing_GEOS-Chem>`_, you must request the
-   maximum amount of stack memory in your login environment. (The
-   stack memory is where local automatic variables and temporary
-   :envvar:`!$OMP PRIVATE` variables will be created.) Add the
-   following lines to your system startup file and to your GEOS-Chem
-   run scripts:
+.. _hco-sa-envvar-parallel-stack:
 
-   .. code-block:: bash
+OMP_STACKSIZE
+-------------
 
-      ulimit -s unlimited
-      export OMP_STACKSIZE=500m
+In order to use HEMCO standalone with `OpenMP
+parallelization <Parallelizing_GEOS-Chem>`_, you must request the
+maximum amount of stack memory in your login environment. (The
+stack memory is where local automatic variables and temporary
+:envvar:`!$OMP PRIVATE` variables will be created.) Add the
+following lines to your system startup file and to your GEOS-Chem
+run scripts:
 
-   The :command:`ulimit -s unlimited` command will tell the bash shell
-   to use the maximum amount of stack memory that is available.
+.. code-block:: bash
 
-   The environment variable :envvar:`OMP_STACKSIZE` must also be set to a very
-   large number. In this example, we are nominally requesting 500 MB of
-   memory. But in practice, this will tell the GNU Fortran compiler to use
-   the maximum amount of stack memory available on your system. The value
-   **500m** is a good round number that is larger than the amount of stack
-   memory on most computer clusters, but you can increase this if you wish.
+   ulimit -s unlimited
+   export OMP_STACKSIZE=500m
+
+The :command:`ulimit -s unlimited` command will tell the bash shell
+to use the maximum amount of stack memory that is available.
+
+The environment variable :envvar:`OMP_STACKSIZE` must also be set to a very
+large number. In this example, we are nominally requesting 500 MB of
+memory. But in practice, this will tell the GNU Fortran compiler to use
+the maximum amount of stack memory available on your system. The value
+**500m** is a good round number that is larger than the amount of stack
+memory on most computer clusters, but you can increase this if you wish.
 
 .. _errors_caused_by_incorrect_settings:
 
@@ -392,14 +398,14 @@ Fix errors caused by incorrect settings
 
 Be on the lookout for these errors:
 
-  #. If :option:`OMP_NUM_THREADS` is set to 1, then your
-     HEMCO standalone simulation will execute using only
-     one computational core.  This will make your simulation take much
+  #. If :ref:`hco-sa-envvar-parallel-threads` is set to 1, then your
+     HEMCO standalone simulation will execute using only one
+     computational core.  This will make your simulation take much
      longer than is necessary.
 
-  #. If :option:`OMP_STACKSIZE` environment variable is not included
-     in your environment file (or if it is set to a very low value),
-     you might encounter a **segmentation fault**.  In this case,
-     the HEMCO standalone "thinks" that it does not have
+  #. If :ref:`hco-sa-envvar-parallel-stack` environment variable is
+     not included in your environment file (or if it is set to a very
+     low value), you might encounter a **segmentation fault**.  In
+     this case, the HEMCO standalone "thinks" that it does not have
      enough memory to perform the simulation, even though sufficient
      memory may be present.

@@ -131,7 +131,7 @@ MODULE HCO_Error_Mod
 #endif
 
   ! HEMCO version number.
-  CHARACTER(LEN=12), PARAMETER, PUBLIC :: HCO_VERSION = '3.11.2'
+  CHARACTER(LEN=12), PARAMETER, PUBLIC :: HCO_VERSION = '3.12.0'
 
 !
 ! !REVISION HISTORY:
@@ -206,7 +206,7 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOC
     INTEGER             :: I, J, hcoLogLUN
-    CHARACTER(LEN=1023) :: MSG, MSG1, MSG2
+    CHARACTER(LEN=1023) :: MSG
 #if defined( ESMF_)
     INTEGER             :: localPET, STATUS
     CHARACTER(4)        :: localPETchar
@@ -218,11 +218,8 @@ CONTAINS
     !======================================================================
 
     ! Specify where to write
-    IF ( PRESENT(LUN) ) THEN
-       hcoLogLUN = LUN
-    ELSE
-       hcoLogLUN = 6
-    ENDIF
+    hcoLogLUN = 6
+    IF ( PRESENT( LUN ) ) hcoLogLUN = LUN
 
     ! Construct error message
 #if defined( ESMF_ )
@@ -230,18 +227,20 @@ CONTAINS
     CALL ESMF_VMGetCurrent(VM, RC=STATUS)
     CALL ESMF_VmGet( VM, localPET=localPET, __RC__ )
     WRITE(localPETchar,'(I4.4)') localPET
-    MSG1 = 'HEMCO ERROR ['//TRIM(localPETchar)//']: '//TRIM(ErrMsg)
+    MSG = 'HEMCO ERROR [' // TRIM( localPETchar ) //']: '// TRIM( ErrMsg )
 #else
-    MSG1 = 'HEMCO ERROR: '//TRIM(ErrMsg)
+    MSG = 'HEMCO ERROR: ' // TRIM( ErrMsg       )
 #endif
-    MSG2 = ''
-    IF ( PRESENT(THISLOC) ) THEN
-       MSG2 = NEW_LINE('a') // ' --> LOCATION: ' // TRIM( THISLOC )
-    ENDIF
-    MSG = NEW_LINE('a') // TRIM(MSG1) // TRIM(MSG2)
+    MSG = NEW_LINE('a')   // TRIM( MSG          )
 
-    ! Print error message
-    WRITE(hcoLogLUN,*) TRIM(MSG)
+    ! Print error message with word wrap
+    CALL HCO_WordWrapPrint( MSG, LineWidth=78, FileLun=hcoLogLUN )
+
+    ! Print location (if THISLOC argument is passed) with word wrap
+    IF ( PRESENT( THISLOC ) ) THEN
+       MSG = ' --> LOCATION: ' // TRIM( THISLOC )
+       CALL HCO_WordWrapPrint( MSG, LineWidth=78, FileLun=hcoLogLUN )
+    ENDIF
 
     ! Return w/ error
     RC = HCO_FAIL
@@ -266,7 +265,7 @@ CONTAINS
 !
   SUBROUTINE HCO_Warning( ErrMsg, THISLOC, LUN )
 !
-! !INPUT PARAMETERS"
+! !INPUT PARAMETERS:
 !
     CHARACTER(LEN=*), INTENT(IN   )            :: ErrMsg
     CHARACTER(LEN=*), INTENT(IN   ), OPTIONAL  :: THISLOC
@@ -286,20 +285,17 @@ CONTAINS
     !======================================================================
 
     ! Specify where to write
-    IF ( PRESENT(LUN) ) THEN
-       hcoLogLUN = LUN
-    ELSE
-       hcoLogLUN = 6
-    ENDIF
+    hcoLogLUN = 6
+    IF ( PRESENT( LUN ) ) hcoLogLUN = LUN
 
     ! Print warning
     MSG = 'HEMCO WARNING: ' // TRIM( ErrMsg )
-    WRITE( hcoLogLUN, '(a)' ) TRIM(MSG)
+    CALL HCO_WordWrapPrint( MSG, LineWidth=78, FileLun=hcoLogLUN )
 
     ! Print location
     IF ( PRESENT(THISLOC) ) THEN
        MSG = '--> LOCATION: ' // TRIM(THISLOC)
-       WRITE( hcoLogLUN, '(a)' ) TRIM(MSG)
+       CALL HCO_WordWrapPrint( MSG, LineWidth=78, FileLun=hcoLogLUN )
     ENDIF
 
   END SUBROUTINE HCO_Warning
@@ -346,11 +342,11 @@ CONTAINS
     hcoLogLUN = 6
     IF ( PRESENT(LUN) ) hcoLogLUN = LUN
 
-    ! Write message
+    ! Write message 
     IF ( PRESENT(SEP1) ) THEN
        WRITE( hcoLogLUN,'(a)' ) REPEAT( SEP1, 79 )
     ENDIF
-    WRITE( hcoLogLUN,'(a)' ) TRIM( MSG )
+    CALL HCO_WordWrapPrint( MSG, LineWidth=78, FileLun=hcoLogLUN )
     IF ( PRESENT(SEP2) ) THEN
        WRITE( hcoLogLUN,'(a)' ) REPEAT( SEP2, 79 )
     ENDIF
@@ -843,5 +839,182 @@ CONTAINS
     Err%LogIsOpen = .FALSE.
 
   END SUBROUTINE HCO_LogFile_Close
+!EOC
+!------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: HCO_CountMatches
+!
+! !DESCRIPTION: Counts the number of characters in str1 that match
+!  a character in str2.  This is a dependency of HCO_WordWrapPrint.
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE HCO_CountMatches( Str1, Str2, Imat, Locations )
+!
+! !INPUT PARAMETERS:
+!
+    CHARACTER(LEN=*), INTENT(IN) ::  Str1             ! Text to scan
+    CHARACTER(LEN=*), INTENT(IN) ::  Str2             ! Character to match
+!
+! !OUTPUT PARAMETERS:
+!
+    INTEGER,          INTENT(OUT) :: imat             ! Number of matches
+    INTEGER,          OPTIONAL    :: Locations(255)   ! Positions of matches
+!
+! !REVISION HISTORY:
+!     DATE:   JAN. 6, 1995
+!     AUTHOR: R.D. STEWART
+!     COMMENTS: Revised slightly (2-5-1996) so that trailing
+!               blanks in str1 are ignored.  Revised again
+!               on 3-6-1996.
+!  See https://github.com/geoschem/geos-chem for complete history
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Scalars
+    INTEGER :: L1, L2, i, j
+    LOGICAL :: again
+
+    ! Arrays
+    INTEGER :: TmpLocations(255)
+
+    ! Initialize
+    TmpLocations = 0
+    L1           = MAX(1,LEN_TRIM(str1))
+    L2           = LEN(str2)
+    imat         = 0
+
+    DO i=1,L1
+       again = .true.
+       j = 1
+       DO WHILE (again)
+          IF (str2(j:j).EQ.str1(i:i)) THEN
+             imat               = imat+1
+             TmpLocations(imat) = i
+             again              = .false.
+          ELSEIF (j.LT.L2) THEN
+             j=j+1
+          ELSE
+             again = .false.
+          ENDIF
+       ENDDO
+    ENDDO
+
+    ! Return positions where matches occured (OPTIONAL)
+    IF ( PRESENT( Locations ) ) Locations = TmpLocations
+
+  END SUBROUTINE HCO_CountMatches
+!EOC
+!------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: HCO_WordWrapPrint
+!
+! !DESCRIPTION: Prints a text string wrapped to a specified line width.
+!  Useful for displaying error and warning messages.
+!\\
+!\\
+! !INTERFACE:
+!
+  SUBROUTINE HCO_WordWrapPrint( Text, LineWidth, Delimiter, FileLun )
+!
+! !INPUT PARAMETERS:
+!
+    CHARACTER(LEN=*), INTENT(IN) :: Text        ! Text to print
+    INTEGER,          INTENT(IN) :: LineWidth   ! Width (characters) of lines
+    CHARACTER(LEN=1), OPTIONAL   :: Delimiter   ! Delimiter between words
+    INTEGER,          OPTIONAL   :: fileLun     ! LUN of file to write
+!
+! !REMARKS:
+!  (1) This routine must be placed here in hco_error_mod.F90 and not
+!      in hco_chartools_mod.F90 in order to avoid a circular dependency.
+!  (2) The default DELIMITER is the space (" ") character.
+!
+! !REVISION HISTORY:
+!  20 Dec 2015 - R. Yantosca - Initial version
+!  See https://github.com/geoschem/geos-chem for complete history
+!EOP
+!------------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+    ! Scalars
+    INTEGER          :: C, S, B, Matches, Length, LUN
+
+    ! Arrays
+    INTEGER          :: BreakPts(100)
+    INTEGER          :: SpaceLoc(500)
+
+    ! Strings
+    CHARACTER(LEN=1) :: Delim
+
+    !=======================================================================
+    ! WordWrapPrint begins here!
+    !=======================================================================
+
+    ! SpaceLoc is the array of where delimiters (usually the " "
+    ! character) occur in the text, and S is its index.
+    S           = 1
+    SpaceLoc    = 0
+
+    ! BreakPts is the array of where line breaks occur
+    ! and B is its index.
+    BreakPts    = 0
+    B           = 1
+    BreakPts(B) = 1
+
+    ! Delimiter for separating words (will be the space character by default)
+    Delim = ' '
+    IF ( PRESENT( Delimiter ) ) Delim = Delimiter
+
+    ! If writing to file, get the logical unit numbef from the fileLun arg
+    LUN = 6
+    IF ( PRESENT( FileLun ) ) LUN = fileLun
+
+    ! Find the Location of spaces in the text
+    CALL HCO_CountMatches( Text, ' ', Matches, SpaceLoc )
+
+    ! Loop through the number of matches
+    DO
+
+       ! Move to the next delimiter location
+       S = S + 1
+
+       ! Compute the length of the line
+       Length = SpaceLoc(S) - BreakPts(B)
+
+       ! If the length of this segment is greater than the requested
+       ! line length, store the position of this line break
+       IF ( Length > LineWidth ) THEN
+          B           = B             + 1
+          BreakPts(B) = SpaceLoc(S-1) + 1
+       ENDIF
+
+       ! If we have exceeded the number of delimiters in the text, then set
+       ! the last breakpoint at the end of the text and exit the loop.
+       IF ( S > Matches ) THEN
+          B           = B + 1
+          BreakPts(B) = LEN_TRIM( Text ) + 1
+          EXIT
+       ENDIF
+
+    ENDDO
+
+    ! Print each line
+    DO C = 1, B-1
+       WRITE( LUN, '(a)' ) Text( BreakPts(C):BreakPts(C+1)-1 )
+    ENDDO
+
+  END SUBROUTINE HCO_WordWrapPrint
 !EOC
 END MODULE HCO_Error_Mod
