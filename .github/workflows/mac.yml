@@ -4,7 +4,16 @@ on:
   push:
     branches:
       - main
+      - dev/**
+      - release
+      - release/**
   pull_request:
+    branches:
+      - main
+      - dev
+      - dev/**
+      - release
+      - release/**
   workflow_dispatch:
 
 concurrency:
@@ -17,13 +26,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gcc_version: [12, 13, 14]
+        gcc_version: [13, 14, 15]
         build_type: [Debug, Release]
     env:
       FC: gfortran-${{ matrix.gcc_version }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4        
+        with:
+          persist-credentials: false
 
       - name: Install dependencies
         run: brew install netcdf netcdf-fortran gcc@${{ matrix.gcc_version }}

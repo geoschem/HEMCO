@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.12.0] - 2026-02-05
+### Added
+- Added the functionality of selectively applying gridded scaling factor based on the value of mask ID from a gridded file
+- Added functions `HCO_WordWrapPrint` and `HCO_CountMatches` as `PRIVATE` routines to `hco_error_mod.F90`
+- Added function `IO_ErrMsg` to `hcoio_read_std_mod.F90` to generate a replacement error message for the "cannot find field for current simulation time" message
+- Added GNU compiler collection version 15 to the GitHub action that builds HEMCO on MacOS
+- Added `DustL23M` extension module `src/Extensions/hcox_dustl23m_mod.F90`
+- Added call to `HCO_SetPBLm` in routine `HCOI_SA_RUN` so that the PBL height will evolve with time in the HEMCO standalone
+- Added `ExtState%TSKIN` for skin temperature and `ExtState%HFLUX` for sensible heat flux
+- Added `run/config_for_offline_emissions` folder to contain sample `HEMCO_Config.rc` files
+- Added `do_sum` argument to routine `Collapse` in`src/Core/hco_interp_mod.F90`
+- Added `docs/read_the_docs_environment.yml` Conda environment file
+
+### Changed
+- Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
+- Updated badges on `README.md` and `docs/source/index.rst`
+- Updated GitHub Actions to run if the branch name matches `dev`, `dev/**`, `release`, `release/**`
+- Rewrote "cannot find field for current simulation time" error message for clarity
+- Updated `HCO_Error` and `HCO_Warning` to call `HCO_WordWrapPrint` to wrap messages to 78 characters wide
+- Replaced terse error messages in `hcoio_read_std_mod.F90` with more descriptive ones
+- Updated error messages in routine `ExtStateInit` to be more descriptive
+- Renamed `ExtState%SNOWHGT` to `ExtState%SNOMAS`
+- Changed call to `ExtDat_Set` for `ExtData%SNOMAS` to read data from the GMAO `SNOMAS` field instead of `SNOWHGT`
+- Updated `run/HEMCO_sa_Spec.rc` to be consistent with the new dust species
+- Updated `run/createRunDir.sh` to copy the`cleanRunDir.sh` script to the run directory
+- Updated comment headers and removed GCHP-specific text in `run/cleanRunDir.sh`
+- Replaced `DST{1..4}` with `DSTbin{1..7}` and renumbered lines accordingly in `run/HEMCO_sa_Spec.rc`
+- Updated link to current HEMCO Standalone documentation in `run/README`
+- Updated ReadTheDocs documentation for the addition of `DustL23M` and removal of `DustDead` and DustGinoux` extensions
+- Updated `geos-chem-shared-docs/editing_these_docs.rst` with instructions for using a Conda environment to build RTD doc
+
+### Fixed
+- Fixed security issues in GitHub Actions
+- Fixed bug in routine `Register_Species` caused by a null string being passed to `HCO_Msg`
+- Fixed bug in `hco_interp_mod.F90` where `Met_DELPDRY` was being averaged in the vertical instead of summed
+
+### Removed
+- Removed Microsoft Azure Dev Pipeline continuous integration tests
+- Removed GNU Compiler Collection version 12 from the GitHub action that builds HEMCO on MacOS
+- Removed `ExtState%PBLH` (and code that referenced this), as PBL height may be obtained from `HcoState%Grid%PBLHEIGHT`.
+- Removed `DustDead` source code (`src/Extensions/hcox_dustdead_mod.F`)
+- Removed `DustGinoux` source code (`src/Extensions/hcox_dustginoux_mod.F90`)
+
 ## [3.11.2] - 2025-07-28
 ### Changed
 - Increase string length for reading lines from HEMCO standalone grid file for 0.125x0.15625 global resolution

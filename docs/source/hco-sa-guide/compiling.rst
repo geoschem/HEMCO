@@ -239,51 +239,68 @@ to the run directory.
 HEMCO standalone build options
 ==============================
 
-.. option:: RUNDIR
+RUNDIR
+------
 
-   Paths to run directories where :command:`make install` installs
-   HEMCO standalone. Multiple run directories can be specified by a
-   semicolon separated list. A warning is issues if one of these
-   directories does not look like a run directory.
+Paths to run directories where :command:`make install` installs
+HEMCO standalone. Multiple run directories can be specified by a
+semicolon separated list. A warning is issues if one of these
+directories does not look like a run directory.
 
-   These paths can be relative paths or absolute paths. Relative paths
-   are interpreted as relative to your build directory.
+These paths can be relative paths or absolute paths. Relative paths
+are interpreted as relative to your build directory.
 
-.. option:: CMAKE_BUILD_TYPE
+CMAKE_BUILD_TYPE
+----------------
 
-   Specifies the build type.  Allowable values are:
+Specifies the build type.  Allowable values are:
 
-   .. option:: Release
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
 
-      The default option.  Compiles HEMCO standalone for speed.
+   * - Value
+     - Description
+   * - Release
+     - The default option.  Compiles HEMCO standalone for speed.
+   * - Debug
+     - Compiles HEMCO standalone with several debugging flags turned
+       on.  This may help you find common errors such as
+       array-out-of-bounds, division-by-zero, or not-a-number.
 
-   .. option:: Debug
+.. important::
 
-      Compiles HEMCO standalone with several debugging flags turned
-      on.  This may help you find common errors such as
-      array-out-of-bounds, division-by-zero, or not-a-number.
+   The additional error checks that are applied with :literal:`Debug`
+   will cause HEMCO standalone to run much more slowly!  Do not use
+   :literal:`Debug` for long production simulations.
 
-      .. important::
+HEMCO_Fortran_FLAGS_<COMPILER_ID>
+---------------------------------
 
-         The additional error checks that are applied with
-         :literal:`Debug` will cause HEMCO standalone to run much more
-         slowly!  Do not use :literal:`Debug` for long production
-         simulations.
+Additional compiler options for HEMCO standalone for the
+:literal:`Release` or :literal:`Debug` build type.
 
-.. option:: HEMCO_Fortran_FLAGS_<COMPILER_ID>
+<COMPILER_ID>
+-------------
 
-    Additional compiler options for HEMCO standalone for build type
-    :literal:`<BUILD_TYPE>`.
+Allowable values are:
 
-   .. option:: <COMPILER_ID>
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
 
-      Valid values are :literal:`GNU` and :literal:`Intel`.
+   * - Value
+     - Description
+   * - GNU
+     - Specifies the GNU Compiler Collection (:literal:`gcc`,
+       :literal:`g++`, :literal:`gfortran`).
+   * - Intel
+     - Specifies the Intel compiler suite (:literal:`icc`,
+       :literal:`icpc`, :literal:`ifort`).
 
-.. option:: HEMCO_Fortran_FLAGS_<CMAKE_BUILD_TYPE>_<COMPILER_ID>
 
-   Compiler options for HEMCO standalone for the given
-   :option:`CMAKE_BUILD_TYPE`.
+HEMCO_Fortran_FLAGS_<CMAKE_BUILD_TYPE>_<COMPILER_ID>
+----------------------------------------------------
 
-   .. option:: <COMPILER_ID>
-
-      Valid values are :literal:`GNU` and :literal:`Intel`.
+Compiler options for HEMCO standalone for build type
+:literal:`Release` or :literal:`Debug`.

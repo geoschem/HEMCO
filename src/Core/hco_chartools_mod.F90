@@ -30,7 +30,7 @@ MODULE HCO_CharTools_Mod
   PUBLIC :: IsInWord
   PUBLIC :: NextCharPos
   PUBLIC :: GetNextLine
-  PUBLIC :: HCO_READLINE
+  PUBLIC :: HCO_ReadLine
 !
 ! !REVISION HISTORY:
 !  18 Dec 2013 - C. Keller   - Initialization
