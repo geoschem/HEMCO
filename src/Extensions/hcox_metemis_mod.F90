@@ -3657,6 +3657,7 @@ CONTAINS
    ExtState%MEmisPNCOM_OR_090%DoUse          = .TRUE.
    ExtState%MEmisPNCOM_OR_100%DoUse          = .TRUE.
    ExtState%MEmisPNCOM_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPNCOM_OR_120%DoUse          = .TRUE.
 
    ExtState%MEmisPNH4_OR_030%DoUse          = .TRUE.
    ExtState%MEmisPNH4_OR_040%DoUse          = .TRUE.
@@ -3852,7 +3853,7 @@ CONTAINS
 
    ! Loop over interpolation nodes until we find the largest node value
    ! that is less than the desired value
-   DO I=1, SIZE(NODES)
+   DO I=1, SIZE(NODES)-1
       INDICES(1) = I
       IF ( VALUE <= NODES(I+1) ) EXIT
    END DO
@@ -3861,7 +3862,8 @@ CONTAINS
    INDICES(2) = INDICES(1) + 1
 
    ! Weights for the corresponding node indices
-   WEIGHTS(1) = ( NODES(I+1) - VALUE ) / ( NODES(I+1) - NODES(I) )
+   WEIGHTS(1) = ( NODES(INDICES(2)) - VALUE ) / &
+                ( NODES(INDICES(2)) - NODES(INDICES(1)) )
    WEIGHTS(2) = 1.0 - WEIGHTS(1)
 
  END SUBROUTINE INTERPOL_LINWEIGHTS
@@ -4063,10 +4065,10 @@ CONTAINS
    !=================================================================
 
    !MetEmis Temperature bins (Degrees Fahrenheit) = 10 from explicit nT
-   !e.g., 20 - 30, ... 110 - 120
+   !These are set to lower bin edge defined in MetEmis files. 
+   !e.g., 20 - 30 (20), ... 110 - 120 (110)
    Inst%Tlev = (/ 20.0e0, 30.0e0, 40.0e0, 50.0e0,  60.0e0,  &
                   70.0e0, 80.0e0, 90.0e0, 100.0e0, 110.0e0 /)
-
 
    !Get 2-m air temperature, K
    TAIR = ExtState%T2M%Arr%Val(I,J)
