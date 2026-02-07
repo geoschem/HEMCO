@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libnetcdf-dev netcdf-bin libnetcdff-dev
+          sudo apt-get install -y libnetcdf-dev netcdf-bin libnetcdff-dev gfortran-${{ matrix.gcc_version }}
 
       - name: Run Cmake
         run: cmake -S . -B build -D CMAKE_BUILD_TYPE=${{ matrix.build_type }}
