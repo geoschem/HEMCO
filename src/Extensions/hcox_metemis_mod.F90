@@ -110,6 +110,59 @@ MODULE HCOX_MetEmis_MOD
      INTEGER               :: IDTNO2
      INTEGER               :: IDTHONO
      INTEGER               :: IDTCO
+     INTEGER               :: IDTSO2
+     INTEGER               :: IDTNH3
+     INTEGER               :: IDTCH4
+     INTEGER               :: IDTACROLEIN
+     INTEGER               :: IDTBUTADIENE13
+     INTEGER               :: IDTETHY
+
+     INTEGER               :: IDTTERP
+     INTEGER               :: IDTFORM
+     INTEGER               :: IDTPAR
+     INTEGER               :: IDTIOLE
+     INTEGER               :: IDTOLE
+     INTEGER               :: IDTETH
+     INTEGER               :: IDTETHA
+     INTEGER               :: IDTETOH
+     INTEGER               :: IDTMEOH
+     INTEGER               :: IDTBENZ
+
+     INTEGER               :: IDTTOL
+     INTEGER               :: IDTXYLMN
+     INTEGER               :: IDTNAPH
+     INTEGER               :: IDTALD2
+     INTEGER               :: IDTALDX
+     INTEGER               :: IDTISOP
+     INTEGER               :: IDTPRPA
+     INTEGER               :: IDTACET
+     INTEGER               :: IDTKET
+     INTEGER               :: IDTALD2_PRIMARY
+
+     INTEGER               :: IDTFORM_PRIMARY
+     INTEGER               :: IDTSOAALK
+     INTEGER               :: IDTPEC
+     INTEGER               :: IDTPOC
+     INTEGER               :: IDTPAL
+     INTEGER               :: IDTPCA
+     INTEGER               :: IDTPCL
+     INTEGER               :: IDTPFE
+     INTEGER               :: IDTPH2O
+     INTEGER               :: IDTPK
+
+     INTEGER               :: IDTPMG
+     INTEGER               :: IDTPMN
+     INTEGER               :: IDTPMOTHR
+     INTEGER               :: IDTPNA
+     INTEGER               :: IDTPNCOM
+     INTEGER               :: IDTPNH4
+     INTEGER               :: IDTPNO3
+     INTEGER               :: IDTPTI
+     INTEGER               :: IDTPSI
+     INTEGER               :: IDTPMC
+
+     INTEGER               :: IDTPSO4
+
      LOGICAL               :: RHUMGASDIS  ! Apply humidity correction for split
                                           ! of NOx and HONO gas and diesel fuels
      ! Arrays
@@ -274,12 +327,64 @@ CONTAINS
     REAL(hp), TARGET         :: FLUXNO2  (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: FLUXHONO (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: FLUXCO   (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXSO2  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXNH3  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXCH4  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXACROLEIN  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXBUTADIENE13  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXETHY (HcoState%NX,HcoState%NY)
+
+    REAL(hp), TARGET         :: FLUXTERP (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXFORM (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPAR  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXIOLE (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXOLE  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXETH  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXETHA (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXETOH (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXMEOH (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXBENZ (HcoState%NX,HcoState%NY)
+
+    REAL(hp), TARGET         :: FLUXTOL  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXXYLMN(HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXNAPH (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXALD2 (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXALDX (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXISOP (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPRPA (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXACET (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXKET  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXALD2_PRIMARY (HcoState%NX,HcoState%NY)
+
+    REAL(hp), TARGET         :: FLUXFORM_PRIMARY (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXSOAALK (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPEC  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPOC  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPAL  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPCA  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPCL  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPFE  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPH2O (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPK   (HcoState%NX,HcoState%NY)
+
+    REAL(hp), TARGET         :: FLUXPMG  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPMN  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPMOTHR (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPNA  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPNCOM(HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPNH4 (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPNO3 (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPTI  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPSI  (HcoState%NX,HcoState%NY)
+    REAL(hp), TARGET         :: FLUXPMC  (HcoState%NX,HcoState%NY)
+
+    REAL(hp), TARGET         :: FLUXPSO4 (HcoState%NX,HcoState%NY)
 
     ! Pointers
     REAL(hp), POINTER        :: Arr2D(:,:)
 
     ! For diagnostics
-    REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,4)  ! changed dim to 4 to store NO, NO2, HONO, CO
+    REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,51)  ! number of MetEmis Species !IVAI
     LOGICAL, SAVE            :: DODIAGN = .FALSE.
     CHARACTER(LEN=31)        :: DiagnName
     TYPE(DiagnCont), POINTER :: TmpCnt
@@ -289,6 +394,59 @@ CONTAINS
     REAL(dp)                 :: TEMP_NO2
     REAL(dp)                 :: TEMP_HONO
     REAL(dp)                 :: TEMP_CO
+    REAL(dp)                 :: TEMP_SO2
+    REAL(dp)                 :: TEMP_NH3
+    REAL(dp)                 :: TEMP_CH4
+    REAL(dp)                 :: TEMP_ACROLEIN
+    REAL(dp)                 :: TEMP_BUTADIENE13
+    REAL(dp)                 :: TEMP_ETHY
+
+    REAL(dp)                 :: TEMP_TERP
+    REAL(dp)                 :: TEMP_FORM
+    REAL(dp)                 :: TEMP_PAR
+    REAL(dp)                 :: TEMP_IOLE
+    REAL(dp)                 :: TEMP_OLE
+    REAL(dp)                 :: TEMP_ETH
+    REAL(dp)                 :: TEMP_ETHA
+    REAL(dp)                 :: TEMP_ETOH
+    REAL(dp)                 :: TEMP_MEOH
+    REAL(dp)                 :: TEMP_BENZ
+
+    REAL(dp)                 :: TEMP_TOL
+    REAL(dp)                 :: TEMP_XYLMN
+    REAL(dp)                 :: TEMP_NAPH
+    REAL(dp)                 :: TEMP_ALD2
+    REAL(dp)                 :: TEMP_ALDX
+    REAL(dp)                 :: TEMP_ISOP
+    REAL(dp)                 :: TEMP_PRPA
+    REAL(dp)                 :: TEMP_ACET
+    REAL(dp)                 :: TEMP_KET
+    REAL(dp)                 :: TEMP_ALD2_PRIMARY
+
+    REAL(dp)                 :: TEMP_FORM_PRIMARY
+    REAL(dp)                 :: TEMP_SOAALK
+    REAL(dp)                 :: TEMP_PEC
+    REAL(dp)                 :: TEMP_POC
+    REAL(dp)                 :: TEMP_PAL
+    REAL(dp)                 :: TEMP_PCA
+    REAL(dp)                 :: TEMP_PCL
+    REAL(dp)                 :: TEMP_PFE
+    REAL(dp)                 :: TEMP_PH2O
+    REAL(dp)                 :: TEMP_PK
+
+    REAL(dp)                 :: TEMP_PMG
+    REAL(dp)                 :: TEMP_PMN
+    REAL(dp)                 :: TEMP_PMOTHR
+    REAL(dp)                 :: TEMP_PNA
+    REAL(dp)                 :: TEMP_PNCOM
+    REAL(dp)                 :: TEMP_PNH4
+    REAL(dp)                 :: TEMP_PNO3
+    REAL(dp)                 :: TEMP_PTI
+    REAL(dp)                 :: TEMP_PSI
+    REAL(dp)                 :: TEMP_PMC
+
+    REAL(dp)                 :: TEMP_PSO4
+
 
     !=================================================================
     ! MetEmis begins here!
@@ -323,6 +481,240 @@ CONTAINS
       RETURN
     ENDIF
 
+    IF ( Inst%IDTSO2 <= 0) THEN  !SO2
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTNH3 <= 0) THEN  !NH3
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTCH4 <= 0) THEN  !CH4
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTACROLEIN <= 0) THEN  !ACROLEIN
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTBUTADIENE13 <= 0) THEN  !BUTADIENE13
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTETHY <= 0) THEN  !ETHY
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTTERP <= 0) THEN  !TERP
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTFORM <= 0) THEN  !FORM
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPAR <= 0) THEN  !PAR
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTIOLE <= 0) THEN  !IOLE
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTOLE <= 0) THEN  !OLE
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTETH <= 0) THEN  !ETH
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTETHA <= 0) THEN  !ETHA
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTETOH <= 0) THEN  !ETOH
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTMEOH <= 0) THEN  !MEOH
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTBENZ <= 0) THEN  !BENZ
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTTOL <= 0) THEN  !TOL
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTXYLMN <= 0) THEN  !XYLMN
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTNAPH <= 0) THEN  !NAPH
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTALD2 <= 0) THEN  !ALD2
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTALDX <= 0) THEN  !ALDX
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTISOP <= 0) THEN  !ISOP
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPRPA <= 0) THEN  !PRPA
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTACET <= 0) THEN  !ACET
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTKET <= 0) THEN  !KET
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTALD2_PRIMARY <= 0) THEN  !ALD2_PRIMARY
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTFORM_PRIMARY<= 0) THEN  !FORM_PRIMARY
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTSOAALK <= 0) THEN  !SOAALK
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPEC <= 0) THEN  !PEC
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPOC <= 0) THEN  !POC
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPAL <= 0) THEN  !PAL
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPCA <= 0) THEN  !PCA
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPCL <= 0) THEN  !PCL
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPFE <= 0) THEN  !PFE
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPH2O <= 0) THEN  !PH2O
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPK  <= 0) THEN  !PK
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPMG <= 0) THEN  !PMG
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPMN <= 0) THEN  !PMN
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPMOTHR <= 0) THEN  !PMOTHR
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPNA <= 0) THEN  !PNA
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPNCOM <= 0) THEN  !PNCOM
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPNH4 <= 0) THEN  !PNH4
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPNO3 <= 0) THEN  !PNO3
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPTI <= 0) THEN  !PTI
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPSI <= 0) THEN  !PSI
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPMC <= 0) THEN  !PMC
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
+
+    IF ( Inst%IDTPSO4 <= 0) THEN  !PSO4
+      RC = HCO_SUCCESS
+      RETURN
+    ENDIF
 
     ! Nullify
     Arr2D  => NULL()
@@ -341,14 +733,14 @@ CONTAINS
           TmpCnt => NULL()
        ENDIF
 
-        IF ( .NOT. DoDiagn ) THEN
+       IF ( .NOT. DoDiagn ) THEN
           DiagnName = 'METEMIS_OR_NO2'
           CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
                                 DiagnName, 0, DoDiagn, TmpCnt )
           TmpCnt => NULL()
        ENDIF
 
-        IF ( .NOT. DoDiagn ) THEN
+       IF ( .NOT. DoDiagn ) THEN
           DiagnName = 'METEMIS_OR_HONO'
           CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
                                 DiagnName, 0, DoDiagn, TmpCnt )
@@ -357,6 +749,335 @@ CONTAINS
 
        IF ( .NOT. DoDiagn ) THEN
           DiagnName = 'METEMIS_OR_CO'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_SO2'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_NH3'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_CH4'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_ACROLEIN'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_BUTADIENE13'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_ETHY'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_TERP'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_FORM'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PAR'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_IOLE'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_OLE'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_ETH'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_ETHA'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_ETOH'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_MEOH'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_BENZ'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_TOL'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_XYLMN'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_NAPH'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_ALD2'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_ALDX'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_ISOP'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PRPA'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_ACET'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_KET'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_ALD2_PRIMARY'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_FORM_PRIMARY'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_SOAALK'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PEC'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_POC'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PAL'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PCA'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PCL'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PFE'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PH2O'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PK'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PMG'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PMN'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PMOTHR'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PNA'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PNCOM'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PNH4'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PNO3'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PTI'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PSI'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PMC'
+          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                DiagnName, 0, DoDiagn, TmpCnt )
+          TmpCnt => NULL()
+       ENDIF
+
+       IF ( .NOT. DoDiagn ) THEN
+          DiagnName = 'METEMIS_OR_PSO4'
           CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
                                 DiagnName, 0, DoDiagn, TmpCnt )
           TmpCnt => NULL()
@@ -374,6 +1095,58 @@ CONTAINS
     FLUXNO2       = 0.0_hp
     FLUXHONO      = 0.0_hp
     FLUXCO        = 0.0_hp
+    FLUXSO2       = 0.0_hp
+    FLUXNH3       = 0.0_hp
+    FLUXCH4       = 0.0_hp
+    FLUXACROLEIN  = 0.0_hp
+    FLUXBUTADIENE13 = 0.0_hp
+    FLUXETHY      = 0.0_hp
+
+    FLUXTERP      = 0.0_hp
+    FLUXFORM      = 0.0_hp
+    FLUXPAR       = 0.0_hp
+    FLUXIOLE      = 0.0_hp
+    FLUXOLE       = 0.0_hp
+    FLUXETH       = 0.0_hp
+    FLUXETHA      = 0.0_hp
+    FLUXETOH      = 0.0_hp
+    FLUXMEOH      = 0.0_hp
+    FLUXBENZ      = 0.0_hp
+
+    FLUXTOL       = 0.0_hp
+    FLUXXYLMN     = 0.0_hp
+    FLUXNAPH      = 0.0_hp
+    FLUXALD2      = 0.0_hp
+    FLUXALDX      = 0.0_hp
+    FLUXISOP      = 0.0_hp
+    FLUXPRPA      = 0.0_hp
+    FLUXACET      = 0.0_hp
+    FLUXKET       = 0.0_hp
+    FLUXALD2_PRIMARY = 0.0_hp
+
+    FLUXFORM_PRIMARY = 0.0_hp
+    FLUXSOAALK    = 0.0_hp
+    FLUXPEC       = 0.0_hp
+    FLUXPOC       = 0.0_hp
+    FLUXPAL       = 0.0_hp
+    FLUXPCA       = 0.0_hp
+    FLUXPCL       = 0.0_hp
+    FLUXPFE       = 0.0_hp
+    FLUXPH2O      = 0.0_hp
+    FLUXPK        = 0.0_hp
+
+    FLUXPMG       = 0.0_hp
+    FLUXPMN       = 0.0_hp
+    FLUXPMOTHR    = 0.0_hp
+    FLUXPNA       = 0.0_hp
+    FLUXPNCOM     = 0.0_hp
+    FLUXPNH4      = 0.0_hp
+    FLUXPNO3      = 0.0_hp
+    FLUXPTI       = 0.0_hp
+    FLUXPSI       = 0.0_hp
+    FLUXPMC       = 0.0_hp
+
+    FLUXPSO4      = 0.0_hp
 
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
@@ -382,14 +1155,75 @@ CONTAINS
        TEMP_NO2    = 0.0_hp
        TEMP_HONO   = 0.0_hp
        TEMP_CO     = 0.0_hp
+       TEMP_SO2    = 0.0_hp
+       TEMP_NH3    = 0.0_hp
+       TEMP_CH4    = 0.0_hp
+       TEMP_ACROLEIN  = 0.0_hp
+       TEMP_BUTADIENE13 = 0.0_hp
+       TEMP_ETHY   = 0.0_hp
+
+       TEMP_TERP   = 0.0_hp
+       TEMP_FORM   = 0.0_hp
+       TEMP_PAR    = 0.0_hp
+       TEMP_IOLE   = 0.0_hp
+       TEMP_OLE    = 0.0_hp
+       TEMP_ETH    = 0.0_hp
+       TEMP_ETHA   = 0.0_hp
+       TEMP_ETOH   = 0.0_hp
+       TEMP_MEOH   = 0.0_hp
+       TEMP_BENZ   = 0.0_hp
+
+       TEMP_TOL    = 0.0_hp
+       TEMP_XYLMN  = 0.0_hp
+       TEMP_NAPH   = 0.0_hp
+       TEMP_ALD2   = 0.0_hp
+       TEMP_ALDX   = 0.0_hp
+       TEMP_ISOP   = 0.0_hp
+       TEMP_PRPA   = 0.0_hp
+       TEMP_ACET   = 0.0_hp
+       TEMP_KET    = 0.0_hp
+       TEMP_ALD2_PRIMARY = 0.0_hp
+
+       TEMP_FORM_PRIMARY = 0.0_hp
+       TEMP_SOAALK = 0.0_hp
+       TEMP_PEC    = 0.0_hp
+       TEMP_POC    = 0.0_hp
+       TEMP_PAL    = 0.0_hp
+       TEMP_PCA    = 0.0_hp
+       TEMP_PCL    = 0.0_hp
+       TEMP_PFE    = 0.0_hp
+       TEMP_PH2O   = 0.0_hp
+       TEMP_PK     = 0.0_hp
+
+       TEMP_PMG    = 0.0_hp
+       TEMP_PMN    = 0.0_hp
+       TEMP_PMOTHR = 0.0_hp
+       TEMP_PNA    = 0.0_hp
+       TEMP_PNCOM  = 0.0_hp
+       TEMP_PNH4   = 0.0_hp
+       TEMP_PNO3   = 0.0_hp
+       TEMP_PTI    = 0.0_hp
+       TEMP_PSI    = 0.0_hp
+       TEMP_PMC    = 0.0_hp
+
+       TEMP_PSO4   = 0.0_hp
 
        !---------------------------------------------------------------------
        ! MetEmis lookup table for emissions based on temperature
        ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
-       CALL METEMIS_LUT( ExtState,  HcoState,  Inst,      I,                  &
-                         J,         RC,        TEMP_NO, TEMP_NO2,             &
-                         TEMP_HONO, TEMP_CO )
+       CALL METEMIS_LUT( ExtState,  HcoState,  Inst,   I,   J,   RC,                     &
+                         TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
+                         TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
+                         TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
+                         TEMP_ETH , TEMP_ETHA , TEMP_ETOH, TEMP_MEOH, TEMP_BENZ,         &
+                         TEMP_TOL, TEMP_XYLMN, TEMP_NAPH, TEMP_ALD2, TEMP_ALDX,          &
+                         TEMP_ISOP, TEMP_PRPA, TEMP_ACET, TEMP_KET, TEMP_ALD2_PRIMARY,   &
+                         TEMP_FORM_PRIMARY, TEMP_SOAALK, TEMP_PEC, TEMP_POC, TEMP_PAL,   &
+                         TEMP_PCA, TEMP_PCL, TEMP_PFE, TEMP_PH2O, TEMP_PK,               &
+                         TEMP_PMG, TEMP_PMN, TEMP_PMOTHR, TEMP_PNA, TEMP_PNCOM,          &
+                         TEMP_PNH4, TEMP_PNO3, TEMP_PTI, TEMP_PSI, TEMP_PMC,             &
+                         TEMP_PSO4)
 
        IF ( RC /= HCO_SUCCESS ) THEN
           ERR = .TRUE.; EXIT
@@ -418,15 +1252,306 @@ CONTAINS
            FLUXCO (I,J) = TEMP_CO
        ENDIF
 
+       IF ( Inst%IDTSO2 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXSO2(I,J) = TEMP_SO2
+       ENDIF
+
+       IF ( Inst%IDTNH3 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXNH3(I,J) = TEMP_NH3
+       ENDIF
+
+       IF ( Inst%IDTCH4 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXCH4(I,J) = TEMP_CH4
+       ENDIF
+
+       IF ( Inst%IDTACROLEIN > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXACROLEIN(I,J) = TEMP_ACROLEIN
+       ENDIF
+
+       IF ( Inst%IDTBUTADIENE13 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXBUTADIENE13 (I,J) = TEMP_BUTADIENE13
+       ENDIF
+
+       IF ( Inst%IDTETHY > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXETHY(I,J) = TEMP_ETHY
+       ENDIF
+
+       IF ( Inst%IDTTERP > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXTERP(I,J) = TEMP_TERP
+       ENDIF
+
+       IF ( Inst%IDTFORM > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXFORM(I,J) = TEMP_FORM
+       ENDIF
+
+       IF ( Inst%IDTPAR > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPAR(I,J) = TEMP_PAR
+       ENDIF
+
+       IF ( Inst%IDTIOLE > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXIOLE(I,J) = TEMP_IOLE
+       ENDIF
+
+       IF ( Inst%IDTOLE > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXOLE(I,J) = TEMP_OLE
+       ENDIF
+
+       IF ( Inst%IDTETH > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXETH(I,J) = TEMP_ETH
+       ENDIF
+
+       IF ( Inst%IDTETHA > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXETHA(I,J) = TEMP_ETHA
+       ENDIF
+
+       IF ( Inst%IDTETOH > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXETOH(I,J) = TEMP_ETOH
+       ENDIF
+
+       IF ( Inst%IDTMEOH > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXMEOH(I,J) = TEMP_MEOH
+       ENDIF
+
+       IF ( Inst%IDTBENZ > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXBENZ(I,J) = TEMP_BENZ
+       ENDIF
+
+       IF ( Inst%IDTTOL > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXTOL(I,J) = TEMP_TOL
+       ENDIF
+
+       IF ( Inst%IDTXYLMN > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXXYLMN(I,J) = TEMP_XYLMN
+       ENDIF
+
+       IF ( Inst%IDTNAPH > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXNAPH(I,J) = TEMP_NAPH
+       ENDIF
+
+       IF ( Inst%IDTALD2 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXALD2(I,J) = TEMP_ALD2
+       ENDIF
+
+       IF ( Inst%IDTALDX > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXALDX(I,J) = TEMP_ALDX
+       ENDIF
+
+       IF ( Inst%IDTISOP > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXISOP(I,J) = TEMP_ISOP
+       ENDIF
+
+       IF ( Inst%IDTPRPA > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPRPA(I,J) = TEMP_PRPA
+       ENDIF
+
+       IF ( Inst%IDTACET > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXACET(I,J) = TEMP_ACET
+       ENDIF
+
+       IF ( Inst%IDTKET > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXKET(I,J) = TEMP_KET
+       ENDIF
+
+       IF ( Inst%IDTALD2_PRIMARY > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXALD2_PRIMARY(I,J) = TEMP_ALD2_PRIMARY
+       ENDIF
+
+       IF ( Inst%IDTFORM_PRIMARY > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXFORM_PRIMARY(I,J) = TEMP_FORM_PRIMARY
+       ENDIF
+
+       IF ( Inst%IDTSOAALK> 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXSOAALK(I,J) = TEMP_SOAALK
+       ENDIF
+
+       IF ( Inst%IDTPEC > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPEC(I,J) = TEMP_PEC
+       ENDIF
+
+       IF ( Inst%IDTPOC > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPOC(I,J) = TEMP_POC
+       ENDIF
+
+       IF ( Inst%IDTPAL > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPAL(I,J) = TEMP_PAL
+       ENDIF
+
+       IF ( Inst%IDTPCA > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPCA(I,J) = TEMP_PCA
+       ENDIF
+
+       IF ( Inst%IDTPCL > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPCL(I,J) = TEMP_PCL
+       ENDIF
+
+       IF ( Inst%IDTPFE > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPFE(I,J) = TEMP_PFE
+       ENDIF
+
+       IF ( Inst%IDTPH2O > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPH2O(I,J) = TEMP_PH2O
+       ENDIF
+
+       IF ( Inst%IDTPK > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPK (I,J) = TEMP_PK
+       ENDIF
+
+       IF ( Inst%IDTPMG > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPMG(I,J) = TEMP_PMG
+       ENDIF
+
+       IF ( Inst%IDTPMN > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPMN(I,J) = TEMP_PMN
+       ENDIF
+
+       IF ( Inst%IDTPMOTHR > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPMOTHR(I,J) = TEMP_PMOTHR
+       ENDIF
+
+       IF ( Inst%IDTPNA > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPNA(I,J) = TEMP_PNA
+       ENDIF
+
+       IF ( Inst%IDTPNCOM> 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPNCOM (I,J) = TEMP_PNCOM
+       ENDIF
+
+       IF ( Inst%IDTPNH4 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPNH4 (I,J) = TEMP_PNH4
+       ENDIF
+
+       IF ( Inst%IDTPNO3 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPNO3 (I,J) = TEMP_PNO3
+       ENDIF
+
+       IF ( Inst%IDTPTI > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPTI(I,J) = TEMP_PTI
+       ENDIF
+
+       IF ( Inst%IDTPSI > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPSI(I,J) = TEMP_PSI
+       ENDIF
+
+       IF ( Inst%IDTPMC > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPMC(I,J) = TEMP_PMC
+       ENDIF
+
+       IF ( Inst%IDTPSO4 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPSO4(I,J) = TEMP_PSO4
+       ENDIF
+
+
+
 !
        !---------------------------------------------------------------------
        ! Eventually write out into diagnostics array
        !---------------------------------------------------------------------
        IF ( DoDiagn ) THEN
-           DIAGN(I,J,1) =  FLUXNO (I,J)
-           DIAGN(I,J,2) =  FLUXNO2(I,J)
-           DIAGN(I,J,3) =  FLUXHONO(I,J)
-           DIAGN(I,J,4) =  FLUXCO (I,J)
+           DIAGN(I,J,1) =  FLUXNO   (I,J)
+           DIAGN(I,J,2) =  FLUXNO2  (I,J)
+           DIAGN(I,J,3) =  FLUXHONO (I,J)
+           DIAGN(I,J,4) =  FLUXCO   (I,J)
+           DIAGN(I,J,5) =  FLUXSO2  (I,J)
+           DIAGN(I,J,6) =  FLUXNH3  (I,J)
+           DIAGN(I,J,7) =  FLUXCH4  (I,J)
+           DIAGN(I,J,8) =  FLUXACROLEIN (I,J)
+           DIAGN(I,J,9) =  FLUXBUTADIENE13(I,J)
+           DIAGN(I,J,10)=  FLUXETHY (I,J)
+
+           DIAGN(I,J,11)=  FLUXTERP (I,J)
+           DIAGN(I,J,12)=  FLUXFORM (I,J)
+           DIAGN(I,J,13)=  FLUXPAR  (I,J)
+           DIAGN(I,J,14)=  FLUXIOLE (I,J)
+           DIAGN(I,J,15)=  FLUXOLE  (I,J)
+           DIAGN(I,J,16)=  FLUXETH  (I,J)
+           DIAGN(I,J,17)=  FLUXETHA (I,J)
+           DIAGN(I,J,18)=  FLUXETOH (I,J)
+           DIAGN(I,J,19)=  FLUXMEOH (I,J)
+           DIAGN(I,J,20)=  FLUXBENZ (I,J)
+
+           DIAGN(I,J,21)=  FLUXTOL  (I,J)
+           DIAGN(I,J,22)=  FLUXXYLMN(I,J)
+           DIAGN(I,J,23)=  FLUXNAPH (I,J)
+           DIAGN(I,J,24)=  FLUXALD2 (I,J)
+           DIAGN(I,J,25)=  FLUXALDX (I,J)
+           DIAGN(I,J,26)=  FLUXISOP (I,J)
+           DIAGN(I,J,27)=  FLUXPRPA (I,J)
+           DIAGN(I,J,28)=  FLUXACET (I,J)
+           DIAGN(I,J,29)=  FLUXKET  (I,J)
+           DIAGN(I,J,30)=  FLUXALD2_PRIMARY(I,J)
+
+           DIAGN(I,J,31)=  FLUXFORM_PRIMARY(I,J)
+           DIAGN(I,J,32)=  FLUXSOAALK(I,J)
+           DIAGN(I,J,33)=  FLUXPEC  (I,J)
+           DIAGN(I,J,34)=  FLUXPOC  (I,J)
+           DIAGN(I,J,35)=  FLUXPAL  (I,J)
+           DIAGN(I,J,36)=  FLUXPCA  (I,J)
+           DIAGN(I,J,37)=  FLUXPCL  (I,J)
+           DIAGN(I,J,38)=  FLUXPFE  (I,J)
+           DIAGN(I,J,39)=  FLUXPH2O (I,J)
+           DIAGN(I,J,40)=  FLUXPK   (I,J)
+
+           DIAGN(I,J,41)=  FLUXPMG  (I,J)
+           DIAGN(I,J,42)=  FLUXPMN  (I,J)
+           DIAGN(I,J,43)=  FLUXPMOTHR(I,J)
+           DIAGN(I,J,44)=  FLUXPNA  (I,J)
+           DIAGN(I,J,45)=  FLUXPNCOM(I,J)
+           DIAGN(I,J,46)=  FLUXPNH4 (I,J)
+           DIAGN(I,J,47)=  FLUXPNO3 (I,J)
+           DIAGN(I,J,48)=  FLUXPTI  (I,J)
+           DIAGN(I,J,49)=  FLUXPSI  (I,J)
+           DIAGN(I,J,50)=  FLUXPMC  (I,J)
+
+           DIAGN(I,J,51)=  FLUXPSO4 (I,J)
+
+
        ENDIF
 
     ENDDO !I
@@ -449,7 +1574,6 @@ CONTAINS
     DefScaleEmis               = HcoState%Options%ScaleEmis
     HcoState%Options%ScaleEmis = .FALSE.
 
-    ! NO
     IF ( Inst%IDTNO > 0 ) THEN
 
        ! Add flux to emission array
@@ -463,7 +1587,7 @@ CONTAINS
 
     IF ( Inst%IDTNO2 > 0 ) THEN
 
-       ! Add flux to emission array
+       ! Add flux to emission array NO2
        CALL HCO_EmisAdd( HcoState, FLUXNO2, Inst%IDTNO2, &
                          RC,       ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -474,7 +1598,7 @@ CONTAINS
 
     IF ( Inst%IDTHONO > 0 ) THEN
 
-       ! Add flux to emission array
+       ! Add flux to emission array HONO
        CALL HCO_EmisAdd( HcoState, FLUXHONO, Inst%IDTHONO, &
                          RC,       ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -485,7 +1609,7 @@ CONTAINS
 
     IF ( Inst%IDTCO  > 0 ) THEN
 
-       ! Add flux to emission array
+       ! Add flux to emission array CO
        CALL HCO_EmisAdd( HcoState, FLUXCO , Inst%IDTCO , &
                          RC,       ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
@@ -494,53 +1618,1181 @@ CONTAINS
        ENDIF
     ENDIF
 
-    ! Eventually update manual diagnostics
+    IF ( Inst%IDTSO2 > 0 ) THEN
+
+       ! Add flux to emission array SO2
+       CALL HCO_EmisAdd( HcoState, FLUXSO2 , Inst%IDTSO2 , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSO2 ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTNH3 > 0 ) THEN
+
+       ! Add flux to emission array NH3
+       CALL HCO_EmisAdd( HcoState, FLUXNH3 , Inst%IDTNH3 , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXNH3 ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTCH4 > 0 ) THEN
+
+       ! Add flux to emission array CH4
+       CALL HCO_EmisAdd( HcoState, FLUXCH4 , Inst%IDTCH4 , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXCH4 ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTACROLEIN > 0 ) THEN
+
+       ! Add flux to emission array ACROLEIN
+       CALL HCO_EmisAdd( HcoState, FLUXACROLEIN , Inst%IDTACROLEIN , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXACROLEIN ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTBUTADIENE13 > 0 ) THEN
+
+       ! Add flux to emission array BUTADIENE13
+       CALL HCO_EmisAdd( HcoState, FLUXBUTADIENE13 , Inst%IDTBUTADIENE13 , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXBUTADIENE13 ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTETHY > 0 ) THEN
+
+       ! Add flux to emission array ETHY
+       CALL HCO_EmisAdd( HcoState, FLUXETHY , Inst%IDTETHY , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXETHY ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTTERP > 0 ) THEN
+
+       ! Add flux to emission array TERP
+       CALL HCO_EmisAdd( HcoState, FLUXTERP , Inst%IDTTERP , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXTERP ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTFORM > 0 ) THEN
+
+       ! Add flux to emission array FORM
+       CALL HCO_EmisAdd( HcoState, FLUXFORM , Inst%IDTFORM , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXFORM ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPAR > 0 ) THEN
+
+       ! Add flux to emission array PAR
+       CALL HCO_EmisAdd( HcoState, FLUXPAR , Inst%IDTPAR , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPAR ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTIOLE > 0 ) THEN
+
+       ! Add flux to emission array IOLE
+       CALL HCO_EmisAdd( HcoState, FLUXIOLE , Inst%IDTIOLE , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXIOLE ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTOLE > 0 ) THEN
+
+       ! Add flux to emission array OLE
+       CALL HCO_EmisAdd( HcoState, FLUXOLE , Inst%IDTOLE , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXOLE ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTETH > 0 ) THEN
+
+       ! Add flux to emission array ETH
+       CALL HCO_EmisAdd( HcoState, FLUXETH , Inst%IDTETH , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXETH ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTETHA > 0 ) THEN
+
+       ! Add flux to emission array ETHA
+       CALL HCO_EmisAdd( HcoState, FLUXETHA , Inst%IDTETHA , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXETHA ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTETOH > 0 ) THEN
+
+       ! Add flux to emission array ETOH
+       CALL HCO_EmisAdd( HcoState, FLUXETOH , Inst%IDTETOH , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXETOH ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTMEOH > 0 ) THEN
+
+       ! Add flux to emission array MEOH
+       CALL HCO_EmisAdd( HcoState, FLUXMEOH , Inst%IDTMEOH , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXMEOH ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTBENZ > 0 ) THEN
+
+       ! Add flux to emission array BENZ
+       CALL HCO_EmisAdd( HcoState, FLUXBENZ , Inst%IDTBENZ , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXBENZ ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTTOL > 0 ) THEN
+
+       ! Add flux to emission array TOL
+       CALL HCO_EmisAdd( HcoState, FLUXTOL , Inst%IDTTOL , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXTOL ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTXYLMN > 0 ) THEN
+
+       ! Add flux to emission array XYLMN
+       CALL HCO_EmisAdd( HcoState, FLUXXYLMN , Inst%IDTXYLMN , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXXYLMN ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTNAPH > 0 ) THEN
+
+       ! Add flux to emission array NAPH
+       CALL HCO_EmisAdd( HcoState, FLUXNAPH , Inst%IDTNAPH , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXNAPH ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTALD2 > 0 ) THEN
+
+       ! Add flux to emission array ALD2
+       CALL HCO_EmisAdd( HcoState, FLUXALD2 , Inst%IDTALD2 , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXALD2 ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTALDX > 0 ) THEN
+
+       ! Add flux to emission array ALDX
+       CALL HCO_EmisAdd( HcoState, FLUXALDX , Inst%IDTALDX , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXALDX ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTISOP > 0 ) THEN
+
+       ! Add flux to emission array ISOP
+       CALL HCO_EmisAdd( HcoState, FLUXISOP , Inst%IDTISOP , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXISOP ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPRPA > 0 ) THEN
+
+       ! Add flux to emission array PRPA
+       CALL HCO_EmisAdd( HcoState, FLUXPRPA , Inst%IDTPRPA , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPRPA ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTACET > 0 ) THEN
+
+       ! Add flux to emission array ACET
+       CALL HCO_EmisAdd( HcoState, FLUXACET , Inst%IDTACET , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXACET ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTKET > 0 ) THEN
+
+       ! Add flux to emission array KET
+       CALL HCO_EmisAdd( HcoState, FLUXKET , Inst%IDTKET , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXKET ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTALD2_PRIMARY > 0 ) THEN
+
+       ! Add flux to emission array ALD2_PRIMARY
+       CALL HCO_EmisAdd( HcoState, FLUXALD2_PRIMARY , Inst%IDTALD2_PRIMARY , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXALD2_PRIMARY ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTFORM_PRIMARY > 0 ) THEN
+
+       ! Add flux to emission array FORM_PRIMARY
+       CALL HCO_EmisAdd( HcoState, FLUXFORM_PRIMARY , Inst%IDTFORM_PRIMARY , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXFORM_PRIMARY ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTSOAALK > 0 ) THEN
+
+       ! Add flux to emission array SOAALK
+       CALL HCO_EmisAdd( HcoState, FLUXSOAALK , Inst%IDTSOAALK , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSOAALK ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPEC > 0 ) THEN
+
+       ! Add flux to emission array PEC
+       CALL HCO_EmisAdd( HcoState, FLUXPEC , Inst%IDTPEC , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPEC ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPOC > 0 ) THEN
+
+       ! Add flux to emission array POC
+       CALL HCO_EmisAdd( HcoState, FLUXPOC , Inst%IDTPOC , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPOC ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPAL > 0 ) THEN
+
+       ! Add flux to emission array PAL
+       CALL HCO_EmisAdd( HcoState, FLUXPAL , Inst%IDTPAL , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPAL ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPCA > 0 ) THEN
+
+       ! Add flux to emission array PCA
+       CALL HCO_EmisAdd( HcoState, FLUXPCA , Inst%IDTPCA , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPCA ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPCL > 0 ) THEN
+
+       ! Add flux to emission array PCL
+       CALL HCO_EmisAdd( HcoState, FLUXPCL , Inst%IDTPCL , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPCL ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPFE > 0 ) THEN
+
+       ! Add flux to emission array PFE
+       CALL HCO_EmisAdd( HcoState, FLUXPFE , Inst%IDTPFE , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPFE ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPH2O > 0 ) THEN
+
+       ! Add flux to emission array PH2O
+       CALL HCO_EmisAdd( HcoState, FLUXPH2O , Inst%IDTPH2O , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPH2O ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPK > 0 ) THEN
+
+       ! Add flux to emission array PK
+       CALL HCO_EmisAdd( HcoState, FLUXPK , Inst%IDTPK , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPK ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPMG > 0 ) THEN
+
+       ! Add flux to emission array PMG
+       CALL HCO_EmisAdd( HcoState, FLUXPMG , Inst%IDTPMG , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPMG ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPMN > 0 ) THEN
+
+       ! Add flux to emission array PMN
+       CALL HCO_EmisAdd( HcoState, FLUXPMN , Inst%IDTPMN , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPMN ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPMOTHR > 0 ) THEN
+
+       ! Add flux to emission array PMOTHR
+       CALL HCO_EmisAdd( HcoState, FLUXPMOTHR , Inst%IDTPMOTHR , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPMOTHR ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPNA > 0 ) THEN
+
+       ! Add flux to emission array PNA
+       CALL HCO_EmisAdd( HcoState, FLUXPNA , Inst%IDTPNA , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPNA ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPNCOM > 0 ) THEN
+
+       ! Add flux to emission array PNCOM
+       CALL HCO_EmisAdd( HcoState, FLUXPNCOM , Inst%IDTPNCOM , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPNCOM ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPNH4 > 0 ) THEN
+
+       ! Add flux to emission array PNH4
+       CALL HCO_EmisAdd( HcoState, FLUXPNH4 , Inst%IDTPNH4 , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPNH4 ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPNO3 > 0 ) THEN
+
+       ! Add flux to emission array PNO3
+       CALL HCO_EmisAdd( HcoState, FLUXPNO3 , Inst%IDTPNO3 , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPNO3 ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPTI > 0 ) THEN
+
+       ! Add flux to emission array PTI
+       CALL HCO_EmisAdd( HcoState, FLUXPTI , Inst%IDTPTI , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPTI ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPSI > 0 ) THEN
+
+       ! Add flux to emission array PSI
+       CALL HCO_EmisAdd( HcoState, FLUXPSI , Inst%IDTPSI , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPSI ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPMC > 0 ) THEN
+
+       ! Add flux to emission array PMC
+       CALL HCO_EmisAdd( HcoState, FLUXPMC , Inst%IDTPMC , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPMC ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    IF ( Inst%IDTPSO4 > 0 ) THEN
+
+       ! Add flux to emission array PSO4
+       CALL HCO_EmisAdd( HcoState, FLUXPSO4 , Inst%IDTPSO4 , &
+                         RC,       ExtNr=Inst%ExtNr )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPSO4 ', RC )
+          RETURN
+       ENDIF
+    ENDIF
+
+    ! Eventually update manual diagnostics NO
     IF ( DoDiagn ) THEN
         DiagnName =  'MetEmis_NO'
        Arr2D     => DIAGN(:,:,1)
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_NO', RC, THISLOC=LOC )
            RETURN
        ENDIF
 
     ENDIF
 
-    ! Eventually update manual diagnostics
+    ! Eventually update manual diagnostics NO2
     IF ( DoDiagn ) THEN
         DiagnName =  'MetEmis_NO2'
        Arr2D     => DIAGN(:,:,2)
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_NO2', RC, THISLOC=LOC )
            RETURN
        ENDIF
 
     ENDIF
 
-    ! Eventually update manual diagnostics
+    ! Eventually update manual diagnostics HONO
     IF ( DoDiagn ) THEN
         DiagnName =  'MetEmis_HONO'
        Arr2D     => DIAGN(:,:,3)
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_HONO', RC, THISLOC=LOC )
            RETURN
        ENDIF
 
     ENDIF
 
-    ! Eventually update manual diagnostics
+    ! Eventually update manual diagnostics CO
     IF ( DoDiagn ) THEN
         DiagnName =  'MetEmis_CO'
        Arr2D     => DIAGN(:,:,4)
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_CO', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics SO2
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_SO2'
+       Arr2D     => DIAGN(:,:,5)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_SO2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics NH3
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_NH3'
+       Arr2D     => DIAGN(:,:,6)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_NH3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics CH4
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_CH4'
+       Arr2D     => DIAGN(:,:,7)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_CH4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics ACROLEIN
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_ACROLEIN'
+       Arr2D     => DIAGN(:,:,8)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_ACROLEIN', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics BUTADIENE13
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_BUTADIENE13'
+       Arr2D     => DIAGN(:,:,9)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_BUTADIENE13', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics ETHY
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_ETHY'
+       Arr2D     => DIAGN(:,:,10)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_ETHY', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics TERP
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_TERP'
+       Arr2D     => DIAGN(:,:,11)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_TERP', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics FORM
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_FORM'
+       Arr2D     => DIAGN(:,:,12)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_FORM', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PAR
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PAR'
+       Arr2D     => DIAGN(:,:,13)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PAR', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics IOLE
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_IOLE'
+       Arr2D     => DIAGN(:,:,14)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_IOLE', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics OLE
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_OLE'
+       Arr2D     => DIAGN(:,:,15)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_OLE', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics ETH
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_ETH'
+       Arr2D     => DIAGN(:,:,16)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_ETH', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics ETHA
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_ETHA'
+       Arr2D     => DIAGN(:,:,17)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_ETHA', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics ETOH
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_ETOH'
+       Arr2D     => DIAGN(:,:,18)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_ETOH', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics MEOH
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_MEOH'
+       Arr2D     => DIAGN(:,:,19)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_MEOH', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics BENZ
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_BENZ'
+       Arr2D     => DIAGN(:,:,20)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_BENZ', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics TOL
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_TOL'
+       Arr2D     => DIAGN(:,:,21)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_TOL', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics XYLMN
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_XYLMN'
+       Arr2D     => DIAGN(:,:,22)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_XYLMN', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics NAPH
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_NAPH'
+       Arr2D     => DIAGN(:,:,23)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_NAPH', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics ALD2
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_ALD2'
+       Arr2D     => DIAGN(:,:,24)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_ALD2', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics ALDX
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_ALDX'
+       Arr2D     => DIAGN(:,:,25)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_ALDX', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics ISOP
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_ISOP'
+       Arr2D     => DIAGN(:,:,26)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_ISOP', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PRPA
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PRPA'
+       Arr2D     => DIAGN(:,:,27)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PRPA', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics ACET
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_ACET'
+       Arr2D     => DIAGN(:,:,28)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_ACET', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics KET
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_KET'
+       Arr2D     => DIAGN(:,:,29)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_KET', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics ALD2_PRIMARY
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_ALD2_PRIMARY'
+       Arr2D     => DIAGN(:,:,30)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_ALD2_PRIMARY', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics FORM_PRIMARY
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_FORM_PRIMARY'
+       Arr2D     => DIAGN(:,:,31)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_FORM_PRIMARY', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics SOAALK
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_SOAALK'
+       Arr2D     => DIAGN(:,:,32)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_SOAALK', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PEC
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PEC'
+       Arr2D     => DIAGN(:,:,33)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PEC', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics POC
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_POC'
+       Arr2D     => DIAGN(:,:,34)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_POC', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PAL
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PAL'
+       Arr2D     => DIAGN(:,:,35)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PAL', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PCA
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PCA'
+       Arr2D     => DIAGN(:,:,36)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PCA', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PCL
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PCL'
+       Arr2D     => DIAGN(:,:,37)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PCL', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PFE
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PFE'
+       Arr2D     => DIAGN(:,:,38)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PFE', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PH2O
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PH2O'
+       Arr2D     => DIAGN(:,:,39)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PH2O', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PK
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PK'
+       Arr2D     => DIAGN(:,:,40)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PK', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PMG
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PMG'
+       Arr2D     => DIAGN(:,:,41)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PMG', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PMN
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PMN'
+       Arr2D     => DIAGN(:,:,42)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PMN', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PMOTHR
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PMOTHR'
+       Arr2D     => DIAGN(:,:,43)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PMOTHR', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PNA
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PNA'
+       Arr2D     => DIAGN(:,:,44)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PNA', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PNCOM
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PNCOM'
+       Arr2D     => DIAGN(:,:,45)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PNCOM', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PNH4
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PNH4'
+       Arr2D     => DIAGN(:,:,46)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PNH4', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PNO3
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PNO3'
+       Arr2D     => DIAGN(:,:,47)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PNO3', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PTI
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PTI'
+       Arr2D     => DIAGN(:,:,48)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PTI', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PSI
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PSI'
+       Arr2D     => DIAGN(:,:,49)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PSI', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PMC
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PMC'
+       Arr2D     => DIAGN(:,:,50)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PMC', RC, THISLOC=LOC )
+           RETURN
+       ENDIF
+
+    ENDIF
+
+    ! Eventually update manual diagnostics PSO4
+    IF ( DoDiagn ) THEN
+        DiagnName =  'MetEmis_PSO4'
+       Arr2D     => DIAGN(:,:,51)
+       CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                          cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+       IF ( RC /= HCO_SUCCESS ) THEN
+           CALL HCO_ERROR( 'Diagn_Update error: MetEmis_PSO4', RC, THISLOC=LOC )
            RETURN
        ENDIF
 
@@ -648,6 +2900,59 @@ CONTAINS
       Inst%IDTNO2         = -1
       Inst%IDTHONO        = -1
       Inst%IDTCO          = -1
+      Inst%IDTSO2         = -1
+      Inst%IDTNH3         = -1
+      Inst%IDTCH4         = -1
+      Inst%IDTACROLEIN    = -1
+      Inst%IDTBUTADIENE13 = -1
+      Inst%IDTETHY        = -1
+
+      Inst%IDTTERP        = -1
+      Inst%IDTFORM        = -1
+      Inst%IDTPAR         = -1
+      Inst%IDTIOLE        = -1
+      Inst%IDTOLE         = -1
+      Inst%IDTETH         = -1
+      Inst%IDTETHA        = -1
+      Inst%IDTETOH        = -1
+      Inst%IDTMEOH        = -1
+      Inst%IDTBENZ        = -1
+
+      Inst%IDTTOL         = -1
+      Inst%IDTXYLMN       = -1
+      Inst%IDTNAPH        = -1
+      Inst%IDTALD2        = -1
+      Inst%IDTALDX        = -1
+      Inst%IDTISOP        = -1
+      Inst%IDTPRPA        = -1
+      Inst%IDTACET        = -1
+      Inst%IDTKET         = -1
+      Inst%IDTALD2_PRIMARY= -1
+
+      Inst%IDTFORM_PRIMARY= -1
+      Inst%IDTSOAALK      = -1
+      Inst%IDTPEC         = -1
+      Inst%IDTPOC         = -1
+      Inst%IDTPAL         = -1
+      Inst%IDTPCA         = -1
+      Inst%IDTPCL         = -1
+      Inst%IDTPFE         = -1
+      Inst%IDTPH2O        = -1
+      Inst%IDTPK          = -1
+
+      Inst%IDTPMG         = -1
+      Inst%IDTPMN         = -1
+      Inst%IDTPMOTHR      = -1
+      Inst%IDTPNA         = -1
+      Inst%IDTPNCOM       = -1
+      Inst%IDTPNH4        = -1
+      Inst%IDTPNO3        = -1
+      Inst%IDTPTI         = -1
+      Inst%IDTPSI         = -1
+      Inst%IDTPMC         = -1
+
+      Inst%IDTPSO4        = -1
+
       Inst%Tlev           =  0.0e0
 
       !------------------------------------------------------------------------
@@ -661,7 +2966,7 @@ CONTAINS
           RETURN
       ENDIF
 
-      ! Check for NO
+      ! Check for MetEmis Species NO/NO2/HONO/CO/SO2...
       DO I = 1, nSpc
          SELECT CASE ( TRIM(SpcNames(I)) )
             CASE ( "NO" )
@@ -672,6 +2977,106 @@ CONTAINS
                Inst%IDTHONO = HcoIDs(I)
             CASE ( "CO" )
                Inst%IDTCO  = HcoIDs(I)
+            CASE ( "SO2" )
+               Inst%IDTSO2 = HcoIDs(I)
+            CASE ( "NH3" )
+               Inst%IDTNH3 = HcoIDs(I)
+            CASE ( "CH4" )
+               Inst%IDTCH4 = HcoIDs(I)
+            CASE ( "ACROLEIN" )
+               Inst%IDTACROLEIN = HcoIDs(I)
+            CASE ( "BUTADIENE13" )
+               Inst%IDTBUTADIENE13 = HcoIDs(I)
+            CASE ( "ETHY" )
+               Inst%IDTETHY = HcoIDs(I)
+
+            CASE ( "TERP" )
+               Inst%IDTTERP = HcoIDs(I)
+            CASE ( "FORM" )
+               Inst%IDTFORM = HcoIDs(I)
+            CASE ( "PAR" )
+               Inst%IDTPAR = HcoIDs(I)
+            CASE ( "IOLE" )
+               Inst%IDTIOLE = HcoIDs(I)
+            CASE ( "OLE" )
+               Inst%IDTOLE = HcoIDs(I)
+            CASE ( "ETH" )
+               Inst%IDTETH = HcoIDs(I)
+            CASE ( "ETHA" )
+               Inst%IDTETHA = HcoIDs(I)
+            CASE ( "ETOH" )
+               Inst%IDTETOH = HcoIDs(I)
+            CASE ( "MEOH" )
+               Inst%IDTMEOH = HcoIDs(I)
+            CASE ( "BENZ" )
+               Inst%IDTBENZ = HcoIDs(I)
+
+            CASE ( "TOL" )
+               Inst%IDTTOL = HcoIDs(I)
+            CASE ( "XYLMN" )
+               Inst%IDTXYLMN = HcoIDs(I)
+            CASE ( "NAPH" )
+               Inst%IDTNAPH = HcoIDs(I)
+            CASE ( "ALD2" )
+               Inst%IDTALD2 = HcoIDs(I)
+            CASE ( "ALDX" )
+               Inst%IDTALDX = HcoIDs(I)
+            CASE ( "ISOP" )
+               Inst%IDTISOP = HcoIDs(I)
+            CASE ( "PRPA" )
+               Inst%IDTPRPA = HcoIDs(I)
+            CASE ( "ACET" )
+               Inst%IDTACET = HcoIDs(I)
+            CASE ( "KET" )
+               Inst%IDTKET = HcoIDs(I)
+            CASE ( "ALD2_PRIMARY" )
+               Inst%IDTALD2_PRIMARY = HcoIDs(I)
+
+            CASE ( "FORM_PRIMARY" )
+               Inst%IDTFORM_PRIMARY = HcoIDs(I)
+            CASE ( "SOAALK" )
+               Inst%IDTSOAALK = HcoIDs(I)
+            CASE ( "PEC" )
+               Inst%IDTPEC = HcoIDs(I)
+            CASE ( "POC" )
+               Inst%IDTPOC = HcoIDs(I)
+            CASE ( "PAL" )
+               Inst%IDTPAL = HcoIDs(I)
+            CASE ( "PCA" )
+               Inst%IDTPCA = HcoIDs(I)
+            CASE ( "PCL" )
+               Inst%IDTPCL = HcoIDs(I)
+            CASE ( "PFE" )
+               Inst%IDTPFE = HcoIDs(I)
+            CASE ( "PH2O" )
+               Inst%IDTPH2O = HcoIDs(I)
+            CASE ( "PK" )
+               Inst%IDTPK = HcoIDs(I)
+
+            CASE ( "PMG" )
+               Inst%IDTPMG = HcoIDs(I)
+            CASE ( "PMN" )
+               Inst%IDTPMN = HcoIDs(I)
+            CASE ( "PMOTHR" )
+               Inst%IDTPMOTHR = HcoIDs(I)
+            CASE ( "PNA" )
+               Inst%IDTPNA = HcoIDs(I)
+            CASE ( "PNCOM" )
+               Inst%IDTPNCOM = HcoIDs(I)
+            CASE ( "PNH4" )
+               Inst%IDTPNH4 = HcoIDs(I)
+            CASE ( "PNO3" )
+               Inst%IDTPNO3 = HcoIDs(I)
+            CASE ( "PTI" )
+               Inst%IDTPTI = HcoIDs(I)
+            CASE ( "PSI" )
+               Inst%IDTPSI = HcoIDs(I)
+            CASE ( "PMC" )
+               Inst%IDTPMC = HcoIDs(I)
+
+            CASE ( "PSO4" )
+               Inst%IDTPSO4 = HcoIDs(I)
+
             CASE DEFAULT
                ! leave empty
          END SELECT
@@ -803,6 +3208,523 @@ CONTAINS
    ExtState%MEmisCO_OR_110%DoUse          = .TRUE.
    ExtState%MEmisCO_OR_120%DoUse          = .TRUE.
 
+   ExtState%MEmisSO2_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisSO2_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisSO2_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisSO2_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisSO2_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisSO2_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisSO2_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisSO2_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisSO2_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisSO2_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisNH3_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisNH3_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisNH3_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisNH3_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisNH3_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisNH3_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisNH3_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisNH3_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisNH3_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisNH3_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisCH4_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisCH4_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisCH4_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisCH4_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisCH4_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisCH4_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisCH4_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisCH4_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisCH4_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisCH4_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisACROLEIN_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisACROLEIN_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisACROLEIN_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisACROLEIN_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisACROLEIN_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisACROLEIN_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisACROLEIN_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisACROLEIN_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisACROLEIN_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisACROLEIN_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisBUTADIENE13_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisBUTADIENE13_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisBUTADIENE13_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisBUTADIENE13_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisBUTADIENE13_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisBUTADIENE13_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisBUTADIENE13_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisBUTADIENE13_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisBUTADIENE13_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisBUTADIENE13_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisETHY_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisETHY_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisETHY_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisETHY_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisETHY_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisETHY_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisETHY_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisETHY_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisETHY_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisETHY_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisTERP_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisTERP_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisTERP_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisTERP_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisTERP_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisTERP_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisTERP_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisTERP_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisTERP_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisTERP_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisFORM_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisFORM_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisFORM_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisFORM_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisFORM_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisFORM_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisFORM_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisFORM_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisFORM_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisFORM_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPAR_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPAR_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPAR_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPAR_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPAR_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPAR_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPAR_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPAR_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPAR_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPAR_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisIOLE_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisIOLE_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisIOLE_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisIOLE_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisIOLE_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisIOLE_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisIOLE_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisIOLE_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisIOLE_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisIOLE_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisOLE_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisOLE_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisOLE_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisOLE_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisOLE_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisOLE_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisOLE_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisOLE_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisOLE_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisOLE_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisETH_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisETH_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisETH_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisETH_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisETH_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisETH_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisETH_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisETH_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisETH_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisETH_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisETHA_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisETHA_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisETHA_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisETHA_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisETHA_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisETHA_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisETHA_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisETHA_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisETHA_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisETHA_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisETOH_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisETOH_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisETOH_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisETOH_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisETOH_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisETOH_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisETOH_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisETOH_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisETOH_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisETOH_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisMEOH_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisMEOH_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisMEOH_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisMEOH_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisMEOH_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisMEOH_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisMEOH_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisMEOH_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisMEOH_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisMEOH_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisBENZ_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisBENZ_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisBENZ_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisBENZ_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisBENZ_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisBENZ_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisBENZ_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisBENZ_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisBENZ_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisBENZ_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisTOL_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisTOL_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisTOL_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisTOL_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisTOL_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisTOL_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisTOL_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisTOL_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisTOL_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisTOL_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisXYLMN_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisXYLMN_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisXYLMN_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisXYLMN_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisXYLMN_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisXYLMN_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisXYLMN_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisXYLMN_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisXYLMN_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisXYLMN_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisNAPH_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisNAPH_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisNAPH_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisNAPH_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisNAPH_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisNAPH_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisNAPH_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisNAPH_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisNAPH_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisNAPH_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisALD2_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisALD2_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisALD2_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisALD2_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisALD2_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisALD2_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisALD2_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisALD2_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisALD2_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisALD2_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisALDX_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisALDX_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisALDX_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisALDX_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisALDX_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisALDX_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisALDX_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisALDX_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisALDX_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisALDX_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisISOP_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisISOP_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisISOP_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisISOP_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisISOP_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisISOP_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisISOP_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisISOP_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisISOP_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisISOP_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPRPA_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPRPA_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPRPA_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPRPA_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPRPA_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPRPA_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPRPA_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPRPA_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPRPA_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPRPA_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisACET_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisACET_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisACET_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisACET_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisACET_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisACET_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisACET_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisACET_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisACET_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisACET_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisKET_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisKET_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisKET_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisKET_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisKET_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisKET_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisKET_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisKET_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisKET_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisKET_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisALD2_PRIMARY_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisFORM_PRIMARY_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisSOAALK_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisSOAALK_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisSOAALK_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisSOAALK_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisSOAALK_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisSOAALK_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisSOAALK_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisSOAALK_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisSOAALK_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisSOAALK_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPEC_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPEC_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPEC_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPEC_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPEC_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPEC_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPEC_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPEC_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPEC_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPEC_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPOC_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPOC_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPOC_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPOC_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPOC_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPOC_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPOC_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPOC_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPOC_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPOC_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPAL_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPAL_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPAL_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPAL_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPAL_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPAL_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPAL_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPAL_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPAL_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPAL_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPCA_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPCA_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPCA_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPCA_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPCA_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPCA_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPCA_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPCA_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPCA_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPCA_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPCL_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPCL_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPCL_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPCL_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPCL_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPCL_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPCL_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPCL_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPCL_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPCL_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPFE_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPFE_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPFE_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPFE_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPFE_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPFE_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPFE_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPFE_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPFE_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPFE_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPH2O_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPH2O_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPH2O_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPH2O_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPH2O_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPH2O_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPH2O_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPH2O_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPH2O_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPH2O_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPK_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPK_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPK_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPK_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPK_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPK_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPK_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPK_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPK_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPK_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPMG_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPMG_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPMG_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPMG_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPMG_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPMG_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPMG_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPMG_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPMG_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPMG_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPMN_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPMN_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPMN_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPMN_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPMN_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPMN_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPMN_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPMN_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPMN_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPMN_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPMOTHR_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPMOTHR_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPMOTHR_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPMOTHR_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPMOTHR_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPMOTHR_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPMOTHR_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPMOTHR_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPMOTHR_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPMOTHR_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPNA_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPNA_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPNA_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPNA_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPNA_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPNA_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPNA_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPNA_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPNA_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPNA_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPNCOM_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPNCOM_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPNCOM_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPNCOM_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPNCOM_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPNCOM_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPNCOM_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPNCOM_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPNCOM_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPNCOM_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPNH4_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPNH4_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPNH4_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPNH4_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPNH4_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPNH4_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPNH4_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPNH4_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPNH4_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPNH4_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPNO3_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPNO3_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPNO3_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPNO3_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPNO3_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPNO3_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPNO3_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPNO3_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPNO3_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPNO3_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPTI_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPTI_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPTI_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPTI_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPTI_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPTI_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPTI_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPTI_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPTI_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPTI_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPSI_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPSI_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPSI_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPSI_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPSI_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPSI_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPSI_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPSI_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPSI_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPSI_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPMC_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPMC_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPMC_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPMC_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPMC_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPMC_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPMC_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPMC_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPMC_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPMC_OR_120%DoUse          = .TRUE.
+
+   ExtState%MEmisPSO4_OR_030%DoUse          = .TRUE.
+   ExtState%MEmisPSO4_OR_040%DoUse          = .TRUE.
+   ExtState%MEmisPSO4_OR_050%DoUse          = .TRUE.
+   ExtState%MEmisPSO4_OR_060%DoUse          = .TRUE.
+   ExtState%MEmisPSO4_OR_070%DoUse          = .TRUE.
+   ExtState%MEmisPSO4_OR_080%DoUse          = .TRUE.
+   ExtState%MEmisPSO4_OR_090%DoUse          = .TRUE.
+   ExtState%MEmisPSO4_OR_100%DoUse          = .TRUE.
+   ExtState%MEmisPSO4_OR_110%DoUse          = .TRUE.
+   ExtState%MEmisPSO4_OR_120%DoUse          = .TRUE.
+
    !------------------------------------------------------------------------
    ! Leave w/ success
    !------------------------------------------------------------------------
@@ -931,7 +3853,7 @@ CONTAINS
 
    ! Loop over interpolation nodes until we find the largest node value
    ! that is less than the desired value
-   DO I=1, SIZE(NODES)
+   DO I=1, SIZE(NODES)-1
       INDICES(1) = I
       IF ( VALUE <= NODES(I+1) ) EXIT
    END DO
@@ -940,7 +3862,8 @@ CONTAINS
    INDICES(2) = INDICES(1) + 1
 
    ! Weights for the corresponding node indices
-   WEIGHTS(1) = ( NODES(I+1) - VALUE ) / ( NODES(I+1) - NODES(I) )
+   WEIGHTS(1) = ( NODES(INDICES(2)) - VALUE ) / &
+                ( NODES(INDICES(2)) - NODES(INDICES(1)) )
    WEIGHTS(2) = 1.0 - WEIGHTS(1)
 
  END SUBROUTINE INTERPOL_LINWEIGHTS
@@ -963,8 +3886,18 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
- SUBROUTINE METEMIS_LUT( ExtState,  HcoState, Inst, &
-                         I, J, RC,  TEMPNO, TEMPNO2, TEMPHONO ,TEMPCO )
+ SUBROUTINE METEMIS_LUT( ExtState,  HcoState, Inst, I, J, RC,                          &
+                         TEMPNO,   TEMPNO2,   TEMPHONO,  TEMPCO,   TEMPSO2,            &
+                         TEMPNH3,  TEMPCH4,   TEMPACROLEIN, TEMPBUTADIENE13, TEMPETHY, &
+                         TEMPTERP, TEMPFORM,  TEMPPAR,   TEMPIOLE, TEMPOLE ,           &
+                         TEMPETH , TEMPETHA , TEMPETOH,  TEMPMEOH, TEMPBENZ,           &
+                         TEMPTOL,  TEMPXYLMN, TEMPNAPH,  TEMPALD2, TEMPALDX,           &
+                         TEMPISOP, TEMPPRPA,  TEMPACET,  TEMPKET,  TEMPALD2_PRIMARY,   &
+                 TEMPFORM_PRIMARY, TEMPSOAALK, TEMPPEC,  TEMPPOC,  TEMPPAL,            &
+                         TEMPPCA,  TEMPPCL,   TEMPPFE,   TEMPPH2O, TEMPPK,             &
+                         TEMPPMG,  TEMPPMN,   TEMPPMOTHR, TEMPPNA, TEMPPNCOM,          &
+                         TEMPPNH4, TEMPPNO3,  TEMPPTI,   TEMPPSI,  TEMPPMC,            &
+                         TEMPPSO4)
 !
 ! !USES:
 !
@@ -980,10 +3913,65 @@ CONTAINS
 !
 ! !OUTPUT PARAMETERS:
 !
+! Temp dependent MetEmis emission species 51 in total , kg/m2/s
+!
    REAL*8, INTENT(OUT)           :: TEMPNO   ! Temp dependent NO emissions, kg/m2/s
    REAL*8, INTENT(OUT)           :: TEMPNO2  ! Temp dependent NO2 emissions, kg/m2/s
    REAL*8, INTENT(OUT)           :: TEMPHONO ! Temp dependent HONO emissions, kg/m2/s
    REAL*8, INTENT(OUT)           :: TEMPCO   ! Temp dependent CO  emissions, kg/m2/s
+   REAL*8, INTENT(OUT)           :: TEMPSO2  ! Temp dependent SO2 emissions, kg/m2/s
+   REAL*8, INTENT(OUT)           :: TEMPNH3  ! Temp dependent NH3 emissions, kg/m2/s
+
+   REAL*8, INTENT(OUT)           :: TEMPCH4
+   REAL*8, INTENT(OUT)           :: TEMPACROLEIN
+   REAL*8, INTENT(OUT)           :: TEMPBUTADIENE13
+   REAL*8, INTENT(OUT)           :: TEMPETHY
+
+   REAL*8, INTENT(OUT)           :: TEMPTERP
+   REAL*8, INTENT(OUT)           :: TEMPFORM
+   REAL*8, INTENT(OUT)           :: TEMPPAR
+   REAL*8, INTENT(OUT)           :: TEMPIOLE
+   REAL*8, INTENT(OUT)           :: TEMPOLE
+   REAL*8, INTENT(OUT)           :: TEMPETH
+   REAL*8, INTENT(OUT)           :: TEMPETHA
+   REAL*8, INTENT(OUT)           :: TEMPETOH
+   REAL*8, INTENT(OUT)           :: TEMPMEOH
+   REAL*8, INTENT(OUT)           :: TEMPBENZ
+
+   REAL*8, INTENT(OUT)           :: TEMPTOL
+   REAL*8, INTENT(OUT)           :: TEMPXYLMN
+   REAL*8, INTENT(OUT)           :: TEMPNAPH
+   REAL*8, INTENT(OUT)           :: TEMPALD2
+   REAL*8, INTENT(OUT)           :: TEMPALDX
+   REAL*8, INTENT(OUT)           :: TEMPISOP
+   REAL*8, INTENT(OUT)           :: TEMPPRPA
+   REAL*8, INTENT(OUT)           :: TEMPACET
+   REAL*8, INTENT(OUT)           :: TEMPKET
+   REAL*8, INTENT(OUT)           :: TEMPALD2_PRIMARY
+
+   REAL*8, INTENT(OUT)           :: TEMPFORM_PRIMARY
+   REAL*8, INTENT(OUT)           :: TEMPSOAALK
+   REAL*8, INTENT(OUT)           :: TEMPPEC
+   REAL*8, INTENT(OUT)           :: TEMPPOC
+   REAL*8, INTENT(OUT)           :: TEMPPAL
+   REAL*8, INTENT(OUT)           :: TEMPPCA
+   REAL*8, INTENT(OUT)           :: TEMPPCL
+   REAL*8, INTENT(OUT)           :: TEMPPFE
+   REAL*8, INTENT(OUT)           :: TEMPPH2O
+   REAL*8, INTENT(OUT)           :: TEMPPK
+
+   REAL*8, INTENT(OUT)           :: TEMPPMG
+   REAL*8, INTENT(OUT)           :: TEMPPMN
+   REAL*8, INTENT(OUT)           :: TEMPPMOTHR
+   REAL*8, INTENT(OUT)           :: TEMPPNA
+   REAL*8, INTENT(OUT)           :: TEMPPNCOM
+   REAL*8, INTENT(OUT)           :: TEMPPNH4
+   REAL*8, INTENT(OUT)           :: TEMPPNO3
+   REAL*8, INTENT(OUT)           :: TEMPPTI
+   REAL*8, INTENT(OUT)           :: TEMPPSI
+   REAL*8, INTENT(OUT)           :: TEMPPMC
+
+   REAL*8, INTENT(OUT)           :: TEMPPSO4
 
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -999,14 +3987,66 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
    INTEGER                    :: I1
+   REAL(sp)                   :: RHUMGAS,RHUMDIS
    REAL(sp)                   :: TEMPNO_GAS,   TEMPNO_GAS_TMP
    REAL(sp)                   :: TEMPNO_DIS,   TEMPNO_DIS_TMP
    REAL(sp)                   :: TEMPNO2_GAS,  TEMPNO2_GAS_TMP
    REAL(sp)                   :: TEMPNO2_DIS,  TEMPNO2_DIS_TMP
    REAL(sp)                   :: TEMPHONO_GAS, TEMPHONO_GAS_TMP
    REAL(sp)                   :: TEMPHONO_DIS, TEMPHONO_DIS_TMP
-   REAL(sp)                   :: RHUMGAS,RHUMDIS
    REAL(sp)                   :: TEMPCO_TMP
+   REAL(sp)                   :: TEMPSO2_TMP
+   REAL(sp)                   :: TEMPNH3_TMP
+   REAL(dp)                   :: TEMPCH4_TMP
+   REAL(dp)                   :: TEMPACROLEIN_TMP
+   REAL(dp)                   :: TEMPBUTADIENE13_TMP
+   REAL(dp)                   :: TEMPETHY_TMP
+
+   REAL(dp)                   :: TEMPTERP_TMP
+   REAL(dp)                   :: TEMPFORM_TMP
+   REAL(dp)                   :: TEMPPAR_TMP
+   REAL(dp)                   :: TEMPIOLE_TMP
+   REAL(dp)                   :: TEMPOLE_TMP
+   REAL(dp)                   :: TEMPETH_TMP
+   REAL(dp)                   :: TEMPETHA_TMP
+   REAL(dp)                   :: TEMPETOH_TMP
+   REAL(dp)                   :: TEMPMEOH_TMP
+   REAL(dp)                   :: TEMPBENZ_TMP
+
+   REAL(dp)                   :: TEMPTOL_TMP
+   REAL(dp)                   :: TEMPXYLMN_TMP
+   REAL(dp)                   :: TEMPNAPH_TMP
+   REAL(dp)                   :: TEMPALD2_TMP
+   REAL(dp)                   :: TEMPALDX_TMP
+   REAL(dp)                   :: TEMPISOP_TMP
+   REAL(dp)                   :: TEMPPRPA_TMP
+   REAL(dp)                   :: TEMPACET_TMP
+   REAL(dp)                   :: TEMPKET_TMP
+   REAL(dp)                   :: TEMPALD2_PRIMARY_TMP
+
+   REAL(dp)                   :: TEMPFORM_PRIMARY_TMP
+   REAL(dp)                   :: TEMPSOAALK_TMP
+   REAL(dp)                   :: TEMPPEC_TMP
+   REAL(dp)                   :: TEMPPOC_TMP
+   REAL(dp)                   :: TEMPPAL_TMP
+   REAL(dp)                   :: TEMPPCA_TMP
+   REAL(dp)                   :: TEMPPCL_TMP
+   REAL(dp)                   :: TEMPPFE_TMP
+   REAL(dp)                   :: TEMPPH2O_TMP
+   REAL(dp)                   :: TEMPPK_TMP
+
+   REAL(dp)                   :: TEMPPMG_TMP
+   REAL(dp)                   :: TEMPPMN_TMP
+   REAL(dp)                   :: TEMPPMOTHR_TMP
+   REAL(dp)                   :: TEMPPNA_TMP
+   REAL(dp)                   :: TEMPPNCOM_TMP
+   REAL(dp)                   :: TEMPPNH4_TMP
+   REAL(dp)                   :: TEMPPNO3_TMP
+   REAL(dp)                   :: TEMPPTI_TMP
+   REAL(dp)                   :: TEMPPSI_TMP
+   REAL(dp)                   :: TEMPPMC_TMP
+
+   REAL(dp)                   :: TEMPPSO4_TMP
 
    REAL(sp)                   :: WEIGHT
    REAL(sp)                   :: TAIR
@@ -1025,10 +4065,10 @@ CONTAINS
    !=================================================================
 
    !MetEmis Temperature bins (Degrees Fahrenheit) = 10 from explicit nT
-   !e.g., 20 - 30, ... 110 - 120
+   !These are set to lower bin edge defined in MetEmis files. 
+   !e.g., 20 - 30 (20), ... 110 - 120 (110)
    Inst%Tlev = (/ 20.0e0, 30.0e0, 40.0e0, 50.0e0,  60.0e0,  &
                   70.0e0, 80.0e0, 90.0e0, 100.0e0, 110.0e0 /)
-
 
    !Get 2-m air temperature, K
    TAIR = ExtState%T2M%Arr%Val(I,J)
@@ -1074,6 +4114,58 @@ CONTAINS
    TEMPHONO_GAS= 0.0d0
    TEMPHONO_DIS= 0.0d0
    TEMPCO      = 0.0d0
+   TEMPSO2     = 0.0d0
+   TEMPNH3     = 0.0d0
+   TEMPCH4     = 0.0d0
+   TEMPACROLEIN = 0.0d0
+   TEMPBUTADIENE13 = 0.0d0
+   TEMPETHY    = 0.0d0
+
+   TEMPTERP    = 0.0d0
+   TEMPFORM    = 0.0d0
+   TEMPPAR     = 0.0d0
+   TEMPIOLE    = 0.0d0
+   TEMPOLE     = 0.0d0
+   TEMPETH     = 0.0d0
+   TEMPETHA    = 0.0d0
+   TEMPETOH    = 0.0d0
+   TEMPMEOH    = 0.0d0
+   TEMPBENZ    = 0.0d0
+
+   TEMPTOL     = 0.0d0
+   TEMPXYLMN   = 0.0d0
+   TEMPNAPH    = 0.0d0
+   TEMPALD2    = 0.0d0
+   TEMPALDX    = 0.0d0
+   TEMPISOP    = 0.0d0
+   TEMPPRPA    = 0.0d0
+   TEMPACET    = 0.0d0
+   TEMPKET     = 0.0d0
+   TEMPALD2_PRIMARY = 0.0d0
+
+   TEMPFORM_PRIMARY = 0.0d0
+   TEMPSOAALK  = 0.0d0
+   TEMPPEC     = 0.0d0
+   TEMPPOC     = 0.0d0
+   TEMPPAL     = 0.0d0
+   TEMPPCA     = 0.0d0
+   TEMPPCL     = 0.0d0
+   TEMPPFE     = 0.0d0
+   TEMPPH2O    = 0.0d0
+   TEMPPK      = 0.0d0
+
+   TEMPPMG     = 0.0d0
+   TEMPPMN     = 0.0d0
+   TEMPPMOTHR  = 0.0d0
+   TEMPPNA     = 0.0d0
+   TEMPPNCOM   = 0.0d0
+   TEMPPNH4    = 0.0d0
+   TEMPPNO3    = 0.0d0
+   TEMPPTI     = 0.0d0
+   TEMPPSI     = 0.0d0
+   TEMPPMC     = 0.0d0
+
+   TEMPPSO4    = 0.0d0
 
   ! Loop over temperature bins
    DO I1=1,2
@@ -1086,6 +4178,59 @@ CONTAINS
             TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_030%Arr%Val(I,J)
             TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_030%Arr%Val(I,J)
             TEMPCO_TMP       =  ExtState%MEmisCO_OR_030%Arr%Val(I,J)
+            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_030%Arr%Val(I,J)
+            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_030%Arr%Val(I,J)
+            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_030%Arr%Val(I,J)
+            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_030%Arr%Val(I,J)
+            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_030%Arr%Val(I,J)
+            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_030%Arr%Val(I,J)
+
+            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_030%Arr%Val(I,J)
+            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_030%Arr%Val(I,J)
+            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_030%Arr%Val(I,J)
+            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_030%Arr%Val(I,J)
+            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_030%Arr%Val(I,J)
+            TEMPETH_TMP      =  ExtState%MEmisETH_OR_030%Arr%Val(I,J)
+            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_030%Arr%Val(I,J)
+            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_030%Arr%Val(I,J)
+            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_030%Arr%Val(I,J)
+            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_030%Arr%Val(I,J)
+
+            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_030%Arr%Val(I,J)
+            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_030%Arr%Val(I,J)
+            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_030%Arr%Val(I,J)
+            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_030%Arr%Val(I,J)
+            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_030%Arr%Val(I,J)
+            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_030%Arr%Val(I,J)
+            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_030%Arr%Val(I,J)
+            TEMPACET_TMP     =  ExtState%MEmisACET_OR_030%Arr%Val(I,J)
+            TEMPKET_TMP      =  ExtState%MEmisKET_OR_030%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_030%Arr%Val(I,J)
+
+            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_030%Arr%Val(I,J)
+            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_030%Arr%Val(I,J)
+            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_030%Arr%Val(I,J)
+            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_030%Arr%Val(I,J)
+            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_030%Arr%Val(I,J)
+            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_030%Arr%Val(I,J)
+            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_030%Arr%Val(I,J)
+            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_030%Arr%Val(I,J)
+            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_030%Arr%Val(I,J)
+            TEMPPK_TMP       =  ExtState%MEmisPK_OR_030%Arr%Val(I,J)
+
+            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_030%Arr%Val(I,J)
+            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_030%Arr%Val(I,J)
+            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_030%Arr%Val(I,J)
+            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_030%Arr%Val(I,J)
+            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_030%Arr%Val(I,J)
+            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_030%Arr%Val(I,J)
+            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_030%Arr%Val(I,J)
+            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_030%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_030%Arr%Val(I,J)
+            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_030%Arr%Val(I,J)
+
+            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_030%Arr%Val(I,J)
+
             WEIGHT       = WTS(1,I1)
          CASE ( 30 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_040%Arr%Val(I,J)
@@ -1095,6 +4240,59 @@ CONTAINS
             TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_040%Arr%Val(I,J)
             TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_040%Arr%Val(I,J)
             TEMPCO_TMP       =  ExtState%MEmisCO_OR_040%Arr%Val(I,J)
+            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_040%Arr%Val(I,J)
+            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_040%Arr%Val(I,J)
+            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_040%Arr%Val(I,J)
+            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_040%Arr%Val(I,J)
+            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_040%Arr%Val(I,J)
+            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_040%Arr%Val(I,J)
+
+            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_040%Arr%Val(I,J)
+            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_040%Arr%Val(I,J)
+            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_040%Arr%Val(I,J)
+            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_040%Arr%Val(I,J)
+            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_040%Arr%Val(I,J)
+            TEMPETH_TMP      =  ExtState%MEmisETH_OR_040%Arr%Val(I,J)
+            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_040%Arr%Val(I,J)
+            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_040%Arr%Val(I,J)
+            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_040%Arr%Val(I,J)
+            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_040%Arr%Val(I,J)
+
+            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_040%Arr%Val(I,J)
+            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_040%Arr%Val(I,J)
+            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_040%Arr%Val(I,J)
+            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_040%Arr%Val(I,J)
+            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_040%Arr%Val(I,J)
+            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_040%Arr%Val(I,J)
+            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_040%Arr%Val(I,J)
+            TEMPACET_TMP     =  ExtState%MEmisACET_OR_040%Arr%Val(I,J)
+            TEMPKET_TMP      =  ExtState%MEmisKET_OR_040%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_040%Arr%Val(I,J)
+
+            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_040%Arr%Val(I,J)
+            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_040%Arr%Val(I,J)
+            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_040%Arr%Val(I,J)
+            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_040%Arr%Val(I,J)
+            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_040%Arr%Val(I,J)
+            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_040%Arr%Val(I,J)
+            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_040%Arr%Val(I,J)
+            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_040%Arr%Val(I,J)
+            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_040%Arr%Val(I,J)
+            TEMPPK_TMP       =  ExtState%MEmisPK_OR_040%Arr%Val(I,J)
+
+            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_040%Arr%Val(I,J)
+            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_040%Arr%Val(I,J)
+            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_040%Arr%Val(I,J)
+            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_040%Arr%Val(I,J)
+            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_040%Arr%Val(I,J)
+            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_040%Arr%Val(I,J)
+            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_040%Arr%Val(I,J)
+            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_040%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_040%Arr%Val(I,J)
+            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_040%Arr%Val(I,J)
+
+            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_040%Arr%Val(I,J)
+
             WEIGHT       = WTS(1,I1)
          CASE ( 40 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_050%Arr%Val(I,J)
@@ -1104,6 +4302,59 @@ CONTAINS
             TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_050%Arr%Val(I,J)
             TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_050%Arr%Val(I,J)
             TEMPCO_TMP       =  ExtState%MEmisCO_OR_050%Arr%Val(I,J)
+            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_050%Arr%Val(I,J)
+            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_050%Arr%Val(I,J)
+            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_050%Arr%Val(I,J)
+            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_050%Arr%Val(I,J)
+            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_050%Arr%Val(I,J)
+            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_050%Arr%Val(I,J)
+
+            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_050%Arr%Val(I,J)
+            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_050%Arr%Val(I,J)
+            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_050%Arr%Val(I,J)
+            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_050%Arr%Val(I,J)
+            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_050%Arr%Val(I,J)
+            TEMPETH_TMP      =  ExtState%MEmisETH_OR_050%Arr%Val(I,J)
+            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_050%Arr%Val(I,J)
+            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_050%Arr%Val(I,J)
+            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_050%Arr%Val(I,J)
+            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_050%Arr%Val(I,J)
+
+            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_050%Arr%Val(I,J)
+            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_050%Arr%Val(I,J)
+            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_050%Arr%Val(I,J)
+            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_050%Arr%Val(I,J)
+            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_050%Arr%Val(I,J)
+            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_050%Arr%Val(I,J)
+            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_050%Arr%Val(I,J)
+            TEMPACET_TMP     =  ExtState%MEmisACET_OR_050%Arr%Val(I,J)
+            TEMPKET_TMP      =  ExtState%MEmisKET_OR_050%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_050%Arr%Val(I,J)
+
+            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_050%Arr%Val(I,J)
+            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_050%Arr%Val(I,J)
+            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_050%Arr%Val(I,J)
+            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_050%Arr%Val(I,J)
+            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_050%Arr%Val(I,J)
+            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_050%Arr%Val(I,J)
+            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_050%Arr%Val(I,J)
+            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_050%Arr%Val(I,J)
+            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_050%Arr%Val(I,J)
+            TEMPPK_TMP       =  ExtState%MEmisPK_OR_050%Arr%Val(I,J)
+
+            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_050%Arr%Val(I,J)
+            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_050%Arr%Val(I,J)
+            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_050%Arr%Val(I,J)
+            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_050%Arr%Val(I,J)
+            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_050%Arr%Val(I,J)
+            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_050%Arr%Val(I,J)
+            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_050%Arr%Val(I,J)
+            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_050%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_050%Arr%Val(I,J)
+            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_050%Arr%Val(I,J)
+
+            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_050%Arr%Val(I,J)
+
             WEIGHT       = WTS(1,I1)
          CASE ( 50 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_060%Arr%Val(I,J)
@@ -1113,6 +4364,59 @@ CONTAINS
             TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_060%Arr%Val(I,J)
             TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_060%Arr%Val(I,J)
             TEMPCO_TMP       =  ExtState%MEmisCO_OR_060%Arr%Val(I,J)
+            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_060%Arr%Val(I,J)
+            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_060%Arr%Val(I,J)
+            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_060%Arr%Val(I,J)
+            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_060%Arr%Val(I,J)
+            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_060%Arr%Val(I,J)
+            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_060%Arr%Val(I,J)
+
+            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_060%Arr%Val(I,J)
+            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_060%Arr%Val(I,J)
+            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_060%Arr%Val(I,J)
+            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_060%Arr%Val(I,J)
+            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_060%Arr%Val(I,J)
+            TEMPETH_TMP      =  ExtState%MEmisETH_OR_060%Arr%Val(I,J)
+            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_060%Arr%Val(I,J)
+            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_060%Arr%Val(I,J)
+            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_060%Arr%Val(I,J)
+            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_060%Arr%Val(I,J)
+
+            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_060%Arr%Val(I,J)
+            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_060%Arr%Val(I,J)
+            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_060%Arr%Val(I,J)
+            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_060%Arr%Val(I,J)
+            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_060%Arr%Val(I,J)
+            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_060%Arr%Val(I,J)
+            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_060%Arr%Val(I,J)
+            TEMPACET_TMP     =  ExtState%MEmisACET_OR_060%Arr%Val(I,J)
+            TEMPKET_TMP      =  ExtState%MEmisKET_OR_060%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_060%Arr%Val(I,J)
+
+            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_060%Arr%Val(I,J)
+            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_060%Arr%Val(I,J)
+            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_060%Arr%Val(I,J)
+            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_060%Arr%Val(I,J)
+            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_060%Arr%Val(I,J)
+            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_060%Arr%Val(I,J)
+            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_060%Arr%Val(I,J)
+            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_060%Arr%Val(I,J)
+            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_060%Arr%Val(I,J)
+            TEMPPK_TMP       =  ExtState%MEmisPK_OR_060%Arr%Val(I,J)
+
+            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_060%Arr%Val(I,J)
+            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_060%Arr%Val(I,J)
+            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_060%Arr%Val(I,J)
+            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_060%Arr%Val(I,J)
+            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_060%Arr%Val(I,J)
+            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_060%Arr%Val(I,J)
+            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_060%Arr%Val(I,J)
+            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_060%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_060%Arr%Val(I,J)
+            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_060%Arr%Val(I,J)
+
+            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_060%Arr%Val(I,J)
+
             WEIGHT       = WTS(1,I1)
          CASE ( 60 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_070%Arr%Val(I,J)
@@ -1122,6 +4426,59 @@ CONTAINS
             TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_070%Arr%Val(I,J)
             TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_070%Arr%Val(I,J)
             TEMPCO_TMP       =  ExtState%MEmisCO_OR_070%Arr%Val(I,J)
+            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_070%Arr%Val(I,J)
+            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_070%Arr%Val(I,J)
+            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_070%Arr%Val(I,J)
+            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_070%Arr%Val(I,J)
+            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_070%Arr%Val(I,J)
+            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_070%Arr%Val(I,J)
+
+            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_070%Arr%Val(I,J)
+            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_070%Arr%Val(I,J)
+            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_070%Arr%Val(I,J)
+            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_070%Arr%Val(I,J)
+            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_070%Arr%Val(I,J)
+            TEMPETH_TMP      =  ExtState%MEmisETH_OR_070%Arr%Val(I,J)
+            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_070%Arr%Val(I,J)
+            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_070%Arr%Val(I,J)
+            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_070%Arr%Val(I,J)
+            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_070%Arr%Val(I,J)
+
+            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_070%Arr%Val(I,J)
+            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_070%Arr%Val(I,J)
+            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_070%Arr%Val(I,J)
+            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_070%Arr%Val(I,J)
+            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_070%Arr%Val(I,J)
+            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_070%Arr%Val(I,J)
+            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_070%Arr%Val(I,J)
+            TEMPACET_TMP     =  ExtState%MEmisACET_OR_070%Arr%Val(I,J)
+            TEMPKET_TMP      =  ExtState%MEmisKET_OR_070%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_070%Arr%Val(I,J)
+
+            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_070%Arr%Val(I,J)
+            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_070%Arr%Val(I,J)
+            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_070%Arr%Val(I,J)
+            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_070%Arr%Val(I,J)
+            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_070%Arr%Val(I,J)
+            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_070%Arr%Val(I,J)
+            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_070%Arr%Val(I,J)
+            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_070%Arr%Val(I,J)
+            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_070%Arr%Val(I,J)
+            TEMPPK_TMP       =  ExtState%MEmisPK_OR_070%Arr%Val(I,J)
+
+            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_070%Arr%Val(I,J)
+            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_070%Arr%Val(I,J)
+            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_070%Arr%Val(I,J)
+            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_070%Arr%Val(I,J)
+            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_070%Arr%Val(I,J)
+            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_070%Arr%Val(I,J)
+            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_070%Arr%Val(I,J)
+            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_070%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_070%Arr%Val(I,J)
+            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_070%Arr%Val(I,J)
+
+            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_070%Arr%Val(I,J)
+
             WEIGHT       = WTS(1,I1)
          CASE ( 70 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_080%Arr%Val(I,J)
@@ -1131,6 +4488,59 @@ CONTAINS
             TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_080%Arr%Val(I,J)
             TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_080%Arr%Val(I,J)
             TEMPCO_TMP       =  ExtState%MEmisCO_OR_080%Arr%Val(I,J)
+            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_080%Arr%Val(I,J)
+            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_080%Arr%Val(I,J)
+            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_080%Arr%Val(I,J)
+            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_080%Arr%Val(I,J)
+            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_080%Arr%Val(I,J)
+            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_080%Arr%Val(I,J)
+
+            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_080%Arr%Val(I,J)
+            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_080%Arr%Val(I,J)
+            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_080%Arr%Val(I,J)
+            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_080%Arr%Val(I,J)
+            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_080%Arr%Val(I,J)
+            TEMPETH_TMP      =  ExtState%MEmisETH_OR_080%Arr%Val(I,J)
+            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_080%Arr%Val(I,J)
+            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_080%Arr%Val(I,J)
+            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_080%Arr%Val(I,J)
+            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_080%Arr%Val(I,J)
+
+            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_080%Arr%Val(I,J)
+            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_080%Arr%Val(I,J)
+            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_080%Arr%Val(I,J)
+            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_080%Arr%Val(I,J)
+            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_080%Arr%Val(I,J)
+            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_080%Arr%Val(I,J)
+            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_080%Arr%Val(I,J)
+            TEMPACET_TMP     =  ExtState%MEmisACET_OR_080%Arr%Val(I,J)
+            TEMPKET_TMP      =  ExtState%MEmisKET_OR_080%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_080%Arr%Val(I,J)
+
+            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_080%Arr%Val(I,J)
+            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_080%Arr%Val(I,J)
+            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_080%Arr%Val(I,J)
+            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_080%Arr%Val(I,J)
+            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_080%Arr%Val(I,J)
+            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_080%Arr%Val(I,J)
+            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_080%Arr%Val(I,J)
+            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_080%Arr%Val(I,J)
+            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_080%Arr%Val(I,J)
+            TEMPPK_TMP       =  ExtState%MEmisPK_OR_080%Arr%Val(I,J)
+
+            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_080%Arr%Val(I,J)
+            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_080%Arr%Val(I,J)
+            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_080%Arr%Val(I,J)
+            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_080%Arr%Val(I,J)
+            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_080%Arr%Val(I,J)
+            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_080%Arr%Val(I,J)
+            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_080%Arr%Val(I,J)
+            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_080%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_080%Arr%Val(I,J)
+            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_080%Arr%Val(I,J)
+
+            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_080%Arr%Val(I,J)
+
             WEIGHT       = WTS(1,I1)
          CASE ( 80 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_090%Arr%Val(I,J)
@@ -1140,6 +4550,59 @@ CONTAINS
             TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_090%Arr%Val(I,J)
             TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_090%Arr%Val(I,J)
             TEMPCO_TMP       =  ExtState%MEmisCO_OR_090%Arr%Val(I,J)
+            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_090%Arr%Val(I,J)
+            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_090%Arr%Val(I,J)
+            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_090%Arr%Val(I,J)
+            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_090%Arr%Val(I,J)
+            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_090%Arr%Val(I,J)
+            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_090%Arr%Val(I,J)
+
+            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_090%Arr%Val(I,J)
+            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_090%Arr%Val(I,J)
+            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_090%Arr%Val(I,J)
+            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_090%Arr%Val(I,J)
+            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_090%Arr%Val(I,J)
+            TEMPETH_TMP      =  ExtState%MEmisETH_OR_090%Arr%Val(I,J)
+            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_090%Arr%Val(I,J)
+            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_090%Arr%Val(I,J)
+            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_090%Arr%Val(I,J)
+            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_090%Arr%Val(I,J)
+
+            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_090%Arr%Val(I,J)
+            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_090%Arr%Val(I,J)
+            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_090%Arr%Val(I,J)
+            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_090%Arr%Val(I,J)
+            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_090%Arr%Val(I,J)
+            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_090%Arr%Val(I,J)
+            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_090%Arr%Val(I,J)
+            TEMPACET_TMP     =  ExtState%MEmisACET_OR_090%Arr%Val(I,J)
+            TEMPKET_TMP      =  ExtState%MEmisKET_OR_090%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_090%Arr%Val(I,J)
+
+            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_090%Arr%Val(I,J)
+            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_090%Arr%Val(I,J)
+            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_090%Arr%Val(I,J)
+            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_090%Arr%Val(I,J)
+            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_090%Arr%Val(I,J)
+            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_090%Arr%Val(I,J)
+            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_090%Arr%Val(I,J)
+            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_090%Arr%Val(I,J)
+            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_090%Arr%Val(I,J)
+            TEMPPK_TMP       =  ExtState%MEmisPK_OR_090%Arr%Val(I,J)
+
+            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_090%Arr%Val(I,J)
+            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_090%Arr%Val(I,J)
+            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_090%Arr%Val(I,J)
+            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_090%Arr%Val(I,J)
+            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_090%Arr%Val(I,J)
+            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_090%Arr%Val(I,J)
+            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_090%Arr%Val(I,J)
+            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_090%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_090%Arr%Val(I,J)
+            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_090%Arr%Val(I,J)
+
+            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_090%Arr%Val(I,J)
+
             WEIGHT       = WTS(1,I1)
          CASE ( 90 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_100%Arr%Val(I,J)
@@ -1149,6 +4612,59 @@ CONTAINS
             TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_100%Arr%Val(I,J)
             TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_100%Arr%Val(I,J)
             TEMPCO_TMP       =  ExtState%MEmisCO_OR_100%Arr%Val(I,J)
+            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_100%Arr%Val(I,J)
+            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_100%Arr%Val(I,J)
+            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_100%Arr%Val(I,J)
+            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_100%Arr%Val(I,J)
+            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_100%Arr%Val(I,J)
+            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_100%Arr%Val(I,J)
+
+            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_100%Arr%Val(I,J)
+            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_100%Arr%Val(I,J)
+            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_100%Arr%Val(I,J)
+            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_100%Arr%Val(I,J)
+            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_100%Arr%Val(I,J)
+            TEMPETH_TMP      =  ExtState%MEmisETH_OR_100%Arr%Val(I,J)
+            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_100%Arr%Val(I,J)
+            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_100%Arr%Val(I,J)
+            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_100%Arr%Val(I,J)
+            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_100%Arr%Val(I,J)
+
+            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_100%Arr%Val(I,J)
+            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_100%Arr%Val(I,J)
+            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_100%Arr%Val(I,J)
+            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_100%Arr%Val(I,J)
+            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_100%Arr%Val(I,J)
+            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_100%Arr%Val(I,J)
+            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_100%Arr%Val(I,J)
+            TEMPACET_TMP     =  ExtState%MEmisACET_OR_100%Arr%Val(I,J)
+            TEMPKET_TMP      =  ExtState%MEmisKET_OR_100%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_100%Arr%Val(I,J)
+
+            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_100%Arr%Val(I,J)
+            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_100%Arr%Val(I,J)
+            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_100%Arr%Val(I,J)
+            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_100%Arr%Val(I,J)
+            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_100%Arr%Val(I,J)
+            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_100%Arr%Val(I,J)
+            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_100%Arr%Val(I,J)
+            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_100%Arr%Val(I,J)
+            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_100%Arr%Val(I,J)
+            TEMPPK_TMP       =  ExtState%MEmisPK_OR_100%Arr%Val(I,J)
+
+            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_100%Arr%Val(I,J)
+            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_100%Arr%Val(I,J)
+            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_100%Arr%Val(I,J)
+            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_100%Arr%Val(I,J)
+            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_100%Arr%Val(I,J)
+            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_100%Arr%Val(I,J)
+            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_100%Arr%Val(I,J)
+            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_100%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_100%Arr%Val(I,J)
+            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_100%Arr%Val(I,J)
+
+            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_100%Arr%Val(I,J)
+
             WEIGHT       = WTS(1,I1)
          CASE ( 100 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_110%Arr%Val(I,J)
@@ -1158,6 +4674,59 @@ CONTAINS
             TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_110%Arr%Val(I,J)
             TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_110%Arr%Val(I,J)
             TEMPCO_TMP       =  ExtState%MEmisCO_OR_110%Arr%Val(I,J)
+            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_110%Arr%Val(I,J)
+            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_110%Arr%Val(I,J)
+            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_110%Arr%Val(I,J)
+            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_110%Arr%Val(I,J)
+            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_110%Arr%Val(I,J)
+            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_110%Arr%Val(I,J)
+
+            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_110%Arr%Val(I,J)
+            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_110%Arr%Val(I,J)
+            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_110%Arr%Val(I,J)
+            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_110%Arr%Val(I,J)
+            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_110%Arr%Val(I,J)
+            TEMPETH_TMP      =  ExtState%MEmisETH_OR_110%Arr%Val(I,J)
+            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_110%Arr%Val(I,J)
+            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_110%Arr%Val(I,J)
+            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_110%Arr%Val(I,J)
+            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_110%Arr%Val(I,J)
+
+            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_110%Arr%Val(I,J)
+            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_110%Arr%Val(I,J)
+            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_110%Arr%Val(I,J)
+            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_110%Arr%Val(I,J)
+            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_110%Arr%Val(I,J)
+            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_110%Arr%Val(I,J)
+            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_110%Arr%Val(I,J)
+            TEMPACET_TMP     =  ExtState%MEmisACET_OR_110%Arr%Val(I,J)
+            TEMPKET_TMP      =  ExtState%MEmisKET_OR_110%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_110%Arr%Val(I,J)
+
+            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_110%Arr%Val(I,J)
+            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_110%Arr%Val(I,J)
+            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_110%Arr%Val(I,J)
+            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_110%Arr%Val(I,J)
+            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_110%Arr%Val(I,J)
+            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_110%Arr%Val(I,J)
+            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_110%Arr%Val(I,J)
+            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_110%Arr%Val(I,J)
+            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_110%Arr%Val(I,J)
+            TEMPPK_TMP       =  ExtState%MEmisPK_OR_110%Arr%Val(I,J)
+
+            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_110%Arr%Val(I,J)
+            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_110%Arr%Val(I,J)
+            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_110%Arr%Val(I,J)
+            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_110%Arr%Val(I,J)
+            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_110%Arr%Val(I,J)
+            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_110%Arr%Val(I,J)
+            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_110%Arr%Val(I,J)
+            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_110%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_110%Arr%Val(I,J)
+            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_110%Arr%Val(I,J)
+
+            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_110%Arr%Val(I,J)
+
             WEIGHT       = WTS(1,I1)
          CASE ( 110 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_120%Arr%Val(I,J)
@@ -1167,6 +4736,59 @@ CONTAINS
             TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_120%Arr%Val(I,J)
             TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_120%Arr%Val(I,J)
             TEMPCO_TMP       =  ExtState%MEmisCO_OR_120%Arr%Val(I,J)
+            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_120%Arr%Val(I,J)
+            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_120%Arr%Val(I,J)
+            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_120%Arr%Val(I,J)
+            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_120%Arr%Val(I,J)
+            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_120%Arr%Val(I,J)
+            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_120%Arr%Val(I,J)
+
+            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_120%Arr%Val(I,J)
+            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_120%Arr%Val(I,J)
+            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_120%Arr%Val(I,J)
+            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_120%Arr%Val(I,J)
+            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_120%Arr%Val(I,J)
+            TEMPETH_TMP      =  ExtState%MEmisETH_OR_120%Arr%Val(I,J)
+            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_120%Arr%Val(I,J)
+            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_120%Arr%Val(I,J)
+            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_120%Arr%Val(I,J)
+            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_120%Arr%Val(I,J)
+
+            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_120%Arr%Val(I,J)
+            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_120%Arr%Val(I,J)
+            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_120%Arr%Val(I,J)
+            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_120%Arr%Val(I,J)
+            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_120%Arr%Val(I,J)
+            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_120%Arr%Val(I,J)
+            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_120%Arr%Val(I,J)
+            TEMPACET_TMP     =  ExtState%MEmisACET_OR_120%Arr%Val(I,J)
+            TEMPKET_TMP      =  ExtState%MEmisKET_OR_120%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_120%Arr%Val(I,J)
+
+            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_120%Arr%Val(I,J)
+            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_120%Arr%Val(I,J)
+            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_120%Arr%Val(I,J)
+            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_120%Arr%Val(I,J)
+            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_120%Arr%Val(I,J)
+            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_120%Arr%Val(I,J)
+            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_120%Arr%Val(I,J)
+            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_120%Arr%Val(I,J)
+            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_120%Arr%Val(I,J)
+            TEMPPK_TMP       =  ExtState%MEmisPK_OR_120%Arr%Val(I,J)
+
+            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_120%Arr%Val(I,J)
+            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_120%Arr%Val(I,J)
+            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_120%Arr%Val(I,J)
+            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_120%Arr%Val(I,J)
+            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_120%Arr%Val(I,J)
+            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_120%Arr%Val(I,J)
+            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_120%Arr%Val(I,J)
+            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_120%Arr%Val(I,J)
+            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_120%Arr%Val(I,J)
+            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_120%Arr%Val(I,J)
+
+            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_120%Arr%Val(I,J)
+
             WEIGHT       = WTS(1,I1)
          CASE DEFAULT
              MSG = 'LUT error: Temperature interpolation error!'
@@ -1185,6 +4807,59 @@ CONTAINS
          TEMPHONO_GAS= TEMPHONO_GAS+ TEMPHONO_GAS_TMP* WEIGHT
          TEMPHONO_DIS= TEMPHONO_DIS+ TEMPHONO_DIS_TMP* WEIGHT
          TEMPCO      = TEMPCO      + TEMPCO_TMP      * WEIGHT
+         TEMPSO2     = TEMPSO2     + TEMPSO2_TMP     * WEIGHT
+         TEMPNH3     = TEMPNH3     + TEMPNH3_TMP     * WEIGHT
+         TEMPCH4     = TEMPCH4     + TEMPCH4_TMP     * WEIGHT
+         TEMPACROLEIN = TEMPACROLEIN + TEMPACROLEIN_TMP * WEIGHT
+         TEMPBUTADIENE13 = TEMPBUTADIENE13 + TEMPBUTADIENE13_TMP * WEIGHT
+         TEMPETHY     = TEMPETHY   + TEMPETHY_TMP    * WEIGHT
+
+         TEMPTERP    = TEMPTERP    + TEMPTERP_TMP    * WEIGHT
+         TEMPFORM    = TEMPFORM    + TEMPFORM_TMP    * WEIGHT
+         TEMPPAR     = TEMPPAR     + TEMPPAR_TMP     * WEIGHT
+         TEMPIOLE    = TEMPIOLE    + TEMPIOLE_TMP    * WEIGHT
+         TEMPOLE     = TEMPOLE     + TEMPOLE_TMP     * WEIGHT
+         TEMPETH     = TEMPETH     + TEMPETH_TMP     * WEIGHT
+         TEMPETHA    = TEMPETHA    + TEMPETHA_TMP    * WEIGHT
+         TEMPETOH    = TEMPETOH    + TEMPETOH_TMP    * WEIGHT
+         TEMPMEOH    = TEMPMEOH    + TEMPMEOH_TMP    * WEIGHT
+         TEMPBENZ    = TEMPBENZ    + TEMPBENZ_TMP    * WEIGHT
+
+         TEMPTOL     = TEMPTOL     + TEMPTOL_TMP     * WEIGHT
+         TEMPXYLMN   = TEMPXYLMN   + TEMPXYLMN_TMP   * WEIGHT
+         TEMPNAPH    = TEMPNAPH    + TEMPNAPH_TMP    * WEIGHT
+         TEMPALD2    = TEMPALD2    + TEMPALD2_TMP    * WEIGHT
+         TEMPALDX    = TEMPALDX    + TEMPALDX_TMP    * WEIGHT
+         TEMPISOP    = TEMPISOP    + TEMPISOP_TMP    * WEIGHT
+         TEMPPRPA    = TEMPPRPA    + TEMPPRPA_TMP    * WEIGHT
+         TEMPACET    = TEMPACET    + TEMPACET_TMP    * WEIGHT
+         TEMPKET     = TEMPKET     + TEMPKET_TMP     * WEIGHT
+         TEMPALD2_PRIMARY = TEMPALD2_PRIMARY + TEMPALD2_PRIMARY_TMP * WEIGHT
+
+         TEMPFORM_PRIMARY = TEMPFORM_PRIMARY + TEMPFORM_PRIMARY_TMP * WEIGHT
+         TEMPSOAALK  = TEMPSOAALK  + TEMPSOAALK_TMP  * WEIGHT
+         TEMPPEC     = TEMPPEC     + TEMPPEC_TMP     * WEIGHT
+         TEMPPOC     = TEMPPOC     + TEMPPOC_TMP     * WEIGHT
+         TEMPPAL     = TEMPPAL     + TEMPPAL_TMP     * WEIGHT
+         TEMPPCA     = TEMPPCA     + TEMPPCA_TMP     * WEIGHT
+         TEMPPCL     = TEMPPCL     + TEMPPCL_TMP     * WEIGHT
+         TEMPPFE     = TEMPPFE     + TEMPPFE_TMP     * WEIGHT
+         TEMPPH2O    = TEMPPH2O    + TEMPPH2O_TMP    * WEIGHT
+         TEMPPK      = TEMPPK      + TEMPPK_TMP      * WEIGHT
+
+         TEMPPMG     = TEMPPMG     + TEMPPMG_TMP     * WEIGHT
+         TEMPPMN     = TEMPPMN     + TEMPPMN_TMP     * WEIGHT
+         TEMPPMOTHR  = TEMPPMOTHR  + TEMPPMOTHR_TMP  * WEIGHT
+         TEMPPNA     = TEMPPNA     + TEMPPNA_TMP     * WEIGHT
+         TEMPPNCOM   = TEMPPNCOM   + TEMPPNCOM_TMP   * WEIGHT
+         TEMPPNH4    = TEMPPNH4    + TEMPPNH4_TMP    * WEIGHT
+         TEMPPNO3    = TEMPPNO3    + TEMPPNO3_TMP    * WEIGHT
+         TEMPPTI     = TEMPPTI     + TEMPPTI_TMP     * WEIGHT
+         TEMPPSI     = TEMPPSI     + TEMPPSI_TMP     * WEIGHT
+         TEMPPMC     = TEMPPMC     + TEMPPMC_TMP     * WEIGHT
+
+         TEMPPSO4    = TEMPPSO4    + TEMPPSO4_TMP    * WEIGHT
+
    END DO
 
    IF ( Inst%RHUMGASDIS ) THEN
