@@ -4065,10 +4065,10 @@ CONTAINS
    !=================================================================
 
    !MetEmis Temperature bins (Degrees Fahrenheit) = 10 from explicit nT
-   !e.g., 20 - 30, ... 110 - 120
-   Inst%Tlev = (/ 30.0e0, 40.0e0, 50.0e0, 60.0e0,  70.0e0,  &
-                  80.0e0, 90.0e0, 100.0e0, 110.0e0, 120.0e0 /)
-
+   !These are set to lower bin edge defined in MetEmis files. 
+   !e.g., 20 - 30 (20), ... 110 - 120 (110)
+   Inst%Tlev = (/ 20.0e0, 30.0e0, 40.0e0, 50.0e0,  60.0e0,  &
+                  70.0e0, 80.0e0, 90.0e0, 100.0e0, 110.0e0 /)
 
    !Get 2-m air temperature, K
    TAIR = ExtState%T2M%Arr%Val(I,J)
@@ -4170,7 +4170,7 @@ CONTAINS
   ! Loop over temperature bins
    DO I1=1,2
       SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
-         CASE ( 30 )
+         CASE ( 20 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_030%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_030%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_030%Arr%Val(I,J)
@@ -4232,7 +4232,7 @@ CONTAINS
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_030%Arr%Val(I,J)
 
             WEIGHT       = WTS(1,I1)
-         CASE ( 40 )
+         CASE ( 30 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_040%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_040%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_040%Arr%Val(I,J)
@@ -4294,7 +4294,7 @@ CONTAINS
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_040%Arr%Val(I,J)
 
             WEIGHT       = WTS(1,I1)
-         CASE ( 50 )
+         CASE ( 40 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_050%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_050%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_050%Arr%Val(I,J)
@@ -4356,7 +4356,7 @@ CONTAINS
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_050%Arr%Val(I,J)
 
             WEIGHT       = WTS(1,I1)
-         CASE ( 60 )
+         CASE ( 50 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_060%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_060%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_060%Arr%Val(I,J)
@@ -4418,7 +4418,7 @@ CONTAINS
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_060%Arr%Val(I,J)
 
             WEIGHT       = WTS(1,I1)
-         CASE ( 70 )
+         CASE ( 60 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_070%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_070%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_070%Arr%Val(I,J)
@@ -4480,7 +4480,7 @@ CONTAINS
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_070%Arr%Val(I,J)
 
             WEIGHT       = WTS(1,I1)
-         CASE ( 80 )
+         CASE ( 70 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_080%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_080%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_080%Arr%Val(I,J)
@@ -4542,7 +4542,7 @@ CONTAINS
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_080%Arr%Val(I,J)
 
             WEIGHT       = WTS(1,I1)
-         CASE ( 90 )
+         CASE ( 80 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_090%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_090%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_090%Arr%Val(I,J)
@@ -4604,7 +4604,7 @@ CONTAINS
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_090%Arr%Val(I,J)
 
             WEIGHT       = WTS(1,I1)
-         CASE ( 100 )
+         CASE ( 90 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_100%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_100%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_100%Arr%Val(I,J)
@@ -4666,7 +4666,7 @@ CONTAINS
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_100%Arr%Val(I,J)
 
             WEIGHT       = WTS(1,I1)
-         CASE ( 110 )
+         CASE ( 100 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_110%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_110%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_110%Arr%Val(I,J)
@@ -4728,7 +4728,7 @@ CONTAINS
             TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_110%Arr%Val(I,J)
 
             WEIGHT       = WTS(1,I1)
-         CASE ( 120 )
+         CASE ( 110 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_120%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_120%Arr%Val(I,J)
             TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_120%Arr%Val(I,J)
