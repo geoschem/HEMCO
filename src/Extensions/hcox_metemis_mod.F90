@@ -387,7 +387,7 @@ CONTAINS
     REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,51)  ! number of MetEmis Species !IVAI
     LOGICAL, SAVE            :: DO_DIAGN(51) = .FALSE.
     CHARACTER(LEN=31)        :: DiagnName
-    CHARACTER(LEN=31), SAVE  :: MEmisNames(51) = (/ &
+    CHARACTER(LEN=31), SAVE  :: MEmisNames(51) = (/ CHARACTER(LEN=31) :: &
        'NO',           'NO2',          'HONO',         'CO',           &
        'SO2',          'NH3',          'CH4',          'ACROLEIN',     &
        'BUTADIENE13',  'ETHY',         'TERP',         'FORM',         &
