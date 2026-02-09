@@ -163,6 +163,9 @@ MODULE HCOX_MetEmis_MOD
 
      INTEGER               :: IDTPSO4
 
+     LOGICAL               :: DO_DIAGN(51)
+     CHARACTER(LEN=31)     :: DiagNames(51)
+
      LOGICAL               :: RHUMGASDIS  ! Apply humidity correction for split
                                           ! of NOx and HONO gas and diesel fuels
      ! Arrays
@@ -385,25 +388,7 @@ CONTAINS
 
     ! For diagnostics
     REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,51)  ! number of MetEmis Species !IVAI
-    LOGICAL, SAVE            :: DO_DIAGN(51) = .FALSE.
-    CHARACTER(LEN=31)        :: DiagnName
-    CHARACTER(LEN=31), SAVE  :: MEmisNames(51) = (/ CHARACTER(LEN=31) :: &
-       'NO',           'NO2',          'HONO',         'CO',           &
-       'SO2',          'NH3',          'CH4',          'ACROLEIN',     &
-       'BUTADIENE13',  'ETHY',         'TERP',         'FORM',         &
-       'PAR',          'IOLE',         'OLE',          'ETH',          &
-       'ETHA',         'ETOH',         'MEOH',         'BENZ',         &
-       'TOL',          'XYLMN',        'NAPH',         'ALD2',         &
-       'ALDX',         'ISOP',         'PRPA',         'ACET',         &
-       'KET',          'ALD2_PRIMARY', 'FORM_PRIMARY', 'SOAALK',       &
-       'PEC',          'POC',          'PAL',          'PCA',          &
-       'PCL',          'PFE',          'PH2O',         'PK',           &
-       'PMG',          'PMN',          'PMOTHR',       'PNA',          &
-       'PNCOM',        'PNH4',         'PNO3',         'PTI',          &
-       'PSI',          'PMC',          'PSO4'          /)
-    CHARACTER(LEN=31), SAVE  :: DiagNames(51) = ''
-    TYPE(DiagnCont), POINTER :: TmpCnt
-    INTEGER                  :: N, K
+    INTEGER                  :: N
 
     !MetEmis Diag Update
     REAL(dp)                 :: TEMP_NO
@@ -741,26 +726,8 @@ CONTAINS
     ! ------------------------------------------------------------------
     FIRST = HcoClock_First( HcoState%Clock, .TRUE. )
 
-    IF ( FIRST ) THEN
-       DO N=1, 51
-          DO K=1, 3
-             IF ( K == 1 ) DiagnName = TRIM(MEmisNames(N)) // '_MetEmis_OR'
-             IF ( K == 2 ) DiagnName = 'MetEmis_' // TRIM(MEmisNames(N))
-             IF ( K == 3 ) DiagnName = 'METEMIS_OR_' // TRIM(MEmisNames(N))
-             CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
-                                   DiagnName, -1, DO_DIAGN(N), TmpCnt )
-             IF ( DO_DIAGN(N) ) THEN
-                DiagNames(N) = DiagnName
-                EXIT
-             ENDIF
-          ENDDO
-          TmpCnt => NULL()
-       ENDDO
-    ENDIF
-
-
     ! Clear diagnostics array
-    IF ( ANY(DO_DIAGN) ) DIAGN(:,:,:) = 0.0_hp
+    IF ( ANY(Inst%DO_DIAGN) ) DIAGN(:,:,:) = 0.0_hp
 
     ! Error check
     ERR = .FALSE.
@@ -1168,7 +1135,7 @@ CONTAINS
        !---------------------------------------------------------------------
        ! Eventually write out into diagnostics array
        !---------------------------------------------------------------------
-       IF ( ANY(DO_DIAGN) ) THEN
+       IF ( ANY(Inst%DO_DIAGN) ) THEN
            DIAGN(I,J,1) =  FLUXNO   (I,J)
            DIAGN(I,J,2) =  FLUXNO2  (I,J)
            DIAGN(I,J,3) =  FLUXHONO (I,J)
@@ -1813,12 +1780,12 @@ CONTAINS
 
     ! Eventually update manual diagnostics
     DO N=1, 51
-       IF ( DO_DIAGN(N) ) THEN
+       IF ( Inst%DO_DIAGN(N) ) THEN
           Arr2D     => DIAGN(:,:,N)
-          CALL Diagn_Update( HcoState, &
-                             cName=TRIM(DiagNames(N)), Array2D=Arr2D, RC=RC)
+          CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
+                             cName=TRIM(Inst%DiagNames(N)), Array2D=Arr2D, RC=RC)
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'Diagn_Update error: ' // TRIM(DiagNames(N)), RC, THISLOC=LOC )
+              CALL HCO_ERROR( 'Diagn_Update error: ' // TRIM(Inst%DiagNames(N)), RC, THISLOC=LOC )
               RETURN
           ENDIF
        ENDIF
@@ -1848,6 +1815,7 @@ CONTAINS
 !
 ! !USES:
 
+   USE HCO_Types_MOD,    ONLY : DiagnCont
    USE HCO_Chartools_Mod, ONLY : HCO_CharParse
    USE HCO_State_MOD,     ONLY : HCO_GetHcoID
    USE HCO_State_MOD,     ONLY : HCO_GetExtHcoID
@@ -1883,6 +1851,22 @@ CONTAINS
    CHARACTER(LEN=255)             :: MSG, LOC
    CHARACTER(LEN= 1)              :: CHAR1
    LOGICAL                        :: FOUND
+   INTEGER                        :: N, K
+   CHARACTER(LEN=31)              :: MEmisNames(51) = (/ CHARACTER(LEN=31) :: &
+      'NO',           'NO2',          'HONO',         'CO',           &
+      'SO2',          'NH3',          'CH4',          'ACROLEIN',     &
+      'BUTADIENE13',  'ETHY',         'TERP',         'FORM',         &
+      'PAR',          'IOLE',         'OLE',          'ETH',          &
+      'ETHA',         'ETOH',         'MEOH',         'BENZ',         &
+      'TOL',          'XYLMN',        'NAPH',         'ALD2',         &
+      'ALDX',         'ISOP',         'PRPA',         'ACET',         &
+      'KET',          'ALD2_PRIMARY', 'FORM_PRIMARY', 'SOAALK',       &
+      'PEC',          'POC',          'PAL',          'PCA',          &
+      'PCL',          'PFE',          'PH2O',         'PK',           &
+      'PMG',          'PMN',          'PMOTHR',       'PNA',          &
+      'PNCOM',        'PNH4',         'PNO3',         'PTI',          &
+      'PSI',          'PMC',          'PSO4'          /)
+   TYPE(DiagnCont), POINTER       :: TmpCnt
    TYPE(MyInst), POINTER          :: Inst
 
    !========================================================================
@@ -2107,6 +2091,25 @@ CONTAINS
          END SELECT
       ENDDO
 
+      !---------------------------------------------------------------------
+      ! Initialize manual diagnostics
+      !---------------------------------------------------------------------
+      Inst%DO_DIAGN  = .FALSE.
+      Inst%DiagNames = ''
+      DO N=1, 51
+         DO K=1, 3
+            IF ( K == 1 ) DiagnName = TRIM(MEmisNames(N)) // '_MetEmis_OR'
+            IF ( K == 2 ) DiagnName = 'MetEmis_' // TRIM(MEmisNames(N))
+            IF ( K == 3 ) DiagnName = 'METEMIS_OR_' // TRIM(MEmisNames(N))
+            CALL DiagnCont_Find ( HcoState%Diagn, -1, Inst%ExtNr, -1, -1, -1, &
+                                  DiagnName, -1, Inst%DO_DIAGN(N), TmpCnt )
+            IF ( Inst%DO_DIAGN(N) ) THEN
+               Inst%DiagNames(N) = DiagnName
+               EXIT
+            ENDIF
+         ENDDO
+         TmpCnt => NULL()
+      ENDDO
 
       ! Verbose mode
       IF ( HcoState%amIRoot ) THEN
