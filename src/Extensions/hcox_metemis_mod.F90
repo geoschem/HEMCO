@@ -401,8 +401,9 @@ CONTAINS
        'PMG',          'PMN',          'PMOTHR',       'PNA',          &
        'PNCOM',        'PNH4',         'PNO3',         'PTI',          &
        'PSI',          'PMC',          'PSO4'          /)
+    CHARACTER(LEN=31), SAVE  :: DiagNames(51) = ''
     TYPE(DiagnCont), POINTER :: TmpCnt
-    INTEGER                  :: N
+    INTEGER                  :: N, K
 
     !MetEmis Diag Update
     REAL(dp)                 :: TEMP_NO
@@ -742,9 +743,17 @@ CONTAINS
 
     IF ( FIRST ) THEN
        DO N=1, 51
-          DiagnName = TRIM(MEmisNames(N)) // '_MetEmis_OR'
-          CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
-                                DiagnName, 0, DO_DIAGN(N), TmpCnt )
+          DO K=1, 3
+             IF ( K == 1 ) DiagnName = TRIM(MEmisNames(N)) // '_MetEmis_OR'
+             IF ( K == 2 ) DiagnName = 'MetEmis_' // TRIM(MEmisNames(N))
+             IF ( K == 3 ) DiagnName = 'METEMIS_OR_' // TRIM(MEmisNames(N))
+             CALL DiagnCont_Find ( HcoState%Diagn, -1, -1, -1, -1, -1, &
+                                   DiagnName, -1, DO_DIAGN(N), TmpCnt )
+             IF ( DO_DIAGN(N) ) THEN
+                DiagNames(N) = DiagnName
+                EXIT
+             ENDIF
+          ENDDO
           TmpCnt => NULL()
        ENDDO
     ENDIF
@@ -1805,12 +1814,11 @@ CONTAINS
     ! Eventually update manual diagnostics
     DO N=1, 51
        IF ( DO_DIAGN(N) ) THEN
-          DiagnName = TRIM(MEmisNames(N)) // '_MetEmis_OR'
           Arr2D     => DIAGN(:,:,N)
-          CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
-                             cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
+          CALL Diagn_Update( HcoState, &
+                             cName=TRIM(DiagNames(N)), Array2D=Arr2D, RC=RC)
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'Diagn_Update error: ' // TRIM(DiagnName), RC, THISLOC=LOC )
+              CALL HCO_ERROR( 'Diagn_Update error: ' // TRIM(DiagNames(N)), RC, THISLOC=LOC )
               RETURN
           ENDIF
        ENDIF
