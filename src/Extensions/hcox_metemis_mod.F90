@@ -320,7 +320,6 @@ CONTAINS
     INTEGER                  :: I, J
     LOGICAL                  :: ERR
     LOGICAL                  :: FILLED
-    LOGICAL                  :: FIRST
     LOGICAL                  :: DefScaleEmis
     CHARACTER(LEN=255)       :: MSG, LOC
     CHARACTER(LEN=1)         :: CHAR1
@@ -719,12 +718,6 @@ CONTAINS
 
     ! Nullify
     Arr2D  => NULL()
-    TmpCnt => NULL()
-
-    ! ------------------------------------------------------------------
-    ! First call: check for diagnostics to write and fill restart values
-    ! ------------------------------------------------------------------
-    FIRST = HcoClock_First( HcoState%Clock, .TRUE. )
 
     ! Clear diagnostics array
     IF ( ANY(Inst%DO_DIAGN) ) DIAGN(:,:,:) = 0.0_hp
