@@ -452,7 +452,6 @@ CONTAINS
     ! MetEmis begins here!
     !=================================================================
     LOC = 'MetEmis (HCOX_METEMIS_MOD.F90)'
-
     ! Enter
     CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
@@ -461,260 +460,71 @@ CONTAINS
     ENDIF
 
     ! Leave here if none of the tracers defined
-     IF ( Inst%IDTNO <= 0) THEN  !NO
+    IF ( Inst%IDTNO <= 0           .AND. &
+         Inst%IDTNO2 <= 0          .AND. & 
+         Inst%IDTHONO <= 0         .AND. &
+         Inst%IDTCO <= 0           .AND. &
+         Inst%IDTSO2 <= 0          .AND. & 
+         Inst%IDTNH3 <= 0          .AND. &   
+         Inst%IDTCH4 <= 0          .AND. &
+         Inst%IDTACROLEIN <= 0     .AND. &
+         Inst%IDTBUTADIENE13 <= 0  .AND. &
+         Inst%IDTETHY <= 0         .AND. &
+         Inst%IDTTERP <= 0         .AND. & 
+         Inst%IDTFORM <= 0         .AND. &
+         Inst%IDTPAR <= 0          .AND. &
+         Inst%IDTIOLE <= 0         .AND. &   
+         Inst%IDTOLE <= 0          .AND. &
+         Inst%IDTETH <= 0          .AND. &   
+         Inst%IDTETHA <= 0         .AND. &
+         Inst%IDTETOH <= 0         .AND. &
+         Inst%IDTMEOH <= 0         .AND. &
+         Inst%IDTBENZ <= 0         .AND. &
+         Inst%IDTTOL <= 0          .AND. &
+         Inst%IDTXYLMN <= 0        .AND. &
+         Inst%IDTNAPH <= 0         .AND. &
+         Inst%IDTALD2 <= 0         .AND. &
+         Inst%IDTALDX <= 0         .AND. &
+         Inst%IDTISOP <= 0         .AND. &
+         Inst%IDTPRPA <= 0         .AND. &
+         Inst%IDTACET <= 0         .AND. &
+         Inst%IDTKET <= 0          .AND. &
+         Inst%IDTALD2_PRIMARY <= 0 .AND. &
+         Inst%IDTFORM_PRIMARY <= 0 .AND. &
+         Inst%IDTSOAALK <= 0       .AND. &
+         Inst%IDTPEC <= 0          .AND. &
+         Inst%IDTPOC <= 0          .AND. &
+         Inst%IDTPAL <= 0          .AND. &
+         Inst%IDTPCA <= 0          .AND. &
+         Inst%IDTPCL <= 0          .AND. &
+         Inst%IDTPFE <= 0          .AND. &
+         Inst%IDTPH2O <= 0         .AND. &
+         Inst%IDTPK <= 0           .AND. &
+         Inst%IDTPMG <= 0          .AND. &
+         Inst%IDTPMN <= 0          .AND. &
+         Inst%IDTPMOTHR <= 0       .AND. &
+         Inst%IDTPNA <= 0          .AND. &
+         Inst%IDTPNCOM <= 0        .AND. &
+         Inst%IDTPNH4 <= 0         .AND. &
+         Inst%IDTPNO3 <= 0         .AND. &
+         Inst%IDTPTI <= 0          .AND. &
+         Inst%IDTPSI <= 0          .AND. &
+         Inst%IDTPMC <= 0          .AND. &
+         Inst%IDTPSO4 <= 0) THEN
        RC = HCO_SUCCESS
        RETURN
     ENDIF
-
-     IF ( Inst%IDTNO2 <= 0) THEN  !NO2
-       RC = HCO_SUCCESS
-       RETURN
-    ENDIF
-
-     IF ( Inst%IDTHONO <= 0) THEN  !HONO
-       RC = HCO_SUCCESS
-       RETURN
-    ENDIF
-
-    IF ( Inst%IDTCO  <= 0) THEN  !CO
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTSO2 <= 0) THEN  !SO2
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTNH3 <= 0) THEN  !NH3
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTCH4 <= 0) THEN  !CH4
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTACROLEIN <= 0) THEN  !ACROLEIN
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTBUTADIENE13 <= 0) THEN  !BUTADIENE13
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTETHY <= 0) THEN  !ETHY
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTTERP <= 0) THEN  !TERP
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTFORM <= 0) THEN  !FORM
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPAR <= 0) THEN  !PAR
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTIOLE <= 0) THEN  !IOLE
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTOLE <= 0) THEN  !OLE
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTETH <= 0) THEN  !ETH
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTETHA <= 0) THEN  !ETHA
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTETOH <= 0) THEN  !ETOH
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTMEOH <= 0) THEN  !MEOH
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTBENZ <= 0) THEN  !BENZ
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTTOL <= 0) THEN  !TOL
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTXYLMN <= 0) THEN  !XYLMN
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTNAPH <= 0) THEN  !NAPH
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTALD2 <= 0) THEN  !ALD2
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTALDX <= 0) THEN  !ALDX
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTISOP <= 0) THEN  !ISOP
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPRPA <= 0) THEN  !PRPA
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTACET <= 0) THEN  !ACET
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTKET <= 0) THEN  !KET
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTALD2_PRIMARY <= 0) THEN  !ALD2_PRIMARY
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTFORM_PRIMARY<= 0) THEN  !FORM_PRIMARY
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTSOAALK <= 0) THEN  !SOAALK
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPEC <= 0) THEN  !PEC
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPOC <= 0) THEN  !POC
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPAL <= 0) THEN  !PAL
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPCA <= 0) THEN  !PCA
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPCL <= 0) THEN  !PCL
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPFE <= 0) THEN  !PFE
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPH2O <= 0) THEN  !PH2O
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPK  <= 0) THEN  !PK
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPMG <= 0) THEN  !PMG
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPMN <= 0) THEN  !PMN
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPMOTHR <= 0) THEN  !PMOTHR
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPNA <= 0) THEN  !PNA
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPNCOM <= 0) THEN  !PNCOM
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPNH4 <= 0) THEN  !PNH4
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPNO3 <= 0) THEN  !PNO3
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPTI <= 0) THEN  !PTI
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPSI <= 0) THEN  !PSI
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPMC <= 0) THEN  !PMC
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
-
-    IF ( Inst%IDTPSO4 <= 0) THEN  !PSO4
-      RC = HCO_SUCCESS
-      RETURN
-    ENDIF
+!
+!
+!    IF ( Inst%IDTPMC <= 0) THEN  !PMC
+!      RC = HCO_SUCCESS
+!      RETURN
+!    ENDIF
+!
+!    IF ( Inst%IDTPSO4 <= 0) THEN  !PSO4
+!      RC = HCO_SUCCESS
+!      RETURN
+!    ENDIF
 
     ! Nullify
     Arr2D  => NULL()
@@ -867,6 +677,7 @@ CONTAINS
 !       !---------------------------------------------------------------------
 !       ! Calculate emissions
 !       !---------------------------------------------------------------------
+
        IF ( Inst%IDTNO > 0 ) THEN
 !           ! Unit: kg/m2/s
            FLUXNO(I,J) = TEMP_NO
@@ -1210,7 +1021,6 @@ CONTAINS
     HcoState%Options%ScaleEmis = .FALSE.
 
     IF ( Inst%IDTNO > 0 ) THEN
-
        ! Add flux to emission array
        CALL HCO_EmisAdd( HcoState, FLUXNO, Inst%IDTNO, &
                          RC,       ExtNr=Inst%ExtNr )
@@ -1221,7 +1031,6 @@ CONTAINS
     ENDIF
 
     IF ( Inst%IDTNO2 > 0 ) THEN
-
        ! Add flux to emission array NO2
        CALL HCO_EmisAdd( HcoState, FLUXNO2, Inst%IDTNO2, &
                          RC,       ExtNr=Inst%ExtNr )
@@ -1254,7 +1063,6 @@ CONTAINS
     ENDIF
 
     IF ( Inst%IDTSO2 > 0 ) THEN
-
        ! Add flux to emission array SO2
        CALL HCO_EmisAdd( HcoState, FLUXSO2 , Inst%IDTSO2 , &
                          RC,       ExtNr=Inst%ExtNr )
@@ -1991,7 +1799,6 @@ CONTAINS
                Inst%IDTBUTADIENE13 = HcoIDs(I)
             CASE ( "ETHY" )
                Inst%IDTETHY = HcoIDs(I)
-
             CASE ( "TERP" )
                Inst%IDTTERP = HcoIDs(I)
             CASE ( "FORM" )
