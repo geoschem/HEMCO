@@ -514,17 +514,6 @@ CONTAINS
        RC = HCO_SUCCESS
        RETURN
     ENDIF
-!
-!
-!    IF ( Inst%IDTPMC <= 0) THEN  !PMC
-!      RC = HCO_SUCCESS
-!      RETURN
-!    ENDIF
-!
-!    IF ( Inst%IDTPSO4 <= 0) THEN  !PSO4
-!      RC = HCO_SUCCESS
-!      RETURN
-!    ENDIF
 
     ! Nullify
     Arr2D  => NULL()
