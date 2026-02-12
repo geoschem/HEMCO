@@ -166,8 +166,15 @@ MODULE HCOX_MetEmis_MOD
      LOGICAL               :: DO_DIAGN(51)
      CHARACTER(LEN=31)     :: DiagNames(51)
 
-     LOGICAL               :: RHUMGASDIS  ! Apply humidity correction for split
-                                          ! of NOx and HONO gas and diesel fuels
+     LOGICAL               :: MEONROAD    ! Turn on MetEmis for Onroad Sector
+     LOGICAL               :: RHUMGASDIS  ! Apply Onroad humidity correction 
+                                          ! for split of NOx and HONO gas and 
+                                          ! diesel fuels
+     !!!TBD - Livestock/RWC
+     !LOGICAL               :: MELIVESTOCK ! Turn on MetEmis for Livestock Sector
+     !LOGICAL               :: MERWC       ! Turn on MetEmis for RWC Sector
+     !REAL*4                :: TEMPRWCF    ! RWC Temperature Threshold (Fahrenheit)
+
      ! Arrays
 
      ! Reference temperature values of variables in the MetEmis look-up tables
@@ -642,11 +649,12 @@ CONTAINS
 
        TEMP_PSO4   = 0.0_hp
 
+       IF ( Inst%MEONROAD ) THEN !MetEmis Onroad sector calculations
        !---------------------------------------------------------------------
-       ! MetEmis lookup table for emissions based on temperature
+       ! MetEmis Onroad lookup table for emissions based on temperature
        ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
-       CALL METEMIS_LUT( ExtState,  HcoState,  Inst,   I,   J,   RC,                     &
+       CALL METEMIS_LUT_OR( ExtState,  HcoState,  Inst,   I,   J,   RC,                  &
                          TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
                          TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
                          TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
@@ -659,12 +667,12 @@ CONTAINS
                          TEMP_PNH4, TEMP_PNO3, TEMP_PTI, TEMP_PSI, TEMP_PMC,             &
                          TEMP_PSO4)
 
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ERR = .TRUE.; EXIT
-       ENDIF
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ERR = .TRUE.; EXIT
+          ENDIF
 
 !       !---------------------------------------------------------------------
-!       ! Calculate emissions
+!       ! Calculate emissions Onroad
 !       !---------------------------------------------------------------------
 
        IF ( Inst%IDTNO > 0 ) THEN
@@ -921,9 +929,68 @@ CONTAINS
 !           ! Unit: kg/m2/s
            FLUXPSO4(I,J) = TEMP_PSO4
        ENDIF
+       
+       ENDIF
 
+      !!!TBD
+!     IF ( Inst%MELIVESTOCK ) THEN !MetEmis Livestock sector calculations
+!       !---------------------------------------------------------------------
+!       ! MetEmis Livestock lookup table for emissions based on temperature
+!       ! (P.C. Campbell, 02/12/2026)
+!       !---------------------------------------------------------------------
+!       CALL METEMIS_LUT_LIV( ExtState,  HcoState,  Inst,   I,   J,   RC,                 &
+!                         TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
+!                         TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
+!                         TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
+!                         TEMP_ETH , TEMP_ETHA , TEMP_ETOH, TEMP_MEOH, TEMP_BENZ,         &
+!                         TEMP_TOL, TEMP_XYLMN, TEMP_NAPH, TEMP_ALD2, TEMP_ALDX,          &
+!                         TEMP_ISOP, TEMP_PRPA, TEMP_ACET, TEMP_KET, TEMP_ALD2_PRIMARY,   &
+!                         TEMP_FORM_PRIMARY, TEMP_SOAALK, TEMP_PEC, TEMP_POC, TEMP_PAL,   &
+!                         TEMP_PCA, TEMP_PCL, TEMP_PFE, TEMP_PH2O, TEMP_PK,               &
+!                         TEMP_PMG, TEMP_PMN, TEMP_PMOTHR, TEMP_PNA, TEMP_PNCOM,          &
+!                         TEMP_PNH4, TEMP_PNO3, TEMP_PTI, TEMP_PSI, TEMP_PMC,             &
+!                         TEMP_PSO4)
 
+!       IF ( RC /= HCO_SUCCESS ) THEN
+!          ERR = .TRUE.; EXIT
+!       ENDIF
+!        !Here this adds sectors together if turned on
+!       IF ( Inst%IDTNO > 0 ) THEN
+!           ! Unit: kg/m2/s
+!           FLUXNO(I,J) = FLUXNO(I,J) + TEMP_NO
+!       ENDIF
+!
+!       ENDIF
+!
+      !!!TBD
+!     IF ( Inst%MERWC ) THEN !MetEmis RWC sector calculations
+!       !---------------------------------------------------------------------
+!       ! MetEmis RWC binary calculation for emissions based on temperature
+!       ! (P.C. Campbell, 02/12/2026)
+!       !---------------------------------------------------------------------
+!       CALL METEMIS_LUT_LIV( ExtState,  HcoState,  Inst,   I,   J,   RC,                 &
+!                         TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
+!                         TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
+!                         TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
+!                         TEMP_ETH , TEMP_ETHA , TEMP_ETOH, TEMP_MEOH, TEMP_BENZ,         &
+!                         TEMP_TOL, TEMP_XYLMN, TEMP_NAPH, TEMP_ALD2, TEMP_ALDX,          &
+!                         TEMP_ISOP, TEMP_PRPA, TEMP_ACET, TEMP_KET, TEMP_ALD2_PRIMARY,   &
+!                         TEMP_FORM_PRIMARY, TEMP_SOAALK, TEMP_PEC, TEMP_POC, TEMP_PAL,   &
+!                         TEMP_PCA, TEMP_PCL, TEMP_PFE, TEMP_PH2O, TEMP_PK,               &
+!                         TEMP_PMG, TEMP_PMN, TEMP_PMOTHR, TEMP_PNA, TEMP_PNCOM,          &
+!                         TEMP_PNH4, TEMP_PNO3, TEMP_PTI, TEMP_PSI, TEMP_PMC,             &
+!                         TEMP_PSO4)
 
+!       IF ( RC /= HCO_SUCCESS ) THEN
+!          ERR = .TRUE.; EXIT
+!       ENDIF
+!        !Here this adds sectors together if turned on
+!       IF ( Inst%IDTNO > 0 ) THEN
+!           ! Unit: kg/m2/s
+!           FLUXNO(I,J) = FLUXNO(I,J) + TEMP_NO
+!       ENDIF
+!
+!       ENDIF
 !
        !---------------------------------------------------------------------
        ! Eventually write out into diagnostics array
@@ -1919,12 +1986,47 @@ CONTAINS
     ! Note: the specified strings have to match those in
     !       the config. file!
 
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME Onroad', &
+                    OptValBool=Inst%MEONROAD, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
-    CALL GetExtOpt( HcoState%Config, ExtNr, 'RH Gas Diesel', &
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'OR RH Gas Diesel', &
                     OptValBool=Inst%RHUMGASDIS, Found=FOUND, RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
         RETURN
+    ENDIF
+
+    !!!TBD - Livestock/RWC
+!    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME Livestock', &
+!                    OptValBool=Inst%MELIVESTOCK, Found=FOUND, RC=RC )
+!    IF ( RC /= HCO_SUCCESS ) THEN
+!        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+!        RETURN
+!    ENDIF
+
+!    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME RWC', &
+!                    OptValBool=Inst%MERWC, Found=FOUND, RC=RC )
+!    IF ( RC /= HCO_SUCCESS ) THEN
+!        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+!        RETURN
+!    ENDIF
+
+!    CALL GetExtOpt( HcoState%Config, ExtNr, 'RWC temp (deg F)', &
+!                    OptValBool=Inst%RWCTEMPF, Found=FOUND, RC=RC )
+!    IF ( RC /= HCO_SUCCESS ) THEN
+!        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+!        RETURN
+!    ENDIF
+
+   
+      ! Verbose mode
+    IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis Onroad option is ',Inst%MEONROAD
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
      ! Verbose mode
@@ -1932,6 +2034,25 @@ CONTAINS
        WRITE(MSG,*) ' --> MetEmis Relative Humidity Gas Diesel Split option is ',Inst%RHUMGASDIS
        CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
+
+   !!!TBD - Livestock/RWC
+     ! Verbose mode
+!    IF ( HcoState%amIRoot ) THEN
+!       WRITE(MSG,*) ' --> MetEmis Livestock option is ',Inst%MELIVESTOCK
+!       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+!    ENDIF
+
+     ! Verbose mode
+!    IF ( HcoState%amIRoot ) THEN
+!       WRITE(MSG,*) ' --> MetEmis RWC option is ',Inst%MERWC
+!       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+!    ENDIF
+
+     ! Verbose mode
+!     IF ( HcoState%amIRoot ) THEN
+!       WRITE(MSG,*) ' --> MetEmis RWC temp (degrees F) is ',Inst%RWCTEMPF
+!       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+!     ENDIF
 
    !========================================================================
    ! Exit if this is a GEOS-Chem dry-run or HEMCO-standalone dry-run
@@ -1945,7 +2066,9 @@ CONTAINS
    !========================================================================
    ! Continue initializing METEMIS for regular simulations
    !========================================================================
-   !three digit suffix pertains to temperature bins in degrees fahrenheit
+
+   IF ( Inst%MEONROAD ) THEN !MetEmis Onroad sector inputs
+   !three digit suffix pertains to onroad temperature bins in degrees fahrenheit
    ExtState%T2M%DoUse                          = .TRUE.
    ExtState%QV2M%DoUse                         = .TRUE.
    ExtState%MEmisNO_GAS_OR_030%DoUse           = .TRUE.
@@ -2541,7 +2664,23 @@ CONTAINS
    ExtState%MEmisPSO4_OR_100%DoUse          = .TRUE.
    ExtState%MEmisPSO4_OR_110%DoUse          = .TRUE.
    ExtState%MEmisPSO4_OR_120%DoUse          = .TRUE.
-
+   !!!TBD Livestock/RWC
+!   ELSEIF ( Inst%MELIVESTOCK ) THEN !MetEmis Livestock sector inputs
+!   !three digit suffix pertains to livestock temperature bins in degrees fahrenheit
+!   ExtState%T2M%DoUse                          = .TRUE.
+!   ExtState%PRECTOT%DoUse                      = .TRUE. 
+!   ...
+!   ...
+!   ELSEIF ( Inst%MERWC ) THEN !MetEmis RWC sector inputs for each animal type
+!  RWC does not have temperature bins, but read in for each species temperature
+!  binary adjustment
+!  ExtState%T2M%DoUse                          = .TRUE.
+!   ...
+!   ...
+   ELSE
+      CALL HCO_ERROR( 'ExtState error: No MetEmis option turned on ', RC )
+      RETURN
+   ENDIF
    !------------------------------------------------------------------------
    ! Leave w/ success
    !------------------------------------------------------------------------
@@ -2690,20 +2829,21 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: metemis_lut
+! !IROUTINE: metemis_lut_or
 !
-! !DESCRIPTION:  Subroutine METEMIS_LUT returns NO emissions
-! based on temperature LUT (TEMPNO), Values are taken taken from a
+! !DESCRIPTION:  Subroutine METEMIS_LUT_OR returns emissions
+! based on temperature LUT, Values are taken taken from a
 ! lookup table using piecewise linear interpolation. The look-up table is derived
 ! from the EPA MOVES model involving work by (Baek et al. 2023;
-! https://doi.org/10.5194/gmd-16-4659-2023)
+! https://doi.org/10.5194/gmd-16-4659-2023), and has further RH adjustments for 
+! NO, NO2, and HONO
 !
 ! The lookup table uses 1 input variable:
 !     TEMP   : model temperature, K
 !\\
 ! !INTERFACE:
 !
- SUBROUTINE METEMIS_LUT( ExtState,  HcoState, Inst, I, J, RC,                          &
+ SUBROUTINE METEMIS_LUT_OR( ExtState,  HcoState, Inst, I, J, RC,                          &
                          TEMPNO,   TEMPNO2,   TEMPHONO,  TEMPCO,   TEMPSO2,            &
                          TEMPNH3,  TEMPCH4,   TEMPACROLEIN, TEMPBUTADIENE13, TEMPETHY, &
                          TEMPTERP, TEMPFORM,  TEMPPAR,   TEMPIOLE, TEMPOLE ,           &
@@ -2875,10 +3015,10 @@ CONTAINS
    REAL(sp), DIMENSION(1,2)   :: WTS
 
    CHARACTER(LEN=255)         :: MSG
-   CHARACTER(LEN=255)         :: LOC = 'METEMIS_LUT'
+   CHARACTER(LEN=255)         :: LOC = 'METEMIS_LUT_OR'
 
    !=================================================================
-   ! METEMIS_LUT begins here!
+   ! METEMIS_LUT_OR begins here!
    !=================================================================
 
    !MetEmis Temperature bins (Degrees Fahrenheit) = 10 from explicit nT
@@ -3711,8 +3851,83 @@ CONTAINS
    ! Return w/ success
    RC = HCO_SUCCESS
 
- END SUBROUTINE METEMIS_LUT
+ END SUBROUTINE METEMIS_LUT_OR
 !EOC
+
+   !!!TBD - Livestock
+!------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: metemis_lut_liv
+!
+! !DESCRIPTION:  Subroutine METEMIS_LUT_LIV returns emissions
+! based on temperature LUT, Values are taken taken from a
+! lookup table using piecewise linear interpolation. The look-up table is derived
+! from the FEM model involving work by (Baek et al. 2023;
+! https://doi.org/10.5194/gmd-16-4659-2023), and has further Precip adjustments 
+! for all species for different animal types (Beef, Swine, Dairy, Poultry)
+!
+! The lookup table uses 1 input variable:
+!     TEMP   : model temperature, K
+!\\
+! !INTERFACE:
+!
+! SUBROUTINE METEMIS_LUT_LIV( ExtState,  HcoState, Inst, I, J, RC,                          &
+!                         TEMPNO,   TEMPNO2,   TEMPHONO,  TEMPCO,   TEMPSO2,            &
+!                         TEMPNH3,  TEMPCH4,   TEMPACROLEIN, TEMPBUTADIENE13, TEMPETHY, &
+!                         TEMPTERP, TEMPFORM,  TEMPPAR,   TEMPIOLE, TEMPOLE ,           &
+!                         TEMPETH , TEMPETHA , TEMPETOH,  TEMPMEOH, TEMPBENZ,           &
+!                         TEMPTOL,  TEMPXYLMN, TEMPNAPH,  TEMPALD2, TEMPALDX,           &
+!                         TEMPISOP, TEMPPRPA,  TEMPACET,  TEMPKET,  TEMPALD2_PRIMARY,   &
+!                 TEMPFORM_PRIMARY, TEMPSOAALK, TEMPPEC,  TEMPPOC,  TEMPPAL,            &
+!                         TEMPPCA,  TEMPPCL,   TEMPPFE,   TEMPPH2O, TEMPPK,             &
+!                         TEMPPMG,  TEMPPMN,   TEMPPMOTHR, TEMPPNA, TEMPPNCOM,          &
+!                         TEMPPNH4, TEMPPNO3,  TEMPPTI,   TEMPPSI,  TEMPPMC,            &
+!                         TEMPPSO4)
+!
+!...
+!...Similar program details as Onroad above, but also with precip parameterizations for 
+! each animal type
+!  END SUBROUTINE METEMIS_LUT_LIV
+
+
+   !!!TBD - RWC
+!------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: metemis_rwc
+!
+! !DESCRIPTION:  Subroutine METEMIS_LUT_RWC returns emissions
+! based on temperature binary flag base on (Baek et al. 2023;
+! https://doi.org/10.5194/gmd-16-4659-2023)...
+!
+! The lookup table uses 1 input variable:
+!     TEMP   : model temperature, K
+!\\
+! !INTERFACE:
+!
+! SUBROUTINE METEMIS_RWC( ExtState,  HcoState, Inst, I, J, RC,                          &
+!                         TEMPNO,   TEMPNO2,   TEMPHONO,  TEMPCO,   TEMPSO2,            &
+!                         TEMPNH3,  TEMPCH4,   TEMPACROLEIN, TEMPBUTADIENE13, TEMPETHY, &
+!                         TEMPTERP, TEMPFORM,  TEMPPAR,   TEMPIOLE, TEMPOLE ,           &
+!                         TEMPETH , TEMPETHA , TEMPETOH,  TEMPMEOH, TEMPBENZ,           &
+!                         TEMPTOL,  TEMPXYLMN, TEMPNAPH,  TEMPALD2, TEMPALDX,           &
+!                         TEMPISOP, TEMPPRPA,  TEMPACET,  TEMPKET,  TEMPALD2_PRIMARY,   &
+!                 TEMPFORM_PRIMARY, TEMPSOAALK, TEMPPEC,  TEMPPOC,  TEMPPAL,            &
+!                         TEMPPCA,  TEMPPCL,   TEMPPFE,   TEMPPH2O, TEMPPK,             &
+!                         TEMPPMG,  TEMPPMN,   TEMPPMOTHR, TEMPPNA, TEMPPNCOM,          &
+!                         TEMPPNH4, TEMPPNO3,  TEMPPTI,   TEMPPSI,  TEMPPMC,            &
+!                         TEMPPSO4)
+!
+!...
+!...Add simple program details for RWC binary flag on/off based on temperature threshold
+! from config
+!  END SUBROUTINE METEMIS_RWC
+
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
