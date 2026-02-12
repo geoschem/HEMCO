@@ -172,8 +172,11 @@ MODULE HCOX_MetEmis_MOD
                                           ! diesel fuels
      !!!TBD - Livestock/RWC
      !LOGICAL               :: MELIVESTOCK ! Turn on MetEmis for Livestock Sector
+     !LOGICAL               :: LIVPRECIP   ! Apply livestock precip correction
+                                           ! for all species across different
+                                           ! animal types
      !LOGICAL               :: MERWC       ! Turn on MetEmis for RWC Sector
-     !REAL*4                :: TEMPRWCF    ! RWC Temperature Threshold (Fahrenheit)
+     !REAL(hp)              :: RWCTEMPF    ! RWC Temperature Threshold (Fahrenheit)
 
      ! Arrays
 
@@ -654,7 +657,7 @@ CONTAINS
        ! MetEmis Onroad lookup table for emissions based on temperature
        ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
-       CALL METEMIS_LUT_OR( ExtState,  HcoState,  Inst,   I,   J,   RC,                  &
+       CALL METEMIS_LUT_ONROAD( ExtState,  HcoState,  Inst,   I,   J,   RC,                  &
                          TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
                          TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
                          TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
@@ -932,7 +935,7 @@ CONTAINS
        
        ENDIF
 
-      !!!TBD
+      !!!TBD Livestock
 !     IF ( Inst%MELIVESTOCK ) THEN !MetEmis Livestock sector calculations
 !       !---------------------------------------------------------------------
 !       ! MetEmis Livestock lookup table for emissions based on temperature
@@ -959,16 +962,17 @@ CONTAINS
 !           ! Unit: kg/m2/s
 !           FLUXNO(I,J) = FLUXNO(I,J) + TEMP_NO
 !       ENDIF
+!       Continue all species here...
 !
 !       ENDIF
 !
-      !!!TBD
+      !!!TBD RWC
 !     IF ( Inst%MERWC ) THEN !MetEmis RWC sector calculations
 !       !---------------------------------------------------------------------
 !       ! MetEmis RWC binary calculation for emissions based on temperature
 !       ! (P.C. Campbell, 02/12/2026)
 !       !---------------------------------------------------------------------
-!       CALL METEMIS_LUT_LIV( ExtState,  HcoState,  Inst,   I,   J,   RC,                 &
+!       CALL METEMIS_LUT_RWC( ExtState,  HcoState,  Inst,   I,   J,   RC,                 &
 !                         TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
 !                         TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
 !                         TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
@@ -989,6 +993,7 @@ CONTAINS
 !           ! Unit: kg/m2/s
 !           FLUXNO(I,J) = FLUXNO(I,J) + TEMP_NO
 !       ENDIF
+!       Continue all species here
 !
 !       ENDIF
 !
@@ -2008,6 +2013,13 @@ CONTAINS
 !        RETURN
 !    ENDIF
 
+!    CALL GetExtOpt( HcoState%Config, ExtNr, 'Livestock Precip', &
+!                    OptValBool=Inst%LIVPRECIP, Found=FOUND, RC=RC )
+!    IF ( RC /= HCO_SUCCESS ) THEN
+!        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+!        RETURN
+!    ENDIF
+
 !    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME RWC', &
 !                    OptValBool=Inst%MERWC, Found=FOUND, RC=RC )
 !    IF ( RC /= HCO_SUCCESS ) THEN
@@ -2016,7 +2028,7 @@ CONTAINS
 !    ENDIF
 
 !    CALL GetExtOpt( HcoState%Config, ExtNr, 'RWC temp (deg F)', &
-!                    OptValBool=Inst%RWCTEMPF, Found=FOUND, RC=RC )
+!                    OptValHp=Inst%RWCTEMPF, Found=FOUND, RC=RC )
 !    IF ( RC /= HCO_SUCCESS ) THEN
 !        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
 !        RETURN
@@ -2039,6 +2051,12 @@ CONTAINS
      ! Verbose mode
 !    IF ( HcoState%amIRoot ) THEN
 !       WRITE(MSG,*) ' --> MetEmis Livestock option is ',Inst%MELIVESTOCK
+!       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+!    ENDIF
+
+    ! Verbose mode
+!    IF ( HcoState%amIRoot ) THEN
+!       WRITE(MSG,*) ' --> MetEmis Livestock Precipitation option is ',Inst%LIVPRECIP
 !       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
 !    ENDIF
 
@@ -2670,13 +2688,14 @@ CONTAINS
 !   ExtState%T2M%DoUse                          = .TRUE.
 !   ExtState%PRECTOT%DoUse                      = .TRUE. 
 !   ...
+!   ExtState%MEmisPSO4_BEEF_LIV_030%DoUse            = .TRUE.
 !   ...
-!   ELSEIF ( Inst%MERWC ) THEN !MetEmis RWC sector inputs for each animal type
+!   ELSEIF ( Inst%MERWC ) THEN !MetEmis RWC sector inputs for each species
 !  RWC does not have temperature bins, but read in for each species temperature
-!  binary adjustment
+!  binary adjustment in subroutine later
 !  ExtState%T2M%DoUse                          = .TRUE.
-!   ...
-!   ...
+!  ...
+!  ExtState%MEmisPSO4_RWC%DoUse                 = .TRUE.
    ELSE
       CALL HCO_ERROR( 'ExtState error: No MetEmis option turned on ', RC )
       RETURN
@@ -2829,9 +2848,9 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: metemis_lut_or
+! !IROUTINE: metemis_lut_onroad
 !
-! !DESCRIPTION:  Subroutine METEMIS_LUT_OR returns emissions
+! !DESCRIPTION:  Subroutine METEMIS_LUT_ONROAD returns emissions
 ! based on temperature LUT, Values are taken taken from a
 ! lookup table using piecewise linear interpolation. The look-up table is derived
 ! from the EPA MOVES model involving work by (Baek et al. 2023;
@@ -2843,7 +2862,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
- SUBROUTINE METEMIS_LUT_OR( ExtState,  HcoState, Inst, I, J, RC,                          &
+ SUBROUTINE METEMIS_LUT_ONROAD( ExtState,  HcoState, Inst, I, J, RC,                          &
                          TEMPNO,   TEMPNO2,   TEMPHONO,  TEMPCO,   TEMPSO2,            &
                          TEMPNH3,  TEMPCH4,   TEMPACROLEIN, TEMPBUTADIENE13, TEMPETHY, &
                          TEMPTERP, TEMPFORM,  TEMPPAR,   TEMPIOLE, TEMPOLE ,           &
@@ -3015,10 +3034,10 @@ CONTAINS
    REAL(sp), DIMENSION(1,2)   :: WTS
 
    CHARACTER(LEN=255)         :: MSG
-   CHARACTER(LEN=255)         :: LOC = 'METEMIS_LUT_OR'
+   CHARACTER(LEN=255)         :: LOC = 'METEMIS_LUT_ONROAD'
 
    !=================================================================
-   ! METEMIS_LUT_OR begins here!
+   ! METEMIS_LUT_ONROAD begins here!
    !=================================================================
 
    !MetEmis Temperature bins (Degrees Fahrenheit) = 10 from explicit nT
@@ -3851,7 +3870,7 @@ CONTAINS
    ! Return w/ success
    RC = HCO_SUCCESS
 
- END SUBROUTINE METEMIS_LUT_OR
+ END SUBROUTINE METEMIS_LUT_ONROAD
 !EOC
 
    !!!TBD - Livestock
@@ -3860,9 +3879,9 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: metemis_lut_liv
+! !IROUTINE: metemis_lut_livestock
 !
-! !DESCRIPTION:  Subroutine METEMIS_LUT_LIV returns emissions
+! !DESCRIPTION:  Subroutine METEMIS_LUT_LIVESTOCK returns emissions
 ! based on temperature LUT, Values are taken taken from a
 ! lookup table using piecewise linear interpolation. The look-up table is derived
 ! from the FEM model involving work by (Baek et al. 2023;
@@ -3874,7 +3893,7 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-! SUBROUTINE METEMIS_LUT_LIV( ExtState,  HcoState, Inst, I, J, RC,                          &
+! SUBROUTINE METEMIS_LUT_LIVESTOCK( ExtState,  HcoState, Inst, I, J, RC,                &
 !                         TEMPNO,   TEMPNO2,   TEMPHONO,  TEMPCO,   TEMPSO2,            &
 !                         TEMPNH3,  TEMPCH4,   TEMPACROLEIN, TEMPBUTADIENE13, TEMPETHY, &
 !                         TEMPTERP, TEMPFORM,  TEMPPAR,   TEMPIOLE, TEMPOLE ,           &
@@ -3887,10 +3906,1007 @@ CONTAINS
 !                         TEMPPNH4, TEMPPNO3,  TEMPPTI,   TEMPPSI,  TEMPPMC,            &
 !                         TEMPPSO4)
 !
-!...
+!..
+!
+! !USES:
+!
+!   USE HCO_STATE_MOD,        ONLY : HCO_State
+!   USE HCOX_STATE_MOD,       ONLY : Ext_State
+!!
+!! !INPUT PARAMETERS:
+!!
+!   TYPE(Ext_State), POINTER    :: ExtState
+!   TYPE(HCO_State), POINTER    :: HcoState
+!   TYPE(MyInst),    POINTER    :: Inst
+!   INTEGER, INTENT(IN)         :: I, J      ! Grid indices
+!!
+!! !OUTPUT PARAMETERS:
+!!
+!! Temp dependent MetEmis emission species 51 in total , kg/m2/s
+!!
+!   REAL*8, INTENT(OUT)           :: TEMPNO   ! Temp dependent NO emissions, kg/m2/s
+!   REAL*8, INTENT(OUT)           :: TEMPNO2  ! Temp dependent NO2 emissions, kg/m2/s
+!   REAL*8, INTENT(OUT)           :: TEMPHONO ! Temp dependent HONO emissions, kg/m2/s
+!   REAL*8, INTENT(OUT)           :: TEMPCO   ! Temp dependent CO  emissions, kg/m2/s
+!   REAL*8, INTENT(OUT)           :: TEMPSO2  ! Temp dependent SO2 emissions, kg/m2/s
+!   REAL*8, INTENT(OUT)           :: TEMPNH3  ! Temp dependent NH3 emissions, kg/m2/s
+!
+!   REAL*8, INTENT(OUT)           :: TEMPCH4
+!   REAL*8, INTENT(OUT)           :: TEMPACROLEIN
+!   REAL*8, INTENT(OUT)           :: TEMPBUTADIENE13
+!   REAL*8, INTENT(OUT)           :: TEMPETHY
+!
+!   REAL*8, INTENT(OUT)           :: TEMPTERP
+!   REAL*8, INTENT(OUT)           :: TEMPFORM
+!   REAL*8, INTENT(OUT)           :: TEMPPAR
+!   REAL*8, INTENT(OUT)           :: TEMPIOLE
+!   REAL*8, INTENT(OUT)           :: TEMPOLE
+!   REAL*8, INTENT(OUT)           :: TEMPETH
+!   REAL*8, INTENT(OUT)           :: TEMPETHA
+!   REAL*8, INTENT(OUT)           :: TEMPETOH
+!   REAL*8, INTENT(OUT)           :: TEMPMEOH
+!   REAL*8, INTENT(OUT)           :: TEMPBENZ
+!
+!   REAL*8, INTENT(OUT)           :: TEMPTOL
+!   REAL*8, INTENT(OUT)           :: TEMPXYLMN
+!   REAL*8, INTENT(OUT)           :: TEMPNAPH
+!   REAL*8, INTENT(OUT)           :: TEMPALD2
+!   REAL*8, INTENT(OUT)           :: TEMPALDX
+!   REAL*8, INTENT(OUT)           :: TEMPISOP
+!   REAL*8, INTENT(OUT)           :: TEMPPRPA
+!   REAL*8, INTENT(OUT)           :: TEMPACET
+!   REAL*8, INTENT(OUT)           :: TEMPKET
+!   REAL*8, INTENT(OUT)           :: TEMPALD2_PRIMARY
+!
+!   REAL*8, INTENT(OUT)           :: TEMPFORM_PRIMARY
+!   REAL*8, INTENT(OUT)           :: TEMPSOAALK
+!   REAL*8, INTENT(OUT)           :: TEMPPEC
+!   REAL*8, INTENT(OUT)           :: TEMPPOC
+!   REAL*8, INTENT(OUT)           :: TEMPPAL
+!   REAL*8, INTENT(OUT)           :: TEMPPCA
+!   REAL*8, INTENT(OUT)           :: TEMPPCL
+!   REAL*8, INTENT(OUT)           :: TEMPPFE
+!   REAL*8, INTENT(OUT)           :: TEMPPH2O
+!   REAL*8, INTENT(OUT)           :: TEMPPK
+!
+!   REAL*8, INTENT(OUT)           :: TEMPPMG
+!   REAL*8, INTENT(OUT)           :: TEMPPMN
+!   REAL*8, INTENT(OUT)           :: TEMPPMOTHR
+!   REAL*8, INTENT(OUT)           :: TEMPPNA
+!   REAL*8, INTENT(OUT)           :: TEMPPNCOM
+!   REAL*8, INTENT(OUT)           :: TEMPPNH4
+!   REAL*8, INTENT(OUT)           :: TEMPPNO3
+!   REAL*8, INTENT(OUT)           :: TEMPPTI
+!   REAL*8, INTENT(OUT)           :: TEMPPSI
+!   REAL*8, INTENT(OUT)           :: TEMPPMC
+!
+!   REAL*8, INTENT(OUT)           :: TEMPPSO4
+!
+!! !INPUT/OUTPUT PARAMETERS:
+!!
+!   INTEGER, INTENT(INOUT)        :: RC      ! Return code
+!!
+!! !REVISION HISTORY:
+!!     Mar 2025 - P.C. Campbell - Initial version
+!!  See https://github.com/geoschem/hemco for complete history
+!!EOP
+!!------------------------------------------------------------------------------
+!!BOC
+!!
+!! !LOCAL VARIABLES:
+!!
+!   INTEGER                    :: I1
+!   REAL(sp)                   :: RHUMGAS,RHUMDIS
+!   REAL(sp)                   :: TEMPNO_GAS,   TEMPNO_GAS_TMP
+!   REAL(sp)                   :: TEMPNO_DIS,   TEMPNO_DIS_TMP
+!   REAL(sp)                   :: TEMPNO2_GAS,  TEMPNO2_GAS_TMP
+!   REAL(sp)                   :: TEMPNO2_DIS,  TEMPNO2_DIS_TMP
+!   REAL(sp)                   :: TEMPHONO_GAS, TEMPHONO_GAS_TMP
+!   REAL(sp)                   :: TEMPHONO_DIS, TEMPHONO_DIS_TMP
+!   REAL(sp)                   :: TEMPCO_TMP
+!   REAL(sp)                   :: TEMPSO2_TMP
+!   REAL(sp)                   :: TEMPNH3_TMP
+!   REAL(dp)                   :: TEMPCH4_TMP
+!   REAL(dp)                   :: TEMPACROLEIN_TMP
+!   REAL(dp)                   :: TEMPBUTADIENE13_TMP
+!   REAL(dp)                   :: TEMPETHY_TMP
+!
+!   REAL(dp)                   :: TEMPTERP_TMP
+!   REAL(dp)                   :: TEMPFORM_TMP
+!   REAL(dp)                   :: TEMPPAR_TMP
+!   REAL(dp)                   :: TEMPIOLE_TMP
+!   REAL(dp)                   :: TEMPOLE_TMP
+!   REAL(dp)                   :: TEMPETH_TMP
+!   REAL(dp)                   :: TEMPETHA_TMP
+!   REAL(dp)                   :: TEMPETOH_TMP
+!   REAL(dp)                   :: TEMPMEOH_TMP
+!   REAL(dp)                   :: TEMPBENZ_TMP
+!
+!   REAL(dp)                   :: TEMPTOL_TMP
+!   REAL(dp)                   :: TEMPXYLMN_TMP
+!   REAL(dp)                   :: TEMPNAPH_TMP
+!   REAL(dp)                   :: TEMPALD2_TMP
+!   REAL(dp)                   :: TEMPALDX_TMP
+!   REAL(dp)                   :: TEMPISOP_TMP
+!   REAL(dp)                   :: TEMPPRPA_TMP
+!   REAL(dp)                   :: TEMPACET_TMP
+!   REAL(dp)                   :: TEMPKET_TMP
+!   REAL(dp)                   :: TEMPALD2_PRIMARY_TMP
+!
+!   REAL(dp)                   :: TEMPFORM_PRIMARY_TMP
+!   REAL(dp)                   :: TEMPSOAALK_TMP
+!   REAL(dp)                   :: TEMPPEC_TMP
+!   REAL(dp)                   :: TEMPPOC_TMP
+!   REAL(dp)                   :: TEMPPAL_TMP
+!   REAL(dp)                   :: TEMPPCA_TMP
+!   REAL(dp)                   :: TEMPPCL_TMP
+!   REAL(dp)                   :: TEMPPFE_TMP
+!   REAL(dp)                   :: TEMPPH2O_TMP
+!   REAL(dp)                   :: TEMPPK_TMP
+!
+!   REAL(dp)                   :: TEMPPMG_TMP
+!   REAL(dp)                   :: TEMPPMN_TMP
+!   REAL(dp)                   :: TEMPPMOTHR_TMP
+!   REAL(dp)                   :: TEMPPNA_TMP
+!   REAL(dp)                   :: TEMPPNCOM_TMP
+!   REAL(dp)                   :: TEMPPNH4_TMP
+!   REAL(dp)                   :: TEMPPNO3_TMP
+!   REAL(dp)                   :: TEMPPTI_TMP
+!   REAL(dp)                   :: TEMPPSI_TMP
+!   REAL(dp)                   :: TEMPPMC_TMP
+!
+!   REAL(dp)                   :: TEMPPSO4_TMP
+!
+!   REAL(sp)                   :: WEIGHT
+!   REAL(sp)                   :: TAIR
+!   REAL(sp)                   :: A,B,X,Y  !Precip correction
+!
+!   ! Interpolation variables, indices, and weights
+!   REAL(sp), DIMENSION(1)     :: VARS
+!   INTEGER,  DIMENSION(1,2)   :: INDX
+!   REAL(sp), DIMENSION(1,2)   :: WTS
+!
+!   CHARACTER(LEN=255)         :: MSG
+!   CHARACTER(LEN=255)         :: LOC = 'METEMIS_LUT_OR'
+!
+!   !=================================================================
+!   ! METEMIS_LUT_OR begins here!
+!   !=================================================================
+!
+!   !MetEmis Temperature bins (Degrees Fahrenheit) = 10 from explicit nT
+!   !These are set to lower bin edge defined in MetEmis files. 
+!   !e.g., 20 - 30 (20), ... 110 - 120 (110)
+!   Inst%Tlev = (/ 20.0e0, 30.0e0, 40.0e0, 50.0e0,  60.0e0,  &
+!                  70.0e0, 80.0e0, 90.0e0, 100.0e0, 110.0e0 /)
+!
+!   !Get 2-m air temperature, K
+!   TAIR = ExtState%T2M%Arr%Val(I,J)
+!   !Get 2-m air specific humidity, kg/kg
+!   PRECIP = ExtState%PRECTOT%Arr%Val(I,J)
+!
+!   !========================================================================
+!   ! Load all variables into a single array
+!   !========================================================================
+!
+!   ! Air Temperature, K --> Fahrenheit for MetEmis consistency
+!   VARS(1) = (TAIR - 273.15)*1.8 + 32.0
+!   ! Total Precip, kg/m2/s --> mm/hr for MetEmis consistency
+!   PRECIP = PRECIP * 3600.0 
+!
+!   ! Check if outside bounds of MetEmis Temperature Bins and set , i.e., <= 20F or >=120 F
+!   IF ( VARS(1) <= 20.0  ) THEN
+!      VARS(1) = 20.0
+!   ENDIF
+!
+!   IF ( VARS(1) >= 120.0  ) THEN
+!      VARS(1) = 120.0
+!   ENDIF
+!
+!   !========================================================================
+!   ! Find the indices of nodes and their corresponding weights for the
+!   ! interpolation
+!   !========================================================================
+!
+!   ! Temperature:
+!   CALL INTERPOL_LINWEIGHTS( Inst%Tlev, VARS(1), INDX(1,:), WTS(1,:) )
+!
+!   !========================================================================
+!   ! Piecewise linear interpolation
+!   !========================================================================
+!
+!   ! Initialize
+!   TEMPNO      = 0.0d0
+!   TEMPNO_GAS  = 0.0d0
+!   TEMPNO_DIS  = 0.0d0
+!   TEMPNO2     = 0.0d0
+!   TEMPNO2_GAS = 0.0d0
+!   TEMPNO2_DIS = 0.0d0
+!   TEMPHONO    = 0.0d0
+!   TEMPHONO_GAS= 0.0d0
+!   TEMPHONO_DIS= 0.0d0
+!   TEMPCO      = 0.0d0
+!   TEMPSO2     = 0.0d0
+!   TEMPNH3     = 0.0d0
+!   TEMPCH4     = 0.0d0
+!   TEMPACROLEIN = 0.0d0
+!   TEMPBUTADIENE13 = 0.0d0
+!   TEMPETHY    = 0.0d0
+!
+!   TEMPTERP    = 0.0d0
+!   TEMPFORM    = 0.0d0
+!   TEMPPAR     = 0.0d0
+!   TEMPIOLE    = 0.0d0
+!   TEMPOLE     = 0.0d0
+!   TEMPETH     = 0.0d0
+!   TEMPETHA    = 0.0d0
+!   TEMPETOH    = 0.0d0
+!   TEMPMEOH    = 0.0d0
+!   TEMPBENZ    = 0.0d0
+!
+!   TEMPTOL     = 0.0d0
+!   TEMPXYLMN   = 0.0d0
+!   TEMPNAPH    = 0.0d0
+!   TEMPALD2    = 0.0d0
+!   TEMPALDX    = 0.0d0
+!   TEMPISOP    = 0.0d0
+!   TEMPPRPA    = 0.0d0
+!   TEMPACET    = 0.0d0
+!   TEMPKET     = 0.0d0
+!   TEMPALD2_PRIMARY = 0.0d0
+!
+!   TEMPFORM_PRIMARY = 0.0d0
+!   TEMPSOAALK  = 0.0d0
+!   TEMPPEC     = 0.0d0
+!   TEMPPOC     = 0.0d0
+!   TEMPPAL     = 0.0d0
+!   TEMPPCA     = 0.0d0
+!   TEMPPCL     = 0.0d0
+!   TEMPPFE     = 0.0d0
+!   TEMPPH2O    = 0.0d0
+!   TEMPPK      = 0.0d0
+!
+!   TEMPPMG     = 0.0d0
+!   TEMPPMN     = 0.0d0
+!   TEMPPMOTHR  = 0.0d0
+!   TEMPPNA     = 0.0d0
+!   TEMPPNCOM   = 0.0d0
+!   TEMPPNH4    = 0.0d0
+!   TEMPPNO3    = 0.0d0
+!   TEMPPTI     = 0.0d0
+!   TEMPPSI     = 0.0d0
+!   TEMPPMC     = 0.0d0
+!
+!   TEMPPSO4    = 0.0d0
+!
+!  ! Loop over temperature bins
+!   DO I1=1,2
+!      SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
+!         CASE ( 20 )
+!            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_030%Arr%Val(I,J)
+!            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_030%Arr%Val(I,J)
+!            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_030%Arr%Val(I,J)
+!            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_030%Arr%Val(I,J)
+!            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_030%Arr%Val(I,J)
+!            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_030%Arr%Val(I,J)
+!            TEMPCO_TMP       =  ExtState%MEmisCO_OR_030%Arr%Val(I,J)
+!            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_030%Arr%Val(I,J)
+!            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_030%Arr%Val(I,J)
+!            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_030%Arr%Val(I,J)
+!            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_030%Arr%Val(I,J)
+!            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_030%Arr%Val(I,J)
+!            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_030%Arr%Val(I,J)
+!
+!            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_030%Arr%Val(I,J)
+!            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_030%Arr%Val(I,J)
+!            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_030%Arr%Val(I,J)
+!            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_030%Arr%Val(I,J)
+!            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_030%Arr%Val(I,J)
+!            TEMPETH_TMP      =  ExtState%MEmisETH_OR_030%Arr%Val(I,J)
+!            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_030%Arr%Val(I,J)
+!            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_030%Arr%Val(I,J)
+!            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_030%Arr%Val(I,J)
+!            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_030%Arr%Val(I,J)
+!
+!            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_030%Arr%Val(I,J)
+!            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_030%Arr%Val(I,J)
+!            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_030%Arr%Val(I,J)
+!            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_030%Arr%Val(I,J)
+!            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_030%Arr%Val(I,J)
+!            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_030%Arr%Val(I,J)
+!            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_030%Arr%Val(I,J)
+!            TEMPACET_TMP     =  ExtState%MEmisACET_OR_030%Arr%Val(I,J)
+!            TEMPKET_TMP      =  ExtState%MEmisKET_OR_030%Arr%Val(I,J)
+!            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_030%Arr%Val(I,J)
+!
+!            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_030%Arr%Val(I,J)
+!            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_030%Arr%Val(I,J)
+!            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_030%Arr%Val(I,J)
+!            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_030%Arr%Val(I,J)
+!            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_030%Arr%Val(I,J)
+!            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_030%Arr%Val(I,J)
+!            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_030%Arr%Val(I,J)
+!            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_030%Arr%Val(I,J)
+!            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_030%Arr%Val(I,J)
+!            TEMPPK_TMP       =  ExtState%MEmisPK_OR_030%Arr%Val(I,J)
+!
+!            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_030%Arr%Val(I,J)
+!            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_030%Arr%Val(I,J)
+!            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_030%Arr%Val(I,J)
+!            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_030%Arr%Val(I,J)
+!            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_030%Arr%Val(I,J)
+!            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_030%Arr%Val(I,J)
+!            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_030%Arr%Val(I,J)
+!            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_030%Arr%Val(I,J)
+!            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_030%Arr%Val(I,J)
+!            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_030%Arr%Val(I,J)
+!
+!            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_030%Arr%Val(I,J)
+!
+!            WEIGHT       = WTS(1,I1)
+!         CASE ( 30 )
+!            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_040%Arr%Val(I,J)
+!            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_040%Arr%Val(I,J)
+!            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_040%Arr%Val(I,J)
+!            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_040%Arr%Val(I,J)
+!            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_040%Arr%Val(I,J)
+!            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_040%Arr%Val(I,J)
+!            TEMPCO_TMP       =  ExtState%MEmisCO_OR_040%Arr%Val(I,J)
+!            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_040%Arr%Val(I,J)
+!            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_040%Arr%Val(I,J)
+!            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_040%Arr%Val(I,J)
+!            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_040%Arr%Val(I,J)
+!            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_040%Arr%Val(I,J)
+!            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_040%Arr%Val(I,J)
+!
+!            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_040%Arr%Val(I,J)
+!            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_040%Arr%Val(I,J)
+!            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_040%Arr%Val(I,J)
+!            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_040%Arr%Val(I,J)
+!            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_040%Arr%Val(I,J)
+!            TEMPETH_TMP      =  ExtState%MEmisETH_OR_040%Arr%Val(I,J)
+!            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_040%Arr%Val(I,J)
+!            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_040%Arr%Val(I,J)
+!            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_040%Arr%Val(I,J)
+!            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_040%Arr%Val(I,J)
+!
+!            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_040%Arr%Val(I,J)
+!            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_040%Arr%Val(I,J)
+!            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_040%Arr%Val(I,J)
+!            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_040%Arr%Val(I,J)
+!            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_040%Arr%Val(I,J)
+!            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_040%Arr%Val(I,J)
+!            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_040%Arr%Val(I,J)
+!            TEMPACET_TMP     =  ExtState%MEmisACET_OR_040%Arr%Val(I,J)
+!            TEMPKET_TMP      =  ExtState%MEmisKET_OR_040%Arr%Val(I,J)
+!            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_040%Arr%Val(I,J)
+!
+!            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_040%Arr%Val(I,J)
+!            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_040%Arr%Val(I,J)
+!            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_040%Arr%Val(I,J)
+!            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_040%Arr%Val(I,J)
+!            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_040%Arr%Val(I,J)
+!            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_040%Arr%Val(I,J)
+!            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_040%Arr%Val(I,J)
+!            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_040%Arr%Val(I,J)
+!            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_040%Arr%Val(I,J)
+!            TEMPPK_TMP       =  ExtState%MEmisPK_OR_040%Arr%Val(I,J)
+!
+!            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_040%Arr%Val(I,J)
+!            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_040%Arr%Val(I,J)
+!            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_040%Arr%Val(I,J)
+!            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_040%Arr%Val(I,J)
+!            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_040%Arr%Val(I,J)
+!            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_040%Arr%Val(I,J)
+!            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_040%Arr%Val(I,J)
+!            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_040%Arr%Val(I,J)
+!            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_040%Arr%Val(I,J)
+!            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_040%Arr%Val(I,J)
+!
+!            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_040%Arr%Val(I,J)
+!
+!            WEIGHT       = WTS(1,I1)
+!         CASE ( 40 )
+!            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_050%Arr%Val(I,J)
+!            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_050%Arr%Val(I,J)
+!            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_050%Arr%Val(I,J)
+!            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_050%Arr%Val(I,J)
+!            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_050%Arr%Val(I,J)
+!            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_050%Arr%Val(I,J)
+!            TEMPCO_TMP       =  ExtState%MEmisCO_OR_050%Arr%Val(I,J)
+!            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_050%Arr%Val(I,J)
+!            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_050%Arr%Val(I,J)
+!            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_050%Arr%Val(I,J)
+!            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_050%Arr%Val(I,J)
+!            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_050%Arr%Val(I,J)
+!            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_050%Arr%Val(I,J)
+!
+!            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_050%Arr%Val(I,J)
+!            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_050%Arr%Val(I,J)
+!            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_050%Arr%Val(I,J)
+!            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_050%Arr%Val(I,J)
+!            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_050%Arr%Val(I,J)
+!            TEMPETH_TMP      =  ExtState%MEmisETH_OR_050%Arr%Val(I,J)
+!            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_050%Arr%Val(I,J)
+!            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_050%Arr%Val(I,J)
+!            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_050%Arr%Val(I,J)
+!            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_050%Arr%Val(I,J)
+!
+!            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_050%Arr%Val(I,J)
+!            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_050%Arr%Val(I,J)
+!            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_050%Arr%Val(I,J)
+!            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_050%Arr%Val(I,J)
+!            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_050%Arr%Val(I,J)
+!            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_050%Arr%Val(I,J)
+!            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_050%Arr%Val(I,J)
+!            TEMPACET_TMP     =  ExtState%MEmisACET_OR_050%Arr%Val(I,J)
+!            TEMPKET_TMP      =  ExtState%MEmisKET_OR_050%Arr%Val(I,J)
+!            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_050%Arr%Val(I,J)
+!
+!            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_050%Arr%Val(I,J)
+!            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_050%Arr%Val(I,J)
+!            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_050%Arr%Val(I,J)
+!            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_050%Arr%Val(I,J)
+!            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_050%Arr%Val(I,J)
+!            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_050%Arr%Val(I,J)
+!            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_050%Arr%Val(I,J)
+!            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_050%Arr%Val(I,J)
+!            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_050%Arr%Val(I,J)
+!            TEMPPK_TMP       =  ExtState%MEmisPK_OR_050%Arr%Val(I,J)
+!
+!            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_050%Arr%Val(I,J)
+!            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_050%Arr%Val(I,J)
+!            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_050%Arr%Val(I,J)
+!            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_050%Arr%Val(I,J)
+!            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_050%Arr%Val(I,J)
+!            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_050%Arr%Val(I,J)
+!            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_050%Arr%Val(I,J)
+!            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_050%Arr%Val(I,J)
+!            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_050%Arr%Val(I,J)
+!            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_050%Arr%Val(I,J)
+!
+!            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_050%Arr%Val(I,J)
+!
+!            WEIGHT       = WTS(1,I1)
+!         CASE ( 50 )
+!            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_060%Arr%Val(I,J)
+!            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_060%Arr%Val(I,J)
+!            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_060%Arr%Val(I,J)
+!            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_060%Arr%Val(I,J)
+!            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_060%Arr%Val(I,J)
+!            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_060%Arr%Val(I,J)
+!            TEMPCO_TMP       =  ExtState%MEmisCO_OR_060%Arr%Val(I,J)
+!            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_060%Arr%Val(I,J)
+!            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_060%Arr%Val(I,J)
+!            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_060%Arr%Val(I,J)
+!            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_060%Arr%Val(I,J)
+!            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_060%Arr%Val(I,J)
+!            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_060%Arr%Val(I,J)
+!
+!            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_060%Arr%Val(I,J)
+!            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_060%Arr%Val(I,J)
+!            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_060%Arr%Val(I,J)
+!            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_060%Arr%Val(I,J)
+!            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_060%Arr%Val(I,J)
+!            TEMPETH_TMP      =  ExtState%MEmisETH_OR_060%Arr%Val(I,J)
+!            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_060%Arr%Val(I,J)
+!            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_060%Arr%Val(I,J)
+!            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_060%Arr%Val(I,J)
+!            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_060%Arr%Val(I,J)
+!
+!            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_060%Arr%Val(I,J)
+!            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_060%Arr%Val(I,J)
+!            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_060%Arr%Val(I,J)
+!            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_060%Arr%Val(I,J)
+!            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_060%Arr%Val(I,J)
+!            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_060%Arr%Val(I,J)
+!            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_060%Arr%Val(I,J)
+!            TEMPACET_TMP     =  ExtState%MEmisACET_OR_060%Arr%Val(I,J)
+!            TEMPKET_TMP      =  ExtState%MEmisKET_OR_060%Arr%Val(I,J)
+!            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_060%Arr%Val(I,J)
+!
+!            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_060%Arr%Val(I,J)
+!            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_060%Arr%Val(I,J)
+!            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_060%Arr%Val(I,J)
+!            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_060%Arr%Val(I,J)
+!            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_060%Arr%Val(I,J)
+!            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_060%Arr%Val(I,J)
+!            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_060%Arr%Val(I,J)
+!            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_060%Arr%Val(I,J)
+!            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_060%Arr%Val(I,J)
+!            TEMPPK_TMP       =  ExtState%MEmisPK_OR_060%Arr%Val(I,J)
+!
+!            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_060%Arr%Val(I,J)
+!            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_060%Arr%Val(I,J)
+!            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_060%Arr%Val(I,J)
+!            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_060%Arr%Val(I,J)
+!            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_060%Arr%Val(I,J)
+!            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_060%Arr%Val(I,J)
+!            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_060%Arr%Val(I,J)
+!            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_060%Arr%Val(I,J)
+!            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_060%Arr%Val(I,J)
+!            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_060%Arr%Val(I,J)
+!
+!            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_060%Arr%Val(I,J)
+!
+!            WEIGHT       = WTS(1,I1)
+!         CASE ( 60 )
+!            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_070%Arr%Val(I,J)
+!            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_070%Arr%Val(I,J)
+!            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_070%Arr%Val(I,J)
+!            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_070%Arr%Val(I,J)
+!            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_070%Arr%Val(I,J)
+!            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_070%Arr%Val(I,J)
+!            TEMPCO_TMP       =  ExtState%MEmisCO_OR_070%Arr%Val(I,J)
+!            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_070%Arr%Val(I,J)
+!            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_070%Arr%Val(I,J)
+!            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_070%Arr%Val(I,J)
+!            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_070%Arr%Val(I,J)
+!            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_070%Arr%Val(I,J)
+!            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_070%Arr%Val(I,J)
+!
+!            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_070%Arr%Val(I,J)
+!            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_070%Arr%Val(I,J)
+!            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_070%Arr%Val(I,J)
+!            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_070%Arr%Val(I,J)
+!            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_070%Arr%Val(I,J)
+!            TEMPETH_TMP      =  ExtState%MEmisETH_OR_070%Arr%Val(I,J)
+!            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_070%Arr%Val(I,J)
+!            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_070%Arr%Val(I,J)
+!            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_070%Arr%Val(I,J)
+!            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_070%Arr%Val(I,J)
+!
+!            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_070%Arr%Val(I,J)
+!            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_070%Arr%Val(I,J)
+!            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_070%Arr%Val(I,J)
+!            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_070%Arr%Val(I,J)
+!            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_070%Arr%Val(I,J)
+!            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_070%Arr%Val(I,J)
+!            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_070%Arr%Val(I,J)
+!            TEMPACET_TMP     =  ExtState%MEmisACET_OR_070%Arr%Val(I,J)
+!            TEMPKET_TMP      =  ExtState%MEmisKET_OR_070%Arr%Val(I,J)
+!            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_070%Arr%Val(I,J)
+!
+!            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_070%Arr%Val(I,J)
+!            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_070%Arr%Val(I,J)
+!            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_070%Arr%Val(I,J)
+!            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_070%Arr%Val(I,J)
+!            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_070%Arr%Val(I,J)
+!            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_070%Arr%Val(I,J)
+!            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_070%Arr%Val(I,J)
+!            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_070%Arr%Val(I,J)
+!            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_070%Arr%Val(I,J)
+!            TEMPPK_TMP       =  ExtState%MEmisPK_OR_070%Arr%Val(I,J)
+!
+!            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_070%Arr%Val(I,J)
+!            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_070%Arr%Val(I,J)
+!            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_070%Arr%Val(I,J)
+!            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_070%Arr%Val(I,J)
+!            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_070%Arr%Val(I,J)
+!            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_070%Arr%Val(I,J)
+!            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_070%Arr%Val(I,J)
+!            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_070%Arr%Val(I,J)
+!            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_070%Arr%Val(I,J)
+!            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_070%Arr%Val(I,J)
+!
+!            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_070%Arr%Val(I,J)
+!
+!            WEIGHT       = WTS(1,I1)
+!         CASE ( 70 )
+!            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_080%Arr%Val(I,J)
+!            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_080%Arr%Val(I,J)
+!            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_080%Arr%Val(I,J)
+!            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_080%Arr%Val(I,J)
+!            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_080%Arr%Val(I,J)
+!            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_080%Arr%Val(I,J)
+!            TEMPCO_TMP       =  ExtState%MEmisCO_OR_080%Arr%Val(I,J)
+!            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_080%Arr%Val(I,J)
+!            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_080%Arr%Val(I,J)
+!            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_080%Arr%Val(I,J)
+!            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_080%Arr%Val(I,J)
+!            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_080%Arr%Val(I,J)
+!            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_080%Arr%Val(I,J)
+!
+!            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_080%Arr%Val(I,J)
+!            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_080%Arr%Val(I,J)
+!            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_080%Arr%Val(I,J)
+!            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_080%Arr%Val(I,J)
+!            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_080%Arr%Val(I,J)
+!            TEMPETH_TMP      =  ExtState%MEmisETH_OR_080%Arr%Val(I,J)
+!            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_080%Arr%Val(I,J)
+!            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_080%Arr%Val(I,J)
+!            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_080%Arr%Val(I,J)
+!            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_080%Arr%Val(I,J)
+!
+!            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_080%Arr%Val(I,J)
+!            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_080%Arr%Val(I,J)
+!            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_080%Arr%Val(I,J)
+!            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_080%Arr%Val(I,J)
+!            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_080%Arr%Val(I,J)
+!            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_080%Arr%Val(I,J)
+!            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_080%Arr%Val(I,J)
+!            TEMPACET_TMP     =  ExtState%MEmisACET_OR_080%Arr%Val(I,J)
+!            TEMPKET_TMP      =  ExtState%MEmisKET_OR_080%Arr%Val(I,J)
+!            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_080%Arr%Val(I,J)
+!
+!            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_080%Arr%Val(I,J)
+!            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_080%Arr%Val(I,J)
+!            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_080%Arr%Val(I,J)
+!            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_080%Arr%Val(I,J)
+!            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_080%Arr%Val(I,J)
+!            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_080%Arr%Val(I,J)
+!            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_080%Arr%Val(I,J)
+!            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_080%Arr%Val(I,J)
+!            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_080%Arr%Val(I,J)
+!            TEMPPK_TMP       =  ExtState%MEmisPK_OR_080%Arr%Val(I,J)
+!
+!            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_080%Arr%Val(I,J)
+!            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_080%Arr%Val(I,J)
+!            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_080%Arr%Val(I,J)
+!            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_080%Arr%Val(I,J)
+!            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_080%Arr%Val(I,J)
+!            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_080%Arr%Val(I,J)
+!            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_080%Arr%Val(I,J)
+!            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_080%Arr%Val(I,J)
+!            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_080%Arr%Val(I,J)
+!            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_080%Arr%Val(I,J)
+!
+!            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_080%Arr%Val(I,J)
+!
+!            WEIGHT       = WTS(1,I1)
+!         CASE ( 80 )
+!            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_090%Arr%Val(I,J)
+!            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_090%Arr%Val(I,J)
+!            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_090%Arr%Val(I,J)
+!            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_090%Arr%Val(I,J)
+!            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_090%Arr%Val(I,J)
+!            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_090%Arr%Val(I,J)
+!            TEMPCO_TMP       =  ExtState%MEmisCO_OR_090%Arr%Val(I,J)
+!            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_090%Arr%Val(I,J)
+!            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_090%Arr%Val(I,J)
+!            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_090%Arr%Val(I,J)
+!            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_090%Arr%Val(I,J)
+!            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_090%Arr%Val(I,J)
+!            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_090%Arr%Val(I,J)
+!
+!            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_090%Arr%Val(I,J)
+!            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_090%Arr%Val(I,J)
+!            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_090%Arr%Val(I,J)
+!            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_090%Arr%Val(I,J)
+!            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_090%Arr%Val(I,J)
+!            TEMPETH_TMP      =  ExtState%MEmisETH_OR_090%Arr%Val(I,J)
+!            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_090%Arr%Val(I,J)
+!            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_090%Arr%Val(I,J)
+!            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_090%Arr%Val(I,J)
+!            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_090%Arr%Val(I,J)
+!
+!            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_090%Arr%Val(I,J)
+!            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_090%Arr%Val(I,J)
+!            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_090%Arr%Val(I,J)
+!            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_090%Arr%Val(I,J)
+!            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_090%Arr%Val(I,J)
+!            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_090%Arr%Val(I,J)
+!            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_090%Arr%Val(I,J)
+!            TEMPACET_TMP     =  ExtState%MEmisACET_OR_090%Arr%Val(I,J)
+!            TEMPKET_TMP      =  ExtState%MEmisKET_OR_090%Arr%Val(I,J)
+!            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_090%Arr%Val(I,J)
+!
+!            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_090%Arr%Val(I,J)
+!            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_090%Arr%Val(I,J)
+!            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_090%Arr%Val(I,J)
+!            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_090%Arr%Val(I,J)
+!            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_090%Arr%Val(I,J)
+!            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_090%Arr%Val(I,J)
+!            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_090%Arr%Val(I,J)
+!            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_090%Arr%Val(I,J)
+!            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_090%Arr%Val(I,J)
+!            TEMPPK_TMP       =  ExtState%MEmisPK_OR_090%Arr%Val(I,J)
+!
+!            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_090%Arr%Val(I,J)
+!            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_090%Arr%Val(I,J)
+!            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_090%Arr%Val(I,J)
+!            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_090%Arr%Val(I,J)
+!            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_090%Arr%Val(I,J)
+!            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_090%Arr%Val(I,J)
+!            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_090%Arr%Val(I,J)
+!            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_090%Arr%Val(I,J)
+!            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_090%Arr%Val(I,J)
+!            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_090%Arr%Val(I,J)
+!
+!            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_090%Arr%Val(I,J)
+!
+!            WEIGHT       = WTS(1,I1)
+!         CASE ( 90 )
+!            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_100%Arr%Val(I,J)
+!            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_100%Arr%Val(I,J)
+!            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_100%Arr%Val(I,J)
+!            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_100%Arr%Val(I,J)
+!            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_100%Arr%Val(I,J)
+!            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_100%Arr%Val(I,J)
+!            TEMPCO_TMP       =  ExtState%MEmisCO_OR_100%Arr%Val(I,J)
+!            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_100%Arr%Val(I,J)
+!            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_100%Arr%Val(I,J)
+!            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_100%Arr%Val(I,J)
+!            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_100%Arr%Val(I,J)
+!            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_100%Arr%Val(I,J)
+!            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_100%Arr%Val(I,J)
+!
+!            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_100%Arr%Val(I,J)
+!            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_100%Arr%Val(I,J)
+!            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_100%Arr%Val(I,J)
+!            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_100%Arr%Val(I,J)
+!            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_100%Arr%Val(I,J)
+!            TEMPETH_TMP      =  ExtState%MEmisETH_OR_100%Arr%Val(I,J)
+!            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_100%Arr%Val(I,J)
+!            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_100%Arr%Val(I,J)
+!            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_100%Arr%Val(I,J)
+!            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_100%Arr%Val(I,J)
+!
+!            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_100%Arr%Val(I,J)
+!            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_100%Arr%Val(I,J)
+!            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_100%Arr%Val(I,J)
+!            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_100%Arr%Val(I,J)
+!            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_100%Arr%Val(I,J)
+!            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_100%Arr%Val(I,J)
+!            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_100%Arr%Val(I,J)
+!            TEMPACET_TMP     =  ExtState%MEmisACET_OR_100%Arr%Val(I,J)
+!            TEMPKET_TMP      =  ExtState%MEmisKET_OR_100%Arr%Val(I,J)
+!            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_100%Arr%Val(I,J)
+!
+!            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_100%Arr%Val(I,J)
+!            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_100%Arr%Val(I,J)
+!            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_100%Arr%Val(I,J)
+!            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_100%Arr%Val(I,J)
+!            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_100%Arr%Val(I,J)
+!            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_100%Arr%Val(I,J)
+!            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_100%Arr%Val(I,J)
+!            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_100%Arr%Val(I,J)
+!            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_100%Arr%Val(I,J)
+!            TEMPPK_TMP       =  ExtState%MEmisPK_OR_100%Arr%Val(I,J)
+!
+!            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_100%Arr%Val(I,J)
+!            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_100%Arr%Val(I,J)
+!            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_100%Arr%Val(I,J)
+!            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_100%Arr%Val(I,J)
+!            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_100%Arr%Val(I,J)
+!            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_100%Arr%Val(I,J)
+!            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_100%Arr%Val(I,J)
+!            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_100%Arr%Val(I,J)
+!            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_100%Arr%Val(I,J)
+!            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_100%Arr%Val(I,J)
+!
+!            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_100%Arr%Val(I,J)
+!
+!            WEIGHT       = WTS(1,I1)
+!         CASE ( 100 )
+!            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_110%Arr%Val(I,J)
+!            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_110%Arr%Val(I,J)
+!            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_110%Arr%Val(I,J)
+!            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_110%Arr%Val(I,J)
+!            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_110%Arr%Val(I,J)
+!            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_110%Arr%Val(I,J)
+!            TEMPCO_TMP       =  ExtState%MEmisCO_OR_110%Arr%Val(I,J)
+!            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_110%Arr%Val(I,J)
+!            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_110%Arr%Val(I,J)
+!            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_110%Arr%Val(I,J)
+!            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_110%Arr%Val(I,J)
+!            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_110%Arr%Val(I,J)
+!            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_110%Arr%Val(I,J)
+!
+!            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_110%Arr%Val(I,J)
+!            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_110%Arr%Val(I,J)
+!            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_110%Arr%Val(I,J)
+!            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_110%Arr%Val(I,J)
+!            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_110%Arr%Val(I,J)
+!            TEMPETH_TMP      =  ExtState%MEmisETH_OR_110%Arr%Val(I,J)
+!            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_110%Arr%Val(I,J)
+!            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_110%Arr%Val(I,J)
+!            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_110%Arr%Val(I,J)
+!            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_110%Arr%Val(I,J)
+!
+!            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_110%Arr%Val(I,J)
+!            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_110%Arr%Val(I,J)
+!            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_110%Arr%Val(I,J)
+!            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_110%Arr%Val(I,J)
+!            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_110%Arr%Val(I,J)
+!            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_110%Arr%Val(I,J)
+!            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_110%Arr%Val(I,J)
+!            TEMPACET_TMP     =  ExtState%MEmisACET_OR_110%Arr%Val(I,J)
+!            TEMPKET_TMP      =  ExtState%MEmisKET_OR_110%Arr%Val(I,J)
+!            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_110%Arr%Val(I,J)
+!
+!            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_110%Arr%Val(I,J)
+!            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_110%Arr%Val(I,J)
+!            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_110%Arr%Val(I,J)
+!            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_110%Arr%Val(I,J)
+!            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_110%Arr%Val(I,J)
+!            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_110%Arr%Val(I,J)
+!            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_110%Arr%Val(I,J)
+!            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_110%Arr%Val(I,J)
+!            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_110%Arr%Val(I,J)
+!            TEMPPK_TMP       =  ExtState%MEmisPK_OR_110%Arr%Val(I,J)
+!
+!            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_110%Arr%Val(I,J)
+!            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_110%Arr%Val(I,J)
+!            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_110%Arr%Val(I,J)
+!            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_110%Arr%Val(I,J)
+!            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_110%Arr%Val(I,J)
+!            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_110%Arr%Val(I,J)
+!            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_110%Arr%Val(I,J)
+!            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_110%Arr%Val(I,J)
+!            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_110%Arr%Val(I,J)
+!            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_110%Arr%Val(I,J)
+!
+!            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_110%Arr%Val(I,J)
+!
+!            WEIGHT       = WTS(1,I1)
+!         CASE ( 110 )
+!            TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_120%Arr%Val(I,J)
+!            TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_120%Arr%Val(I,J)
+!            TEMPNO2_GAS_TMP  =  ExtState%MEmisNO2_GAS_OR_120%Arr%Val(I,J)
+!            TEMPNO2_DIS_TMP  =  ExtState%MEmisNO2_DIS_OR_120%Arr%Val(I,J)
+!            TEMPHONO_GAS_TMP =  ExtState%MEmisHONO_GAS_OR_120%Arr%Val(I,J)
+!            TEMPHONO_DIS_TMP =  ExtState%MEmisHONO_DIS_OR_120%Arr%Val(I,J)
+!            TEMPCO_TMP       =  ExtState%MEmisCO_OR_120%Arr%Val(I,J)
+!            TEMPSO2_TMP      =  ExtState%MEmisSO2_OR_120%Arr%Val(I,J)
+!            TEMPNH3_TMP      =  ExtState%MEmisNH3_OR_120%Arr%Val(I,J)
+!            TEMPCH4_TMP      =  ExtState%MEmisCH4_OR_120%Arr%Val(I,J)
+!            TEMPACROLEIN_TMP =  ExtState%MEmisACROLEIN_OR_120%Arr%Val(I,J)
+!            TEMPBUTADIENE13_TMP =  ExtState%MEmisBUTADIENE13_OR_120%Arr%Val(I,J)
+!            TEMPETHY_TMP     =  ExtState%MEmisETHY_OR_120%Arr%Val(I,J)
+!
+!            TEMPTERP_TMP     =  ExtState%MEmisTERP_OR_120%Arr%Val(I,J)
+!            TEMPFORM_TMP     =  ExtState%MEmisFORM_OR_120%Arr%Val(I,J)
+!            TEMPPAR_TMP      =  ExtState%MEmisPAR_OR_120%Arr%Val(I,J)
+!            TEMPIOLE_TMP     =  ExtState%MEmisIOLE_OR_120%Arr%Val(I,J)
+!            TEMPOLE_TMP      =  ExtState%MEmisOLE_OR_120%Arr%Val(I,J)
+!            TEMPETH_TMP      =  ExtState%MEmisETH_OR_120%Arr%Val(I,J)
+!            TEMPETHA_TMP     =  ExtState%MEmisETHA_OR_120%Arr%Val(I,J)
+!            TEMPETOH_TMP     =  ExtState%MEmisETOH_OR_120%Arr%Val(I,J)
+!            TEMPMEOH_TMP     =  ExtState%MEmisMEOH_OR_120%Arr%Val(I,J)
+!            TEMPBENZ_TMP     =  ExtState%MEmisBENZ_OR_120%Arr%Val(I,J)
+!
+!            TEMPTOL_TMP      =  ExtState%MEmisTOL_OR_120%Arr%Val(I,J)
+!            TEMPXYLMN_TMP    =  ExtState%MEmisXYLMN_OR_120%Arr%Val(I,J)
+!            TEMPNAPH_TMP     =  ExtState%MEmisNAPH_OR_120%Arr%Val(I,J)
+!            TEMPALD2_TMP     =  ExtState%MEmisALD2_OR_120%Arr%Val(I,J)
+!            TEMPALDX_TMP     =  ExtState%MEmisALDX_OR_120%Arr%Val(I,J)
+!            TEMPISOP_TMP     =  ExtState%MEmisISOP_OR_120%Arr%Val(I,J)
+!            TEMPPRPA_TMP     =  ExtState%MEmisPRPA_OR_120%Arr%Val(I,J)
+!            TEMPACET_TMP     =  ExtState%MEmisACET_OR_120%Arr%Val(I,J)
+!            TEMPKET_TMP      =  ExtState%MEmisKET_OR_120%Arr%Val(I,J)
+!            TEMPALD2_PRIMARY_TMP =  ExtState%MEmisALD2_PRIMARY_OR_120%Arr%Val(I,J)
+!
+!            TEMPFORM_PRIMARY_TMP =  ExtState%MEmisFORM_PRIMARY_OR_120%Arr%Val(I,J)
+!            TEMPSOAALK_TMP   =  ExtState%MEmisSOAALK_OR_120%Arr%Val(I,J)
+!            TEMPPEC_TMP      =  ExtState%MEmisPEC_OR_120%Arr%Val(I,J)
+!            TEMPPOC_TMP      =  ExtState%MEmisPOC_OR_120%Arr%Val(I,J)
+!            TEMPPAL_TMP      =  ExtState%MEmisPAL_OR_120%Arr%Val(I,J)
+!            TEMPPCA_TMP      =  ExtState%MEmisPCA_OR_120%Arr%Val(I,J)
+!            TEMPPCL_TMP      =  ExtState%MEmisPCL_OR_120%Arr%Val(I,J)
+!            TEMPPFE_TMP      =  ExtState%MEmisPFE_OR_120%Arr%Val(I,J)
+!            TEMPPH2O_TMP     =  ExtState%MEmisPH2O_OR_120%Arr%Val(I,J)
+!            TEMPPK_TMP       =  ExtState%MEmisPK_OR_120%Arr%Val(I,J)
+!
+!            TEMPPMG_TMP      =  ExtState%MEmisPMG_OR_120%Arr%Val(I,J)
+!            TEMPPMN_TMP      =  ExtState%MEmisPMN_OR_120%Arr%Val(I,J)
+!            TEMPPMOTHR_TMP   =  ExtState%MEmisPMOTHR_OR_120%Arr%Val(I,J)
+!            TEMPPNA_TMP      =  ExtState%MEmisPNA_OR_120%Arr%Val(I,J)
+!            TEMPPNCOM_TMP    =  ExtState%MEmisPNCOM_OR_120%Arr%Val(I,J)
+!            TEMPPNH4_TMP     =  ExtState%MEmisPNH4_OR_120%Arr%Val(I,J)
+!            TEMPPNO3_TMP     =  ExtState%MEmisPNO3_OR_120%Arr%Val(I,J)
+!            TEMPPTI_TMP      =  ExtState%MEmisPTI_OR_120%Arr%Val(I,J)
+!            TEMPPSI_TMP      =  ExtState%MEmisPSI_OR_120%Arr%Val(I,J)
+!            TEMPPMC_TMP      =  ExtState%MEmisPMC_OR_120%Arr%Val(I,J)
+!
+!            TEMPPSO4_TMP     =  ExtState%MEmisPSO4_OR_120%Arr%Val(I,J)
+!
+!            WEIGHT       = WTS(1,I1)
+!         CASE DEFAULT
+!             MSG = 'LUT error: Temperature interpolation error!'
+!             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
+!             RETURN
+!      END SELECT
+!
+!         !-----------------------------------
+!         ! Final interpolated values
+!         !-----------------------------------
+!         ! Weighted sum of TempNO from the LUT
+!         TEMPNO_GAS  = TEMPNO_GAS  + TEMPNO_GAS_TMP  * WEIGHT
+!         TEMPNO_DIS  = TEMPNO_DIS  + TEMPNO_DIS_TMP  * WEIGHT
+!         TEMPNO2_GAS = TEMPNO2_GAS + TEMPNO2_GAS_TMP * WEIGHT
+!         TEMPNO2_DIS = TEMPNO2_DIS + TEMPNO2_DIS_TMP * WEIGHT
+!         TEMPHONO_GAS= TEMPHONO_GAS+ TEMPHONO_GAS_TMP* WEIGHT
+!         TEMPHONO_DIS= TEMPHONO_DIS+ TEMPHONO_DIS_TMP* WEIGHT
+!         TEMPCO      = TEMPCO      + TEMPCO_TMP      * WEIGHT
+!         TEMPSO2     = TEMPSO2     + TEMPSO2_TMP     * WEIGHT
+!         TEMPNH3     = TEMPNH3     + TEMPNH3_TMP     * WEIGHT
+!         TEMPCH4     = TEMPCH4     + TEMPCH4_TMP     * WEIGHT
+!         TEMPACROLEIN = TEMPACROLEIN + TEMPACROLEIN_TMP * WEIGHT
+!         TEMPBUTADIENE13 = TEMPBUTADIENE13 + TEMPBUTADIENE13_TMP * WEIGHT
+!         TEMPETHY     = TEMPETHY   + TEMPETHY_TMP    * WEIGHT
+!
+!         TEMPTERP    = TEMPTERP    + TEMPTERP_TMP    * WEIGHT
+!         TEMPFORM    = TEMPFORM    + TEMPFORM_TMP    * WEIGHT
+!         TEMPPAR     = TEMPPAR     + TEMPPAR_TMP     * WEIGHT
+!         TEMPIOLE    = TEMPIOLE    + TEMPIOLE_TMP    * WEIGHT
+!         TEMPOLE     = TEMPOLE     + TEMPOLE_TMP     * WEIGHT
+!         TEMPETH     = TEMPETH     + TEMPETH_TMP     * WEIGHT
+!         TEMPETHA    = TEMPETHA    + TEMPETHA_TMP    * WEIGHT
+!         TEMPETOH    = TEMPETOH    + TEMPETOH_TMP    * WEIGHT
+!         TEMPMEOH    = TEMPMEOH    + TEMPMEOH_TMP    * WEIGHT
+!         TEMPBENZ    = TEMPBENZ    + TEMPBENZ_TMP    * WEIGHT
+!
+!         TEMPTOL     = TEMPTOL     + TEMPTOL_TMP     * WEIGHT
+!         TEMPXYLMN   = TEMPXYLMN   + TEMPXYLMN_TMP   * WEIGHT
+!         TEMPNAPH    = TEMPNAPH    + TEMPNAPH_TMP    * WEIGHT
+!         TEMPALD2    = TEMPALD2    + TEMPALD2_TMP    * WEIGHT
+!         TEMPALDX    = TEMPALDX    + TEMPALDX_TMP    * WEIGHT
+!         TEMPISOP    = TEMPISOP    + TEMPISOP_TMP    * WEIGHT
+!         TEMPPRPA    = TEMPPRPA    + TEMPPRPA_TMP    * WEIGHT
+!         TEMPACET    = TEMPACET    + TEMPACET_TMP    * WEIGHT
+!         TEMPKET     = TEMPKET     + TEMPKET_TMP     * WEIGHT
+!         TEMPALD2_PRIMARY = TEMPALD2_PRIMARY + TEMPALD2_PRIMARY_TMP * WEIGHT
+!
+!         TEMPFORM_PRIMARY = TEMPFORM_PRIMARY + TEMPFORM_PRIMARY_TMP * WEIGHT
+!         TEMPSOAALK  = TEMPSOAALK  + TEMPSOAALK_TMP  * WEIGHT
+!         TEMPPEC     = TEMPPEC     + TEMPPEC_TMP     * WEIGHT
+!         TEMPPOC     = TEMPPOC     + TEMPPOC_TMP     * WEIGHT
+!         TEMPPAL     = TEMPPAL     + TEMPPAL_TMP     * WEIGHT
+!         TEMPPCA     = TEMPPCA     + TEMPPCA_TMP     * WEIGHT
+!         TEMPPCL     = TEMPPCL     + TEMPPCL_TMP     * WEIGHT
+!         TEMPPFE     = TEMPPFE     + TEMPPFE_TMP     * WEIGHT
+!         TEMPPH2O    = TEMPPH2O    + TEMPPH2O_TMP    * WEIGHT
+!         TEMPPK      = TEMPPK      + TEMPPK_TMP      * WEIGHT
+!
+!         TEMPPMG     = TEMPPMG     + TEMPPMG_TMP     * WEIGHT
+!         TEMPPMN     = TEMPPMN     + TEMPPMN_TMP     * WEIGHT
+!         TEMPPMOTHR  = TEMPPMOTHR  + TEMPPMOTHR_TMP  * WEIGHT
+!         TEMPPNA     = TEMPPNA     + TEMPPNA_TMP     * WEIGHT
+!         TEMPPNCOM   = TEMPPNCOM   + TEMPPNCOM_TMP   * WEIGHT
+!         TEMPPNH4    = TEMPPNH4    + TEMPPNH4_TMP    * WEIGHT
+!         TEMPPNO3    = TEMPPNO3    + TEMPPNO3_TMP    * WEIGHT
+!         TEMPPTI     = TEMPPTI     + TEMPPTI_TMP     * WEIGHT
+!         TEMPPSI     = TEMPPSI     + TEMPPSI_TMP     * WEIGHT
+!         TEMPPMC     = TEMPPMC     + TEMPPMC_TMP     * WEIGHT
+!
+!         TEMPPSO4    = TEMPPSO4    + TEMPPSO4_TMP    * WEIGHT
+!
+!   END DO
+!
+!   IF ( Inst%LIVPRECIP ) THEN
+!      X = PRECIP !mm/hr
+!      Beef
+!      A     = -1.0*(0.422-0.0065*VARS(1))*X
+!      B     = 0.0079 + 0.0068*VARS(1)
+!      Y     = (0.935 - 0.0058*VARS(1))*EXP(A+B)
+!       TEMPNO_BEEF = TEMPNO_BEEF*Y
+!      Swine
+!      A     = -1.0*(0.627-0.0048*VARS(1))*X
+!      B     = 0.111 + 0.003*VARS(1)
+!      Y     = (0.869 - 0.0031*VARS(1))*EXP(A+B)
+!       TEMPNO_SWINE = TEMPNO_SWINE*Y
+!      Dairy
+!      A     = -1.0*(0.658-0.0036*VARS(1))*X
+!      B     = 0.998 - 0.0043*VARS(1)
+!      Y     = (0.009 + 0.0037*VARS(1))*EXP(A+B)
+!       TEMPNO_DAIRY = TEMPNO_DAIRY*Y
+!      Poultry
+!      A     = -1.0*(0.352-0.0062*VARS(1))*X
+!      B     = 0.703 + 0.0059*VARS(1)
+!      Y     = (0.189 - 0.0029*VARS(1))*EXP(A+B)
+!       TEMPNO_POULTRY = TEMPNO_POULTRY*Y
+!   ENDIF
+!      TEMPNO = TEMPNO_BEEF + TEMPNO_SWINE + TEMPNO_DAIRY + TEMPNO_POULTRY
+!     Continue to add remaining species below....
+!  ...
+!  ....
+!
+!   ! Return w/ success
+!   RC = HCO_SUCCESS
+
 !...Similar program details as Onroad above, but also with precip parameterizations for 
 ! each animal type
-!  END SUBROUTINE METEMIS_LUT_LIV
+!  END SUBROUTINE METEMIS_LUT_LIVESTOCK
 
 
    !!!TBD - RWC
@@ -3902,10 +4918,10 @@ CONTAINS
 ! !IROUTINE: metemis_rwc
 !
 ! !DESCRIPTION:  Subroutine METEMIS_LUT_RWC returns emissions
-! based on temperature binary flag base on (Baek et al. 2023;
+! based on temperature binary flag from (Baek et al. 2023;
 ! https://doi.org/10.5194/gmd-16-4659-2023)...
 !
-! The lookup table uses 1 input variable:
+! This uses 1 input variable:
 !     TEMP   : model temperature, K
 !\\
 ! !INTERFACE:
@@ -3926,6 +4942,11 @@ CONTAINS
 !...
 !...Add simple program details for RWC binary flag on/off based on temperature threshold
 ! from config
+!  IF ( Inst%MERWC ) THEN 
+!  RWC_TEMP = Inst%RWCTEMPF  ! RWC temperature threshold from config
+!
+!  ...
+! ENDIF
 !  END SUBROUTINE METEMIS_RWC
 
 !------------------------------------------------------------------------------

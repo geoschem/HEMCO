@@ -167,6 +167,7 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2I),  POINTER :: TropLev     ! Tropopause level [1]
      TYPE(ExtDat_2R),  POINTER :: FLASH_DENS  ! Lightning flash density [#/km2/s]
      TYPE(ExtDat_2R),  POINTER :: CONV_DEPTH  ! Convective cloud depth [m]
+     TYPE(ExtDat_2R),  POINTER :: PRECTOT     ! Total Precipitation [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_GAS_OR_030  ! MetEmis NO GAS Onroad Table 30F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_GAS_OR_040  ! MetEmis NO GAS Onroad Table 40F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_GAS_OR_050  ! MetEmis NO GAS Onroad Table 50F [kg/m2/s]
@@ -759,6 +760,56 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: MEmisPSO4_OR_110  ! MetEmis PSO4  Onroad Table 110F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisPSO4_OR_120  ! MetEmis PSO4  Onroad Table 120F [kg/m2/s]
 
+     !!!TBD Livestock
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_BEEF_LIV_030   ! MetEmis NO Livestock Beef Table 30F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_BEEF_LIV_040   ! MetEmis NO Livestock Beef Table 40F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_BEEF_LIV_050   ! MetEmis NO Livestock Beef Table 50F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_BEEF_LIV_060   ! MetEmis NO Livestock Beef Table 60F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_BEEF_LIV_070   ! MetEmis NO Livestock Beef Table 70F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_BEEF_LIV_080   ! MetEmis NO Livestock Beef Table 80F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_BEEF_LIV_090   ! MetEmis NO Livestock Beef Table 90F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_BEEF_LIV_100   ! MetEmis NO Livestock Beef Table 100F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_BEEF_LIV_110   ! MetEmis NO Livestock Beef Table 110F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_BEEF_LIV_120   ! MetEmis NO Livestock Beef Table 120F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_SWINE_LIV_030  ! MetEmis NO Livestock Swine Table 30F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_SWINE_LIV_040  ! MetEmis NO Livestock Swine Table 40F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_SWINE_LIV_050  ! MetEmis NO Livestock Swine Table 50F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_SWINE_LIV_060  ! MetEmis NO Livestock Swine Table 60F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_SWINE_LIV_070  ! MetEmis NO Livestock Swine Table 70F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_SWINE_LIV_080  ! MetEmis NO Livestock Swine Table 80F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_SWINE_LIV_090  ! MetEmis NO Livestock Swine Table 90F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_SWINE_LIV_100  ! MetEmis NO Livestock Swine Table 100F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_SWINE_LIV_110  ! MetEmis NO Livestock Swine Table 110F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_SWINE_LIV_120  ! MetEmis NO Livestock Swine Table 120F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_DAIRY_LIV_030  ! MetEmis NO Livestock Dairy Table 30F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_DAIRY_LIV_040  ! MetEmis NO Livestock Dairy Table 40F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_DAIRY_LIV_050  ! MetEmis NO Livestock Dairy Table 50F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_DAIRY_LIV_060  ! MetEmis NO Livestock Dairy Table 60F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_DAIRY_LIV_070  ! MetEmis NO Livestock Dairy Table 70F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_DAIRY_LIV_080  ! MetEmis NO Livestock Dairy Table 80F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_DAIRY_LIV_090  ! MetEmis NO Livestock Dairy Table 90F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_DAIRY_LIV_100  ! MetEmis NO Livestock Dairy Table 100F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_DAIRY_LIV_110  ! MetEmis NO Livestock Dairy Table 110F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_DAIRY_LIV_120  ! MetEmis NO Livestock Dairy Table 120F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_POULTRY_LIV_030  ! MetEmis NO Livestock Poultry Table 30F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_POULTRY_LIV_040  ! MetEmis NO Livestock Poultry Table 40F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_POULTRY_LIV_050  ! MetEmis NO Livestock Poultry Table 50F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_POULTRY_LIV_060  ! MetEmis NO Livestock Poultry Table 60F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_POULTRY_LIV_070  ! MetEmis NO Livestock Poultry Table 70F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_POULTRY_LIV_080  ! MetEmis NO Livestock Poultry Table 80F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_POULTRY_LIV_090  ! MetEmis NO Livestock Poultry Table 90F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_POULTRY_LIV_100  ! MetEmis NO Livestock Poultry Table 100F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_POULTRY_LIV_110  ! MetEmis NO Livestock Poultry Table 110F [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_POULTRY_LIV_120  ! MetEmis NO Livestock Poultry Table 120F [kg/m2/s]
+!     !!!!Continue Livestock Species here for each animal type (BEEF, SWINE, DAIRY, and POULTRY)
+!     !...
+!
+!     !!!TBD RWC
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_RWC   ! MetEmis NO RWC [kg/m2/s]
+!     TYPE(ExtDat_2R),  POINTER :: MEmisNO2_RWC  ! MetEmis NO2 RWC [kg/m2/s]
+!     !!!!Continue RWC Species here
+!     !...
+!
      INTEGER,          POINTER :: PBL_MAX     ! Max height of PBL [level]
      TYPE(ExtDat_3R),  POINTER :: CNV_MFC     ! Convective cloud mass flux [kg/m2/s]
      TYPE(ExtDat_3R),  POINTER :: FRAC_OF_PBL ! Fraction of grid box in PBL
@@ -4548,6 +4599,14 @@ CONTAINS
         RETURN
     ENDIF
 
+         !!!TBD Livestock
+!    CALL ExtDat_Init ( ExtState%MEmisNO_BEEF_LIV_030, RC )
+!    IF ( RC /= HCO_SUCCESS ) THEN
+!        CALL HCO_ERROR( 'Init error: MEmisNO_BEEF_LIV_030 ', RC, THISLOC=LOC )
+!        RETURN
+!    ENDIF
+
+
     ! Return w/ success
     RC = HCO_SUCCESS
 
@@ -5231,6 +5290,13 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%MEmisPSO4_OR_110 )
        CALL ExtDat_Cleanup( ExtState%MEmisPSO4_OR_120 )
 
+       !!!TBD Livestock
+!       CALL ExtDat_Cleanup( ExtState%MEmisNO_BEEF_LIV_030 )
+!      Add remaining species by animal type and bins
+
+       !!!TBD RWC
+!       CALL ExtDat_Cleanup( ExtState%MEmisNO_RWC )
+!      Add remaining species 
 
        ExtState%DRYCOEFF   => NULL()
        ExtState%PBL_MAX    => NULL()
