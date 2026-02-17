@@ -941,7 +941,7 @@ CONTAINS
 !       ! MetEmis Livestock lookup table for emissions based on temperature
 !       ! (P.C. Campbell, 02/12/2026)
 !       !---------------------------------------------------------------------
-!       CALL METEMIS_LUT_LIV( ExtState,  HcoState,  Inst,   I,   J,   RC,                 &
+!       CALL METEMIS_LUT_LIVESTOCK( ExtState,  HcoState,  Inst,   I,   J,   RC,                 &
 !                         TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
 !                         TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
 !                         TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
@@ -2687,6 +2687,7 @@ CONTAINS
 !   !three digit suffix pertains to livestock temperature bins in degrees fahrenheit
 !   ExtState%T2M%DoUse                          = .TRUE.
 !   ExtState%PRECTOT%DoUse                      = .TRUE. 
+!   ExtState%MEmisNO_BEEF_LIV_030%DoUse            = .TRUE.
 !   ...
 !   ExtState%MEmisPSO4_BEEF_LIV_030%DoUse            = .TRUE.
 !   ...
@@ -2694,6 +2695,7 @@ CONTAINS
 !  RWC does not have temperature bins, but read in for each species temperature
 !  binary adjustment in subroutine later
 !  ExtState%T2M%DoUse                          = .TRUE.
+!  ExtState%MEmisNO_RWC%DoUse                 = .TRUE.
 !  ...
 !  ExtState%MEmisPSO4_RWC%DoUse                 = .TRUE.
    ELSE
@@ -4059,7 +4061,7 @@ CONTAINS
 !
 !   REAL(sp)                   :: WEIGHT
 !   REAL(sp)                   :: TAIR
-!   REAL(sp)                   :: A,B,X,Y  !Precip correction
+!   REAL(sp)                   :: A,B,C,X,Y  !Precip correction
 !
 !   ! Interpolation variables, indices, and weights
 !   REAL(sp), DIMENSION(1)     :: VARS
@@ -4876,24 +4878,28 @@ CONTAINS
 !   IF ( Inst%LIVPRECIP ) THEN
 !      X = PRECIP !mm/hr
 !      Beef
-!      A     = -1.0*(0.422-0.0065*VARS(1))*X
-!      B     = 0.0079 + 0.0068*VARS(1)
-!      Y     = (0.935 - 0.0058*VARS(1))*EXP(A+B)
+!      A     = 0.704176
+!      B     = -1.0*(0.340227+0.011827*VARS(1)-0.00013706*VARS(1)*VARS(1))*X
+!      C     = 0.273876
+!      Y     = A * EXP(B) + C
 !       TEMPNO_BEEF = TEMPNO_BEEF*Y
 !      Swine
-!      A     = -1.0*(0.627-0.0048*VARS(1))*X
-!      B     = 0.111 + 0.003*VARS(1)
-!      Y     = (0.869 - 0.0031*VARS(1))*EXP(A+B)
+!      A     = 0.741151 - 0.000823*VARS(1) + 0.00000975*VARS(1)*VARS(1)
+!      B     = -1.0*(0.448762+0.000833*VARS(1)-0.00000814*VARS(1)*VARS(1))*X
+!      C     = (0.242599+0.000846*VARS(1)-0.00000972*VARS(1)*VARS(1))
+!      Y     = A * EXP(B) + C
 !       TEMPNO_SWINE = TEMPNO_SWINE*Y
 !      Dairy
-!      A     = -1.0*(0.658-0.0036*VARS(1))*X
-!      B     = 0.998 - 0.0043*VARS(1)
-!      Y     = (0.009 + 0.0037*VARS(1))*EXP(A+B)
+!      A     = 0.075704 - 0.002498*VARS(1) + 0.00003208*VARS(1)*VARS(1)
+!      B     = -1.0*(0.525663)*X
+!      C     = (0.917940+0.002745*VARS(1)-0.00003523*VARS(1)*VARS(1))
+!      Y     = A * EXP(B) + C
 !       TEMPNO_DAIRY = TEMPNO_DAIRY*Y
 !      Poultry
-!      A     = -1.0*(0.352-0.0062*VARS(1))*X
-!      B     = 0.703 + 0.0059*VARS(1)
-!      Y     = (0.189 - 0.0029*VARS(1))*EXP(A+B)
+!      A     = 0.111969 + 0.001879*VARS(1) - 0.00002245*VARS(1)*VARS(1)
+!      B     = -1.0*(0.193073+0.004176*VARS(1)-0.00005126*VARS(1)*VARS(1))*X
+!      C     = (0.841015 - 0.001985*VARS(1)+0.00002825*VARS(1)*VARS(1))
+!      Y     = A * EXP(B) + C
 !       TEMPNO_POULTRY = TEMPNO_POULTRY*Y
 !   ENDIF
 !      TEMPNO = TEMPNO_BEEF + TEMPNO_SWINE + TEMPNO_DAIRY + TEMPNO_POULTRY
@@ -4942,11 +4948,53 @@ CONTAINS
 !...
 !...Add simple program details for RWC binary flag on/off based on temperature threshold
 ! from config
-!  IF ( Inst%MERWC ) THEN 
-!  RWC_TEMP = Inst%RWCTEMPF  ! RWC temperature threshold from config
+
+! !USES:
+!
+!   USE HCO_STATE_MOD,        ONLY : HCO_State
+!   USE HCOX_STATE_MOD,       ONLY : Ext_State
+!!
+!! !INPUT PARAMETERS:
+!!
+!   TYPE(Ext_State), POINTER    :: ExtState
+!   TYPE(HCO_State), POINTER    :: HcoState
+!   TYPE(MyInst),    POINTER    :: Inst
+!   INTEGER, INTENT(IN)         :: I, J      ! Grid indices
+!!
+!! !OUTPUT PARAMETERS:
+!!
+!! Temp dependent MetEmis emission species 51 in total , kg/m2/s
+!!
+!   REAL*8, INTENT(OUT)           :: TEMPNO   ! Temp dependent NO emissions, kg/m2/s
+!   ...add remaining species
+!
+!Local
+!
+!  Initialize
+!   TEMPNO      = 0.0d0
+!   ...add remaining species
+!
+!   TEMPNO = ExtState%MEmisNO_RWC%Arr%Val(I,J)
+!   ...add remaining species
+!
+!   RWC_TEMP = Inst%RWCTEMPF  ! RWC temperature threshold in Fahrenheit from config
+!   !Get 2-m air temperature, K
+!   TAIR = ExtState%T2M%Arr%Val(I,J)
+!
+!   !========================================================================
+!   ! Load all variables into a single array
+!   !========================================================================
+!   ! Air Temperature, K --> Fahrenheit for MetEmis consistency
+!   VARS(1) = (TAIR - 273.15)*1.8 + 32.0
+!   IF (VARS(1) .GT. RWC_TEMP) THEN  !RWC emissions off (zero out)
+!        TEMPNO = TEMPNO * 0.0          
+!        ...add remaining species
+!    ENDIF
 !
 !  ...
-! ENDIF
+! ! Return w/ success
+!   RC = HCO_SUCCESS
+
 !  END SUBROUTINE METEMIS_RWC
 
 !------------------------------------------------------------------------------
