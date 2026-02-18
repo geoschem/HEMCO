@@ -170,13 +170,12 @@ MODULE HCOX_MetEmis_MOD
      LOGICAL               :: RHUMGASDIS  ! Apply Onroad humidity correction 
                                           ! for split of NOx and HONO gas and 
                                           ! diesel fuels
-     !!!TBD - Livestock/RWC
-     !LOGICAL               :: MELIVESTOCK ! Turn on MetEmis for Livestock Sector
-     !LOGICAL               :: LIVPRECIP   ! Apply livestock precip correction
-                                           ! for all species across different
-                                           ! animal types
-     !LOGICAL               :: MERWC       ! Turn on MetEmis for RWC Sector
-     !REAL(hp)              :: RWCTEMPF    ! RWC Temperature Threshold (Fahrenheit)
+     LOGICAL               :: MELIVESTOCK ! Turn on MetEmis for Livestock Sector
+     LOGICAL               :: LIVPRECIP   ! Apply livestock precip correction
+                                          ! for all species across different
+                                          ! animal types
+     LOGICAL               :: MERWC       ! Turn on MetEmis for RWC Sector
+     REAL(hp)              :: RWCTEMPF    ! RWC Temperature Threshold (Fahrenheit)
 
      ! Arrays
 
@@ -399,64 +398,125 @@ CONTAINS
     REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,51)  ! number of MetEmis Species !IVAI
     INTEGER                  :: N
 
-    !MetEmis Diag Update
-    REAL(dp)                 :: TEMP_NO
-    REAL(dp)                 :: TEMP_NO2
-    REAL(dp)                 :: TEMP_HONO
-    REAL(dp)                 :: TEMP_CO
-    REAL(dp)                 :: TEMP_SO2
-    REAL(dp)                 :: TEMP_NH3
-    REAL(dp)                 :: TEMP_CH4
-    REAL(dp)                 :: TEMP_ACROLEIN
-    REAL(dp)                 :: TEMP_BUTADIENE13
-    REAL(dp)                 :: TEMP_ETHY
+    !MetEmis Diag Update Onroad
+    REAL(dp)                 :: TEMP_NO_OR
+    REAL(dp)                 :: TEMP_NO2_OR
+    REAL(dp)                 :: TEMP_HONO_OR
+    REAL(dp)                 :: TEMP_CO_OR
+    REAL(dp)                 :: TEMP_SO2_OR
+    REAL(dp)                 :: TEMP_NH3_OR
+    REAL(dp)                 :: TEMP_CH4_OR
+    REAL(dp)                 :: TEMP_ACROLEIN_OR
+    REAL(dp)                 :: TEMP_BUTADIENE13_OR
+    REAL(dp)                 :: TEMP_ETHY_OR
 
-    REAL(dp)                 :: TEMP_TERP
-    REAL(dp)                 :: TEMP_FORM
-    REAL(dp)                 :: TEMP_PAR
-    REAL(dp)                 :: TEMP_IOLE
-    REAL(dp)                 :: TEMP_OLE
-    REAL(dp)                 :: TEMP_ETH
-    REAL(dp)                 :: TEMP_ETHA
-    REAL(dp)                 :: TEMP_ETOH
-    REAL(dp)                 :: TEMP_MEOH
-    REAL(dp)                 :: TEMP_BENZ
+    REAL(dp)                 :: TEMP_TERP_OR
+    REAL(dp)                 :: TEMP_FORM_OR
+    REAL(dp)                 :: TEMP_PAR_OR
+    REAL(dp)                 :: TEMP_IOLE_OR
+    REAL(dp)                 :: TEMP_OLE_OR
+    REAL(dp)                 :: TEMP_ETH_OR
+    REAL(dp)                 :: TEMP_ETHA_OR
+    REAL(dp)                 :: TEMP_ETOH_OR
+    REAL(dp)                 :: TEMP_MEOH_OR
+    REAL(dp)                 :: TEMP_BENZ_OR
 
-    REAL(dp)                 :: TEMP_TOL
-    REAL(dp)                 :: TEMP_XYLMN
-    REAL(dp)                 :: TEMP_NAPH
-    REAL(dp)                 :: TEMP_ALD2
-    REAL(dp)                 :: TEMP_ALDX
-    REAL(dp)                 :: TEMP_ISOP
-    REAL(dp)                 :: TEMP_PRPA
-    REAL(dp)                 :: TEMP_ACET
-    REAL(dp)                 :: TEMP_KET
-    REAL(dp)                 :: TEMP_ALD2_PRIMARY
+    REAL(dp)                 :: TEMP_TOL_OR
+    REAL(dp)                 :: TEMP_XYLMN_OR
+    REAL(dp)                 :: TEMP_NAPH_OR
+    REAL(dp)                 :: TEMP_ALD2_OR
+    REAL(dp)                 :: TEMP_ALDX_OR
+    REAL(dp)                 :: TEMP_ISOP_OR
+    REAL(dp)                 :: TEMP_PRPA_OR
+    REAL(dp)                 :: TEMP_ACET_OR
+    REAL(dp)                 :: TEMP_KET_OR
+    REAL(dp)                 :: TEMP_ALD2_PRIMARY_OR
 
-    REAL(dp)                 :: TEMP_FORM_PRIMARY
-    REAL(dp)                 :: TEMP_SOAALK
-    REAL(dp)                 :: TEMP_PEC
-    REAL(dp)                 :: TEMP_POC
-    REAL(dp)                 :: TEMP_PAL
-    REAL(dp)                 :: TEMP_PCA
-    REAL(dp)                 :: TEMP_PCL
-    REAL(dp)                 :: TEMP_PFE
-    REAL(dp)                 :: TEMP_PH2O
-    REAL(dp)                 :: TEMP_PK
+    REAL(dp)                 :: TEMP_FORM_PRIMARY_OR
+    REAL(dp)                 :: TEMP_SOAALK_OR
+    REAL(dp)                 :: TEMP_PEC_OR
+    REAL(dp)                 :: TEMP_POC_OR
+    REAL(dp)                 :: TEMP_PAL_OR
+    REAL(dp)                 :: TEMP_PCA_OR
+    REAL(dp)                 :: TEMP_PCL_OR
+    REAL(dp)                 :: TEMP_PFE_OR
+    REAL(dp)                 :: TEMP_PH2O_OR
+    REAL(dp)                 :: TEMP_PK_OR
 
-    REAL(dp)                 :: TEMP_PMG
-    REAL(dp)                 :: TEMP_PMN
-    REAL(dp)                 :: TEMP_PMOTHR
-    REAL(dp)                 :: TEMP_PNA
-    REAL(dp)                 :: TEMP_PNCOM
-    REAL(dp)                 :: TEMP_PNH4
-    REAL(dp)                 :: TEMP_PNO3
-    REAL(dp)                 :: TEMP_PTI
-    REAL(dp)                 :: TEMP_PSI
-    REAL(dp)                 :: TEMP_PMC
+    REAL(dp)                 :: TEMP_PMG_OR
+    REAL(dp)                 :: TEMP_PMN_OR
+    REAL(dp)                 :: TEMP_PMOTHR_OR
+    REAL(dp)                 :: TEMP_PNA_OR
+    REAL(dp)                 :: TEMP_PNCOM_OR
+    REAL(dp)                 :: TEMP_PNH4_OR
+    REAL(dp)                 :: TEMP_PNO3_OR
+    REAL(dp)                 :: TEMP_PTI_OR
+    REAL(dp)                 :: TEMP_PSI_OR
+    REAL(dp)                 :: TEMP_PMC_OR
 
-    REAL(dp)                 :: TEMP_PSO4
+    REAL(dp)                 :: TEMP_PSO4_OR
 
+!MetEmis Diag Update Livestock
+!    REAL(dp)                 :: TEMP_NO_LIV
+    !Add remaining species here
+
+!MetEmis Diag Update RWC
+    REAL(dp)                 :: TEMP_NO_RWC
+    REAL(dp)                 :: TEMP_NO2_RWC
+    REAL(dp)                 :: TEMP_HONO_RWC
+    REAL(dp)                 :: TEMP_CO_RWC
+    REAL(dp)                 :: TEMP_SO2_RWC
+    REAL(dp)                 :: TEMP_NH3_RWC
+    REAL(dp)                 :: TEMP_CH4_RWC
+    REAL(dp)                 :: TEMP_ACROLEIN_RWC
+    REAL(dp)                 :: TEMP_BUTADIENE13_RWC
+    REAL(dp)                 :: TEMP_ETHY_RWC
+
+    REAL(dp)                 :: TEMP_TERP_RWC
+    REAL(dp)                 :: TEMP_FORM_RWC
+    REAL(dp)                 :: TEMP_PAR_RWC
+    REAL(dp)                 :: TEMP_IOLE_RWC
+    REAL(dp)                 :: TEMP_OLE_RWC
+    REAL(dp)                 :: TEMP_ETH_RWC
+    REAL(dp)                 :: TEMP_ETHA_RWC
+    REAL(dp)                 :: TEMP_ETOH_RWC
+    REAL(dp)                 :: TEMP_MEOH_RWC
+    REAL(dp)                 :: TEMP_BENZ_RWC
+
+    REAL(dp)                 :: TEMP_TOL_RWC
+    REAL(dp)                 :: TEMP_XYLMN_RWC
+    REAL(dp)                 :: TEMP_NAPH_RWC
+    REAL(dp)                 :: TEMP_ALD2_RWC
+    REAL(dp)                 :: TEMP_ALDX_RWC
+    REAL(dp)                 :: TEMP_ISOP_RWC
+    REAL(dp)                 :: TEMP_PRPA_RWC
+    REAL(dp)                 :: TEMP_ACET_RWC
+    REAL(dp)                 :: TEMP_KET_RWC
+    REAL(dp)                 :: TEMP_ALD2_PRIMARY_RWC
+
+    REAL(dp)                 :: TEMP_FORM_PRIMARY_RWC
+    REAL(dp)                 :: TEMP_SOAALK_RWC
+    REAL(dp)                 :: TEMP_PEC_RWC
+    REAL(dp)                 :: TEMP_POC_RWC
+    REAL(dp)                 :: TEMP_PAL_RWC
+    REAL(dp)                 :: TEMP_PCA_RWC
+    REAL(dp)                 :: TEMP_PCL_RWC
+    REAL(dp)                 :: TEMP_PFE_RWC
+    REAL(dp)                 :: TEMP_PH2O_RWC
+    REAL(dp)                 :: TEMP_PK_RWC
+
+    REAL(dp)                 :: TEMP_PMG_RWC
+    REAL(dp)                 :: TEMP_PMN_RWC
+    REAL(dp)                 :: TEMP_PMOTHR_RWC
+    REAL(dp)                 :: TEMP_PNA_RWC
+    REAL(dp)                 :: TEMP_PNCOM_RWC
+    REAL(dp)                 :: TEMP_PNH4_RWC
+    REAL(dp)                 :: TEMP_PNO3_RWC
+    REAL(dp)                 :: TEMP_PTI_RWC
+    REAL(dp)                 :: TEMP_PSI_RWC
+    REAL(dp)                 :: TEMP_PMC_RWC
+
+    REAL(dp)                 :: TEMP_PSO4_RWC
 
     !=================================================================
     ! MetEmis begins here!
@@ -595,81 +655,82 @@ CONTAINS
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
-       TEMP_NO     = 0.0_hp
-       TEMP_NO2    = 0.0_hp
-       TEMP_HONO   = 0.0_hp
-       TEMP_CO     = 0.0_hp
-       TEMP_SO2    = 0.0_hp
-       TEMP_NH3    = 0.0_hp
-       TEMP_CH4    = 0.0_hp
-       TEMP_ACROLEIN  = 0.0_hp
-       TEMP_BUTADIENE13 = 0.0_hp
-       TEMP_ETHY   = 0.0_hp
+       !Onroad Temp
+       TEMP_NO_OR     = 0.0_hp
+       TEMP_NO2_OR    = 0.0_hp
+       TEMP_HONO_OR   = 0.0_hp
+       TEMP_CO_OR     = 0.0_hp
+       TEMP_SO2_OR    = 0.0_hp
+       TEMP_NH3_OR    = 0.0_hp
+       TEMP_CH4_OR    = 0.0_hp
+       TEMP_ACROLEIN_OR  = 0.0_hp
+       TEMP_BUTADIENE13_OR = 0.0_hp
+       TEMP_ETHY_OR   = 0.0_hp
 
-       TEMP_TERP   = 0.0_hp
-       TEMP_FORM   = 0.0_hp
-       TEMP_PAR    = 0.0_hp
-       TEMP_IOLE   = 0.0_hp
-       TEMP_OLE    = 0.0_hp
-       TEMP_ETH    = 0.0_hp
-       TEMP_ETHA   = 0.0_hp
-       TEMP_ETOH   = 0.0_hp
-       TEMP_MEOH   = 0.0_hp
-       TEMP_BENZ   = 0.0_hp
+       TEMP_TERP_OR   = 0.0_hp
+       TEMP_FORM_OR   = 0.0_hp
+       TEMP_PAR_OR    = 0.0_hp
+       TEMP_IOLE_OR   = 0.0_hp
+       TEMP_OLE_OR    = 0.0_hp
+       TEMP_ETH_OR    = 0.0_hp
+       TEMP_ETHA_OR   = 0.0_hp
+       TEMP_ETOH_OR   = 0.0_hp
+       TEMP_MEOH_OR   = 0.0_hp
+       TEMP_BENZ_OR   = 0.0_hp
 
-       TEMP_TOL    = 0.0_hp
-       TEMP_XYLMN  = 0.0_hp
-       TEMP_NAPH   = 0.0_hp
-       TEMP_ALD2   = 0.0_hp
-       TEMP_ALDX   = 0.0_hp
-       TEMP_ISOP   = 0.0_hp
-       TEMP_PRPA   = 0.0_hp
-       TEMP_ACET   = 0.0_hp
-       TEMP_KET    = 0.0_hp
-       TEMP_ALD2_PRIMARY = 0.0_hp
+       TEMP_TOL_OR    = 0.0_hp
+       TEMP_XYLMN_OR  = 0.0_hp
+       TEMP_NAPH_OR   = 0.0_hp
+       TEMP_ALD2_OR   = 0.0_hp
+       TEMP_ALDX_OR   = 0.0_hp
+       TEMP_ISOP_OR   = 0.0_hp
+       TEMP_PRPA_OR   = 0.0_hp
+       TEMP_ACET_OR   = 0.0_hp
+       TEMP_KET_OR    = 0.0_hp
+       TEMP_ALD2_PRIMARY_OR = 0.0_hp
 
-       TEMP_FORM_PRIMARY = 0.0_hp
-       TEMP_SOAALK = 0.0_hp
-       TEMP_PEC    = 0.0_hp
-       TEMP_POC    = 0.0_hp
-       TEMP_PAL    = 0.0_hp
-       TEMP_PCA    = 0.0_hp
-       TEMP_PCL    = 0.0_hp
-       TEMP_PFE    = 0.0_hp
-       TEMP_PH2O   = 0.0_hp
-       TEMP_PK     = 0.0_hp
+       TEMP_FORM_PRIMARY_OR = 0.0_hp
+       TEMP_SOAALK_OR = 0.0_hp
+       TEMP_PEC_OR    = 0.0_hp
+       TEMP_POC_OR    = 0.0_hp
+       TEMP_PAL_OR    = 0.0_hp
+       TEMP_PCA_OR    = 0.0_hp
+       TEMP_PCL_OR    = 0.0_hp
+       TEMP_PFE_OR    = 0.0_hp
+       TEMP_PH2O_OR   = 0.0_hp
+       TEMP_PK_OR    = 0.0_hp
 
-       TEMP_PMG    = 0.0_hp
-       TEMP_PMN    = 0.0_hp
-       TEMP_PMOTHR = 0.0_hp
-       TEMP_PNA    = 0.0_hp
-       TEMP_PNCOM  = 0.0_hp
-       TEMP_PNH4   = 0.0_hp
-       TEMP_PNO3   = 0.0_hp
-       TEMP_PTI    = 0.0_hp
-       TEMP_PSI    = 0.0_hp
-       TEMP_PMC    = 0.0_hp
+       TEMP_PMG_OR    = 0.0_hp
+       TEMP_PMN_OR    = 0.0_hp
+       TEMP_PMOTHR_OR = 0.0_hp
+       TEMP_PNA_OR    = 0.0_hp
+       TEMP_PNCOM_OR  = 0.0_hp
+       TEMP_PNH4_OR   = 0.0_hp
+       TEMP_PNO3_OR   = 0.0_hp
+       TEMP_PTI_OR    = 0.0_hp
+       TEMP_PSI_OR    = 0.0_hp
+       TEMP_PMC_OR    = 0.0_hp
 
-       TEMP_PSO4   = 0.0_hp
+       TEMP_PSO4_OR   = 0.0_hp
 
        IF ( Inst%MEONROAD ) THEN !MetEmis Onroad sector calculations
        !---------------------------------------------------------------------
        ! MetEmis Onroad lookup table for emissions based on temperature
        ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
-       CALL METEMIS_LUT_ONROAD( ExtState,  HcoState,  Inst,   I,   J,   RC,                  &
-                         TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
-                         TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
-                         TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
-                         TEMP_ETH , TEMP_ETHA , TEMP_ETOH, TEMP_MEOH, TEMP_BENZ,         &
-                         TEMP_TOL, TEMP_XYLMN, TEMP_NAPH, TEMP_ALD2, TEMP_ALDX,          &
-                         TEMP_ISOP, TEMP_PRPA, TEMP_ACET, TEMP_KET, TEMP_ALD2_PRIMARY,   &
-                         TEMP_FORM_PRIMARY, TEMP_SOAALK, TEMP_PEC, TEMP_POC, TEMP_PAL,   &
-                         TEMP_PCA, TEMP_PCL, TEMP_PFE, TEMP_PH2O, TEMP_PK,               &
-                         TEMP_PMG, TEMP_PMN, TEMP_PMOTHR, TEMP_PNA, TEMP_PNCOM,          &
-                         TEMP_PNH4, TEMP_PNO3, TEMP_PTI, TEMP_PSI, TEMP_PMC,             &
-                         TEMP_PSO4)
-
+       CALL METEMIS_LUT_ONROAD( ExtState,  HcoState,  Inst,   I,   J,   RC,               &
+                  TEMP_NO_OR,  TEMP_NO2_OR, TEMP_HONO_OR, TEMP_CO_OR,  TEMP_SO2_OR,       &
+                  TEMP_NH3_OR, TEMP_CH4_OR, TEMP_ACROLEIN_OR, TEMP_BUTADIENE13_OR,        &
+                  TEMP_ETHY_OR, TEMP_TERP_OR, TEMP_FORM_OR, TEMP_PAR_OR, TEMP_IOLE_OR,    &
+                  TEMP_OLE_OR, TEMP_ETH_OR, TEMP_ETHA_OR, TEMP_ETOH_OR, TEMP_MEOH_OR,     &
+                  TEMP_BENZ_OR, TEMP_TOL_OR, TEMP_XYLMN_OR, TEMP_NAPH_OR, TEMP_ALD2_OR,   &
+                  TEMP_ALDX_OR, TEMP_ISOP_OR, TEMP_PRPA_OR, TEMP_ACET_OR, TEMP_KET_OR,    &
+                  TEMP_ALD2_PRIMARY_OR,TEMP_FORM_PRIMARY_OR, TEMP_SOAALK_OR, TEMP_PEC_OR, &
+                  TEMP_POC_OR, TEMP_PAL_OR,TEMP_PCA_OR, TEMP_PCL_OR, TEMP_PFE_OR,         &
+                  TEMP_PH2O_OR, TEMP_PK_OR, TEMP_PMG_OR, TEMP_PMN_OR, TEMP_PMOTHR_OR,     &
+                  TEMP_PNA_OR, TEMP_PNCOM_OR, TEMP_PNH4_OR, TEMP_PNO3_OR, TEMP_PTI_OR,    &
+                  TEMP_PSI_OR, TEMP_PMC_OR, TEMP_PSO4_OR)
+                 
           IF ( RC /= HCO_SUCCESS ) THEN
              ERR = .TRUE.; EXIT
           ENDIF
@@ -680,322 +741,637 @@ CONTAINS
 
        IF ( Inst%IDTNO > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXNO(I,J) = TEMP_NO
+           FLUXNO(I,J) = TEMP_NO_OR
        ENDIF
 
        IF ( Inst%IDTNO2 > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXNO2(I,J) = TEMP_NO2
+           FLUXNO2(I,J) = TEMP_NO2_OR
        ENDIF
 !
        IF ( Inst%IDTHONO > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXHONO(I,J) = TEMP_HONO
+           FLUXHONO(I,J) = TEMP_HONO_OR
        ENDIF
 !
        IF ( Inst%IDTCO  > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXCO (I,J) = TEMP_CO
+           FLUXCO (I,J) = TEMP_CO_OR
        ENDIF
 
        IF ( Inst%IDTSO2 > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXSO2(I,J) = TEMP_SO2
+           FLUXSO2(I,J) = TEMP_SO2_OR
        ENDIF
 
        IF ( Inst%IDTNH3 > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXNH3(I,J) = TEMP_NH3
+           FLUXNH3(I,J) = TEMP_NH3_OR
        ENDIF
 
        IF ( Inst%IDTCH4 > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXCH4(I,J) = TEMP_CH4
+           FLUXCH4(I,J) = TEMP_CH4_OR
        ENDIF
 
        IF ( Inst%IDTACROLEIN > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXACROLEIN(I,J) = TEMP_ACROLEIN
+           FLUXACROLEIN(I,J) = TEMP_ACROLEIN_OR
        ENDIF
 
        IF ( Inst%IDTBUTADIENE13 > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXBUTADIENE13 (I,J) = TEMP_BUTADIENE13
+           FLUXBUTADIENE13 (I,J) = TEMP_BUTADIENE13_OR
        ENDIF
 
        IF ( Inst%IDTETHY > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXETHY(I,J) = TEMP_ETHY
+           FLUXETHY(I,J) = TEMP_ETHY_OR
        ENDIF
 
        IF ( Inst%IDTTERP > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXTERP(I,J) = TEMP_TERP
+           FLUXTERP(I,J) = TEMP_TERP_OR
        ENDIF
 
        IF ( Inst%IDTFORM > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXFORM(I,J) = TEMP_FORM
+           FLUXFORM(I,J) = TEMP_FORM_OR
        ENDIF
 
        IF ( Inst%IDTPAR > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPAR(I,J) = TEMP_PAR
+           FLUXPAR(I,J) = TEMP_PAR_OR
        ENDIF
 
        IF ( Inst%IDTIOLE > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXIOLE(I,J) = TEMP_IOLE
+           FLUXIOLE(I,J) = TEMP_IOLE_OR
        ENDIF
 
        IF ( Inst%IDTOLE > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXOLE(I,J) = TEMP_OLE
+           FLUXOLE(I,J) = TEMP_OLE_OR
        ENDIF
 
        IF ( Inst%IDTETH > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXETH(I,J) = TEMP_ETH
+           FLUXETH(I,J) = TEMP_ETH_OR
        ENDIF
 
        IF ( Inst%IDTETHA > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXETHA(I,J) = TEMP_ETHA
+           FLUXETHA(I,J) = TEMP_ETHA_OR
        ENDIF
 
        IF ( Inst%IDTETOH > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXETOH(I,J) = TEMP_ETOH
+           FLUXETOH(I,J) = TEMP_ETOH_OR
        ENDIF
 
        IF ( Inst%IDTMEOH > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXMEOH(I,J) = TEMP_MEOH
+           FLUXMEOH(I,J) = TEMP_MEOH_OR
        ENDIF
 
        IF ( Inst%IDTBENZ > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXBENZ(I,J) = TEMP_BENZ
+           FLUXBENZ(I,J) = TEMP_BENZ_OR
        ENDIF
 
        IF ( Inst%IDTTOL > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXTOL(I,J) = TEMP_TOL
+           FLUXTOL(I,J) = TEMP_TOL_OR
        ENDIF
 
        IF ( Inst%IDTXYLMN > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXXYLMN(I,J) = TEMP_XYLMN
+           FLUXXYLMN(I,J) = TEMP_XYLMN_OR
        ENDIF
 
        IF ( Inst%IDTNAPH > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXNAPH(I,J) = TEMP_NAPH
+           FLUXNAPH(I,J) = TEMP_NAPH_OR
        ENDIF
 
        IF ( Inst%IDTALD2 > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXALD2(I,J) = TEMP_ALD2
+           FLUXALD2(I,J) = TEMP_ALD2_OR
        ENDIF
 
        IF ( Inst%IDTALDX > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXALDX(I,J) = TEMP_ALDX
+           FLUXALDX(I,J) = TEMP_ALDX_OR
        ENDIF
 
        IF ( Inst%IDTISOP > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXISOP(I,J) = TEMP_ISOP
+           FLUXISOP(I,J) = TEMP_ISOP_OR
        ENDIF
 
        IF ( Inst%IDTPRPA > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPRPA(I,J) = TEMP_PRPA
+           FLUXPRPA(I,J) = TEMP_PRPA_OR
        ENDIF
 
        IF ( Inst%IDTACET > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXACET(I,J) = TEMP_ACET
+           FLUXACET(I,J) = TEMP_ACET_OR
        ENDIF
 
        IF ( Inst%IDTKET > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXKET(I,J) = TEMP_KET
+           FLUXKET(I,J) = TEMP_KET_OR
        ENDIF
 
        IF ( Inst%IDTALD2_PRIMARY > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXALD2_PRIMARY(I,J) = TEMP_ALD2_PRIMARY
+           FLUXALD2_PRIMARY(I,J) = TEMP_ALD2_PRIMARY_OR
        ENDIF
 
        IF ( Inst%IDTFORM_PRIMARY > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXFORM_PRIMARY(I,J) = TEMP_FORM_PRIMARY
+           FLUXFORM_PRIMARY(I,J) = TEMP_FORM_PRIMARY_OR
        ENDIF
 
        IF ( Inst%IDTSOAALK> 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXSOAALK(I,J) = TEMP_SOAALK
+           FLUXSOAALK(I,J) = TEMP_SOAALK_OR
        ENDIF
 
        IF ( Inst%IDTPEC > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPEC(I,J) = TEMP_PEC
+           FLUXPEC(I,J) = TEMP_PEC_OR
        ENDIF
 
        IF ( Inst%IDTPOC > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPOC(I,J) = TEMP_POC
+           FLUXPOC(I,J) = TEMP_POC_OR
        ENDIF
 
        IF ( Inst%IDTPAL > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPAL(I,J) = TEMP_PAL
+           FLUXPAL(I,J) = TEMP_PAL_OR
        ENDIF
 
        IF ( Inst%IDTPCA > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPCA(I,J) = TEMP_PCA
+           FLUXPCA(I,J) = TEMP_PCA_OR
        ENDIF
 
        IF ( Inst%IDTPCL > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPCL(I,J) = TEMP_PCL
+           FLUXPCL(I,J) = TEMP_PCL_OR
        ENDIF
 
        IF ( Inst%IDTPFE > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPFE(I,J) = TEMP_PFE
+           FLUXPFE(I,J) = TEMP_PFE_OR
        ENDIF
 
        IF ( Inst%IDTPH2O > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPH2O(I,J) = TEMP_PH2O
+           FLUXPH2O(I,J) = TEMP_PH2O_OR
        ENDIF
 
        IF ( Inst%IDTPK > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPK (I,J) = TEMP_PK
+           FLUXPK (I,J) = TEMP_PK_OR
        ENDIF
 
        IF ( Inst%IDTPMG > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPMG(I,J) = TEMP_PMG
+           FLUXPMG(I,J) = TEMP_PMG_OR
        ENDIF
 
        IF ( Inst%IDTPMN > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPMN(I,J) = TEMP_PMN
+           FLUXPMN(I,J) = TEMP_PMN_OR
        ENDIF
 
        IF ( Inst%IDTPMOTHR > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPMOTHR(I,J) = TEMP_PMOTHR
+           FLUXPMOTHR(I,J) = TEMP_PMOTHR_OR
        ENDIF
 
        IF ( Inst%IDTPNA > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPNA(I,J) = TEMP_PNA
+           FLUXPNA(I,J) = TEMP_PNA_OR
        ENDIF
 
        IF ( Inst%IDTPNCOM> 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPNCOM (I,J) = TEMP_PNCOM
+           FLUXPNCOM (I,J) = TEMP_PNCOM_OR
        ENDIF
 
        IF ( Inst%IDTPNH4 > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPNH4 (I,J) = TEMP_PNH4
+           FLUXPNH4 (I,J) = TEMP_PNH4_OR
        ENDIF
 
        IF ( Inst%IDTPNO3 > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPNO3 (I,J) = TEMP_PNO3
+           FLUXPNO3 (I,J) = TEMP_PNO3_OR
        ENDIF
 
        IF ( Inst%IDTPTI > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPTI(I,J) = TEMP_PTI
+           FLUXPTI(I,J) = TEMP_PTI_OR
        ENDIF
 
        IF ( Inst%IDTPSI > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPSI(I,J) = TEMP_PSI
+           FLUXPSI(I,J) = TEMP_PSI_OR
        ENDIF
 
        IF ( Inst%IDTPMC > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPMC(I,J) = TEMP_PMC
+           FLUXPMC(I,J) = TEMP_PMC_OR
        ENDIF
 
        IF ( Inst%IDTPSO4 > 0 ) THEN
 !           ! Unit: kg/m2/s
-           FLUXPSO4(I,J) = TEMP_PSO4
+           FLUXPSO4(I,J) = TEMP_PSO4_OR
        ENDIF
        
        ENDIF
 
       !!!TBD Livestock
+
+      !Livestock Temp
+
+      !TEMP_NO_LIV = 0.0_hp
+
+       !Add Remainin species here...
+
 !     IF ( Inst%MELIVESTOCK ) THEN !MetEmis Livestock sector calculations
 !       !---------------------------------------------------------------------
 !       ! MetEmis Livestock lookup table for emissions based on temperature
 !       ! (P.C. Campbell, 02/12/2026)
 !       !---------------------------------------------------------------------
-!       CALL METEMIS_LUT_LIVESTOCK( ExtState,  HcoState,  Inst,   I,   J,   RC,                 &
-!                         TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
-!                         TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
-!                         TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
-!                         TEMP_ETH , TEMP_ETHA , TEMP_ETOH, TEMP_MEOH, TEMP_BENZ,         &
-!                         TEMP_TOL, TEMP_XYLMN, TEMP_NAPH, TEMP_ALD2, TEMP_ALDX,          &
-!                         TEMP_ISOP, TEMP_PRPA, TEMP_ACET, TEMP_KET, TEMP_ALD2_PRIMARY,   &
-!                         TEMP_FORM_PRIMARY, TEMP_SOAALK, TEMP_PEC, TEMP_POC, TEMP_PAL,   &
-!                         TEMP_PCA, TEMP_PCL, TEMP_PFE, TEMP_PH2O, TEMP_PK,               &
-!                         TEMP_PMG, TEMP_PMN, TEMP_PMOTHR, TEMP_PNA, TEMP_PNCOM,          &
-!                         TEMP_PNH4, TEMP_PNO3, TEMP_PTI, TEMP_PSI, TEMP_PMC,             &
-!                         TEMP_PSO4)
-
+!       CALL METEMIS_LUT_LIVESTOCK( ExtState,  HcoState,  Inst,   I,   J,   RC,               &
+!                  TEMP_NO_LIV,  TEMP_NO2_LIV, TEMP_HONO_LIV, TEMP_CO_LIV,  TEMP_SO2_LIV,     &
+!                  TEMP_NH3_LIV, TEMP_CH4_LIV, TEMP_ACROLEIN_LIV, TEMP_BUTADIENE13_LIV,       &
+!                  TEMP_ETHY_LIV, TEMP_TERP_LIV, TEMP_FORM_LIV, TEMP_PAR_LIV, TEMP_IOLE_LIV,  &
+!                  TEMP_OLE_LIV, TEMP_ETH_LIV, TEMP_ETHA_LIV, TEMP_ETOH_LIV, TEMP_MEOH_LIV,   &
+!                  TEMP_BENZ_LIV, TEMP_TOL_LIV, TEMP_XYLMN_LIV, TEMP_NAPH_LIV, TEMP_ALD2_LIV, &
+!                  TEMP_ALDX_LIV, TEMP_ISOP_LIV, TEMP_PRPA_LIV, TEMP_ACET_LIV, TEMP_KET_LIV,  &
+!                  TEMP_ALD2_PRIMARY_LIV,TEMP_FORM_PRIMARY_LIV, TEMP_SOAALK_LIV, TEMP_PEC_LIV,&
+!                  TEMP_POC_LIV, TEMP_PAL_LIV,TEMP_PCA_LIV, TEMP_PCL_LIV, TEMP_PFE_LIV,       &
+!                  TEMP_PH2O_LIV, TEMP_PK_LIV, TEMP_PMG_LIV, TEMP_PMN_LIV, TEMP_PMOTHR_LIV,   &
+!                  TEMP_PNA_LIV, TEMP_PNCOM_LIV, TEMP_PNH4_LIV, TEMP_PNO3_LIV, TEMP_PTI_LIV,  &
+!                  TEMP_PSI_LIV, TEMP_PMC_LIV, TEMP_PSO4_LIV)
+!
 !       IF ( RC /= HCO_SUCCESS ) THEN
 !          ERR = .TRUE.; EXIT
 !       ENDIF
 !        !Here this adds sectors together if turned on
 !       IF ( Inst%IDTNO > 0 ) THEN
 !           ! Unit: kg/m2/s
-!           FLUXNO(I,J) = FLUXNO(I,J) + TEMP_NO
+!           FLUXNO(I,J) = FLUXNO(I,J) + TEMP_NO_LIV
 !       ENDIF
 !       Continue all species here...
 !
 !       ENDIF
-!
-      !!!TBD RWC
-!     IF ( Inst%MERWC ) THEN !MetEmis RWC sector calculations
-!       !---------------------------------------------------------------------
-!       ! MetEmis RWC binary calculation for emissions based on temperature
-!       ! (P.C. Campbell, 02/12/2026)
-!       !---------------------------------------------------------------------
-!       CALL METEMIS_LUT_RWC( ExtState,  HcoState,  Inst,   I,   J,   RC,                 &
-!                         TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
-!                         TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
-!                         TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
-!                         TEMP_ETH , TEMP_ETHA , TEMP_ETOH, TEMP_MEOH, TEMP_BENZ,         &
-!                         TEMP_TOL, TEMP_XYLMN, TEMP_NAPH, TEMP_ALD2, TEMP_ALDX,          &
-!                         TEMP_ISOP, TEMP_PRPA, TEMP_ACET, TEMP_KET, TEMP_ALD2_PRIMARY,   &
-!                         TEMP_FORM_PRIMARY, TEMP_SOAALK, TEMP_PEC, TEMP_POC, TEMP_PAL,   &
-!                         TEMP_PCA, TEMP_PCL, TEMP_PFE, TEMP_PH2O, TEMP_PK,               &
-!                         TEMP_PMG, TEMP_PMN, TEMP_PMOTHR, TEMP_PNA, TEMP_PNCOM,          &
-!                         TEMP_PNH4, TEMP_PNO3, TEMP_PTI, TEMP_PSI, TEMP_PMC,             &
-!                         TEMP_PSO4)
 
-!       IF ( RC /= HCO_SUCCESS ) THEN
-!          ERR = .TRUE.; EXIT
-!       ENDIF
-!        !Here this adds sectors together if turned on
-!       IF ( Inst%IDTNO > 0 ) THEN
-!           ! Unit: kg/m2/s
-!           FLUXNO(I,J) = FLUXNO(I,J) + TEMP_NO
-!       ENDIF
-!       Continue all species here
-!
-!       ENDIF
+
+       !RWC Temp
+       TEMP_NO_RWC     = 0.0_hp
+       TEMP_NO2_RWC    = 0.0_hp
+       TEMP_HONO_RWC   = 0.0_hp
+       TEMP_CO_RWC     = 0.0_hp
+       TEMP_SO2_RWC    = 0.0_hp
+       TEMP_NH3_RWC    = 0.0_hp
+       TEMP_CH4_RWC    = 0.0_hp
+       TEMP_ACROLEIN_RWC  = 0.0_hp
+       TEMP_BUTADIENE13_RWC = 0.0_hp
+       TEMP_ETHY_RWC   = 0.0_hp
+
+       TEMP_TERP_RWC   = 0.0_hp
+       TEMP_FORM_RWC  = 0.0_hp
+       TEMP_PAR_RWC    = 0.0_hp
+       TEMP_IOLE_RWC   = 0.0_hp
+       TEMP_OLE_RWC    = 0.0_hp
+       TEMP_ETH_RWC    = 0.0_hp
+       TEMP_ETHA_RWC   = 0.0_hp
+       TEMP_ETOH_RWC   = 0.0_hp
+       TEMP_MEOH_RWC   = 0.0_hp
+       TEMP_BENZ_RWC   = 0.0_hp
+
+       TEMP_TOL_RWC    = 0.0_hp
+       TEMP_XYLMN_RWC  = 0.0_hp
+       TEMP_NAPH_RWC   = 0.0_hp
+       TEMP_ALD2_RWC   = 0.0_hp
+       TEMP_ALDX_RWC   = 0.0_hp
+       TEMP_ISOP_RWC   = 0.0_hp
+       TEMP_PRPA_RWC   = 0.0_hp
+       TEMP_ACET_RWC   = 0.0_hp
+       TEMP_KET_RWC    = 0.0_hp
+       TEMP_ALD2_PRIMARY_RWC = 0.0_hp
+
+       TEMP_FORM_PRIMARY_RWC = 0.0_hp
+       TEMP_SOAALK_RWC = 0.0_hp
+       TEMP_PEC_RWC    = 0.0_hp
+       TEMP_POC_RWC    = 0.0_hp
+       TEMP_PAL_RWC    = 0.0_hp
+       TEMP_PCA_RWC    = 0.0_hp
+       TEMP_PCL_RWC    = 0.0_hp
+       TEMP_PFE_RWC    = 0.0_hp
+       TEMP_PH2O_RWC   = 0.0_hp
+       TEMP_PK_RWC     = 0.0_hp
+
+       TEMP_PMG_RWC    = 0.0_hp
+       TEMP_PMN_RWC    = 0.0_hp
+       TEMP_PMOTHR_RWC = 0.0_hp
+       TEMP_PNA_RWC    = 0.0_hp
+       TEMP_PNCOM_RWC  = 0.0_hp
+       TEMP_PNH4_RWC   = 0.0_hp
+       TEMP_PNO3_RWC   = 0.0_hp
+       TEMP_PTI_RWC   = 0.0_hp
+       TEMP_PSI_RWC    = 0.0_hp
+       TEMP_PMC_RWC    = 0.0_hp
+
+       TEMP_PSO4_RWC   = 0.0_hp
+
+     IF ( Inst%MERWC ) THEN !MetEmis RWC sector calculations
+       !---------------------------------------------------------------------
+       ! MetEmis RWC binary calculation for emissions based on temperature
+       ! (P.C. Campbell, 02/12/2026)
+       !---------------------------------------------------------------------
+       CALL METEMIS_RWC( ExtState,  HcoState,  Inst,   I,   J,   RC,                         &
+                  TEMP_NO_RWC,  TEMP_NO2_RWC, TEMP_HONO_RWC, TEMP_CO_RWC,  TEMP_SO2_RWC,     &
+                  TEMP_NH3_RWC, TEMP_CH4_RWC, TEMP_ACROLEIN_RWC, TEMP_BUTADIENE13_RWC,       &
+                  TEMP_ETHY_RWC, TEMP_TERP_RWC, TEMP_FORM_RWC, TEMP_PAR_RWC, TEMP_IOLE_RWC,  &
+                  TEMP_OLE_RWC, TEMP_ETH_RWC, TEMP_ETHA_RWC, TEMP_ETOH_RWC, TEMP_MEOH_RWC,   &
+                  TEMP_BENZ_RWC, TEMP_TOL_RWC, TEMP_XYLMN_RWC, TEMP_NAPH_RWC, TEMP_ALD2_RWC, & 
+                  TEMP_ALDX_RWC, TEMP_ISOP_RWC, TEMP_PRPA_RWC, TEMP_ACET_RWC, TEMP_KET_RWC,  &
+                  TEMP_ALD2_PRIMARY_RWC,TEMP_FORM_PRIMARY_RWC, TEMP_SOAALK_RWC, TEMP_PEC_RWC,&
+                  TEMP_POC_RWC, TEMP_PAL_RWC,TEMP_PCA_RWC, TEMP_PCL_RWC, TEMP_PFE_RWC,       &
+                  TEMP_PH2O_RWC, TEMP_PK_RWC, TEMP_PMG_RWC, TEMP_PMN_RWC, TEMP_PMOTHR_RWC,   &
+                  TEMP_PNA_RWC, TEMP_PNCOM_RWC, TEMP_PNH4_RWC, TEMP_PNO3_RWC, TEMP_PTI_RWC,  &
+                  TEMP_PSI_RWC, TEMP_PMC_RWC, TEMP_PSO4_RWC)
+
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ERR = .TRUE.; EXIT
+       ENDIF
+
+        !Here this adds sectors together if turned on
+       IF ( Inst%IDTNO > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXNO(I,J) = FLUXNO(I,J) + TEMP_NO_RWC
+       ENDIF
+
+       IF ( Inst%IDTNO2 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXNO2(I,J) = FLUXNO2(I,J) + TEMP_NO2_RWC
+       ENDIF
+
+       IF ( Inst%IDTHONO > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXHONO(I,J) = FLUXHONO(I,J) + TEMP_HONO_RWC
+       ENDIF
+
+       IF ( Inst%IDTCO > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXCO(I,J) = FLUXCO(I,J) + TEMP_CO_RWC
+       ENDIF
+
+       IF ( Inst%IDTSO2 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXSO2(I,J) = FLUXSO2(I,J) + TEMP_SO2_RWC
+       ENDIF
+
+       IF ( Inst%IDTNH3 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXNH3(I,J) = FLUXNH3(I,J) + TEMP_NH3_RWC
+       ENDIF
+
+       IF ( Inst%IDTCH4 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXCH4(I,J) = FLUXCH4(I,J) + TEMP_CH4_RWC
+       ENDIF
+
+       IF ( Inst%IDTACROLEIN > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXACROLEIN(I,J) = FLUXACROLEIN(I,J) + TEMP_ACROLEIN_RWC
+       ENDIF
+
+       IF ( Inst%IDTBUTADIENE13 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXBUTADIENE13(I,J) = FLUXBUTADIENE13(I,J) + TEMP_BUTADIENE13_RWC
+       ENDIF
+
+       IF ( Inst%IDTETHY > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXETHY(I,J) = FLUXETHY(I,J) + TEMP_ETHY_RWC
+       ENDIF
+
+       IF ( Inst%IDTTERP > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXTERP(I,J) = FLUXTERP(I,J) + TEMP_TERP_RWC
+       ENDIF
+
+       IF ( Inst%IDTFORM > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXFORM(I,J) = FLUXFORM(I,J) + TEMP_FORM_RWC
+       ENDIF
+
+       IF ( Inst%IDTPAR > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPAR(I,J) = FLUXPAR(I,J) + TEMP_PAR_RWC
+       ENDIF
+
+       IF ( Inst%IDTIOLE > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXIOLE(I,J) = FLUXIOLE(I,J) + TEMP_IOLE_RWC
+       ENDIF
+
+       IF ( Inst%IDTOLE > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXOLE(I,J) = FLUXOLE(I,J) + TEMP_OLE_RWC
+       ENDIF
+
+       IF ( Inst%IDTETH > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXETH(I,J) = FLUXETH(I,J) + TEMP_ETH_RWC
+       ENDIF
+
+       IF ( Inst%IDTETHA > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXETHA(I,J) = FLUXETHA(I,J) + TEMP_ETHA_RWC
+       ENDIF
+
+       IF ( Inst%IDTETOH > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXETOH(I,J) = FLUXETOH(I,J) + TEMP_ETOH_RWC
+       ENDIF
+
+       IF ( Inst%IDTMEOH > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXMEOH(I,J) = FLUXMEOH(I,J) + TEMP_MEOH_RWC
+       ENDIF
+
+       IF ( Inst%IDTBENZ > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXBENZ(I,J) = FLUXBENZ(I,J) + TEMP_BENZ_RWC
+       ENDIF
+
+       IF ( Inst%IDTTOL > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXTOL(I,J) = FLUXTOL(I,J) + TEMP_TOL_RWC
+       ENDIF
+
+       IF ( Inst%IDTXYLMN > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXXYLMN(I,J) = FLUXXYLMN(I,J) + TEMP_XYLMN_RWC
+       ENDIF
+
+       IF ( Inst%IDTNAPH > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXNAPH(I,J) = FLUXNAPH(I,J) + TEMP_NAPH_RWC
+       ENDIF
+
+       IF ( Inst%IDTALD2 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXALD2(I,J) = FLUXALD2(I,J) + TEMP_ALD2_RWC
+       ENDIF
+
+       IF ( Inst%IDTALDX > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXALDX(I,J) = FLUXALDX(I,J) + TEMP_ALDX_RWC
+       ENDIF
+
+       IF ( Inst%IDTISOP > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXISOP(I,J) = FLUXISOP(I,J) + TEMP_ISOP_RWC
+       ENDIF
+
+       IF ( Inst%IDTPRPA > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPRPA(I,J) = FLUXPRPA(I,J) + TEMP_PRPA_RWC
+       ENDIF
+
+       IF ( Inst%IDTACET > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXACET(I,J) = FLUXACET(I,J) + TEMP_ACET_RWC
+       ENDIF
+
+       IF ( Inst%IDTKET > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXKET(I,J) = FLUXKET(I,J) + TEMP_KET_RWC
+       ENDIF
+
+       IF ( Inst%IDTALD2_PRIMARY > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXALD2_PRIMARY(I,J) = FLUXALD2_PRIMARY(I,J) + TEMP_ALD2_PRIMARY_RWC
+       ENDIF
+
+       IF ( Inst%IDTFORM_PRIMARY > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXFORM_PRIMARY(I,J) = FLUXFORM_PRIMARY(I,J) + TEMP_FORM_PRIMARY_RWC
+       ENDIF
+
+       IF ( Inst%IDTSOAALK > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXSOAALK(I,J) = FLUXSOAALK(I,J) + TEMP_SOAALK_RWC
+       ENDIF
+
+       IF ( Inst%IDTPEC > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPEC(I,J) = FLUXPEC(I,J) + TEMP_PEC_RWC
+       ENDIF
+
+       IF ( Inst%IDTPOC > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPOC(I,J) = FLUXPOC(I,J) + TEMP_POC_RWC
+       ENDIF
+
+       IF ( Inst%IDTPAL > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPAL(I,J) = FLUXPAL(I,J) + TEMP_PAL_RWC
+       ENDIF
+
+       IF ( Inst%IDTPCA > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPCA(I,J) = FLUXPCA(I,J) + TEMP_PCA_RWC
+       ENDIF
+
+       IF ( Inst%IDTPCL > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPCL(I,J) = FLUXPCL(I,J) + TEMP_PCL_RWC
+       ENDIF
+
+       IF ( Inst%IDTPFE > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPFE(I,J) = FLUXPFE(I,J) + TEMP_PFE_RWC
+       ENDIF
+
+       IF ( Inst%IDTPH2O > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPH2O(I,J) = FLUXPH2O(I,J) + TEMP_PH2O_RWC
+       ENDIF
+
+       IF ( Inst%IDTPK > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPK(I,J) = FLUXPK(I,J) + TEMP_PK_RWC
+       ENDIF
+
+       IF ( Inst%IDTPMG > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMG(I,J) = FLUXPMG(I,J) + TEMP_PMG_RWC
+       ENDIF
+
+       IF ( Inst%IDTPMN > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMN(I,J) = FLUXPMN(I,J) + TEMP_PMN_RWC
+       ENDIF
+
+       IF ( Inst%IDTPMOTHR > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMOTHR(I,J) = FLUXPMOTHR(I,J) + TEMP_PMOTHR_RWC
+       ENDIF
+
+       IF ( Inst%IDTPNA > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNA(I,J) = FLUXPNA(I,J) + TEMP_PNA_RWC
+       ENDIF
+
+       IF ( Inst%IDTPNCOM > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNCOM(I,J) = FLUXPNCOM(I,J) + TEMP_PNCOM_RWC
+       ENDIF
+
+       IF ( Inst%IDTPNH4 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNH4(I,J) = FLUXPNH4(I,J) + TEMP_PNH4_RWC
+       ENDIF
+
+       IF ( Inst%IDTPNO3 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNO3(I,J) = FLUXPNO3(I,J) + TEMP_PNO3_RWC
+       ENDIF
+
+       IF ( Inst%IDTPTI > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPTI(I,J) = FLUXPTI(I,J) + TEMP_PTI_RWC
+       ENDIF
+
+       IF ( Inst%IDTPSI > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPSI(I,J) = FLUXPSI(I,J) + TEMP_PSI_RWC
+       ENDIF
+
+       IF ( Inst%IDTPMC > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMC(I,J) = FLUXPMC(I,J) + TEMP_PMC_RWC
+       ENDIF
+
+       IF ( Inst%IDTPSO4 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPSO4(I,J) = FLUXPSO4(I,J) + TEMP_PSO4_RWC
+       ENDIF
+
+     ENDIF
 !
        !---------------------------------------------------------------------
        ! Eventually write out into diagnostics array
@@ -2005,35 +2381,33 @@ CONTAINS
         RETURN
     ENDIF
 
-    !!!TBD - Livestock/RWC
-!    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME Livestock', &
-!                    OptValBool=Inst%MELIVESTOCK, Found=FOUND, RC=RC )
-!    IF ( RC /= HCO_SUCCESS ) THEN
-!        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
-!        RETURN
-!    ENDIF
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME Livestock', &
+                    OptValBool=Inst%MELIVESTOCK, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
-!    CALL GetExtOpt( HcoState%Config, ExtNr, 'Livestock Precip', &
-!                    OptValBool=Inst%LIVPRECIP, Found=FOUND, RC=RC )
-!    IF ( RC /= HCO_SUCCESS ) THEN
-!        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
-!        RETURN
-!    ENDIF
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'Livestock Precip', &
+                    OptValBool=Inst%LIVPRECIP, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
-!    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME RWC', &
-!                    OptValBool=Inst%MERWC, Found=FOUND, RC=RC )
-!    IF ( RC /= HCO_SUCCESS ) THEN
-!        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
-!        RETURN
-!    ENDIF
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME RWC', &
+                    OptValBool=Inst%MERWC, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
-!    CALL GetExtOpt( HcoState%Config, ExtNr, 'RWC temp (deg F)', &
-!                    OptValHp=Inst%RWCTEMPF, Found=FOUND, RC=RC )
-!    IF ( RC /= HCO_SUCCESS ) THEN
-!        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
-!        RETURN
-!    ENDIF
-
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'RWC temp (deg F)', &
+                    OptValHp=Inst%RWCTEMPF, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
    
       ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
@@ -2047,30 +2421,29 @@ CONTAINS
        CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
-   !!!TBD - Livestock/RWC
      ! Verbose mode
-!    IF ( HcoState%amIRoot ) THEN
-!       WRITE(MSG,*) ' --> MetEmis Livestock option is ',Inst%MELIVESTOCK
-!       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
-!    ENDIF
+    IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis Livestock option is ',Inst%MELIVESTOCK
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+    ENDIF
 
     ! Verbose mode
-!    IF ( HcoState%amIRoot ) THEN
-!       WRITE(MSG,*) ' --> MetEmis Livestock Precipitation option is ',Inst%LIVPRECIP
-!       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
-!    ENDIF
+    IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis Livestock Precipitation option is ',Inst%LIVPRECIP
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+    ENDIF
 
      ! Verbose mode
-!    IF ( HcoState%amIRoot ) THEN
-!       WRITE(MSG,*) ' --> MetEmis RWC option is ',Inst%MERWC
-!       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
-!    ENDIF
+    IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis RWC option is ',Inst%MERWC
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+    ENDIF
 
      ! Verbose mode
-!     IF ( HcoState%amIRoot ) THEN
-!       WRITE(MSG,*) ' --> MetEmis RWC temp (degrees F) is ',Inst%RWCTEMPF
-!       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
-!     ENDIF
+     IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis RWC temp (degrees F) is ',Inst%RWCTEMPF
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+     ENDIF
 
    !========================================================================
    ! Exit if this is a GEOS-Chem dry-run or HEMCO-standalone dry-run
@@ -2691,13 +3064,61 @@ CONTAINS
 !   ...
 !   ExtState%MEmisPSO4_BEEF_LIV_030%DoUse            = .TRUE.
 !   ...
-!   ELSEIF ( Inst%MERWC ) THEN !MetEmis RWC sector inputs for each species
+   ELSEIF ( Inst%MERWC ) THEN !MetEmis RWC sector inputs for each species
 !  RWC does not have temperature bins, but read in for each species temperature
 !  binary adjustment in subroutine later
-!  ExtState%T2M%DoUse                          = .TRUE.
-!  ExtState%MEmisNO_RWC%DoUse                 = .TRUE.
-!  ...
-!  ExtState%MEmisPSO4_RWC%DoUse                 = .TRUE.
+   ExtState%T2M%DoUse                          = .TRUE.
+   ExtState%MEmisNO_RWC%DoUse                  = .TRUE.
+   ExtState%MEmisNO2_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisHONO_RWC%DoUse                = .TRUE.
+   ExtState%MEmisCO_RWC%DoUse                  = .TRUE.
+   ExtState%MEmisSO2_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisNH3_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisCH4_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisACROLEIN_RWC%DoUse            = .TRUE.
+   ExtState%MEmisBUTADIENE13_RWC%DoUse         = .TRUE.
+   ExtState%MEmisETHY_RWC%DoUse                = .TRUE.
+   ExtState%MEmisTERP_RWC%DoUse                = .TRUE.
+   ExtState%MEmisFORM_RWC%DoUse                = .TRUE.
+   ExtState%MEmisPAR_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisIOLE_RWC%DoUse                = .TRUE.
+   ExtState%MEmisOLE_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisETH_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisETHA_RWC%DoUse                = .TRUE.
+   ExtState%MEmisETOH_RWC%DoUse                = .TRUE.
+   ExtState%MEmisMEOH_RWC%DoUse                = .TRUE.
+   ExtState%MEmisBENZ_RWC%DoUse                = .TRUE.
+   ExtState%MEmisTOL_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisXYLMN_RWC%DoUse               = .TRUE.
+   ExtState%MEmisNAPH_RWC%DoUse                = .TRUE.
+   ExtState%MEmisALD2_RWC%DoUse                = .TRUE.
+   ExtState%MEmisALDX_RWC%DoUse                = .TRUE.
+   ExtState%MEmisISOP_RWC%DoUse                = .TRUE.
+   ExtState%MEmisPRPA_RWC%DoUse                = .TRUE.
+   ExtState%MEmisACET_RWC%DoUse                = .TRUE.
+   ExtState%MEmisKET_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_RWC%DoUse        = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_RWC%DoUse        = .TRUE.
+   ExtState%MEmisSOAALK_RWC%DoUse              = .TRUE.
+   ExtState%MEmisPEC_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPOC_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPAL_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPCA_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPCL_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPFE_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPH2O_RWC%DoUse                = .TRUE.
+   ExtState%MEmisPK_RWC%DoUse                  = .TRUE.
+   ExtState%MEmisPMG_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPMN_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPMOTHR_RWC%DoUse              = .TRUE.
+   ExtState%MEmisPNA_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPNCOM_RWC%DoUse               = .TRUE.
+   ExtState%MEmisPNH4_RWC%DoUse                = .TRUE.
+   ExtState%MEmisPNO3_RWC%DoUse                = .TRUE.
+   ExtState%MEmisPTI_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPSI_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPMC_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPSO4_RWC%DoUse                = .TRUE.
    ELSE
       CALL HCO_ERROR( 'ExtState error: No MetEmis option turned on ', RC )
       RETURN
@@ -4923,79 +5344,274 @@ CONTAINS
 !
 ! !IROUTINE: metemis_rwc
 !
-! !DESCRIPTION:  Subroutine METEMIS_LUT_RWC returns emissions
+! !DESCRIPTION:  Subroutine METEMIS_RWC returns emissions
 ! based on temperature binary flag from (Baek et al. 2023;
 ! https://doi.org/10.5194/gmd-16-4659-2023)...
 !
 ! This uses 1 input variable:
 !     TEMP   : model temperature, K
 !\\
-! !INTERFACE:
-!
-! SUBROUTINE METEMIS_RWC( ExtState,  HcoState, Inst, I, J, RC,                          &
-!                         TEMPNO,   TEMPNO2,   TEMPHONO,  TEMPCO,   TEMPSO2,            &
-!                         TEMPNH3,  TEMPCH4,   TEMPACROLEIN, TEMPBUTADIENE13, TEMPETHY, &
-!                         TEMPTERP, TEMPFORM,  TEMPPAR,   TEMPIOLE, TEMPOLE ,           &
-!                         TEMPETH , TEMPETHA , TEMPETOH,  TEMPMEOH, TEMPBENZ,           &
-!                         TEMPTOL,  TEMPXYLMN, TEMPNAPH,  TEMPALD2, TEMPALDX,           &
-!                         TEMPISOP, TEMPPRPA,  TEMPACET,  TEMPKET,  TEMPALD2_PRIMARY,   &
-!                 TEMPFORM_PRIMARY, TEMPSOAALK, TEMPPEC,  TEMPPOC,  TEMPPAL,            &
-!                         TEMPPCA,  TEMPPCL,   TEMPPFE,   TEMPPH2O, TEMPPK,             &
-!                         TEMPPMG,  TEMPPMN,   TEMPPMOTHR, TEMPPNA, TEMPPNCOM,          &
-!                         TEMPPNH4, TEMPPNO3,  TEMPPTI,   TEMPPSI,  TEMPPMC,            &
-!                         TEMPPSO4)
-!
-!...
-!...Add simple program details for RWC binary flag on/off based on temperature threshold
-! from config
+ !INTERFACE:
 
-! !USES:
+ SUBROUTINE METEMIS_RWC( ExtState,  HcoState, Inst, I, J, RC,                          &
+                         TEMPNO,   TEMPNO2,   TEMPHONO,  TEMPCO,   TEMPSO2,            &
+                         TEMPNH3,  TEMPCH4,   TEMPACROLEIN, TEMPBUTADIENE13, TEMPETHY, &
+                         TEMPTERP, TEMPFORM,  TEMPPAR,   TEMPIOLE, TEMPOLE ,           &
+                         TEMPETH , TEMPETHA , TEMPETOH,  TEMPMEOH, TEMPBENZ,           &
+                         TEMPTOL,  TEMPXYLMN, TEMPNAPH,  TEMPALD2, TEMPALDX,           &
+                         TEMPISOP, TEMPPRPA,  TEMPACET,  TEMPKET,  TEMPALD2_PRIMARY,   &
+                 TEMPFORM_PRIMARY, TEMPSOAALK, TEMPPEC,  TEMPPOC,  TEMPPAL,            &
+                         TEMPPCA,  TEMPPCL,   TEMPPFE,   TEMPPH2O, TEMPPK,             &
+                         TEMPPMG,  TEMPPMN,   TEMPPMOTHR, TEMPPNA, TEMPPNCOM,          &
+                         TEMPPNH4, TEMPPNO3,  TEMPPTI,   TEMPPSI,  TEMPPMC,            &
+                         TEMPPSO4)
+
+ !USES:
+   USE HCO_STATE_MOD,        ONLY : HCO_State
+   USE HCOX_STATE_MOD,       ONLY : Ext_State
 !
-!   USE HCO_STATE_MOD,        ONLY : HCO_State
-!   USE HCOX_STATE_MOD,       ONLY : Ext_State
-!!
-!! !INPUT PARAMETERS:
-!!
-!   TYPE(Ext_State), POINTER    :: ExtState
-!   TYPE(HCO_State), POINTER    :: HcoState
-!   TYPE(MyInst),    POINTER    :: Inst
-!   INTEGER, INTENT(IN)         :: I, J      ! Grid indices
-!!
-!! !OUTPUT PARAMETERS:
-!!
-!! Temp dependent MetEmis emission species 51 in total , kg/m2/s
-!!
-!   REAL*8, INTENT(OUT)           :: TEMPNO   ! Temp dependent NO emissions, kg/m2/s
-!   ...add remaining species
+! !INPUT PARAMETERS:
 !
-!Local
+   TYPE(Ext_State), POINTER    :: ExtState
+   TYPE(HCO_State), POINTER    :: HcoState
+   TYPE(MyInst),    POINTER    :: Inst
+   INTEGER, INTENT(IN)         :: I, J      ! Grid indices
 !
+! OUTPUT PARAMETERS:
+!
+! Temp dependent MetEmis emission species 51 in total , kg/m2/s
+!
+   REAL*8, INTENT(OUT)           :: TEMPNO   ! Temp dependent NO emissions, kg/m2/s
+   REAL*8, INTENT(OUT)           :: TEMPNO2
+   REAL*8, INTENT(OUT)           :: TEMPHONO
+   REAL*8, INTENT(OUT)           :: TEMPCO
+   REAL*8, INTENT(OUT)           :: TEMPSO2
+   REAL*8, INTENT(OUT)           :: TEMPNH3
+   REAL*8, INTENT(OUT)           :: TEMPCH4
+   REAL*8, INTENT(OUT)           :: TEMPACROLEIN
+   REAL*8, INTENT(OUT)           :: TEMPBUTADIENE13
+   REAL*8, INTENT(OUT)           :: TEMPETHY
+   REAL*8, INTENT(OUT)           :: TEMPTERP
+   REAL*8, INTENT(OUT)           :: TEMPFORM
+   REAL*8, INTENT(OUT)           :: TEMPPAR
+   REAL*8, INTENT(OUT)           :: TEMPIOLE
+   REAL*8, INTENT(OUT)           :: TEMPOLE
+   REAL*8, INTENT(OUT)           :: TEMPETH
+   REAL*8, INTENT(OUT)           :: TEMPETHA
+   REAL*8, INTENT(OUT)           :: TEMPETOH
+   REAL*8, INTENT(OUT)           :: TEMPMEOH
+   REAL*8, INTENT(OUT)           :: TEMPBENZ
+   REAL*8, INTENT(OUT)           :: TEMPTOL
+   REAL*8, INTENT(OUT)           :: TEMPXYLMN
+   REAL*8, INTENT(OUT)           :: TEMPNAPH
+   REAL*8, INTENT(OUT)           :: TEMPALD2
+   REAL*8, INTENT(OUT)           :: TEMPALDX
+   REAL*8, INTENT(OUT)           :: TEMPISOP
+   REAL*8, INTENT(OUT)           :: TEMPPRPA
+   REAL*8, INTENT(OUT)           :: TEMPACET
+   REAL*8, INTENT(OUT)           :: TEMPKET
+   REAL*8, INTENT(OUT)           :: TEMPALD2_PRIMARY
+   REAL*8, INTENT(OUT)           :: TEMPFORM_PRIMARY
+   REAL*8, INTENT(OUT)           :: TEMPSOAALK
+   REAL*8, INTENT(OUT)           :: TEMPPEC
+   REAL*8, INTENT(OUT)           :: TEMPPOC
+   REAL*8, INTENT(OUT)           :: TEMPPAL
+   REAL*8, INTENT(OUT)           :: TEMPPCA
+   REAL*8, INTENT(OUT)           :: TEMPPCL
+   REAL*8, INTENT(OUT)           :: TEMPPFE
+   REAL*8, INTENT(OUT)           :: TEMPPH2O
+   REAL*8, INTENT(OUT)           :: TEMPPK
+   REAL*8, INTENT(OUT)           :: TEMPPMG
+   REAL*8, INTENT(OUT)           :: TEMPPMN
+   REAL*8, INTENT(OUT)           :: TEMPPMOTHR
+   REAL*8, INTENT(OUT)           :: TEMPPNA
+   REAL*8, INTENT(OUT)           :: TEMPPNCOM
+   REAL*8, INTENT(OUT)           :: TEMPPNH4
+   REAL*8, INTENT(OUT)           :: TEMPPNO3
+   REAL*8, INTENT(OUT)           :: TEMPPTI
+   REAL*8, INTENT(OUT)           :: TEMPPSI
+   REAL*8, INTENT(OUT)           :: TEMPPMC
+   REAL*8, INTENT(OUT)           :: TEMPPSO4
+
+! INPUT/OUTPUT PARAMETERS:
+   INTEGER, INTENT(INOUT)        :: RC      ! Return code
+! Local
+   REAL(sp)                   :: RWC_TEMP, TAIR  !RWC and air temperature
+   REAL(sp), DIMENSION(1)     :: VARS
+
 !  Initialize
-!   TEMPNO      = 0.0d0
-!   ...add remaining species
-!
-!   TEMPNO = ExtState%MEmisNO_RWC%Arr%Val(I,J)
-!   ...add remaining species
-!
-!   RWC_TEMP = Inst%RWCTEMPF  ! RWC temperature threshold in Fahrenheit from config
-!   !Get 2-m air temperature, K
-!   TAIR = ExtState%T2M%Arr%Val(I,J)
-!
-!   !========================================================================
-!   ! Load all variables into a single array
-!   !========================================================================
-!   ! Air Temperature, K --> Fahrenheit for MetEmis consistency
-!   VARS(1) = (TAIR - 273.15)*1.8 + 32.0
-!   IF (VARS(1) .GT. RWC_TEMP) THEN  !RWC emissions off (zero out)
-!        TEMPNO = TEMPNO * 0.0          
-!        ...add remaining species
-!    ENDIF
-!
-!  ...
-! ! Return w/ success
-!   RC = HCO_SUCCESS
+   TEMPNO       = 0.0d0
+   TEMPNO2      = 0.0d0
+   TEMPHONO     = 0.0d0
+   TEMPCO       = 0.0d0
+   TEMPSO2      = 0.0d0
+   TEMPNH3      = 0.0d0
+   TEMPCH4      = 0.0d0
+   TEMPACROLEIN         = 0.0d0
+   TEMPBUTADIENE13      = 0.0d0
+   TEMPETHY      = 0.0d0
+   TEMPTERP      = 0.0d0
+   TEMPFORM      = 0.0d0
+   TEMPPAR       = 0.0d0
+   TEMPIOLE      = 0.0d0
+   TEMPOLE       = 0.0d0
+   TEMPETH       = 0.0d0
+   TEMPETHA      = 0.0d0
+   TEMPETOH      = 0.0d0
+   TEMPMEOH      = 0.0d0
+   TEMPBENZ      = 0.0d0
+   TEMPTOL       = 0.0d0
+   TEMPXYLMN     = 0.0d0
+   TEMPNAPH      = 0.0d0
+   TEMPALD2      = 0.0d0
+   TEMPALDX      = 0.0d0
+   TEMPISOP      = 0.0d0
+   TEMPPRPA      = 0.0d0
+   TEMPACET      = 0.0d0
+   TEMPKET      = 0.0d0
+   TEMPALD2_PRIMARY      = 0.0d0
+   TEMPFORM_PRIMARY      = 0.0d0
+   TEMPSOAALK      = 0.0d0
+   TEMPPEC      = 0.0d0
+   TEMPPOC      = 0.0d0
+   TEMPPAL      = 0.0d0
+   TEMPPCA      = 0.0d0
+   TEMPPCL      = 0.0d0
+   TEMPPFE      = 0.0d0
+   TEMPPH2O     = 0.0d0
+   TEMPPK       = 0.0d0
+   TEMPPMG      = 0.0d0
+   TEMPPMN      = 0.0d0
+   TEMPPMOTHR   = 0.0d0
+   TEMPPNA      = 0.0d0
+   TEMPPNCOM    = 0.0d0
+   TEMPPNH4     = 0.0d0
+   TEMPPNO3     = 0.0d0
+   TEMPPTI      = 0.0d0
+   TEMPPSI      = 0.0d0
+   TEMPPMC      = 0.0d0
+   TEMPPSO4     = 0.0d0
 
-!  END SUBROUTINE METEMIS_RWC
+!  Add state RWC emissions
+   TEMPNO = ExtState%MEmisNO_RWC%Arr%Val(I,J)
+   TEMPNO2 = ExtState%MEmisNO2_RWC%Arr%Val(I,J)
+   TEMPHONO = ExtState%MEmisHONO_RWC%Arr%Val(I,J)
+   TEMPCO = ExtState%MEmisCO_RWC%Arr%Val(I,J)
+   TEMPSO2 = ExtState%MEmisSO2_RWC%Arr%Val(I,J)
+   TEMPNH3 = ExtState%MEmisNH3_RWC%Arr%Val(I,J)
+   TEMPCH4 = ExtState%MEmisCH4_RWC%Arr%Val(I,J)
+   TEMPACROLEIN = ExtState%MEmisACROLEIN_RWC%Arr%Val(I,J)
+   TEMPBUTADIENE13 = ExtState%MEmisBUTADIENE13_RWC%Arr%Val(I,J)
+   TEMPETHY = ExtState%MEmisETHY_RWC%Arr%Val(I,J)
+   TEMPTERP = ExtState%MEmisTERP_RWC%Arr%Val(I,J)
+   TEMPFORM = ExtState%MEmisFORM_RWC%Arr%Val(I,J)
+   TEMPPAR = ExtState%MEmisPAR_RWC%Arr%Val(I,J)
+   TEMPIOLE = ExtState%MEmisIOLE_RWC%Arr%Val(I,J)
+   TEMPOLE = ExtState%MEmisOLE_RWC%Arr%Val(I,J)
+   TEMPETH = ExtState%MEmisETH_RWC%Arr%Val(I,J)
+   TEMPETHA = ExtState%MEmisETHA_RWC%Arr%Val(I,J)
+   TEMPETOH = ExtState%MEmisETOH_RWC%Arr%Val(I,J)
+   TEMPMEOH = ExtState%MEmisMEOH_RWC%Arr%Val(I,J)
+   TEMPBENZ = ExtState%MEmisBENZ_RWC%Arr%Val(I,J)
+   TEMPTOL = ExtState%MEmisTOL_RWC%Arr%Val(I,J)
+   TEMPXYLMN = ExtState%MEmisXYLMN_RWC%Arr%Val(I,J)
+   TEMPNAPH = ExtState%MEmisNAPH_RWC%Arr%Val(I,J)
+   TEMPALD2 = ExtState%MEmisALD2_RWC%Arr%Val(I,J)
+   TEMPALDX = ExtState%MEmisALDX_RWC%Arr%Val(I,J)
+   TEMPISOP = ExtState%MEmisISOP_RWC%Arr%Val(I,J)
+   TEMPPRPA = ExtState%MEmisPRPA_RWC%Arr%Val(I,J)
+   TEMPACET = ExtState%MEmisACET_RWC%Arr%Val(I,J)
+   TEMPKET = ExtState%MEmisKET_RWC%Arr%Val(I,J)
+   TEMPALD2_PRIMARY = ExtState%MEmisALD2_PRIMARY_RWC%Arr%Val(I,J)
+   TEMPFORM_PRIMARY = ExtState%MEmisFORM_PRIMARY_RWC%Arr%Val(I,J)
+   TEMPSOAALK = ExtState%MEmisSOAALK_RWC%Arr%Val(I,J)
+   TEMPPEC = ExtState%MEmisPEC_RWC%Arr%Val(I,J)
+   TEMPPOC = ExtState%MEmisPOC_RWC%Arr%Val(I,J)
+   TEMPPAL = ExtState%MEmisPAL_RWC%Arr%Val(I,J)
+   TEMPPCA = ExtState%MEmisPCA_RWC%Arr%Val(I,J)
+   TEMPPCL = ExtState%MEmisPCL_RWC%Arr%Val(I,J)
+   TEMPPFE = ExtState%MEmisPFE_RWC%Arr%Val(I,J)
+   TEMPPH2O = ExtState%MEmisPH2O_RWC%Arr%Val(I,J)
+   TEMPPK = ExtState%MEmisPK_RWC%Arr%Val(I,J)
+   TEMPPMG = ExtState%MEmisPMG_RWC%Arr%Val(I,J)
+   TEMPPMN = ExtState%MEmisPMN_RWC%Arr%Val(I,J)
+   TEMPPMOTHR = ExtState%MEmisPMOTHR_RWC%Arr%Val(I,J)
+   TEMPPNA = ExtState%MEmisPNA_RWC%Arr%Val(I,J)
+   TEMPPNCOM = ExtState%MEmisPNCOM_RWC%Arr%Val(I,J)
+   TEMPPNH4 = ExtState%MEmisPNH4_RWC%Arr%Val(I,J)
+   TEMPPNO3 = ExtState%MEmisPNO3_RWC%Arr%Val(I,J)
+   TEMPPTI = ExtState%MEmisPTI_RWC%Arr%Val(I,J)
+   TEMPPSI = ExtState%MEmisPSI_RWC%Arr%Val(I,J)
+   TEMPPMC = ExtState%MEmisPMC_RWC%Arr%Val(I,J)
+   TEMPPSO4 = ExtState%MEmisPSO4_RWC%Arr%Val(I,J)
+
+   RWC_TEMP = Inst%RWCTEMPF  ! RWC temperature threshold in Fahrenheit from config
+   !Get 2-m air temperature, K
+   TAIR = ExtState%T2M%Arr%Val(I,J)
+
+   !========================================================================
+   ! Load all variables into a single array
+   !========================================================================
+   ! Air Temperature, K --> Fahrenheit for MetEmis consistency
+   VARS(1) = (TAIR - 273.15)*1.8 + 32.0
+   IF (VARS(1) .GT. RWC_TEMP) THEN  !RWC emissions off (zero out)
+        TEMPNO = TEMPNO * 0.0
+        TEMPNO2 = TEMPNO2 * 0.0        
+        TEMPHONO = TEMPHONO * 0.0
+        TEMPCO = TEMPCO * 0.0
+        TEMPSO2 = TEMPSO2 * 0.0
+        TEMPNH3 = TEMPNH3 * 0.0
+        TEMPCH4 = TEMPCH4 * 0.0
+        TEMPACROLEIN = TEMPACROLEIN * 0.0
+        TEMPBUTADIENE13 = TEMPBUTADIENE13 * 0.0
+        TEMPETHY = TEMPETHY * 0.0
+        TEMPTERP = TEMPTERP * 0.0
+        TEMPFORM = TEMPFORM * 0.0
+        TEMPPAR = TEMPPAR * 0.0
+        TEMPIOLE = TEMPIOLE * 0.0
+        TEMPOLE = TEMPOLE * 0.0
+        TEMPETH = TEMPETH * 0.0
+        TEMPETHA = TEMPETHA * 0.0
+        TEMPETOH = TEMPETOH * 0.0
+        TEMPMEOH = TEMPMEOH * 0.0
+        TEMPBENZ = TEMPBENZ * 0.0
+        TEMPTOL = TEMPTOL * 0.0
+        TEMPXYLMN = TEMPXYLMN * 0.0
+        TEMPNAPH = TEMPNAPH * 0.0
+        TEMPALD2 = TEMPALD2 * 0.0
+        TEMPALDX = TEMPALDX * 0.0
+        TEMPISOP = TEMPISOP * 0.0
+        TEMPPRPA = TEMPPRPA * 0.0
+        TEMPACET = TEMPACET * 0.0
+        TEMPKET = TEMPKET * 0.0
+        TEMPALD2_PRIMARY = TEMPALD2_PRIMARY * 0.0
+        TEMPFORM_PRIMARY = TEMPFORM_PRIMARY * 0.0
+        TEMPSOAALK = TEMPSOAALK * 0.0
+        TEMPPEC = TEMPPEC * 0.0
+        TEMPPOC = TEMPPOC * 0.0
+        TEMPPAL = TEMPPAL * 0.0
+        TEMPPCA = TEMPPCA * 0.0
+        TEMPPCL = TEMPPCL * 0.0
+        TEMPPFE = TEMPPFE * 0.0
+        TEMPPH2O = TEMPPH2O * 0.0
+        TEMPPK = TEMPPK * 0.0
+        TEMPPMG = TEMPPMG * 0.0
+        TEMPPMN = TEMPPMN * 0.0
+        TEMPPMOTHR = TEMPPMOTHR * 0.0
+        TEMPPNA = TEMPPNA * 0.0
+        TEMPPNCOM = TEMPPNCOM * 0.0
+        TEMPPNH4 = TEMPPNH4 * 0.0
+        TEMPPNO3 = TEMPPNO3 * 0.0
+        TEMPPTI = TEMPPTI * 0.0
+        TEMPPSI = TEMPPSI * 0.0
+        TEMPPMC = TEMPPMC * 0.0
+        TEMPPSO4 = TEMPPSO4 * 0.0
+    ENDIF
+
+ ! Return w/ success
+   RC = HCO_SUCCESS
+
+  END SUBROUTINE METEMIS_RWC
 
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !

@@ -804,12 +804,59 @@ MODULE HCOX_STATE_MOD
 !     !!!!Continue Livestock Species here for each animal type (BEEF, SWINE, DAIRY, and POULTRY)
 !     !...
 !
-!     !!!TBD RWC
-!     TYPE(ExtDat_2R),  POINTER :: MEmisNO_RWC   ! MetEmis NO RWC [kg/m2/s]
-!     TYPE(ExtDat_2R),  POINTER :: MEmisNO2_RWC  ! MetEmis NO2 RWC [kg/m2/s]
-!     !!!!Continue RWC Species here
-!     !...
-!
+!    
+     TYPE(ExtDat_2R),  POINTER :: MEmisNO_RWC   ! MetEmis NO RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisNO2_RWC  ! MetEmis NO2 RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisHONO_RWC  ! MetEmis HONO RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCO_RWC  ! MetEmis CO RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisSO2_RWC  ! MetEmis SO2 RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisNH3_RWC  ! MetEmis NH3 RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisCH4_RWC  ! MetEmis CH4 RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisACROLEIN_RWC  ! MetEmis ACROLEIN RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisBUTADIENE13_RWC  ! MetEmis BUTADIENE13 RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisETHY_RWC  ! MetEmis ETHY RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisTERP_RWC  ! MetEmis TERP RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisFORM_RWC  ! MetEmis FORM RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPAR_RWC  ! MetEmis PAR RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisIOLE_RWC  ! MetEmis IOLE RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisOLE_RWC  ! MetEmis OLE RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisETH_RWC  ! MetEmis ETH RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisETHA_RWC  ! MetEmis ETHA RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisETOH_RWC  ! MetEmis ETOH RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisMEOH_RWC  ! MetEmis MEOH RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisBENZ_RWC  ! MetEmis BENZ RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisTOL_RWC  ! MetEmis TOL RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisXYLMN_RWC  ! MetEmis XYLMN RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisNAPH_RWC  ! MetEmis NAPH RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisALD2_RWC  ! MetEmis ALD2 RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisALDX_RWC  ! MetEmis ALDX RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisISOP_RWC  ! MetEmis ISOP RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPRPA_RWC  ! MetEmis PRPA RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisACET_RWC  ! MetEmis ACET RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisKET_RWC  ! MetEmis KET RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisALD2_PRIMARY_RWC  ! MetEmis ALD2_PRIMARY RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisFORM_PRIMARY_RWC  ! MetEmis FORM_PRIMARY RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisSOAALK_RWC  ! MetEmis SOAALK RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPEC_RWC  ! MetEmis PEC RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPOC_RWC  ! MetEmis POC RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPAL_RWC  ! MetEmis PAL RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPCA_RWC  ! MetEmis PCA RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPCL_RWC  ! MetEmis PCL RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPFE_RWC  ! MetEmis PFE RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPH2O_RWC  ! MetEmis PH2O RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPK_RWC  ! MetEmis PK RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPMG_RWC  ! MetEmis PMG RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPMN_RWC  ! MetEmis PMN RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPMOTHR_RWC  ! MetEmis PMOTHR RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPNA_RWC  ! MetEmis PNA RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPNCOM_RWC  ! MetEmis PNCOM RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPNH4_RWC  ! MetEmis PNH4 RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPNO3_RWC  ! MetEmis PNO3 RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPTI_RWC  ! MetEmis PTI RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPSI_RWC  ! MetEmis PSI RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPMC_RWC  ! MetEmis PMC RWC [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPSO4_RWC  ! MetEmis PSO4 RWC [kg/m2/s]
+
      INTEGER,          POINTER :: PBL_MAX     ! Max height of PBL [level]
      TYPE(ExtDat_3R),  POINTER :: CNV_MFC     ! Convective cloud mass flux [kg/m2/s]
      TYPE(ExtDat_3R),  POINTER :: FRAC_OF_PBL ! Fraction of grid box in PBL
@@ -4606,6 +4653,311 @@ CONTAINS
 !        RETURN
 !    ENDIF
 
+    CALL ExtDat_Init ( ExtState%MEmisNO_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNO_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNO2_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNO2_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisHONO_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisHONO_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCO_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCO_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSO2_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSO2_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACROLEIN_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACROLEIN_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBUTADIENE13_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBUTADIENE13_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHY_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHY_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisFORM_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisFORM_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+ 
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETH_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETH_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNAPH_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNAPH_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPRPA_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPRPA_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisFORM_PRIMARY_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisFORM_PRIMARY_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+ 
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPEC_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPEC_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPOC_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPOC_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAL_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAL_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPCA_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPCA_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPCL_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPCL_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPFE_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPFE_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPH2O_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPH2O_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+  
+    CALL ExtDat_Init ( ExtState%MEmisPK_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPK_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPMG_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPMG_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPMN_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPMN_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPMOTHR_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPMOTHR_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPNA_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPNA_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPNCOM_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPNCOM_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPNH4_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPNH4_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPNO3_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPNO3_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPTI_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPTI_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPSI_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPSI_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPMC_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPMC_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPSO4_RWC, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPSO4_RWC ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
     ! Return w/ success
     RC = HCO_SUCCESS
@@ -5294,9 +5646,57 @@ CONTAINS
 !       CALL ExtDat_Cleanup( ExtState%MEmisNO_BEEF_LIV_030 )
 !      Add remaining species by animal type and bins
 
-       !!!TBD RWC
-!       CALL ExtDat_Cleanup( ExtState%MEmisNO_RWC )
-!      Add remaining species 
+       CALL ExtDat_Cleanup( ExtState%MEmisNO_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisNO2_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisHONO_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisCO_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisSO2_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisACROLEIN_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisBUTADIENE13_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHY_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisFORM_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisETH_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisNAPH_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPRPA_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisFORM_PRIMARY_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPEC_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPOC_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAL_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPCA_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPCL_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPFE_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPH2O_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPK_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPMG_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPMN_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPMOTHR_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPNA_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPNCOM_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPNH4_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPNO3_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPTI_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPSI_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPMC_RWC )
+       CALL ExtDat_Cleanup( ExtState%MEmisPSO4_RWC )
 
        ExtState%DRYCOEFF   => NULL()
        ExtState%PBL_MAX    => NULL()
