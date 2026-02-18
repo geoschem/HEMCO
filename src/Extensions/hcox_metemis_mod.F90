@@ -3055,8 +3055,11 @@ CONTAINS
    ExtState%MEmisPSO4_OR_100%DoUse          = .TRUE.
    ExtState%MEmisPSO4_OR_110%DoUse          = .TRUE.
    ExtState%MEmisPSO4_OR_120%DoUse          = .TRUE.
+
+   ENDIF
+
    !!!TBD Livestock/RWC
-!   ELSEIF ( Inst%MELIVESTOCK ) THEN !MetEmis Livestock sector inputs
+!   IF ( Inst%MELIVESTOCK ) THEN !MetEmis Livestock sector inputs
 !   !three digit suffix pertains to livestock temperature bins in degrees fahrenheit
 !   ExtState%T2M%DoUse                          = .TRUE.
 !   ExtState%PRECTOT%DoUse                      = .TRUE. 
@@ -3064,7 +3067,9 @@ CONTAINS
 !   ...
 !   ExtState%MEmisPSO4_BEEF_LIV_030%DoUse            = .TRUE.
 !   ...
-   ELSEIF ( Inst%MERWC ) THEN !MetEmis RWC sector inputs for each species
+!   ENDIF
+
+   IF ( Inst%MERWC ) THEN !MetEmis RWC sector inputs for each species
 !  RWC does not have temperature bins, but read in for each species temperature
 !  binary adjustment in subroutine later
    ExtState%T2M%DoUse                          = .TRUE.
@@ -3119,7 +3124,10 @@ CONTAINS
    ExtState%MEmisPSI_RWC%DoUse                 = .TRUE.
    ExtState%MEmisPMC_RWC%DoUse                 = .TRUE.
    ExtState%MEmisPSO4_RWC%DoUse                = .TRUE.
-   ELSE
+   ENDIF
+
+   ! Error check: No MetEmis option turned on
+   IF ( .NOT. ( Inst%MEONROAD .OR. Inst%MERWC .OR. Inst%MELIVESTOCK ) ) THEN
       CALL HCO_ERROR( 'ExtState error: No MetEmis option turned on ', RC )
       RETURN
    ENDIF
