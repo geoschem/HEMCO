@@ -5540,6 +5540,5472 @@ CONTAINS
         RETURN
     ENDIF
 
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisNH3_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisNH3_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisCH4_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisCH4_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTERP_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTERP_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAR_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAR_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisIOLE_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisIOLE_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisOLE_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisOLE_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETHA_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETHA_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisETOH_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisETOH_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisMEOH_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisMEOH_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisBENZ_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisBENZ_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisTOL_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisTOL_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisXYLMN_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisXYLMN_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALDX_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALDX_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisISOP_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisISOP_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisACET_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisACET_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisKET_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisKET_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisALD2_PRIMARY_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_BEEF_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_BEEF_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_DAIRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_DAIRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_SWINE_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_SWINE_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_010, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_010 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_020, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_020 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_030, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_030 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_040, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_040 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_050, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_050 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_060, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_060 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_070, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_070 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_080, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_080 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_090, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_090 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_100, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_100 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_110, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_110 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisSOAALK_POULTRY_LIV_120, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisSOAALK_POULTRY_LIV_120 ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
     CALL ExtDat_Init ( ExtState%MEmisNO_RWC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'Init error: MEmisNO_RWC ', RC, THISLOC=LOC )
@@ -6531,6 +11997,917 @@ CONTAINS
 
        !!!TBD Livestock Here.
        CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisNH3_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisCH4_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTERP_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAR_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisIOLE_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisOLE_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETHA_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisETOH_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisMEOH_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisBENZ_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisTOL_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisXYLMN_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALDX_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisISOP_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisACET_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisKET_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_BEEF_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_DAIRY_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_SWINE_LIV_120 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_010 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_020 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_030 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_040 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_050 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_060 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_070 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_080 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_090 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_100 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_110 )
+       CALL ExtDat_Cleanup( ExtState%MEmisSOAALK_POULTRY_LIV_120 )
 
        CALL ExtDat_Cleanup( ExtState%MEmisNO_RWC )
        CALL ExtDat_Cleanup( ExtState%MEmisNO2_RWC )
