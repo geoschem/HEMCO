@@ -6051,7 +6051,7 @@ CONTAINS
             TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_030%Arr%Val(I,J)
             TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_030%Arr%Val(I,J)
 
-            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_030%Arr%Val(I,J)dd
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_030%Arr%Val(I,J)
             TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_030%Arr%Val(I,J)
             TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_030%Arr%Val(I,J)
             TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_030%Arr%Val(I,J)
@@ -6148,7 +6148,7 @@ CONTAINS
             TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_040%Arr%Val(I,J)
             TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_040%Arr%Val(I,J)
 
-            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_040%Arr%Val(I,J)dd
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_040%Arr%Val(I,J)
             TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_040%Arr%Val(I,J)
             TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_040%Arr%Val(I,J)
             TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_040%Arr%Val(I,J)
@@ -6245,7 +6245,7 @@ CONTAINS
             TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_050%Arr%Val(I,J)
             TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_050%Arr%Val(I,J)
 
-            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_050%Arr%Val(I,J)dd
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_050%Arr%Val(I,J)
             TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_050%Arr%Val(I,J)
             TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_050%Arr%Val(I,J)
             TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_050%Arr%Val(I,J)
@@ -6342,7 +6342,7 @@ CONTAINS
             TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_060%Arr%Val(I,J)
             TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_060%Arr%Val(I,J)
 
-            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_060%Arr%Val(I,J)dd
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_060%Arr%Val(I,J)
             TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_060%Arr%Val(I,J)
             TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_060%Arr%Val(I,J)
             TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_060%Arr%Val(I,J)
@@ -6440,7 +6440,7 @@ CONTAINS
             TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_070%Arr%Val(I,J)
             TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_070%Arr%Val(I,J)
 
-            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_070%Arr%Val(I,J)dd
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_070%Arr%Val(I,J)
             TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_070%Arr%Val(I,J)
             TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_070%Arr%Val(I,J)
             TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_070%Arr%Val(I,J)
@@ -6537,7 +6537,7 @@ CONTAINS
             TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_080%Arr%Val(I,J)
             TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_080%Arr%Val(I,J)
 
-            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_080%Arr%Val(I,J)dd
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_080%Arr%Val(I,J)
             TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_080%Arr%Val(I,J)
             TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_080%Arr%Val(I,J)
             TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_080%Arr%Val(I,J)
@@ -6634,7 +6634,7 @@ CONTAINS
             TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_090%Arr%Val(I,J)
             TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_090%Arr%Val(I,J)
 
-            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_090%Arr%Val(I,J)dd
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_090%Arr%Val(I,J)
             TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_090%Arr%Val(I,J)
             TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_090%Arr%Val(I,J)
             TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_090%Arr%Val(I,J)
@@ -6731,7 +6731,7 @@ CONTAINS
             TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_100%Arr%Val(I,J)
             TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_100%Arr%Val(I,J)
 
-            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_100%Arr%Val(I,J)dd
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_100%Arr%Val(I,J)
             TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_100%Arr%Val(I,J)
             TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_100%Arr%Val(I,J)
             TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_100%Arr%Val(I,J)
@@ -6828,7 +6828,7 @@ CONTAINS
             TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_110%Arr%Val(I,J)
             TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_110%Arr%Val(I,J)
 
-            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_110%Arr%Val(I,J)dd
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_110%Arr%Val(I,J)
             TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_110%Arr%Val(I,J)
             TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_110%Arr%Val(I,J)
             TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_110%Arr%Val(I,J)
@@ -6925,7 +6925,7 @@ CONTAINS
             TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_120%Arr%Val(I,J)
             TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_120%Arr%Val(I,J)
 
-            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_120%Arr%Val(I,J)dd
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_120%Arr%Val(I,J)
             TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_120%Arr%Val(I,J)
             TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_120%Arr%Val(I,J)
             TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_120%Arr%Val(I,J)
@@ -6942,7 +6942,7 @@ CONTAINS
 
             TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_120%Arr%Val(I,J)
             TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_120%Arr%Val(I,J)
-            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_10%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_120%Arr%Val(I,J)
             TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_120%Arr%Val(I,J)
 
             TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_120%Arr%Val(I,J)
