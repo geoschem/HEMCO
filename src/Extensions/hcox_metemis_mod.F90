@@ -6971,7 +6971,7 @@ CONTAINS
              CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
              RETURN
       END SELECT
-!Continue here..
+
 !         !-----------------------------------
 !         ! Final interpolated values
 !         !-----------------------------------
