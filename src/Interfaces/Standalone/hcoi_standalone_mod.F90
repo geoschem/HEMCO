@@ -10194,22 +10194,22 @@ CONTAINS
     ENDIF
 
     !!!TBD Livestock
-    !%%%%% MetEmis NO Beef livestock emissions at 30 degrees F %%%%%
-!    IF ( ExtState%MEmisNO_BEEF_LIV_030%DoUse ) THEN
-!       Name = 'MEmisNO_BEEF_LIV_030'
-!       CALL ExtDat_Set( HcoState,     ExtState%MEmisNO_BEEF_LIV_030,           &
-!                        TRIM( Name ), RC,       FIRST=FIRST                 )
-!       IF ( RC /= HCO_SUCCESS ) THEN
-!          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
-!                    '" for the HEMCO standalone simulation!'
-!          CALL HCO_Error( ErrMsg, RC, ThisLoc )
-!          CALL HCO_Leave( HcoState%Config%Err, RC )
-!          RETURN
-!       ENDIF
-!    ENDIF
+    !%%%%% MetEmis NH3 Beef livestock emissions at 10 degrees F %%%%%
+    IF ( ExtState%MEmisNH3_BEEF_LIV_010%DoUse ) THEN
+       Name = 'MEmisNH3_BEEF_LIV_010'
+       CALL ExtDat_Set( HcoState,     ExtState%MEmisNH3_BEEF_LIV_010,           &
+                        TRIM( Name ), RC,       FIRST=FIRST                 )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                    '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
 !    !!!!Continue Livestock Species here for each animal type (BEEF, SWINE, DAIRY, and POULTRY) 
 !
-!    !!!TBD RWC
     !%%%%% MetEmis NO RWC emissions %%%%%
     IF ( ExtState%MEmisNO_RWC%DoUse ) THEN
        Name = 'MEmisNO_RWC'
