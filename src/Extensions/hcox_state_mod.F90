@@ -168,6 +168,7 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: FLASH_DENS  ! Lightning flash density [#/km2/s]
      TYPE(ExtDat_2R),  POINTER :: CONV_DEPTH  ! Convective cloud depth [m]
      TYPE(ExtDat_2R),  POINTER :: PRECTOT     ! Total Precipitation [kg/m2/s]
+
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_GAS_OR_030  ! MetEmis NO GAS Onroad Table 30F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_GAS_OR_040  ! MetEmis NO GAS Onroad Table 40F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_GAS_OR_050  ! MetEmis NO GAS Onroad Table 50F [kg/m2/s]
@@ -2288,6 +2289,13 @@ CONTAINS
     CALL ExtDat_Init( ExtState%TropLev, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Could not allocate ExtState%TropLev'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
+    ENDIF
+
+    CALL ExtDat_Init( ExtState%PRECTOT, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = 'Could not allocate ExtState%PRECTOT'
        CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
@@ -11404,6 +11412,8 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%BYNCY      )
        CALL ExtDat_Cleanup( ExtState%LFR        )
        CALL ExtDat_Cleanup( ExtState%TropLev    )
+       CALL ExtDat_Cleanup( ExtState%PRECTOT    )
+
        CALL ExtDat_Cleanup( ExtState%MEmisNO_GAS_OR_030 )
        CALL ExtDat_Cleanup( ExtState%MEmisNO_GAS_OR_040 )
        CALL ExtDat_Cleanup( ExtState%MEmisNO_GAS_OR_050 )

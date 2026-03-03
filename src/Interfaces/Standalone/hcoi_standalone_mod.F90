@@ -2633,6 +2633,20 @@ CONTAINS
       ENDIF
    ENDIF
 
+   !%%%%%Total Precipitation %%%%%
+    IF ( ExtState%PRECTOT%DoUse ) THEN
+       Name = 'PRECTOT'
+       CALL ExtDat_Set( HcoState,     ExtState%PRECTOT,                          &
+                        TRIM( Name ), RC,                   FIRST=FIRST     )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Could not find quantity "' // TRIM( Name )            // &
+                   '" for the HEMCO standalone simulation!'
+          CALL HCO_Error( ErrMsg, RC, ThisLoc )
+          CALL HCO_Leave( HcoState%Config%Err, RC )
+          RETURN
+       ENDIF
+    ENDIF
+
     !%%%%% MetEmis NO GAS onroad emissions at 30 degrees F %%%%%
     IF ( ExtState%MEmisNO_GAS_OR_030%DoUse ) THEN
        Name = 'MEmisNO_GAS_OR_030'
