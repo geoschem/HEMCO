@@ -7821,7 +7821,6 @@ CONTAINS
    !Get fraction snow cover, fraction
    SNOWFRAC = ExtState%FRSNO%Arr%Val(I,J)
 
-   print*, 'AFD_PRECIP=',AFD_PRECIP,'PRECIP=',PRECIP,'AFD_FRSNO=',AFD_FRSNO,'SNOWFRAC=',SNOWFRAC
    !========================================================================
    ! Load all variables into a single array
    !========================================================================
