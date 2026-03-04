@@ -168,6 +168,7 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: FLASH_DENS  ! Lightning flash density [#/km2/s]
      TYPE(ExtDat_2R),  POINTER :: CONV_DEPTH  ! Convective cloud depth [m]
      TYPE(ExtDat_2R),  POINTER :: PRECTOT     ! Total Precipitation [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: FRSNO       ! Snow cover fraction [fraction]
 
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_GAS_OR_030  ! MetEmis NO GAS Onroad Table 30F [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisNO_GAS_OR_040  ! MetEmis NO GAS Onroad Table 40F [kg/m2/s]
@@ -1745,6 +1746,26 @@ MODULE HCOX_STATE_MOD
      TYPE(ExtDat_2R),  POINTER :: MEmisPMC_RWC  ! MetEmis PMC RWC [kg/m2/s]
      TYPE(ExtDat_2R),  POINTER :: MEmisPSO4_RWC  ! MetEmis PSO4 RWC [kg/m2/s]
 
+     TYPE(ExtDat_2R),  POINTER :: MEmisPEC_AFD  ! MetEmis PEC AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPOC_AFD  ! MetEmis POC AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPAL_AFD  ! MetEmis PAL AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPCA_AFD  ! MetEmis PCA AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPCL_AFD  ! MetEmis PCL AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPFE_AFD  ! MetEmis PFE AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPH2O_AFD  ! MetEmis PH2O AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPK_AFD  ! MetEmis PK AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPMG_AFD  ! MetEmis PMG AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPMN_AFD  ! MetEmis PMN AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPMOTHR_AFD  ! MetEmis PMOTHR AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPNA_AFD  ! MetEmis PNA AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPNCOM_AFD  ! MetEmis PNCOM AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPNH4_AFD  ! MetEmis PNH4 AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPNO3_AFD  ! MetEmis PNO3 AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPTI_AFD  ! MetEmis PTI AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPSI_AFD  ! MetEmis PSI AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPMC_AFD  ! MetEmis PMC AFD [kg/m2/s]
+     TYPE(ExtDat_2R),  POINTER :: MEmisPSO4_AFD  ! MetEmis PSO4 AFD [kg/m2/s]
+
      INTEGER,          POINTER :: PBL_MAX     ! Max height of PBL [level]
      TYPE(ExtDat_3R),  POINTER :: CNV_MFC     ! Convective cloud mass flux [kg/m2/s]
      TYPE(ExtDat_3R),  POINTER :: FRAC_OF_PBL ! Fraction of grid box in PBL
@@ -2299,6 +2320,14 @@ CONTAINS
        CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
+
+    CALL ExtDat_Init( ExtState%FRSNO, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+       MSG = 'Could not allocate ExtState%FRSNO'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
+    ENDIF
+
 
     CALL ExtDat_Init ( ExtState%MEmisNO_GAS_OR_030, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
@@ -11320,6 +11349,119 @@ CONTAINS
         RETURN
     ENDIF
 
+    CALL ExtDat_Init ( ExtState%MEmisPEC_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPEC_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPOC_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPOC_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPAL_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPAL_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPCA_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPCA_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPCL_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPCL_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPFE_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPFE_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPH2O_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPH2O_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPK_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPK_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPMG_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPMG_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+CALL ExtDat_Init ( ExtState%MEmisPMN_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPMN_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPMOTHR_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPMOTHR_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPNA_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPNA_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPNCOM_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPNCOM_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPNH4_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPNH4_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPNO3_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPNO3_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPTI_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPTI_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPSI_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPSI_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPMC_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPMC_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL ExtDat_Init ( ExtState%MEmisPSO4_AFD, RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'Init error: MEmisPSO4_AFD ', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
     ! Return w/ success
     RC = HCO_SUCCESS
 
@@ -11413,6 +11555,7 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%LFR        )
        CALL ExtDat_Cleanup( ExtState%TropLev    )
        CALL ExtDat_Cleanup( ExtState%PRECTOT    )
+       CALL ExtDat_Cleanup( ExtState%FRSNO      )
 
        CALL ExtDat_Cleanup( ExtState%MEmisNO_GAS_OR_030 )
        CALL ExtDat_Cleanup( ExtState%MEmisNO_GAS_OR_040 )
@@ -12970,6 +13113,26 @@ CONTAINS
        CALL ExtDat_Cleanup( ExtState%MEmisPSI_RWC )
        CALL ExtDat_Cleanup( ExtState%MEmisPMC_RWC )
        CALL ExtDat_Cleanup( ExtState%MEmisPSO4_RWC )
+
+       CALL ExtDat_Cleanup( ExtState%MEmisPEC_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPOC_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPAL_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPCA_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPCL_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPFE_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPH2O_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPK_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPMG_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPMN_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPMOTHR_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPNA_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPNCOM_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPNH4_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPNO3_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPTI_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPSI_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPMC_AFD )
+       CALL ExtDat_Cleanup( ExtState%MEmisPSO4_AFD )
 
        ExtState%DRYCOEFF   => NULL()
        ExtState%PBL_MAX    => NULL()

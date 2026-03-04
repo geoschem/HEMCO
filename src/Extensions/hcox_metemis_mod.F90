@@ -180,6 +180,11 @@ MODULE HCOX_MetEmis_MOD
      LOGICAL               :: MERWC       ! Turn on MetEmis for RWC Sector
      REAL(hp)              :: RWCTEMPF    ! RWC Temperature Threshold (Fahrenheit)
 
+     LOGICAL               :: MEAFD       ! Turn on MetEmis for AFD Sector
+     REAL(hp)              :: AFDPRECIP   ! AFD Precipitation Threshold (mm/hr)
+     REAL(hp)              :: AFDFRSNO    ! AFD Snow cover Threshold (fraction)
+
+
      ! Arrays
 
      ! Reference temperature values of variables in the MetEmis look-up tables
@@ -536,8 +541,28 @@ CONTAINS
     REAL(dp)                 :: TEMP_PTI_RWC
     REAL(dp)                 :: TEMP_PSI_RWC
     REAL(dp)                 :: TEMP_PMC_RWC
-
     REAL(dp)                 :: TEMP_PSO4_RWC
+!MetEmis Diag Update AFD
+    REAL(dp)                 :: TEMP_PEC_AFD
+    REAL(dp)                 :: TEMP_POC_AFD
+    REAL(dp)                 :: TEMP_PAL_AFD
+    REAL(dp)                 :: TEMP_PCA_AFD
+    REAL(dp)                 :: TEMP_PCL_AFD
+    REAL(dp)                 :: TEMP_PFE_AFD
+    REAL(dp)                 :: TEMP_PH2O_AFD
+    REAL(dp)                 :: TEMP_PK_AFD
+
+    REAL(dp)                 :: TEMP_PMG_AFD
+    REAL(dp)                 :: TEMP_PMN_AFD
+    REAL(dp)                 :: TEMP_PMOTHR_AFD
+    REAL(dp)                 :: TEMP_PNA_AFD
+    REAL(dp)                 :: TEMP_PNCOM_AFD
+    REAL(dp)                 :: TEMP_PNH4_AFD
+    REAL(dp)                 :: TEMP_PNO3_AFD
+    REAL(dp)                 :: TEMP_PTI_AFD
+    REAL(dp)                 :: TEMP_PSI_AFD
+    REAL(dp)                 :: TEMP_PMC_AFD
+    REAL(dp)                 :: TEMP_PSO4_AFD
 
     !=================================================================
     ! MetEmis begins here!
@@ -1492,7 +1517,141 @@ CONTAINS
        ENDIF
 
      ENDIF
-!
+
+       TEMP_PEC_AFD    = 0.0_hp
+       TEMP_POC_AFD    = 0.0_hp
+       TEMP_PAL_AFD    = 0.0_hp
+       TEMP_PCA_AFD    = 0.0_hp
+       TEMP_PCL_AFD    = 0.0_hp
+       TEMP_PFE_AFD    = 0.0_hp
+       TEMP_PH2O_AFD   = 0.0_hp
+       TEMP_PK_AFD     = 0.0_hp
+       TEMP_PMG_AFD    = 0.0_hp
+       TEMP_PMN_AFD    = 0.0_hp
+       TEMP_PMOTHR_AFD = 0.0_hp
+       TEMP_PNA_AFD    = 0.0_hp
+       TEMP_PNCOM_AFD  = 0.0_hp
+       TEMP_PNH4_AFD   = 0.0_hp
+       TEMP_PNO3_AFD   = 0.0_hp
+       TEMP_PTI_AFD   = 0.0_hp
+       TEMP_PSI_AFD    = 0.0_hp
+       TEMP_PMC_AFD    = 0.0_hp
+       TEMP_PSO4_AFD   = 0.0_hp
+
+     IF ( Inst%MEAFD ) THEN !MetEmis AFD sector calculations
+ !---------------------------------------------------------------------
+       ! MetEmis AFD binary calculation for emissions based on precipitation
+       ! (P.C. Campbell, 02/12/2026)
+       !---------------------------------------------------------------------
+       CALL METEMIS_AFD( ExtState,  HcoState,  Inst,   I,   J,   RC,                         &
+                  TEMP_PEC_AFD,&
+                  TEMP_POC_AFD, TEMP_PAL_AFD,TEMP_PCA_AFD, TEMP_PCL_AFD, TEMP_PFE_AFD,       &
+                  TEMP_PH2O_AFD, TEMP_PK_AFD, TEMP_PMG_AFD, TEMP_PMN_AFD, TEMP_PMOTHR_AFD,   &
+                  TEMP_PNA_AFD, TEMP_PNCOM_AFD, TEMP_PNH4_AFD, TEMP_PNO3_AFD, TEMP_PTI_AFD,  &
+                  TEMP_PSI_AFD, TEMP_PMC_AFD, TEMP_PSO4_AFD)
+
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ERR = .TRUE.; EXIT
+       ENDIF
+
+        !Here this adds sectors together if turned on
+       IF ( Inst%IDTPEC > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPEC(I,J) = FLUXPEC(I,J) + TEMP_PEC_AFD
+       ENDIF
+
+       IF ( Inst%IDTPOC > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPOC(I,J) = FLUXPOC(I,J) + TEMP_POC_AFD
+       ENDIF
+
+       IF ( Inst%IDTPAL > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPAL(I,J) = FLUXPAL(I,J) + TEMP_PAL_AFD
+       ENDIF
+
+       IF ( Inst%IDTPCA > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPCA(I,J) = FLUXPCA(I,J) + TEMP_PCA_AFD
+       ENDIF
+
+       IF ( Inst%IDTPCL > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPCL(I,J) = FLUXPCL(I,J) + TEMP_PCL_AFD
+       ENDIF
+
+       IF ( Inst%IDTPFE > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPFE(I,J) = FLUXPFE(I,J) + TEMP_PFE_AFD
+       ENDIF
+
+       IF ( Inst%IDTPH2O > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPH2O(I,J) = FLUXPH2O(I,J) + TEMP_PH2O_AFD
+       ENDIF
+
+       IF ( Inst%IDTPK > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPK(I,J) = FLUXPK(I,J) + TEMP_PK_AFD
+       ENDIF
+
+       IF ( Inst%IDTPMG > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMG(I,J) = FLUXPMG(I,J) + TEMP_PMG_AFD
+       ENDIF
+
+       IF ( Inst%IDTPMN > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMN(I,J) = FLUXPMN(I,J) + TEMP_PMN_AFD
+       ENDIF
+
+       IF ( Inst%IDTPMOTHR > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMOTHR(I,J) = FLUXPMOTHR(I,J) + TEMP_PMOTHR_AFD
+       ENDIF
+
+       IF ( Inst%IDTPNA > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNA(I,J) = FLUXPNA(I,J) + TEMP_PNA_AFD
+       ENDIF
+
+       IF ( Inst%IDTPNCOM > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNCOM(I,J) = FLUXPNCOM(I,J) + TEMP_PNCOM_AFD
+       ENDIF
+
+       IF ( Inst%IDTPNH4 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNH4(I,J) = FLUXPNH4(I,J) + TEMP_PNH4_AFD
+       ENDIF
+
+       IF ( Inst%IDTPNO3 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNO3(I,J) = FLUXPNO3(I,J) + TEMP_PNO3_AFD
+       ENDIF
+
+       IF ( Inst%IDTPTI > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPTI(I,J) = FLUXPTI(I,J) + TEMP_PTI_AFD
+       ENDIF
+
+       IF ( Inst%IDTPSI > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPSI(I,J) = FLUXPSI(I,J) + TEMP_PSI_AFD
+       ENDIF
+
+       IF ( Inst%IDTPMC > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMC(I,J) = FLUXPMC(I,J) + TEMP_PMC_AFD
+       ENDIF
+
+       IF ( Inst%IDTPSO4 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPSO4(I,J) = FLUXPSO4(I,J) + TEMP_PSO4_AFD
+       ENDIF
+
+     ENDIF
+
        !---------------------------------------------------------------------
        ! Eventually write out into diagnostics array
        !---------------------------------------------------------------------
@@ -2529,7 +2688,28 @@ CONTAINS
         CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
         RETURN
     ENDIF
-   
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME AFD', &
+                    OptValBool=Inst%MEAFD, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'AFD precip (mm)', &
+                    OptValHp=Inst%AFDPRECIP, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'AFD frsno (fraction)', &
+                    OptValHp=Inst%AFDFRSNO, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
       ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
        WRITE(MSG,*) ' --> MetEmis Onroad option is ',Inst%MEONROAD
@@ -2565,6 +2745,25 @@ CONTAINS
        WRITE(MSG,*) ' --> MetEmis RWC temp (degrees F) is ',Inst%RWCTEMPF
        CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
      ENDIF
+
+      ! Verbose mode
+     IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis AFD option is ',Inst%MEAFD
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+     ENDIF
+
+     ! Verbose mode
+     IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis AFD precip (mm) is ',Inst%AFDPRECIP
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+     ENDIF
+
+     ! Verbose mode
+     IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis AFD frsno (fraction) is ',Inst%AFDFRSNO
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+     ENDIF
+
 
    !========================================================================
    ! Exit if this is a GEOS-Chem dry-run or HEMCO-standalone dry-run
@@ -4231,8 +4430,35 @@ CONTAINS
    ExtState%MEmisPSO4_RWC%DoUse                = .TRUE.
    ENDIF
 
+   IF ( Inst%MEAFD ) THEN !MetEmis AFD sector inputs for each species
+!  AFD does not have temperature bins, but read in for each species precipitation
+!  binary adjustment in subroutine later
+   ExtState%PRECTOT%DoUse                      = .TRUE.
+   ExtState%FRSNO%DoUse                        = .TRUE.
+   ExtState%MEmisPEC_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPOC_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPAL_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPCA_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPCL_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPFE_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPH2O_AFD%DoUse                = .TRUE.
+   ExtState%MEmisPK_AFD%DoUse                  = .TRUE.
+   ExtState%MEmisPMG_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPMN_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPMOTHR_AFD%DoUse              = .TRUE.
+   ExtState%MEmisPNA_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPNCOM_AFD%DoUse               = .TRUE.
+   ExtState%MEmisPNH4_AFD%DoUse                = .TRUE.
+   ExtState%MEmisPNO3_AFD%DoUse                = .TRUE.
+   ExtState%MEmisPTI_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPSI_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPMC_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPSO4_AFD%DoUse                = .TRUE.
+   ENDIF
+
    ! Error check: No MetEmis option turned on
-   IF ( .NOT. ( Inst%MEONROAD .OR. Inst%MERWC .OR. Inst%MELIVESTOCK ) ) THEN
+   IF ( .NOT. ( Inst%MEONROAD .OR. Inst%MERWC .OR. Inst%MELIVESTOCK .OR. &
+                Inst%MEAFD ) ) THEN
       CALL HCO_ERROR( 'ExtState error: No MetEmis option turned on ', RC )
       RETURN
    ENDIF
@@ -7478,6 +7704,153 @@ CONTAINS
    RC = HCO_SUCCESS
 
   END SUBROUTINE METEMIS_RWC
+
+  !------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: metemis_afd
+!
+! !DESCRIPTION:  Subroutine METEMIS_AFD returns emissions
+! based on precipitation binary flag from (Baek et al. 2023;
+! https://doi.org/10.5194/gmd-16-4659-2023)...
+!
+! This uses 1 input variable:
+!     TEMP   : model total precipitation kg/m2/s
+!\\
+ !INTERFACE:
+
+ SUBROUTINE METEMIS_AFD( ExtState,  HcoState, Inst, I, J, RC,                          &
+                         TEMPPEC,  TEMPPOC,  TEMPPAL,            &
+                         TEMPPCA,  TEMPPCL,   TEMPPFE,   TEMPPH2O, TEMPPK,             &
+                         TEMPPMG,  TEMPPMN,   TEMPPMOTHR, TEMPPNA, TEMPPNCOM,          &
+                         TEMPPNH4, TEMPPNO3,  TEMPPTI,   TEMPPSI,  TEMPPMC,            &
+                         TEMPPSO4)
+
+ !USES:
+   USE HCO_STATE_MOD,        ONLY : HCO_State
+   USE HCOX_STATE_MOD,       ONLY : Ext_State
+!
+! !INPUT PARAMETERS:
+!
+   TYPE(Ext_State), POINTER    :: ExtState
+   TYPE(HCO_State), POINTER    :: HcoState
+   TYPE(MyInst),    POINTER    :: Inst
+   INTEGER, INTENT(IN)         :: I, J      ! Grid indices
+!
+! OUTPUT PARAMETERS:
+!
+! Precip dependent MetEmis emission species 19 in total , kg/m2/s
+!
+   REAL*8, INTENT(OUT)           :: TEMPPEC
+   REAL*8, INTENT(OUT)           :: TEMPPOC
+   REAL*8, INTENT(OUT)           :: TEMPPAL
+   REAL*8, INTENT(OUT)           :: TEMPPCA
+   REAL*8, INTENT(OUT)           :: TEMPPCL
+   REAL*8, INTENT(OUT)           :: TEMPPFE
+   REAL*8, INTENT(OUT)           :: TEMPPH2O
+   REAL*8, INTENT(OUT)           :: TEMPPK
+   REAL*8, INTENT(OUT)           :: TEMPPMG
+   REAL*8, INTENT(OUT)           :: TEMPPMN
+   REAL*8, INTENT(OUT)           :: TEMPPMOTHR
+   REAL*8, INTENT(OUT)           :: TEMPPNA
+   REAL*8, INTENT(OUT)           :: TEMPPNCOM
+   REAL*8, INTENT(OUT)           :: TEMPPNH4
+   REAL*8, INTENT(OUT)           :: TEMPPNO3
+   REAL*8, INTENT(OUT)           :: TEMPPTI
+   REAL*8, INTENT(OUT)           :: TEMPPSI
+   REAL*8, INTENT(OUT)           :: TEMPPMC
+   REAL*8, INTENT(OUT)           :: TEMPPSO4
+
+! INPUT/OUTPUT PARAMETERS:
+   INTEGER, INTENT(INOUT)        :: RC      ! Return code
+! Local
+   REAL(sp)                   :: AFD_PRECIP, PRECIP  !AFD and precipitation
+   REAL(sp)                   :: AFD_FRSNO, SNOWFRAC  !AFD and snow fraction
+
+!  Initialize
+   TEMPPEC      = 0.0d0
+   TEMPPOC      = 0.0d0
+   TEMPPAL      = 0.0d0
+   TEMPPCA      = 0.0d0
+   TEMPPCL      = 0.0d0
+   TEMPPFE      = 0.0d0
+   TEMPPH2O     = 0.0d0
+   TEMPPK       = 0.0d0
+   TEMPPMG      = 0.0d0
+   TEMPPMN      = 0.0d0
+   TEMPPMOTHR   = 0.0d0
+   TEMPPNA      = 0.0d0
+   TEMPPNCOM    = 0.0d0
+   TEMPPNH4     = 0.0d0
+   TEMPPNO3     = 0.0d0
+   TEMPPTI      = 0.0d0
+   TEMPPSI      = 0.0d0
+   TEMPPMC      = 0.0d0
+   TEMPPSO4     = 0.0d0
+
+!  Add state AFD emissions
+   TEMPPEC = ExtState%MEmisPEC_AFD%Arr%Val(I,J)
+   TEMPPOC = ExtState%MEmisPOC_AFD%Arr%Val(I,J)
+   TEMPPAL = ExtState%MEmisPAL_AFD%Arr%Val(I,J)
+   TEMPPCA = ExtState%MEmisPCA_AFD%Arr%Val(I,J)
+   TEMPPCL = ExtState%MEmisPCL_AFD%Arr%Val(I,J)
+   TEMPPFE = ExtState%MEmisPFE_AFD%Arr%Val(I,J)
+   TEMPPH2O = ExtState%MEmisPH2O_AFD%Arr%Val(I,J)
+   TEMPPK = ExtState%MEmisPK_AFD%Arr%Val(I,J)
+   TEMPPMG = ExtState%MEmisPMG_AFD%Arr%Val(I,J)
+   TEMPPMN = ExtState%MEmisPMN_AFD%Arr%Val(I,J)
+   TEMPPMOTHR = ExtState%MEmisPMOTHR_AFD%Arr%Val(I,J)
+   TEMPPNA = ExtState%MEmisPNA_AFD%Arr%Val(I,J)
+   TEMPPNCOM = ExtState%MEmisPNCOM_AFD%Arr%Val(I,J)
+   TEMPPNH4 = ExtState%MEmisPNH4_AFD%Arr%Val(I,J)
+   TEMPPNO3 = ExtState%MEmisPNO3_AFD%Arr%Val(I,J)
+   TEMPPTI = ExtState%MEmisPTI_AFD%Arr%Val(I,J)
+   TEMPPSI = ExtState%MEmisPSI_AFD%Arr%Val(I,J)
+   TEMPPMC = ExtState%MEmisPMC_AFD%Arr%Val(I,J)
+   TEMPPSO4 = ExtState%MEmisPSO4_AFD%Arr%Val(I,J)
+
+   AFD_PRECIP = Inst%AFDPRECIP  ! AFD precip threshold in mm/hr from config
+   !Get precip, kg/m2/s
+   PRECIP = ExtState%PRECTOT%Arr%Val(I,J)
+   !   ! Total Precip, kg/m2/s --> mm/hr for MetEmis consistency
+   PRECIP = PRECIP * 3600.0
+
+   AFD_FRSNO = Inst%AFDFRSNO  ! AFD snow fraction from config
+   !Get fraction snow cover, fraction
+   SNOWFRAC = ExtState%FRSNO%Arr%Val(I,J)
+
+   print*, 'AFD_PRECIP=',AFD_PRECIP,'PRECIP=',PRECIP,'AFD_FRSNO=',AFD_FRSNO,'SNOWFRAC=',SNOWFRAC
+   !========================================================================
+   ! Load all variables into a single array
+   !========================================================================
+   IF (PRECIP .GT. AFD_PRECIP .OR. SNOWFRAC .GT. AFD_FRSNO) THEN  !AFD adjustment 
+        TEMPPEC = TEMPPEC * 0.01
+        TEMPPOC = TEMPPOC * 0.01
+        TEMPPAL = TEMPPAL * 0.01
+        TEMPPCA = TEMPPCA * 0.01
+        TEMPPCL = TEMPPCL * 0.01
+        TEMPPFE = TEMPPFE * 0.01
+        TEMPPH2O = TEMPPH2O * 0.01
+        TEMPPK = TEMPPK * 0.01
+        TEMPPMG = TEMPPMG * 0.01
+        TEMPPMN = TEMPPMN * 0.01
+        TEMPPMOTHR = TEMPPMOTHR * 0.01
+        TEMPPNA = TEMPPNA * 0.01
+        TEMPPNCOM = TEMPPNCOM * 0.01
+        TEMPPNH4 = TEMPPNH4 * 0.01
+        TEMPPNO3 = TEMPPNO3 * 0.01
+        TEMPPTI = TEMPPTI * 0.01
+        TEMPPSI = TEMPPSI * 0.01
+        TEMPPMC = TEMPPMC * 0.01
+        TEMPPSO4 = TEMPPSO4 * 0.01
+    ENDIF
+
+ ! Return w/ success
+   RC = HCO_SUCCESS
+
+  END SUBROUTINE METEMIS_AFD
 
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
