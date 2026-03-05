@@ -96,8 +96,11 @@ MODULE HCOX_MetEmis_MOD
 ! !MODULE VARIABLES:
 
   ! Number of values for each variable in the provided input look-up table
-  ! CONUS MetEmis Tables with  10 temperature bins
-   INTEGER, PARAMETER ::  nT=10    !10 Temperature bins in degrees F
+  ! CONUS MetEmis Onroad Tables with  10 temperature bins
+   INTEGER, PARAMETER ::  nT_OR=10    !10 Temperature bins in degrees F
+   ! CONUS MetEmis Livestock Tables with  11 temperature bins
+   INTEGER, PARAMETER ::  nT_LIV=12    !12 Temperature bins in degrees F
+
 
   ! Now place all module variables in a lderived type object (for a linked
   ! list) so that we can have one instance per node in an MPI environment.
@@ -166,12 +169,27 @@ MODULE HCOX_MetEmis_MOD
      LOGICAL               :: DO_DIAGN(51)
      CHARACTER(LEN=31)     :: DiagNames(51)
 
-     LOGICAL               :: RHUMGASDIS  ! Apply humidity correction for split
-                                          ! of NOx and HONO gas and diesel fuels
+     LOGICAL               :: MEONROAD    ! Turn on MetEmis for Onroad Sector
+     LOGICAL               :: RHUMGASDIS  ! Apply Onroad humidity correction 
+                                          ! for split of NOx and HONO gas and 
+                                          ! diesel fuels
+     LOGICAL               :: MELIVESTOCK ! Turn on MetEmis for Livestock Sector
+     LOGICAL               :: LIVPRECIP   ! Apply livestock precip correction
+                                          ! for all species across different
+                                          ! animal types
+     LOGICAL               :: MERWC       ! Turn on MetEmis for RWC Sector
+     REAL(hp)              :: RWCTEMPF    ! RWC Temperature Threshold (Fahrenheit)
+
+     LOGICAL               :: MEAFD       ! Turn on MetEmis for AFD Sector
+     REAL(hp)              :: AFDPRECIP   ! AFD Precipitation Threshold (mm/hr)
+     REAL(hp)              :: AFDFRSNO    ! AFD Snow cover Threshold (fraction)
+
+
      ! Arrays
 
      ! Reference temperature values of variables in the MetEmis look-up tables
-     REAL*4                :: Tlev(nT)
+     REAL*4                :: Tlev_OR(nT_OR)
+     REAL*4                :: Tlev_LIV(nT_LIV)
 
      TYPE(MyInst), POINTER :: NextInst => NULL()
   END TYPE MyInst
@@ -389,64 +407,162 @@ CONTAINS
     REAL(hp), TARGET         :: DIAGN  (HcoState%NX,HcoState%NY,51)  ! number of MetEmis Species !IVAI
     INTEGER                  :: N
 
-    !MetEmis Diag Update
-    REAL(dp)                 :: TEMP_NO
-    REAL(dp)                 :: TEMP_NO2
-    REAL(dp)                 :: TEMP_HONO
-    REAL(dp)                 :: TEMP_CO
-    REAL(dp)                 :: TEMP_SO2
-    REAL(dp)                 :: TEMP_NH3
-    REAL(dp)                 :: TEMP_CH4
-    REAL(dp)                 :: TEMP_ACROLEIN
-    REAL(dp)                 :: TEMP_BUTADIENE13
-    REAL(dp)                 :: TEMP_ETHY
+    !MetEmis Diag Update Onroad
+    REAL(dp)                 :: TEMP_NO_OR
+    REAL(dp)                 :: TEMP_NO2_OR
+    REAL(dp)                 :: TEMP_HONO_OR
+    REAL(dp)                 :: TEMP_CO_OR
+    REAL(dp)                 :: TEMP_SO2_OR
+    REAL(dp)                 :: TEMP_NH3_OR
+    REAL(dp)                 :: TEMP_CH4_OR
+    REAL(dp)                 :: TEMP_ACROLEIN_OR
+    REAL(dp)                 :: TEMP_BUTADIENE13_OR
+    REAL(dp)                 :: TEMP_ETHY_OR
 
-    REAL(dp)                 :: TEMP_TERP
-    REAL(dp)                 :: TEMP_FORM
-    REAL(dp)                 :: TEMP_PAR
-    REAL(dp)                 :: TEMP_IOLE
-    REAL(dp)                 :: TEMP_OLE
-    REAL(dp)                 :: TEMP_ETH
-    REAL(dp)                 :: TEMP_ETHA
-    REAL(dp)                 :: TEMP_ETOH
-    REAL(dp)                 :: TEMP_MEOH
-    REAL(dp)                 :: TEMP_BENZ
+    REAL(dp)                 :: TEMP_TERP_OR
+    REAL(dp)                 :: TEMP_FORM_OR
+    REAL(dp)                 :: TEMP_PAR_OR
+    REAL(dp)                 :: TEMP_IOLE_OR
+    REAL(dp)                 :: TEMP_OLE_OR
+    REAL(dp)                 :: TEMP_ETH_OR
+    REAL(dp)                 :: TEMP_ETHA_OR
+    REAL(dp)                 :: TEMP_ETOH_OR
+    REAL(dp)                 :: TEMP_MEOH_OR
+    REAL(dp)                 :: TEMP_BENZ_OR
 
-    REAL(dp)                 :: TEMP_TOL
-    REAL(dp)                 :: TEMP_XYLMN
-    REAL(dp)                 :: TEMP_NAPH
-    REAL(dp)                 :: TEMP_ALD2
-    REAL(dp)                 :: TEMP_ALDX
-    REAL(dp)                 :: TEMP_ISOP
-    REAL(dp)                 :: TEMP_PRPA
-    REAL(dp)                 :: TEMP_ACET
-    REAL(dp)                 :: TEMP_KET
-    REAL(dp)                 :: TEMP_ALD2_PRIMARY
+    REAL(dp)                 :: TEMP_TOL_OR
+    REAL(dp)                 :: TEMP_XYLMN_OR
+    REAL(dp)                 :: TEMP_NAPH_OR
+    REAL(dp)                 :: TEMP_ALD2_OR
+    REAL(dp)                 :: TEMP_ALDX_OR
+    REAL(dp)                 :: TEMP_ISOP_OR
+    REAL(dp)                 :: TEMP_PRPA_OR
+    REAL(dp)                 :: TEMP_ACET_OR
+    REAL(dp)                 :: TEMP_KET_OR
+    REAL(dp)                 :: TEMP_ALD2_PRIMARY_OR
 
-    REAL(dp)                 :: TEMP_FORM_PRIMARY
-    REAL(dp)                 :: TEMP_SOAALK
-    REAL(dp)                 :: TEMP_PEC
-    REAL(dp)                 :: TEMP_POC
-    REAL(dp)                 :: TEMP_PAL
-    REAL(dp)                 :: TEMP_PCA
-    REAL(dp)                 :: TEMP_PCL
-    REAL(dp)                 :: TEMP_PFE
-    REAL(dp)                 :: TEMP_PH2O
-    REAL(dp)                 :: TEMP_PK
+    REAL(dp)                 :: TEMP_FORM_PRIMARY_OR
+    REAL(dp)                 :: TEMP_SOAALK_OR
+    REAL(dp)                 :: TEMP_PEC_OR
+    REAL(dp)                 :: TEMP_POC_OR
+    REAL(dp)                 :: TEMP_PAL_OR
+    REAL(dp)                 :: TEMP_PCA_OR
+    REAL(dp)                 :: TEMP_PCL_OR
+    REAL(dp)                 :: TEMP_PFE_OR
+    REAL(dp)                 :: TEMP_PH2O_OR
+    REAL(dp)                 :: TEMP_PK_OR
 
-    REAL(dp)                 :: TEMP_PMG
-    REAL(dp)                 :: TEMP_PMN
-    REAL(dp)                 :: TEMP_PMOTHR
-    REAL(dp)                 :: TEMP_PNA
-    REAL(dp)                 :: TEMP_PNCOM
-    REAL(dp)                 :: TEMP_PNH4
-    REAL(dp)                 :: TEMP_PNO3
-    REAL(dp)                 :: TEMP_PTI
-    REAL(dp)                 :: TEMP_PSI
-    REAL(dp)                 :: TEMP_PMC
+    REAL(dp)                 :: TEMP_PMG_OR
+    REAL(dp)                 :: TEMP_PMN_OR
+    REAL(dp)                 :: TEMP_PMOTHR_OR
+    REAL(dp)                 :: TEMP_PNA_OR
+    REAL(dp)                 :: TEMP_PNCOM_OR
+    REAL(dp)                 :: TEMP_PNH4_OR
+    REAL(dp)                 :: TEMP_PNO3_OR
+    REAL(dp)                 :: TEMP_PTI_OR
+    REAL(dp)                 :: TEMP_PSI_OR
+    REAL(dp)                 :: TEMP_PMC_OR
 
-    REAL(dp)                 :: TEMP_PSO4
+    REAL(dp)                 :: TEMP_PSO4_OR
 
+!MetEmis Diag Update Livestock
+    REAL(dp)                 :: TEMP_NH3_LIV
+    REAL(dp)                 :: TEMP_CH4_LIV 
+    REAL(dp)                 :: TEMP_TERP_LIV
+    REAL(dp)                 :: TEMP_PAR_LIV
+    REAL(dp)                 :: TEMP_IOLE_LIV
+    REAL(dp)                 :: TEMP_OLE_LIV
+    REAL(dp)                 :: TEMP_ETHA_LIV
+    REAL(dp)                 :: TEMP_ETOH_LIV
+    REAL(dp)                 :: TEMP_MEOH_LIV
+    REAL(dp)                 :: TEMP_BENZ_LIV
+    REAL(dp)                 :: TEMP_TOL_LIV
+    REAL(dp)                 :: TEMP_XYLMN_LIV
+    REAL(dp)                 :: TEMP_ALD2_LIV
+    REAL(dp)                 :: TEMP_ALDX_LIV
+    REAL(dp)                 :: TEMP_ISOP_LIV
+    REAL(dp)                 :: TEMP_ACET_LIV
+    REAL(dp)                 :: TEMP_KET_LIV
+    REAL(dp)                 :: TEMP_ALD2_PRIMARY_LIV
+    REAL(dp)                 :: TEMP_SOAALK_LIV
+
+!MetEmis Diag Update RWC
+    REAL(dp)                 :: TEMP_NO_RWC
+    REAL(dp)                 :: TEMP_NO2_RWC
+    REAL(dp)                 :: TEMP_HONO_RWC
+    REAL(dp)                 :: TEMP_CO_RWC
+    REAL(dp)                 :: TEMP_SO2_RWC
+    REAL(dp)                 :: TEMP_NH3_RWC
+    REAL(dp)                 :: TEMP_CH4_RWC
+    REAL(dp)                 :: TEMP_ACROLEIN_RWC
+    REAL(dp)                 :: TEMP_BUTADIENE13_RWC
+    REAL(dp)                 :: TEMP_ETHY_RWC
+
+    REAL(dp)                 :: TEMP_TERP_RWC
+    REAL(dp)                 :: TEMP_FORM_RWC
+    REAL(dp)                 :: TEMP_PAR_RWC
+    REAL(dp)                 :: TEMP_IOLE_RWC
+    REAL(dp)                 :: TEMP_OLE_RWC
+    REAL(dp)                 :: TEMP_ETH_RWC
+    REAL(dp)                 :: TEMP_ETHA_RWC
+    REAL(dp)                 :: TEMP_ETOH_RWC
+    REAL(dp)                 :: TEMP_MEOH_RWC
+    REAL(dp)                 :: TEMP_BENZ_RWC
+
+    REAL(dp)                 :: TEMP_TOL_RWC
+    REAL(dp)                 :: TEMP_XYLMN_RWC
+    REAL(dp)                 :: TEMP_NAPH_RWC
+    REAL(dp)                 :: TEMP_ALD2_RWC
+    REAL(dp)                 :: TEMP_ALDX_RWC
+    REAL(dp)                 :: TEMP_ISOP_RWC
+    REAL(dp)                 :: TEMP_PRPA_RWC
+    REAL(dp)                 :: TEMP_ACET_RWC
+    REAL(dp)                 :: TEMP_KET_RWC
+    REAL(dp)                 :: TEMP_ALD2_PRIMARY_RWC
+
+    REAL(dp)                 :: TEMP_FORM_PRIMARY_RWC
+    REAL(dp)                 :: TEMP_SOAALK_RWC
+    REAL(dp)                 :: TEMP_PEC_RWC
+    REAL(dp)                 :: TEMP_POC_RWC
+    REAL(dp)                 :: TEMP_PAL_RWC
+    REAL(dp)                 :: TEMP_PCA_RWC
+    REAL(dp)                 :: TEMP_PCL_RWC
+    REAL(dp)                 :: TEMP_PFE_RWC
+    REAL(dp)                 :: TEMP_PH2O_RWC
+    REAL(dp)                 :: TEMP_PK_RWC
+
+    REAL(dp)                 :: TEMP_PMG_RWC
+    REAL(dp)                 :: TEMP_PMN_RWC
+    REAL(dp)                 :: TEMP_PMOTHR_RWC
+    REAL(dp)                 :: TEMP_PNA_RWC
+    REAL(dp)                 :: TEMP_PNCOM_RWC
+    REAL(dp)                 :: TEMP_PNH4_RWC
+    REAL(dp)                 :: TEMP_PNO3_RWC
+    REAL(dp)                 :: TEMP_PTI_RWC
+    REAL(dp)                 :: TEMP_PSI_RWC
+    REAL(dp)                 :: TEMP_PMC_RWC
+    REAL(dp)                 :: TEMP_PSO4_RWC
+!MetEmis Diag Update AFD
+    REAL(dp)                 :: TEMP_PEC_AFD
+    REAL(dp)                 :: TEMP_POC_AFD
+    REAL(dp)                 :: TEMP_PAL_AFD
+    REAL(dp)                 :: TEMP_PCA_AFD
+    REAL(dp)                 :: TEMP_PCL_AFD
+    REAL(dp)                 :: TEMP_PFE_AFD
+    REAL(dp)                 :: TEMP_PH2O_AFD
+    REAL(dp)                 :: TEMP_PK_AFD
+
+    REAL(dp)                 :: TEMP_PMG_AFD
+    REAL(dp)                 :: TEMP_PMN_AFD
+    REAL(dp)                 :: TEMP_PMOTHR_AFD
+    REAL(dp)                 :: TEMP_PNA_AFD
+    REAL(dp)                 :: TEMP_PNCOM_AFD
+    REAL(dp)                 :: TEMP_PNH4_AFD
+    REAL(dp)                 :: TEMP_PNO3_AFD
+    REAL(dp)                 :: TEMP_PTI_AFD
+    REAL(dp)                 :: TEMP_PSI_AFD
+    REAL(dp)                 :: TEMP_PMC_AFD
+    REAL(dp)                 :: TEMP_PSO4_AFD
 
     !=================================================================
     ! MetEmis begins here!
@@ -585,346 +701,957 @@ CONTAINS
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
-       TEMP_NO     = 0.0_hp
-       TEMP_NO2    = 0.0_hp
-       TEMP_HONO   = 0.0_hp
-       TEMP_CO     = 0.0_hp
-       TEMP_SO2    = 0.0_hp
-       TEMP_NH3    = 0.0_hp
-       TEMP_CH4    = 0.0_hp
-       TEMP_ACROLEIN  = 0.0_hp
-       TEMP_BUTADIENE13 = 0.0_hp
-       TEMP_ETHY   = 0.0_hp
+       !Onroad Temp
+       TEMP_NO_OR     = 0.0_hp
+       TEMP_NO2_OR    = 0.0_hp
+       TEMP_HONO_OR   = 0.0_hp
+       TEMP_CO_OR     = 0.0_hp
+       TEMP_SO2_OR    = 0.0_hp
+       TEMP_NH3_OR    = 0.0_hp
+       TEMP_CH4_OR    = 0.0_hp
+       TEMP_ACROLEIN_OR  = 0.0_hp
+       TEMP_BUTADIENE13_OR = 0.0_hp
+       TEMP_ETHY_OR   = 0.0_hp
 
-       TEMP_TERP   = 0.0_hp
-       TEMP_FORM   = 0.0_hp
-       TEMP_PAR    = 0.0_hp
-       TEMP_IOLE   = 0.0_hp
-       TEMP_OLE    = 0.0_hp
-       TEMP_ETH    = 0.0_hp
-       TEMP_ETHA   = 0.0_hp
-       TEMP_ETOH   = 0.0_hp
-       TEMP_MEOH   = 0.0_hp
-       TEMP_BENZ   = 0.0_hp
+       TEMP_TERP_OR   = 0.0_hp
+       TEMP_FORM_OR   = 0.0_hp
+       TEMP_PAR_OR    = 0.0_hp
+       TEMP_IOLE_OR   = 0.0_hp
+       TEMP_OLE_OR    = 0.0_hp
+       TEMP_ETH_OR    = 0.0_hp
+       TEMP_ETHA_OR   = 0.0_hp
+       TEMP_ETOH_OR   = 0.0_hp
+       TEMP_MEOH_OR   = 0.0_hp
+       TEMP_BENZ_OR   = 0.0_hp
 
-       TEMP_TOL    = 0.0_hp
-       TEMP_XYLMN  = 0.0_hp
-       TEMP_NAPH   = 0.0_hp
-       TEMP_ALD2   = 0.0_hp
-       TEMP_ALDX   = 0.0_hp
-       TEMP_ISOP   = 0.0_hp
-       TEMP_PRPA   = 0.0_hp
-       TEMP_ACET   = 0.0_hp
-       TEMP_KET    = 0.0_hp
-       TEMP_ALD2_PRIMARY = 0.0_hp
+       TEMP_TOL_OR    = 0.0_hp
+       TEMP_XYLMN_OR  = 0.0_hp
+       TEMP_NAPH_OR   = 0.0_hp
+       TEMP_ALD2_OR   = 0.0_hp
+       TEMP_ALDX_OR   = 0.0_hp
+       TEMP_ISOP_OR   = 0.0_hp
+       TEMP_PRPA_OR   = 0.0_hp
+       TEMP_ACET_OR   = 0.0_hp
+       TEMP_KET_OR    = 0.0_hp
+       TEMP_ALD2_PRIMARY_OR = 0.0_hp
 
-       TEMP_FORM_PRIMARY = 0.0_hp
-       TEMP_SOAALK = 0.0_hp
-       TEMP_PEC    = 0.0_hp
-       TEMP_POC    = 0.0_hp
-       TEMP_PAL    = 0.0_hp
-       TEMP_PCA    = 0.0_hp
-       TEMP_PCL    = 0.0_hp
-       TEMP_PFE    = 0.0_hp
-       TEMP_PH2O   = 0.0_hp
-       TEMP_PK     = 0.0_hp
+       TEMP_FORM_PRIMARY_OR = 0.0_hp
+       TEMP_SOAALK_OR = 0.0_hp
+       TEMP_PEC_OR    = 0.0_hp
+       TEMP_POC_OR    = 0.0_hp
+       TEMP_PAL_OR    = 0.0_hp
+       TEMP_PCA_OR    = 0.0_hp
+       TEMP_PCL_OR    = 0.0_hp
+       TEMP_PFE_OR    = 0.0_hp
+       TEMP_PH2O_OR   = 0.0_hp
+       TEMP_PK_OR    = 0.0_hp
 
-       TEMP_PMG    = 0.0_hp
-       TEMP_PMN    = 0.0_hp
-       TEMP_PMOTHR = 0.0_hp
-       TEMP_PNA    = 0.0_hp
-       TEMP_PNCOM  = 0.0_hp
-       TEMP_PNH4   = 0.0_hp
-       TEMP_PNO3   = 0.0_hp
-       TEMP_PTI    = 0.0_hp
-       TEMP_PSI    = 0.0_hp
-       TEMP_PMC    = 0.0_hp
+       TEMP_PMG_OR    = 0.0_hp
+       TEMP_PMN_OR    = 0.0_hp
+       TEMP_PMOTHR_OR = 0.0_hp
+       TEMP_PNA_OR    = 0.0_hp
+       TEMP_PNCOM_OR  = 0.0_hp
+       TEMP_PNH4_OR   = 0.0_hp
+       TEMP_PNO3_OR   = 0.0_hp
+       TEMP_PTI_OR    = 0.0_hp
+       TEMP_PSI_OR    = 0.0_hp
+       TEMP_PMC_OR    = 0.0_hp
 
-       TEMP_PSO4   = 0.0_hp
+       TEMP_PSO4_OR   = 0.0_hp
 
+       IF ( Inst%MEONROAD ) THEN !MetEmis Onroad sector calculations
        !---------------------------------------------------------------------
-       ! MetEmis lookup table for emissions based on temperature
+       ! MetEmis Onroad lookup table for emissions based on temperature
        ! (P.C. Campbell, 03/19/2025)
        !---------------------------------------------------------------------
-       CALL METEMIS_LUT( ExtState,  HcoState,  Inst,   I,   J,   RC,                     &
-                         TEMP_NO,  TEMP_NO2, TEMP_HONO, TEMP_CO,  TEMP_SO2,              &
-                         TEMP_NH3, TEMP_CH4, TEMP_ACROLEIN, TEMP_BUTADIENE13, TEMP_ETHY, &
-                         TEMP_TERP, TEMP_FORM, TEMP_PAR, TEMP_IOLE , TEMP_OLE ,          &
-                         TEMP_ETH , TEMP_ETHA , TEMP_ETOH, TEMP_MEOH, TEMP_BENZ,         &
-                         TEMP_TOL, TEMP_XYLMN, TEMP_NAPH, TEMP_ALD2, TEMP_ALDX,          &
-                         TEMP_ISOP, TEMP_PRPA, TEMP_ACET, TEMP_KET, TEMP_ALD2_PRIMARY,   &
-                         TEMP_FORM_PRIMARY, TEMP_SOAALK, TEMP_PEC, TEMP_POC, TEMP_PAL,   &
-                         TEMP_PCA, TEMP_PCL, TEMP_PFE, TEMP_PH2O, TEMP_PK,               &
-                         TEMP_PMG, TEMP_PMN, TEMP_PMOTHR, TEMP_PNA, TEMP_PNCOM,          &
-                         TEMP_PNH4, TEMP_PNO3, TEMP_PTI, TEMP_PSI, TEMP_PMC,             &
-                         TEMP_PSO4)
+       CALL METEMIS_LUT_ONROAD( ExtState,  HcoState,  Inst,   I,   J,   RC,               &
+                  TEMP_NO_OR,  TEMP_NO2_OR, TEMP_HONO_OR, TEMP_CO_OR,  TEMP_SO2_OR,       &
+                  TEMP_NH3_OR, TEMP_CH4_OR, TEMP_ACROLEIN_OR, TEMP_BUTADIENE13_OR,        &
+                  TEMP_ETHY_OR, TEMP_TERP_OR, TEMP_FORM_OR, TEMP_PAR_OR, TEMP_IOLE_OR,    &
+                  TEMP_OLE_OR, TEMP_ETH_OR, TEMP_ETHA_OR, TEMP_ETOH_OR, TEMP_MEOH_OR,     &
+                  TEMP_BENZ_OR, TEMP_TOL_OR, TEMP_XYLMN_OR, TEMP_NAPH_OR, TEMP_ALD2_OR,   &
+                  TEMP_ALDX_OR, TEMP_ISOP_OR, TEMP_PRPA_OR, TEMP_ACET_OR, TEMP_KET_OR,    &
+                  TEMP_ALD2_PRIMARY_OR,TEMP_FORM_PRIMARY_OR, TEMP_SOAALK_OR, TEMP_PEC_OR, &
+                  TEMP_POC_OR, TEMP_PAL_OR,TEMP_PCA_OR, TEMP_PCL_OR, TEMP_PFE_OR,         &
+                  TEMP_PH2O_OR, TEMP_PK_OR, TEMP_PMG_OR, TEMP_PMN_OR, TEMP_PMOTHR_OR,     &
+                  TEMP_PNA_OR, TEMP_PNCOM_OR, TEMP_PNH4_OR, TEMP_PNO3_OR, TEMP_PTI_OR,    &
+                  TEMP_PSI_OR, TEMP_PMC_OR, TEMP_PSO4_OR)
+                 
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ERR = .TRUE.; EXIT
+          ENDIF
+
+!       !---------------------------------------------------------------------
+!       ! Calculate emissions Onroad
+!       !---------------------------------------------------------------------
+
+       IF ( Inst%IDTNO > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXNO(I,J) = TEMP_NO_OR
+       ENDIF
+
+       IF ( Inst%IDTNO2 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXNO2(I,J) = TEMP_NO2_OR
+       ENDIF
+!
+       IF ( Inst%IDTHONO > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXHONO(I,J) = TEMP_HONO_OR
+       ENDIF
+!
+       IF ( Inst%IDTCO  > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXCO (I,J) = TEMP_CO_OR
+       ENDIF
+
+       IF ( Inst%IDTSO2 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXSO2(I,J) = TEMP_SO2_OR
+       ENDIF
+
+       IF ( Inst%IDTNH3 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXNH3(I,J) = TEMP_NH3_OR
+       ENDIF
+
+       IF ( Inst%IDTCH4 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXCH4(I,J) = TEMP_CH4_OR
+       ENDIF
+
+       IF ( Inst%IDTACROLEIN > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXACROLEIN(I,J) = TEMP_ACROLEIN_OR
+       ENDIF
+
+       IF ( Inst%IDTBUTADIENE13 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXBUTADIENE13 (I,J) = TEMP_BUTADIENE13_OR
+       ENDIF
+
+       IF ( Inst%IDTETHY > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXETHY(I,J) = TEMP_ETHY_OR
+       ENDIF
+
+       IF ( Inst%IDTTERP > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXTERP(I,J) = TEMP_TERP_OR
+       ENDIF
+
+       IF ( Inst%IDTFORM > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXFORM(I,J) = TEMP_FORM_OR
+       ENDIF
+
+       IF ( Inst%IDTPAR > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPAR(I,J) = TEMP_PAR_OR
+       ENDIF
+
+       IF ( Inst%IDTIOLE > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXIOLE(I,J) = TEMP_IOLE_OR
+       ENDIF
+
+       IF ( Inst%IDTOLE > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXOLE(I,J) = TEMP_OLE_OR
+       ENDIF
+
+       IF ( Inst%IDTETH > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXETH(I,J) = TEMP_ETH_OR
+       ENDIF
+
+       IF ( Inst%IDTETHA > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXETHA(I,J) = TEMP_ETHA_OR
+       ENDIF
+
+       IF ( Inst%IDTETOH > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXETOH(I,J) = TEMP_ETOH_OR
+       ENDIF
+
+       IF ( Inst%IDTMEOH > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXMEOH(I,J) = TEMP_MEOH_OR
+       ENDIF
+
+       IF ( Inst%IDTBENZ > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXBENZ(I,J) = TEMP_BENZ_OR
+       ENDIF
+
+       IF ( Inst%IDTTOL > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXTOL(I,J) = TEMP_TOL_OR
+       ENDIF
+
+       IF ( Inst%IDTXYLMN > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXXYLMN(I,J) = TEMP_XYLMN_OR
+       ENDIF
+
+       IF ( Inst%IDTNAPH > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXNAPH(I,J) = TEMP_NAPH_OR
+       ENDIF
+
+       IF ( Inst%IDTALD2 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXALD2(I,J) = TEMP_ALD2_OR
+       ENDIF
+
+       IF ( Inst%IDTALDX > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXALDX(I,J) = TEMP_ALDX_OR
+       ENDIF
+
+       IF ( Inst%IDTISOP > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXISOP(I,J) = TEMP_ISOP_OR
+       ENDIF
+
+       IF ( Inst%IDTPRPA > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPRPA(I,J) = TEMP_PRPA_OR
+       ENDIF
+
+       IF ( Inst%IDTACET > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXACET(I,J) = TEMP_ACET_OR
+       ENDIF
+
+       IF ( Inst%IDTKET > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXKET(I,J) = TEMP_KET_OR
+       ENDIF
+
+       IF ( Inst%IDTALD2_PRIMARY > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXALD2_PRIMARY(I,J) = TEMP_ALD2_PRIMARY_OR
+       ENDIF
+
+       IF ( Inst%IDTFORM_PRIMARY > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXFORM_PRIMARY(I,J) = TEMP_FORM_PRIMARY_OR
+       ENDIF
+
+       IF ( Inst%IDTSOAALK> 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXSOAALK(I,J) = TEMP_SOAALK_OR
+       ENDIF
+
+       IF ( Inst%IDTPEC > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPEC(I,J) = TEMP_PEC_OR
+       ENDIF
+
+       IF ( Inst%IDTPOC > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPOC(I,J) = TEMP_POC_OR
+       ENDIF
+
+       IF ( Inst%IDTPAL > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPAL(I,J) = TEMP_PAL_OR
+       ENDIF
+
+       IF ( Inst%IDTPCA > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPCA(I,J) = TEMP_PCA_OR
+       ENDIF
+
+       IF ( Inst%IDTPCL > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPCL(I,J) = TEMP_PCL_OR
+       ENDIF
+
+       IF ( Inst%IDTPFE > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPFE(I,J) = TEMP_PFE_OR
+       ENDIF
+
+       IF ( Inst%IDTPH2O > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPH2O(I,J) = TEMP_PH2O_OR
+       ENDIF
+
+       IF ( Inst%IDTPK > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPK (I,J) = TEMP_PK_OR
+       ENDIF
+
+       IF ( Inst%IDTPMG > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPMG(I,J) = TEMP_PMG_OR
+       ENDIF
+
+       IF ( Inst%IDTPMN > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPMN(I,J) = TEMP_PMN_OR
+       ENDIF
+
+       IF ( Inst%IDTPMOTHR > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPMOTHR(I,J) = TEMP_PMOTHR_OR
+       ENDIF
+
+       IF ( Inst%IDTPNA > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPNA(I,J) = TEMP_PNA_OR
+       ENDIF
+
+       IF ( Inst%IDTPNCOM> 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPNCOM (I,J) = TEMP_PNCOM_OR
+       ENDIF
+
+       IF ( Inst%IDTPNH4 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPNH4 (I,J) = TEMP_PNH4_OR
+       ENDIF
+
+       IF ( Inst%IDTPNO3 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPNO3 (I,J) = TEMP_PNO3_OR
+       ENDIF
+
+       IF ( Inst%IDTPTI > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPTI(I,J) = TEMP_PTI_OR
+       ENDIF
+
+       IF ( Inst%IDTPSI > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPSI(I,J) = TEMP_PSI_OR
+       ENDIF
+
+       IF ( Inst%IDTPMC > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPMC(I,J) = TEMP_PMC_OR
+       ENDIF
+
+       IF ( Inst%IDTPSO4 > 0 ) THEN
+!           ! Unit: kg/m2/s
+           FLUXPSO4(I,J) = TEMP_PSO4_OR
+       ENDIF
+       
+       ENDIF
+
+      !!!TBD Livestock
+
+      !Livestock Temp
+
+      TEMP_NH3_LIV = 0.0_hp
+      TEMP_CH4_LIV = 0.0_hp
+      TEMP_TERP_LIV = 0.0_hp
+      TEMP_PAR_LIV = 0.0_hp
+      TEMP_IOLE_LIV = 0.0_hp
+      TEMP_OLE_LIV = 0.0_hp
+      TEMP_ETHA_LIV = 0.0_hp
+      TEMP_ETOH_LIV = 0.0_hp
+      TEMP_MEOH_LIV = 0.0_hp
+      TEMP_BENZ_LIV = 0.0_hp
+      TEMP_TOL_LIV = 0.0_hp
+      TEMP_XYLMN_LIV = 0.0_hp
+      TEMP_ALD2_LIV = 0.0_hp
+      TEMP_ALDX_LIV = 0.0_hp
+      TEMP_ISOP_LIV = 0.0_hp
+      TEMP_ACET_LIV = 0.0_hp
+      TEMP_KET_LIV = 0.0_hp
+      TEMP_ALD2_PRIMARY_LIV = 0.0_hp
+      TEMP_SOAALK_LIV = 0.0_hp
+
+     IF ( Inst%MELIVESTOCK ) THEN !MetEmis Livestock sector calculations
+       !---------------------------------------------------------------------
+       ! MetEmis Livestock lookup table for emissions based on temperature
+       ! (P.C. Campbell, 02/12/2026)
+       !---------------------------------------------------------------------
+       CALL METEMIS_LUT_LIVESTOCK( ExtState,  HcoState,  Inst,   I,   J,   RC,               &
+                  TEMP_NH3_LIV, TEMP_CH4_LIV, TEMP_TERP_LIV, TEMP_PAR_LIV, TEMP_IOLE_LIV,  &
+                  TEMP_OLE_LIV, TEMP_ETHA_LIV, TEMP_ETOH_LIV, TEMP_MEOH_LIV,   &
+                  TEMP_BENZ_LIV, TEMP_TOL_LIV, TEMP_XYLMN_LIV, TEMP_ALD2_LIV, &
+                  TEMP_ALDX_LIV, TEMP_ISOP_LIV, TEMP_ACET_LIV, TEMP_KET_LIV,  &
+                  TEMP_ALD2_PRIMARY_LIV, TEMP_SOAALK_LIV)
 
        IF ( RC /= HCO_SUCCESS ) THEN
           ERR = .TRUE.; EXIT
        ENDIF
 
-!       !---------------------------------------------------------------------
-!       ! Calculate emissions
-!       !---------------------------------------------------------------------
-
-       IF ( Inst%IDTNO > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXNO(I,J) = TEMP_NO
-       ENDIF
-
-       IF ( Inst%IDTNO2 > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXNO2(I,J) = TEMP_NO2
-       ENDIF
-!
-       IF ( Inst%IDTHONO > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXHONO(I,J) = TEMP_HONO
-       ENDIF
-!
-       IF ( Inst%IDTCO  > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXCO (I,J) = TEMP_CO
-       ENDIF
-
-       IF ( Inst%IDTSO2 > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXSO2(I,J) = TEMP_SO2
-       ENDIF
-
+        !Here this adds sectors together if turned on
        IF ( Inst%IDTNH3 > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXNH3(I,J) = TEMP_NH3
+           ! Unit: kg/m2/s
+           FLUXNH3(I,J) = FLUXNH3(I,J) + TEMP_NH3_LIV
        ENDIF
 
        IF ( Inst%IDTCH4 > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXCH4(I,J) = TEMP_CH4
-       ENDIF
-
-       IF ( Inst%IDTACROLEIN > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXACROLEIN(I,J) = TEMP_ACROLEIN
-       ENDIF
-
-       IF ( Inst%IDTBUTADIENE13 > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXBUTADIENE13 (I,J) = TEMP_BUTADIENE13
-       ENDIF
-
-       IF ( Inst%IDTETHY > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXETHY(I,J) = TEMP_ETHY
+           ! Unit: kg/m2/s
+           FLUXCH4(I,J) = FLUXCH4(I,J) + TEMP_CH4_LIV
        ENDIF
 
        IF ( Inst%IDTTERP > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXTERP(I,J) = TEMP_TERP
-       ENDIF
-
-       IF ( Inst%IDTFORM > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXFORM(I,J) = TEMP_FORM
+           ! Unit: kg/m2/s
+           FLUXTERP(I,J) = FLUXTERP(I,J) + TEMP_TERP_LIV
        ENDIF
 
        IF ( Inst%IDTPAR > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPAR(I,J) = TEMP_PAR
+           ! Unit: kg/m2/s
+           FLUXPAR(I,J) = FLUXPAR(I,J) + TEMP_PAR_LIV
        ENDIF
 
        IF ( Inst%IDTIOLE > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXIOLE(I,J) = TEMP_IOLE
+           ! Unit: kg/m2/s
+           FLUXIOLE(I,J) = FLUXIOLE(I,J) + TEMP_IOLE_LIV
        ENDIF
 
        IF ( Inst%IDTOLE > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXOLE(I,J) = TEMP_OLE
-       ENDIF
-
-       IF ( Inst%IDTETH > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXETH(I,J) = TEMP_ETH
+           ! Unit: kg/m2/s
+           FLUXOLE(I,J) = FLUXOLE(I,J) + TEMP_OLE_LIV
        ENDIF
 
        IF ( Inst%IDTETHA > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXETHA(I,J) = TEMP_ETHA
+           ! Unit: kg/m2/s
+           FLUXETHA(I,J) = FLUXETHA(I,J) + TEMP_ETHA_LIV
        ENDIF
 
        IF ( Inst%IDTETOH > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXETOH(I,J) = TEMP_ETOH
+           ! Unit: kg/m2/s
+           FLUXETOH(I,J) = FLUXETOH(I,J) + TEMP_ETOH_LIV
        ENDIF
 
        IF ( Inst%IDTMEOH > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXMEOH(I,J) = TEMP_MEOH
+           ! Unit: kg/m2/s
+           FLUXMEOH(I,J) = FLUXMEOH(I,J) + TEMP_MEOH_LIV
        ENDIF
 
        IF ( Inst%IDTBENZ > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXBENZ(I,J) = TEMP_BENZ
+           ! Unit: kg/m2/s
+           FLUXBENZ(I,J) = FLUXBENZ(I,J) + TEMP_BENZ_LIV
        ENDIF
 
        IF ( Inst%IDTTOL > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXTOL(I,J) = TEMP_TOL
+           ! Unit: kg/m2/s
+           FLUXTOL(I,J) = FLUXTOL(I,J) + TEMP_TOL_LIV
        ENDIF
 
        IF ( Inst%IDTXYLMN > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXXYLMN(I,J) = TEMP_XYLMN
-       ENDIF
-
-       IF ( Inst%IDTNAPH > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXNAPH(I,J) = TEMP_NAPH
+           ! Unit: kg/m2/s
+           FLUXXYLMN(I,J) = FLUXXYLMN(I,J) + TEMP_XYLMN_LIV
        ENDIF
 
        IF ( Inst%IDTALD2 > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXALD2(I,J) = TEMP_ALD2
+           ! Unit: kg/m2/s
+           FLUXALD2(I,J) = FLUXALD2(I,J) + TEMP_ALD2_LIV
        ENDIF
 
        IF ( Inst%IDTALDX > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXALDX(I,J) = TEMP_ALDX
+           ! Unit: kg/m2/s
+           FLUXALDX(I,J) = FLUXALDX(I,J) + TEMP_ALDX_LIV
        ENDIF
 
        IF ( Inst%IDTISOP > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXISOP(I,J) = TEMP_ISOP
-       ENDIF
-
-       IF ( Inst%IDTPRPA > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPRPA(I,J) = TEMP_PRPA
+           ! Unit: kg/m2/s
+           FLUXISOP(I,J) = FLUXISOP(I,J) + TEMP_ISOP_LIV
        ENDIF
 
        IF ( Inst%IDTACET > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXACET(I,J) = TEMP_ACET
+           ! Unit: kg/m2/s
+           FLUXACET(I,J) = FLUXACET(I,J) + TEMP_ACET_LIV
        ENDIF
 
        IF ( Inst%IDTKET > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXKET(I,J) = TEMP_KET
+           ! Unit: kg/m2/s
+           FLUXKET(I,J) = FLUXKET(I,J) + TEMP_KET_LIV
        ENDIF
 
        IF ( Inst%IDTALD2_PRIMARY > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXALD2_PRIMARY(I,J) = TEMP_ALD2_PRIMARY
+           ! Unit: kg/m2/s
+           FLUXALD2_PRIMARY(I,J) = FLUXALD2_PRIMARY(I,J) + TEMP_ALD2_PRIMARY_LIV
+       ENDIF
+
+       IF ( Inst%IDTSOAALK > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXSOAALK(I,J) = FLUXSOAALK(I,J) + TEMP_SOAALK_LIV
+       ENDIF
+
+     ENDIF
+
+       !RWC Temp
+       TEMP_NO_RWC     = 0.0_hp
+       TEMP_NO2_RWC    = 0.0_hp
+       TEMP_HONO_RWC   = 0.0_hp
+       TEMP_CO_RWC     = 0.0_hp
+       TEMP_SO2_RWC    = 0.0_hp
+       TEMP_NH3_RWC    = 0.0_hp
+       TEMP_CH4_RWC    = 0.0_hp
+       TEMP_ACROLEIN_RWC  = 0.0_hp
+       TEMP_BUTADIENE13_RWC = 0.0_hp
+       TEMP_ETHY_RWC   = 0.0_hp
+
+       TEMP_TERP_RWC   = 0.0_hp
+       TEMP_FORM_RWC  = 0.0_hp
+       TEMP_PAR_RWC    = 0.0_hp
+       TEMP_IOLE_RWC   = 0.0_hp
+       TEMP_OLE_RWC    = 0.0_hp
+       TEMP_ETH_RWC    = 0.0_hp
+       TEMP_ETHA_RWC   = 0.0_hp
+       TEMP_ETOH_RWC   = 0.0_hp
+       TEMP_MEOH_RWC   = 0.0_hp
+       TEMP_BENZ_RWC   = 0.0_hp
+
+       TEMP_TOL_RWC    = 0.0_hp
+       TEMP_XYLMN_RWC  = 0.0_hp
+       TEMP_NAPH_RWC   = 0.0_hp
+       TEMP_ALD2_RWC   = 0.0_hp
+       TEMP_ALDX_RWC   = 0.0_hp
+       TEMP_ISOP_RWC   = 0.0_hp
+       TEMP_PRPA_RWC   = 0.0_hp
+       TEMP_ACET_RWC   = 0.0_hp
+       TEMP_KET_RWC    = 0.0_hp
+       TEMP_ALD2_PRIMARY_RWC = 0.0_hp
+
+       TEMP_FORM_PRIMARY_RWC = 0.0_hp
+       TEMP_SOAALK_RWC = 0.0_hp
+       TEMP_PEC_RWC    = 0.0_hp
+       TEMP_POC_RWC    = 0.0_hp
+       TEMP_PAL_RWC    = 0.0_hp
+       TEMP_PCA_RWC    = 0.0_hp
+       TEMP_PCL_RWC    = 0.0_hp
+       TEMP_PFE_RWC    = 0.0_hp
+       TEMP_PH2O_RWC   = 0.0_hp
+       TEMP_PK_RWC     = 0.0_hp
+
+       TEMP_PMG_RWC    = 0.0_hp
+       TEMP_PMN_RWC    = 0.0_hp
+       TEMP_PMOTHR_RWC = 0.0_hp
+       TEMP_PNA_RWC    = 0.0_hp
+       TEMP_PNCOM_RWC  = 0.0_hp
+       TEMP_PNH4_RWC   = 0.0_hp
+       TEMP_PNO3_RWC   = 0.0_hp
+       TEMP_PTI_RWC   = 0.0_hp
+       TEMP_PSI_RWC    = 0.0_hp
+       TEMP_PMC_RWC    = 0.0_hp
+
+       TEMP_PSO4_RWC   = 0.0_hp
+
+     IF ( Inst%MERWC ) THEN !MetEmis RWC sector calculations
+       !---------------------------------------------------------------------
+       ! MetEmis RWC binary calculation for emissions based on temperature
+       ! (P.C. Campbell, 02/12/2026)
+       !---------------------------------------------------------------------
+       CALL METEMIS_RWC( ExtState,  HcoState,  Inst,   I,   J,   RC,                         &
+                  TEMP_NO_RWC,  TEMP_NO2_RWC, TEMP_HONO_RWC, TEMP_CO_RWC,  TEMP_SO2_RWC,     &
+                  TEMP_NH3_RWC, TEMP_CH4_RWC, TEMP_ACROLEIN_RWC, TEMP_BUTADIENE13_RWC,       &
+                  TEMP_ETHY_RWC, TEMP_TERP_RWC, TEMP_FORM_RWC, TEMP_PAR_RWC, TEMP_IOLE_RWC,  &
+                  TEMP_OLE_RWC, TEMP_ETH_RWC, TEMP_ETHA_RWC, TEMP_ETOH_RWC, TEMP_MEOH_RWC,   &
+                  TEMP_BENZ_RWC, TEMP_TOL_RWC, TEMP_XYLMN_RWC, TEMP_NAPH_RWC, TEMP_ALD2_RWC, & 
+                  TEMP_ALDX_RWC, TEMP_ISOP_RWC, TEMP_PRPA_RWC, TEMP_ACET_RWC, TEMP_KET_RWC,  &
+                  TEMP_ALD2_PRIMARY_RWC,TEMP_FORM_PRIMARY_RWC, TEMP_SOAALK_RWC, TEMP_PEC_RWC,&
+                  TEMP_POC_RWC, TEMP_PAL_RWC,TEMP_PCA_RWC, TEMP_PCL_RWC, TEMP_PFE_RWC,       &
+                  TEMP_PH2O_RWC, TEMP_PK_RWC, TEMP_PMG_RWC, TEMP_PMN_RWC, TEMP_PMOTHR_RWC,   &
+                  TEMP_PNA_RWC, TEMP_PNCOM_RWC, TEMP_PNH4_RWC, TEMP_PNO3_RWC, TEMP_PTI_RWC,  &
+                  TEMP_PSI_RWC, TEMP_PMC_RWC, TEMP_PSO4_RWC)
+
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ERR = .TRUE.; EXIT
+       ENDIF
+
+        !Here this adds sectors together if turned on
+       IF ( Inst%IDTNO > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXNO(I,J) = FLUXNO(I,J) + TEMP_NO_RWC
+       ENDIF
+
+       IF ( Inst%IDTNO2 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXNO2(I,J) = FLUXNO2(I,J) + TEMP_NO2_RWC
+       ENDIF
+
+       IF ( Inst%IDTHONO > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXHONO(I,J) = FLUXHONO(I,J) + TEMP_HONO_RWC
+       ENDIF
+
+       IF ( Inst%IDTCO > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXCO(I,J) = FLUXCO(I,J) + TEMP_CO_RWC
+       ENDIF
+
+       IF ( Inst%IDTSO2 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXSO2(I,J) = FLUXSO2(I,J) + TEMP_SO2_RWC
+       ENDIF
+
+       IF ( Inst%IDTNH3 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXNH3(I,J) = FLUXNH3(I,J) + TEMP_NH3_RWC
+       ENDIF
+
+       IF ( Inst%IDTCH4 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXCH4(I,J) = FLUXCH4(I,J) + TEMP_CH4_RWC
+       ENDIF
+
+       IF ( Inst%IDTACROLEIN > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXACROLEIN(I,J) = FLUXACROLEIN(I,J) + TEMP_ACROLEIN_RWC
+       ENDIF
+
+       IF ( Inst%IDTBUTADIENE13 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXBUTADIENE13(I,J) = FLUXBUTADIENE13(I,J) + TEMP_BUTADIENE13_RWC
+       ENDIF
+
+       IF ( Inst%IDTETHY > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXETHY(I,J) = FLUXETHY(I,J) + TEMP_ETHY_RWC
+       ENDIF
+
+       IF ( Inst%IDTTERP > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXTERP(I,J) = FLUXTERP(I,J) + TEMP_TERP_RWC
+       ENDIF
+
+       IF ( Inst%IDTFORM > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXFORM(I,J) = FLUXFORM(I,J) + TEMP_FORM_RWC
+       ENDIF
+
+       IF ( Inst%IDTPAR > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPAR(I,J) = FLUXPAR(I,J) + TEMP_PAR_RWC
+       ENDIF
+
+       IF ( Inst%IDTIOLE > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXIOLE(I,J) = FLUXIOLE(I,J) + TEMP_IOLE_RWC
+       ENDIF
+
+       IF ( Inst%IDTOLE > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXOLE(I,J) = FLUXOLE(I,J) + TEMP_OLE_RWC
+       ENDIF
+
+       IF ( Inst%IDTETH > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXETH(I,J) = FLUXETH(I,J) + TEMP_ETH_RWC
+       ENDIF
+
+       IF ( Inst%IDTETHA > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXETHA(I,J) = FLUXETHA(I,J) + TEMP_ETHA_RWC
+       ENDIF
+
+       IF ( Inst%IDTETOH > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXETOH(I,J) = FLUXETOH(I,J) + TEMP_ETOH_RWC
+       ENDIF
+
+       IF ( Inst%IDTMEOH > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXMEOH(I,J) = FLUXMEOH(I,J) + TEMP_MEOH_RWC
+       ENDIF
+
+       IF ( Inst%IDTBENZ > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXBENZ(I,J) = FLUXBENZ(I,J) + TEMP_BENZ_RWC
+       ENDIF
+
+       IF ( Inst%IDTTOL > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXTOL(I,J) = FLUXTOL(I,J) + TEMP_TOL_RWC
+       ENDIF
+
+       IF ( Inst%IDTXYLMN > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXXYLMN(I,J) = FLUXXYLMN(I,J) + TEMP_XYLMN_RWC
+       ENDIF
+
+       IF ( Inst%IDTNAPH > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXNAPH(I,J) = FLUXNAPH(I,J) + TEMP_NAPH_RWC
+       ENDIF
+
+       IF ( Inst%IDTALD2 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXALD2(I,J) = FLUXALD2(I,J) + TEMP_ALD2_RWC
+       ENDIF
+
+       IF ( Inst%IDTALDX > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXALDX(I,J) = FLUXALDX(I,J) + TEMP_ALDX_RWC
+       ENDIF
+
+       IF ( Inst%IDTISOP > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXISOP(I,J) = FLUXISOP(I,J) + TEMP_ISOP_RWC
+       ENDIF
+
+       IF ( Inst%IDTPRPA > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPRPA(I,J) = FLUXPRPA(I,J) + TEMP_PRPA_RWC
+       ENDIF
+
+       IF ( Inst%IDTACET > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXACET(I,J) = FLUXACET(I,J) + TEMP_ACET_RWC
+       ENDIF
+
+       IF ( Inst%IDTKET > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXKET(I,J) = FLUXKET(I,J) + TEMP_KET_RWC
+       ENDIF
+
+       IF ( Inst%IDTALD2_PRIMARY > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXALD2_PRIMARY(I,J) = FLUXALD2_PRIMARY(I,J) + TEMP_ALD2_PRIMARY_RWC
        ENDIF
 
        IF ( Inst%IDTFORM_PRIMARY > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXFORM_PRIMARY(I,J) = TEMP_FORM_PRIMARY
+           ! Unit: kg/m2/s
+           FLUXFORM_PRIMARY(I,J) = FLUXFORM_PRIMARY(I,J) + TEMP_FORM_PRIMARY_RWC
        ENDIF
 
-       IF ( Inst%IDTSOAALK> 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXSOAALK(I,J) = TEMP_SOAALK
+       IF ( Inst%IDTSOAALK > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXSOAALK(I,J) = FLUXSOAALK(I,J) + TEMP_SOAALK_RWC
        ENDIF
 
        IF ( Inst%IDTPEC > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPEC(I,J) = TEMP_PEC
+           ! Unit: kg/m2/s
+           FLUXPEC(I,J) = FLUXPEC(I,J) + TEMP_PEC_RWC
        ENDIF
 
        IF ( Inst%IDTPOC > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPOC(I,J) = TEMP_POC
+           ! Unit: kg/m2/s
+           FLUXPOC(I,J) = FLUXPOC(I,J) + TEMP_POC_RWC
        ENDIF
 
        IF ( Inst%IDTPAL > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPAL(I,J) = TEMP_PAL
+           ! Unit: kg/m2/s
+           FLUXPAL(I,J) = FLUXPAL(I,J) + TEMP_PAL_RWC
        ENDIF
 
        IF ( Inst%IDTPCA > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPCA(I,J) = TEMP_PCA
+           ! Unit: kg/m2/s
+           FLUXPCA(I,J) = FLUXPCA(I,J) + TEMP_PCA_RWC
        ENDIF
 
        IF ( Inst%IDTPCL > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPCL(I,J) = TEMP_PCL
+           ! Unit: kg/m2/s
+           FLUXPCL(I,J) = FLUXPCL(I,J) + TEMP_PCL_RWC
        ENDIF
 
        IF ( Inst%IDTPFE > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPFE(I,J) = TEMP_PFE
+           ! Unit: kg/m2/s
+           FLUXPFE(I,J) = FLUXPFE(I,J) + TEMP_PFE_RWC
        ENDIF
 
        IF ( Inst%IDTPH2O > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPH2O(I,J) = TEMP_PH2O
+           ! Unit: kg/m2/s
+           FLUXPH2O(I,J) = FLUXPH2O(I,J) + TEMP_PH2O_RWC
        ENDIF
 
        IF ( Inst%IDTPK > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPK (I,J) = TEMP_PK
+           ! Unit: kg/m2/s
+           FLUXPK(I,J) = FLUXPK(I,J) + TEMP_PK_RWC
        ENDIF
 
        IF ( Inst%IDTPMG > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPMG(I,J) = TEMP_PMG
+           ! Unit: kg/m2/s
+           FLUXPMG(I,J) = FLUXPMG(I,J) + TEMP_PMG_RWC
        ENDIF
 
        IF ( Inst%IDTPMN > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPMN(I,J) = TEMP_PMN
+           ! Unit: kg/m2/s
+           FLUXPMN(I,J) = FLUXPMN(I,J) + TEMP_PMN_RWC
        ENDIF
 
        IF ( Inst%IDTPMOTHR > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPMOTHR(I,J) = TEMP_PMOTHR
+           ! Unit: kg/m2/s
+           FLUXPMOTHR(I,J) = FLUXPMOTHR(I,J) + TEMP_PMOTHR_RWC
        ENDIF
 
        IF ( Inst%IDTPNA > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPNA(I,J) = TEMP_PNA
+           ! Unit: kg/m2/s
+           FLUXPNA(I,J) = FLUXPNA(I,J) + TEMP_PNA_RWC
        ENDIF
 
-       IF ( Inst%IDTPNCOM> 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPNCOM (I,J) = TEMP_PNCOM
+       IF ( Inst%IDTPNCOM > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNCOM(I,J) = FLUXPNCOM(I,J) + TEMP_PNCOM_RWC
        ENDIF
 
        IF ( Inst%IDTPNH4 > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPNH4 (I,J) = TEMP_PNH4
+           ! Unit: kg/m2/s
+           FLUXPNH4(I,J) = FLUXPNH4(I,J) + TEMP_PNH4_RWC
        ENDIF
 
        IF ( Inst%IDTPNO3 > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPNO3 (I,J) = TEMP_PNO3
+           ! Unit: kg/m2/s
+           FLUXPNO3(I,J) = FLUXPNO3(I,J) + TEMP_PNO3_RWC
        ENDIF
 
        IF ( Inst%IDTPTI > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPTI(I,J) = TEMP_PTI
+           ! Unit: kg/m2/s
+           FLUXPTI(I,J) = FLUXPTI(I,J) + TEMP_PTI_RWC
        ENDIF
 
        IF ( Inst%IDTPSI > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPSI(I,J) = TEMP_PSI
+           ! Unit: kg/m2/s
+           FLUXPSI(I,J) = FLUXPSI(I,J) + TEMP_PSI_RWC
        ENDIF
 
        IF ( Inst%IDTPMC > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPMC(I,J) = TEMP_PMC
+           ! Unit: kg/m2/s
+           FLUXPMC(I,J) = FLUXPMC(I,J) + TEMP_PMC_RWC
        ENDIF
 
        IF ( Inst%IDTPSO4 > 0 ) THEN
-!           ! Unit: kg/m2/s
-           FLUXPSO4(I,J) = TEMP_PSO4
+           ! Unit: kg/m2/s
+           FLUXPSO4(I,J) = FLUXPSO4(I,J) + TEMP_PSO4_RWC
        ENDIF
 
+     ENDIF
 
+       TEMP_PEC_AFD    = 0.0_hp
+       TEMP_POC_AFD    = 0.0_hp
+       TEMP_PAL_AFD    = 0.0_hp
+       TEMP_PCA_AFD    = 0.0_hp
+       TEMP_PCL_AFD    = 0.0_hp
+       TEMP_PFE_AFD    = 0.0_hp
+       TEMP_PH2O_AFD   = 0.0_hp
+       TEMP_PK_AFD     = 0.0_hp
+       TEMP_PMG_AFD    = 0.0_hp
+       TEMP_PMN_AFD    = 0.0_hp
+       TEMP_PMOTHR_AFD = 0.0_hp
+       TEMP_PNA_AFD    = 0.0_hp
+       TEMP_PNCOM_AFD  = 0.0_hp
+       TEMP_PNH4_AFD   = 0.0_hp
+       TEMP_PNO3_AFD   = 0.0_hp
+       TEMP_PTI_AFD   = 0.0_hp
+       TEMP_PSI_AFD    = 0.0_hp
+       TEMP_PMC_AFD    = 0.0_hp
+       TEMP_PSO4_AFD   = 0.0_hp
 
-!
+     IF ( Inst%MEAFD ) THEN !MetEmis AFD sector calculations
+ !---------------------------------------------------------------------
+       ! MetEmis AFD binary calculation for emissions based on precipitation
+       ! (P.C. Campbell, 02/12/2026)
+       !---------------------------------------------------------------------
+       CALL METEMIS_AFD( ExtState,  HcoState,  Inst,   I,   J,   RC,                         &
+                  TEMP_PEC_AFD,&
+                  TEMP_POC_AFD, TEMP_PAL_AFD,TEMP_PCA_AFD, TEMP_PCL_AFD, TEMP_PFE_AFD,       &
+                  TEMP_PH2O_AFD, TEMP_PK_AFD, TEMP_PMG_AFD, TEMP_PMN_AFD, TEMP_PMOTHR_AFD,   &
+                  TEMP_PNA_AFD, TEMP_PNCOM_AFD, TEMP_PNH4_AFD, TEMP_PNO3_AFD, TEMP_PTI_AFD,  &
+                  TEMP_PSI_AFD, TEMP_PMC_AFD, TEMP_PSO4_AFD)
+
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ERR = .TRUE.; EXIT
+       ENDIF
+
+        !Here this adds sectors together if turned on
+       IF ( Inst%IDTPEC > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPEC(I,J) = FLUXPEC(I,J) + TEMP_PEC_AFD
+       ENDIF
+
+       IF ( Inst%IDTPOC > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPOC(I,J) = FLUXPOC(I,J) + TEMP_POC_AFD
+       ENDIF
+
+       IF ( Inst%IDTPAL > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPAL(I,J) = FLUXPAL(I,J) + TEMP_PAL_AFD
+       ENDIF
+
+       IF ( Inst%IDTPCA > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPCA(I,J) = FLUXPCA(I,J) + TEMP_PCA_AFD
+       ENDIF
+
+       IF ( Inst%IDTPCL > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPCL(I,J) = FLUXPCL(I,J) + TEMP_PCL_AFD
+       ENDIF
+
+       IF ( Inst%IDTPFE > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPFE(I,J) = FLUXPFE(I,J) + TEMP_PFE_AFD
+       ENDIF
+
+       IF ( Inst%IDTPH2O > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPH2O(I,J) = FLUXPH2O(I,J) + TEMP_PH2O_AFD
+       ENDIF
+
+       IF ( Inst%IDTPK > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPK(I,J) = FLUXPK(I,J) + TEMP_PK_AFD
+       ENDIF
+
+       IF ( Inst%IDTPMG > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMG(I,J) = FLUXPMG(I,J) + TEMP_PMG_AFD
+       ENDIF
+
+       IF ( Inst%IDTPMN > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMN(I,J) = FLUXPMN(I,J) + TEMP_PMN_AFD
+       ENDIF
+
+       IF ( Inst%IDTPMOTHR > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMOTHR(I,J) = FLUXPMOTHR(I,J) + TEMP_PMOTHR_AFD
+       ENDIF
+
+       IF ( Inst%IDTPNA > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNA(I,J) = FLUXPNA(I,J) + TEMP_PNA_AFD
+       ENDIF
+
+       IF ( Inst%IDTPNCOM > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNCOM(I,J) = FLUXPNCOM(I,J) + TEMP_PNCOM_AFD
+       ENDIF
+
+       IF ( Inst%IDTPNH4 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNH4(I,J) = FLUXPNH4(I,J) + TEMP_PNH4_AFD
+       ENDIF
+
+       IF ( Inst%IDTPNO3 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPNO3(I,J) = FLUXPNO3(I,J) + TEMP_PNO3_AFD
+       ENDIF
+
+       IF ( Inst%IDTPTI > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPTI(I,J) = FLUXPTI(I,J) + TEMP_PTI_AFD
+       ENDIF
+
+       IF ( Inst%IDTPSI > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPSI(I,J) = FLUXPSI(I,J) + TEMP_PSI_AFD
+       ENDIF
+
+       IF ( Inst%IDTPMC > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPMC(I,J) = FLUXPMC(I,J) + TEMP_PMC_AFD
+       ENDIF
+
+       IF ( Inst%IDTPSO4 > 0 ) THEN
+           ! Unit: kg/m2/s
+           FLUXPSO4(I,J) = FLUXPSO4(I,J) + TEMP_PSO4_AFD
+       ENDIF
+
+     ENDIF
+
        !---------------------------------------------------------------------
        ! Eventually write out into diagnostics array
        !---------------------------------------------------------------------
@@ -1752,7 +2479,8 @@ CONTAINS
 
       Inst%IDTPSO4        = -1
 
-      Inst%Tlev           =  0.0e0
+      Inst%Tlev_OR           =  0.0e0
+      Inst%Tlev_LIV          =  0.0e0
 
       !------------------------------------------------------------------------
       ! Get species IDs
@@ -1919,12 +2647,73 @@ CONTAINS
     ! Note: the specified strings have to match those in
     !       the config. file!
 
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME Onroad', &
+                    OptValBool=Inst%MEONROAD, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
 
-    CALL GetExtOpt( HcoState%Config, ExtNr, 'RH Gas Diesel', &
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'OR RH Gas Diesel', &
                     OptValBool=Inst%RHUMGASDIS, Found=FOUND, RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
         RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME Livestock', &
+                    OptValBool=Inst%MELIVESTOCK, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'Livestock Precip', &
+                    OptValBool=Inst%LIVPRECIP, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME RWC', &
+                    OptValBool=Inst%MERWC, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'RWC temp (deg F)', &
+                    OptValHp=Inst%RWCTEMPF, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'ME AFD', &
+                    OptValBool=Inst%MEAFD, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'AFD precip (mm)', &
+                    OptValHp=Inst%AFDPRECIP, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'AFD frsno (fraction)', &
+                    OptValHp=Inst%AFDFRSNO, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+      ! Verbose mode
+    IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis Onroad option is ',Inst%MEONROAD
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
      ! Verbose mode
@@ -1932,6 +2721,49 @@ CONTAINS
        WRITE(MSG,*) ' --> MetEmis Relative Humidity Gas Diesel Split option is ',Inst%RHUMGASDIS
        CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
     ENDIF
+
+     ! Verbose mode
+    IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis Livestock option is ',Inst%MELIVESTOCK
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+    ENDIF
+
+    ! Verbose mode
+    IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis Livestock Precipitation option is ',Inst%LIVPRECIP
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+    ENDIF
+
+     ! Verbose mode
+    IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis RWC option is ',Inst%MERWC
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+    ENDIF
+
+     ! Verbose mode
+     IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis RWC temp (degrees F) is ',Inst%RWCTEMPF
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+     ENDIF
+
+      ! Verbose mode
+     IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis AFD option is ',Inst%MEAFD
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+     ENDIF
+
+     ! Verbose mode
+     IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis AFD precip (mm) is ',Inst%AFDPRECIP
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+     ENDIF
+
+     ! Verbose mode
+     IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis AFD frsno (fraction) is ',Inst%AFDFRSNO
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+     ENDIF
+
 
    !========================================================================
    ! Exit if this is a GEOS-Chem dry-run or HEMCO-standalone dry-run
@@ -1945,7 +2777,9 @@ CONTAINS
    !========================================================================
    ! Continue initializing METEMIS for regular simulations
    !========================================================================
-   !three digit suffix pertains to temperature bins in degrees fahrenheit
+
+   IF ( Inst%MEONROAD ) THEN !MetEmis Onroad sector inputs
+   !three digit suffix pertains to onroad temperature bins in degrees fahrenheit
    ExtState%T2M%DoUse                          = .TRUE.
    ExtState%QV2M%DoUse                         = .TRUE.
    ExtState%MEmisNO_GAS_OR_030%DoUse           = .TRUE.
@@ -2542,6 +3376,1092 @@ CONTAINS
    ExtState%MEmisPSO4_OR_110%DoUse          = .TRUE.
    ExtState%MEmisPSO4_OR_120%DoUse          = .TRUE.
 
+   ENDIF
+
+    IF ( Inst%MELIVESTOCK ) THEN !MetEmis Livestock sector inputs
+!   !three digit suffix pertains to livestock temperature bins in degrees fahrenheit
+    ExtState%T2M%DoUse                          = .TRUE.
+    ExtState%PRECTOT%DoUse                      = .TRUE. 
+
+    ExtState%MEmisNH3_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisNH3_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisNH3_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisNH3_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisNH3_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisNH3_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisNH3_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisNH3_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisCH4_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisCH4_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisCH4_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisCH4_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisCH4_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisCH4_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisCH4_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisCH4_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisTERP_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisTERP_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisTERP_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisTERP_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisTERP_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisTERP_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisTERP_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisTERP_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisPAR_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisPAR_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisPAR_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisPAR_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisPAR_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisPAR_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisPAR_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisPAR_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisIOLE_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisIOLE_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisIOLE_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisIOLE_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisIOLE_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisOLE_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisOLE_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisOLE_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisOLE_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisOLE_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisOLE_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisOLE_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisOLE_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisETHA_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisETHA_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisETHA_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisETHA_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisETHA_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisETHA_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisETHA_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisETHA_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisETOH_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisETOH_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisETOH_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisETOH_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisETOH_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisETOH_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisETOH_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisETOH_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisMEOH_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisMEOH_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisMEOH_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisMEOH_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisMEOH_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisBENZ_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisBENZ_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisBENZ_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisBENZ_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisBENZ_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisTOL_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisTOL_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisTOL_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisTOL_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisTOL_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisTOL_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisTOL_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisTOL_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisXYLMN_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisXYLMN_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisXYLMN_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisXYLMN_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisXYLMN_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALD2_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALD2_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALD2_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALD2_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALD2_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALD2_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALD2_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALD2_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALDX_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALDX_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALDX_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALDX_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALDX_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALDX_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALDX_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALDX_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisISOP_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisISOP_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisISOP_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisISOP_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisISOP_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisISOP_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisISOP_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisISOP_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisACET_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisACET_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisACET_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisACET_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisACET_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisACET_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisACET_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisACET_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisKET_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisKET_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisKET_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisKET_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisKET_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisKET_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisKET_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisKET_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisSOAALK_BEEF_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_BEEF_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisSOAALK_DAIRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_DAIRY_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisSOAALK_SWINE_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_SWINE_LIV_120%DoUse            = .TRUE.
+
+    ExtState%MEmisSOAALK_POULTRY_LIV_010%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_020%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_030%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_040%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_050%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_060%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_070%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_080%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_090%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_100%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_110%DoUse            = .TRUE.
+    ExtState%MEmisSOAALK_POULTRY_LIV_120%DoUse            = .TRUE.
+
+    ENDIF
+
+   IF ( Inst%MERWC ) THEN !MetEmis RWC sector inputs for each species
+!  RWC does not have temperature bins, but read in for each species temperature
+!  binary adjustment in subroutine later
+   ExtState%T2M%DoUse                          = .TRUE.
+   ExtState%MEmisNO_RWC%DoUse                  = .TRUE.
+   ExtState%MEmisNO2_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisHONO_RWC%DoUse                = .TRUE.
+   ExtState%MEmisCO_RWC%DoUse                  = .TRUE.
+   ExtState%MEmisSO2_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisNH3_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisCH4_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisACROLEIN_RWC%DoUse            = .TRUE.
+   ExtState%MEmisBUTADIENE13_RWC%DoUse         = .TRUE.
+   ExtState%MEmisETHY_RWC%DoUse                = .TRUE.
+   ExtState%MEmisTERP_RWC%DoUse                = .TRUE.
+   ExtState%MEmisFORM_RWC%DoUse                = .TRUE.
+   ExtState%MEmisPAR_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisIOLE_RWC%DoUse                = .TRUE.
+   ExtState%MEmisOLE_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisETH_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisETHA_RWC%DoUse                = .TRUE.
+   ExtState%MEmisETOH_RWC%DoUse                = .TRUE.
+   ExtState%MEmisMEOH_RWC%DoUse                = .TRUE.
+   ExtState%MEmisBENZ_RWC%DoUse                = .TRUE.
+   ExtState%MEmisTOL_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisXYLMN_RWC%DoUse               = .TRUE.
+   ExtState%MEmisNAPH_RWC%DoUse                = .TRUE.
+   ExtState%MEmisALD2_RWC%DoUse                = .TRUE.
+   ExtState%MEmisALDX_RWC%DoUse                = .TRUE.
+   ExtState%MEmisISOP_RWC%DoUse                = .TRUE.
+   ExtState%MEmisPRPA_RWC%DoUse                = .TRUE.
+   ExtState%MEmisACET_RWC%DoUse                = .TRUE.
+   ExtState%MEmisKET_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisALD2_PRIMARY_RWC%DoUse        = .TRUE.
+   ExtState%MEmisFORM_PRIMARY_RWC%DoUse        = .TRUE.
+   ExtState%MEmisSOAALK_RWC%DoUse              = .TRUE.
+   ExtState%MEmisPEC_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPOC_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPAL_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPCA_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPCL_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPFE_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPH2O_RWC%DoUse                = .TRUE.
+   ExtState%MEmisPK_RWC%DoUse                  = .TRUE.
+   ExtState%MEmisPMG_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPMN_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPMOTHR_RWC%DoUse              = .TRUE.
+   ExtState%MEmisPNA_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPNCOM_RWC%DoUse               = .TRUE.
+   ExtState%MEmisPNH4_RWC%DoUse                = .TRUE.
+   ExtState%MEmisPNO3_RWC%DoUse                = .TRUE.
+   ExtState%MEmisPTI_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPSI_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPMC_RWC%DoUse                 = .TRUE.
+   ExtState%MEmisPSO4_RWC%DoUse                = .TRUE.
+   ENDIF
+
+   IF ( Inst%MEAFD ) THEN !MetEmis AFD sector inputs for each species
+!  AFD does not have temperature bins, but read in for each species precipitation
+!  binary adjustment in subroutine later
+   ExtState%PRECTOT%DoUse                      = .TRUE.
+   ExtState%FRSNO%DoUse                        = .TRUE.
+   ExtState%MEmisPEC_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPOC_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPAL_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPCA_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPCL_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPFE_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPH2O_AFD%DoUse                = .TRUE.
+   ExtState%MEmisPK_AFD%DoUse                  = .TRUE.
+   ExtState%MEmisPMG_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPMN_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPMOTHR_AFD%DoUse              = .TRUE.
+   ExtState%MEmisPNA_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPNCOM_AFD%DoUse               = .TRUE.
+   ExtState%MEmisPNH4_AFD%DoUse                = .TRUE.
+   ExtState%MEmisPNO3_AFD%DoUse                = .TRUE.
+   ExtState%MEmisPTI_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPSI_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPMC_AFD%DoUse                 = .TRUE.
+   ExtState%MEmisPSO4_AFD%DoUse                = .TRUE.
+   ENDIF
+
+   ! Error check: No MetEmis option turned on
+   IF ( .NOT. ( Inst%MEONROAD .OR. Inst%MERWC .OR. Inst%MELIVESTOCK .OR. &
+                Inst%MEAFD ) ) THEN
+      CALL HCO_ERROR( 'ExtState error: No MetEmis option turned on ', RC )
+      RETURN
+   ENDIF
    !------------------------------------------------------------------------
    ! Leave w/ success
    !------------------------------------------------------------------------
@@ -2690,20 +4610,21 @@ CONTAINS
 !------------------------------------------------------------------------------
 !BOP
 !
-! !IROUTINE: metemis_lut
+! !IROUTINE: metemis_lut_onroad
 !
-! !DESCRIPTION:  Subroutine METEMIS_LUT returns NO emissions
-! based on temperature LUT (TEMPNO), Values are taken taken from a
+! !DESCRIPTION:  Subroutine METEMIS_LUT_ONROAD returns emissions
+! based on temperature LUT, Values are taken taken from a
 ! lookup table using piecewise linear interpolation. The look-up table is derived
 ! from the EPA MOVES model involving work by (Baek et al. 2023;
-! https://doi.org/10.5194/gmd-16-4659-2023)
+! https://doi.org/10.5194/gmd-16-4659-2023), and has further RH adjustments for 
+! NO, NO2, and HONO
 !
 ! The lookup table uses 1 input variable:
 !     TEMP   : model temperature, K
 !\\
 ! !INTERFACE:
 !
- SUBROUTINE METEMIS_LUT( ExtState,  HcoState, Inst, I, J, RC,                          &
+ SUBROUTINE METEMIS_LUT_ONROAD( ExtState,  HcoState, Inst, I, J, RC,                          &
                          TEMPNO,   TEMPNO2,   TEMPHONO,  TEMPCO,   TEMPSO2,            &
                          TEMPNH3,  TEMPCH4,   TEMPACROLEIN, TEMPBUTADIENE13, TEMPETHY, &
                          TEMPTERP, TEMPFORM,  TEMPPAR,   TEMPIOLE, TEMPOLE ,           &
@@ -2875,16 +4796,16 @@ CONTAINS
    REAL(sp), DIMENSION(1,2)   :: WTS
 
    CHARACTER(LEN=255)         :: MSG
-   CHARACTER(LEN=255)         :: LOC = 'METEMIS_LUT'
+   CHARACTER(LEN=255)         :: LOC = 'METEMIS_LUT_ONROAD'
 
    !=================================================================
-   ! METEMIS_LUT begins here!
+   ! METEMIS_LUT_ONROAD begins here!
    !=================================================================
 
-   !MetEmis Temperature bins (Degrees Fahrenheit) = 10 from explicit nT
+   !MetEmis Temperature bins (Degrees Fahrenheit) = 10 from explicit nT_OR
    !These are set to lower bin edge defined in MetEmis files. 
    !e.g., 20 - 30 (20), ... 110 - 120 (110)
-   Inst%Tlev = (/ 20.0e0, 30.0e0, 40.0e0, 50.0e0,  60.0e0,  &
+   Inst%Tlev_OR = (/ 20.0e0, 30.0e0, 40.0e0, 50.0e0,  60.0e0,  &
                   70.0e0, 80.0e0, 90.0e0, 100.0e0, 110.0e0 /)
 
    !Get 2-m air temperature, K
@@ -2914,7 +4835,7 @@ CONTAINS
    !========================================================================
 
    ! Temperature:
-   CALL INTERPOL_LINWEIGHTS( Inst%Tlev, VARS(1), INDX(1,:), WTS(1,:) )
+   CALL INTERPOL_LINWEIGHTS( Inst%Tlev_OR, VARS(1), INDX(1,:), WTS(1,:) )
 
    !========================================================================
    ! Piecewise linear interpolation
@@ -2986,7 +4907,7 @@ CONTAINS
 
   ! Loop over temperature bins
    DO I1=1,2
-      SELECT CASE ( NINT( Inst%Tlev(INDX(1,I1)) ) )
+      SELECT CASE ( NINT( Inst%Tlev_OR(INDX(1,I1)) ) )
          CASE ( 20 )
             TEMPNO_GAS_TMP   =  ExtState%MEmisNO_GAS_OR_030%Arr%Val(I,J)
             TEMPNO_DIS_TMP   =  ExtState%MEmisNO_DIS_OR_030%Arr%Val(I,J)
@@ -3711,8 +5632,2225 @@ CONTAINS
    ! Return w/ success
    RC = HCO_SUCCESS
 
- END SUBROUTINE METEMIS_LUT
+ END SUBROUTINE METEMIS_LUT_ONROAD
 !EOC
+
+!------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: metemis_lut_livestock
+!
+! !DESCRIPTION:  Subroutine METEMIS_LUT_LIVESTOCK returns emissions
+! based on temperature LUT, Values are taken taken from a
+! lookup table using piecewise linear interpolation. The look-up table is derived
+! from the FEM model involving work by (Baek et al. 2023;
+! https://doi.org/10.5194/gmd-16-4659-2023), and has further Precip adjustments 
+! for all species for different animal types (Beef, Swine, Dairy, Poultry)
+!
+! The lookup table uses 1 input variable:
+!     TEMP   : model temperature, K
+!\\
+! !INTERFACE:
+!
+ SUBROUTINE METEMIS_LUT_LIVESTOCK( ExtState,  HcoState, Inst, I, J, RC,                &
+                  TEMPNH3, TEMPCH4, TEMPTERP, TEMPPAR, TEMPIOLE,  &
+                  TEMPOLE, TEMPETHA, TEMPETOH, TEMPMEOH,   &
+                  TEMPBENZ, TEMPTOL, TEMPXYLMN, TEMPALD2, &
+                  TEMPALDX, TEMPISOP, TEMPACET, TEMPKET,  &
+                  TEMPALD2_PRIMARY, TEMPSOAALK)
+
+
+! !USES:
+!
+   USE HCO_STATE_MOD,        ONLY : HCO_State
+   USE HCOX_STATE_MOD,       ONLY : Ext_State
+!!
+!! !INPUT PARAMETERS:
+!!
+   TYPE(Ext_State), POINTER    :: ExtState
+   TYPE(HCO_State), POINTER    :: HcoState
+   TYPE(MyInst),    POINTER    :: Inst
+   INTEGER, INTENT(IN)         :: I, J      ! Grid indices
+!!
+!! !OUTPUT PARAMETERS:
+!!
+!! Temp dependent MetEmis emission species 19 in total , kg/m2/s
+!!
+   REAL*8, INTENT(OUT)           :: TEMPNH3  ! Temp dependent NH3 emissions, kg/m2/s
+   REAL*8, INTENT(OUT)           :: TEMPCH4
+   REAL*8, INTENT(OUT)           :: TEMPTERP
+   REAL*8, INTENT(OUT)           :: TEMPPAR
+   REAL*8, INTENT(OUT)           :: TEMPIOLE
+   REAL*8, INTENT(OUT)           :: TEMPOLE
+   REAL*8, INTENT(OUT)           :: TEMPETHA
+   REAL*8, INTENT(OUT)           :: TEMPETOH
+   REAL*8, INTENT(OUT)           :: TEMPMEOH
+   REAL*8, INTENT(OUT)           :: TEMPBENZ
+   REAL*8, INTENT(OUT)           :: TEMPTOL
+   REAL*8, INTENT(OUT)           :: TEMPXYLMN
+   REAL*8, INTENT(OUT)           :: TEMPALD2
+   REAL*8, INTENT(OUT)           :: TEMPALDX
+   REAL*8, INTENT(OUT)           :: TEMPISOP
+   REAL*8, INTENT(OUT)           :: TEMPACET
+   REAL*8, INTENT(OUT)           :: TEMPKET
+   REAL*8, INTENT(OUT)           :: TEMPALD2_PRIMARY
+   REAL*8, INTENT(OUT)           :: TEMPSOAALK
+!
+!! !INPUT/OUTPUT PARAMETERS:
+!!
+   INTEGER, INTENT(INOUT)        :: RC      ! Return code
+!!
+!! !REVISION HISTORY:
+!!     Mar 2025 - P.C. Campbell - Initial version
+!!  See https://github.com/geoschem/hemco for complete history
+!!EOP
+!!------------------------------------------------------------------------------
+!!BOC
+!!
+!! !LOCAL VARIABLES:
+!!
+   INTEGER                    :: I1
+
+   REAL(sp)                   :: TEMPNH3_BEEF
+   REAL(sp)                   :: TEMPNH3_DAIRY
+   REAL(sp)                   :: TEMPNH3_SWINE
+   REAL(sp)                   :: TEMPNH3_POULTRY
+   REAL(dp)                   :: TEMPCH4_BEEF
+   REAL(sp)                   :: TEMPCH4_DAIRY
+   REAL(sp)                   :: TEMPCH4_SWINE
+   REAL(sp)                   :: TEMPCH4_POULTRY
+   REAL(dp)                   :: TEMPTERP_BEEF
+   REAL(sp)                   :: TEMPTERP_DAIRY
+   REAL(sp)                   :: TEMPTERP_SWINE
+   REAL(sp)                   :: TEMPTERP_POULTRY
+   REAL(dp)                   :: TEMPPAR_BEEF
+   REAL(sp)                   :: TEMPPAR_DAIRY
+   REAL(sp)                   :: TEMPPAR_SWINE
+   REAL(sp)                   :: TEMPPAR_POULTRY
+   REAL(dp)                   :: TEMPIOLE_BEEF
+   REAL(sp)                   :: TEMPIOLE_DAIRY
+   REAL(sp)                   :: TEMPIOLE_SWINE
+   REAL(sp)                   :: TEMPIOLE_POULTRY
+   REAL(dp)                   :: TEMPOLE_BEEF
+   REAL(sp)                   :: TEMPOLE_DAIRY
+   REAL(sp)                   :: TEMPOLE_SWINE
+   REAL(sp)                   :: TEMPOLE_POULTRY
+   REAL(dp)                   :: TEMPETHA_BEEF
+   REAL(sp)                   :: TEMPETHA_DAIRY
+   REAL(sp)                   :: TEMPETHA_SWINE
+   REAL(sp)                   :: TEMPETHA_POULTRY
+   REAL(dp)                   :: TEMPETOH_BEEF
+   REAL(sp)                   :: TEMPETOH_DAIRY
+   REAL(sp)                   :: TEMPETOH_SWINE
+   REAL(sp)                   :: TEMPETOH_POULTRY
+   REAL(dp)                   :: TEMPMEOH_BEEF
+   REAL(sp)                   :: TEMPMEOH_DAIRY
+   REAL(sp)                   :: TEMPMEOH_SWINE
+   REAL(sp)                   :: TEMPMEOH_POULTRY
+   REAL(dp)                   :: TEMPBENZ_BEEF
+   REAL(sp)                   :: TEMPBENZ_DAIRY
+   REAL(sp)                   :: TEMPBENZ_SWINE
+   REAL(sp)                   :: TEMPBENZ_POULTRY
+   REAL(dp)                   :: TEMPTOL_BEEF
+   REAL(sp)                   :: TEMPTOL_DAIRY
+   REAL(sp)                   :: TEMPTOL_SWINE
+   REAL(sp)                   :: TEMPTOL_POULTRY
+   REAL(dp)                   :: TEMPXYLMN_BEEF
+   REAL(sp)                   :: TEMPXYLMN_DAIRY
+   REAL(sp)                   :: TEMPXYLMN_SWINE
+   REAL(sp)                   :: TEMPXYLMN_POULTRY
+   REAL(dp)                   :: TEMPALD2_BEEF
+   REAL(sp)                   :: TEMPALD2_DAIRY
+   REAL(sp)                   :: TEMPALD2_SWINE
+   REAL(sp)                   :: TEMPALD2_POULTRY
+   REAL(dp)                   :: TEMPALDX_BEEF
+   REAL(sp)                   :: TEMPALDX_DAIRY
+   REAL(sp)                   :: TEMPALDX_SWINE
+   REAL(sp)                   :: TEMPALDX_POULTRY
+   REAL(dp)                   :: TEMPISOP_BEEF
+   REAL(sp)                   :: TEMPISOP_DAIRY
+   REAL(sp)                   :: TEMPISOP_SWINE
+   REAL(sp)                   :: TEMPISOP_POULTRY
+   REAL(dp)                   :: TEMPACET_BEEF
+   REAL(sp)                   :: TEMPACET_DAIRY
+   REAL(sp)                   :: TEMPACET_SWINE
+   REAL(sp)                   :: TEMPACET_POULTRY
+   REAL(dp)                   :: TEMPKET_BEEF
+   REAL(sp)                   :: TEMPKET_DAIRY
+   REAL(sp)                   :: TEMPKET_SWINE
+   REAL(sp)                   :: TEMPKET_POULTRY
+   REAL(dp)                   :: TEMPALD2_PRIMARY_BEEF
+   REAL(sp)                   :: TEMPALD2_PRIMARY_DAIRY
+   REAL(sp)                   :: TEMPALD2_PRIMARY_SWINE
+   REAL(sp)                   :: TEMPALD2_PRIMARY_POULTRY
+   REAL(dp)                   :: TEMPSOAALK_BEEF
+   REAL(sp)                   :: TEMPSOAALK_DAIRY
+   REAL(sp)                   :: TEMPSOAALK_SWINE
+   REAL(sp)                   :: TEMPSOAALK_POULTRY
+
+   REAL(sp)                   :: TEMPNH3_BEEF_TMP
+   REAL(sp)                   :: TEMPNH3_DAIRY_TMP
+   REAL(sp)                   :: TEMPNH3_SWINE_TMP
+   REAL(sp)                   :: TEMPNH3_POULTRY_TMP
+   REAL(dp)                   :: TEMPCH4_BEEF_TMP
+   REAL(sp)                   :: TEMPCH4_DAIRY_TMP
+   REAL(sp)                   :: TEMPCH4_SWINE_TMP
+   REAL(sp)                   :: TEMPCH4_POULTRY_TMP
+   REAL(dp)                   :: TEMPTERP_BEEF_TMP
+   REAL(sp)                   :: TEMPTERP_DAIRY_TMP
+   REAL(sp)                   :: TEMPTERP_SWINE_TMP
+   REAL(sp)                   :: TEMPTERP_POULTRY_TMP
+   REAL(dp)                   :: TEMPPAR_BEEF_TMP
+   REAL(sp)                   :: TEMPPAR_DAIRY_TMP
+   REAL(sp)                   :: TEMPPAR_SWINE_TMP
+   REAL(sp)                   :: TEMPPAR_POULTRY_TMP
+   REAL(dp)                   :: TEMPIOLE_BEEF_TMP
+   REAL(sp)                   :: TEMPIOLE_DAIRY_TMP
+   REAL(sp)                   :: TEMPIOLE_SWINE_TMP
+   REAL(sp)                   :: TEMPIOLE_POULTRY_TMP
+   REAL(dp)                   :: TEMPOLE_BEEF_TMP
+   REAL(sp)                   :: TEMPOLE_DAIRY_TMP
+   REAL(sp)                   :: TEMPOLE_SWINE_TMP
+   REAL(sp)                   :: TEMPOLE_POULTRY_TMP
+   REAL(dp)                   :: TEMPETHA_BEEF_TMP
+   REAL(sp)                   :: TEMPETHA_DAIRY_TMP
+   REAL(sp)                   :: TEMPETHA_SWINE_TMP
+   REAL(sp)                   :: TEMPETHA_POULTRY_TMP
+   REAL(dp)                   :: TEMPETOH_BEEF_TMP
+   REAL(sp)                   :: TEMPETOH_DAIRY_TMP
+   REAL(sp)                   :: TEMPETOH_SWINE_TMP
+   REAL(sp)                   :: TEMPETOH_POULTRY_TMP
+   REAL(dp)                   :: TEMPMEOH_BEEF_TMP
+   REAL(sp)                   :: TEMPMEOH_DAIRY_TMP
+   REAL(sp)                   :: TEMPMEOH_SWINE_TMP
+   REAL(sp)                   :: TEMPMEOH_POULTRY_TMP
+   REAL(dp)                   :: TEMPBENZ_BEEF_TMP
+   REAL(sp)                   :: TEMPBENZ_DAIRY_TMP
+   REAL(sp)                   :: TEMPBENZ_SWINE_TMP
+   REAL(sp)                   :: TEMPBENZ_POULTRY_TMP
+   REAL(dp)                   :: TEMPTOL_BEEF_TMP
+   REAL(sp)                   :: TEMPTOL_DAIRY_TMP
+   REAL(sp)                   :: TEMPTOL_SWINE_TMP
+   REAL(sp)                   :: TEMPTOL_POULTRY_TMP
+   REAL(dp)                   :: TEMPXYLMN_BEEF_TMP
+   REAL(sp)                   :: TEMPXYLMN_DAIRY_TMP
+   REAL(sp)                   :: TEMPXYLMN_SWINE_TMP
+   REAL(sp)                   :: TEMPXYLMN_POULTRY_TMP
+   REAL(dp)                   :: TEMPALD2_BEEF_TMP
+   REAL(sp)                   :: TEMPALD2_DAIRY_TMP
+   REAL(sp)                   :: TEMPALD2_SWINE_TMP
+   REAL(sp)                   :: TEMPALD2_POULTRY_TMP
+   REAL(dp)                   :: TEMPALDX_BEEF_TMP
+   REAL(sp)                   :: TEMPALDX_DAIRY_TMP
+   REAL(sp)                   :: TEMPALDX_SWINE_TMP
+   REAL(sp)                   :: TEMPALDX_POULTRY_TMP
+   REAL(dp)                   :: TEMPISOP_BEEF_TMP
+   REAL(sp)                   :: TEMPISOP_DAIRY_TMP
+   REAL(sp)                   :: TEMPISOP_SWINE_TMP
+   REAL(sp)                   :: TEMPISOP_POULTRY_TMP
+   REAL(dp)                   :: TEMPACET_BEEF_TMP
+   REAL(sp)                   :: TEMPACET_DAIRY_TMP
+   REAL(sp)                   :: TEMPACET_SWINE_TMP
+   REAL(sp)                   :: TEMPACET_POULTRY_TMP
+   REAL(dp)                   :: TEMPKET_BEEF_TMP
+   REAL(sp)                   :: TEMPKET_DAIRY_TMP
+   REAL(sp)                   :: TEMPKET_SWINE_TMP
+   REAL(sp)                   :: TEMPKET_POULTRY_TMP
+   REAL(dp)                   :: TEMPALD2_PRIMARY_BEEF_TMP
+   REAL(sp)                   :: TEMPALD2_PRIMARY_DAIRY_TMP
+   REAL(sp)                   :: TEMPALD2_PRIMARY_SWINE_TMP
+   REAL(sp)                   :: TEMPALD2_PRIMARY_POULTRY_TMP
+   REAL(dp)                   :: TEMPSOAALK_BEEF_TMP
+   REAL(sp)                   :: TEMPSOAALK_DAIRY_TMP
+   REAL(sp)                   :: TEMPSOAALK_SWINE_TMP
+   REAL(sp)                   :: TEMPSOAALK_POULTRY_TMP
+ 
+   REAL(sp)                   :: WEIGHT
+   REAL(sp)                   :: TAIR,PRECIP
+   REAL(sp)                   :: A,B,C,X,Y  !Precip correction
+!
+!   ! Interpolation variables, indices, and weights
+   REAL(sp), DIMENSION(1)     :: VARS
+   INTEGER,  DIMENSION(1,2)   :: INDX
+   REAL(sp), DIMENSION(1,2)   :: WTS
+!
+   CHARACTER(LEN=255)         :: MSG
+   CHARACTER(LEN=255)         :: LOC = 'METEMIS_LUT_LIVESTOCK'
+!
+!   !=================================================================
+!   ! METEMIS_LUT_LIVESTOCK begins here!
+!   !=================================================================
+!
+!   !MetEmis Temperature bins (Degrees Fahrenheit) = 11 from explicit nT_LIV
+!   !These are set to lower bin edge defined in MetEmis files. 
+!   !e.g., 10 - 20 (10), ... 110 - 120 (110)
+    Inst%Tlev_LIV = (/ 0.0e0, 10.0e0, 20.0e0, 30.0e0, 40.0e0, 50.0e0,  60.0e0,  &
+                   70.0e0, 80.0e0, 90.0e0, 100.0e0, 110.0e0 /)
+!
+!   !Get 2-m air temperature, K
+    TAIR = ExtState%T2M%Arr%Val(I,J)
+!   !Get total precipitation, kg/m2/s
+    PRECIP = ExtState%PRECTOT%Arr%Val(I,J)
+!
+!   !========================================================================
+!   ! Load all variables into a single array
+!   !========================================================================
+!
+!   ! Air Temperature, K --> Fahrenheit for MetEmis consistency
+    VARS(1) = (TAIR - 273.15)*1.8 + 32.0
+!   ! Total Precip, kg/m2/s --> mm/hr for MetEmis consistency
+    PRECIP = PRECIP * 3600.0 
+!
+!   ! Check if outside bounds of MetEmis Temperature Bins and set , i.e., <= 10F or >=120 F
+    IF ( VARS(1) <= 0.0  ) THEN
+      VARS(1) = 0.0
+    ENDIF
+!
+    IF ( VARS(1) >= 120.0  ) THEN
+      VARS(1) = 120.0
+    ENDIF
+!
+!   !========================================================================
+!   ! Find the indices of nodes and their corresponding weights for the
+!   ! interpolation
+!   !========================================================================
+!
+!   ! Temperature:
+    CALL INTERPOL_LINWEIGHTS( Inst%Tlev_LIV, VARS(1), INDX(1,:), WTS(1,:) )
+!
+!   !========================================================================
+!   ! Piecewise linear interpolation
+!   !========================================================================
+
+!   ! Initialize
+   TEMPNH3     = 0.0d0
+   TEMPNH3_BEEF      = 0.0d0
+   TEMPNH3_DAIRY     = 0.0d0
+   TEMPNH3_SWINE     = 0.0d0
+   TEMPNH3_POULTRY   = 0.0d0
+   TEMPCH4     = 0.0d0
+   TEMPCH4_BEEF      = 0.0d0
+   TEMPCH4_DAIRY     = 0.0d0
+   TEMPCH4_SWINE     = 0.0d0
+   TEMPCH4_POULTRY   = 0.0d0
+   TEMPTERP    = 0.0d0
+   TEMPTERP_BEEF      = 0.0d0
+   TEMPTERP_DAIRY     = 0.0d0
+   TEMPTERP_SWINE     = 0.0d0
+   TEMPTERP_POULTRY   = 0.0d0
+   TEMPPAR     = 0.0d0
+   TEMPPAR_BEEF      = 0.0d0
+   TEMPPAR_DAIRY     = 0.0d0
+   TEMPPAR_SWINE     = 0.0d0
+   TEMPPAR_POULTRY   = 0.0d0
+   TEMPIOLE    = 0.0d0
+   TEMPIOLE_BEEF      = 0.0d0
+   TEMPIOLE_DAIRY     = 0.0d0
+   TEMPIOLE_SWINE     = 0.0d0
+   TEMPIOLE_POULTRY   = 0.0d0
+   TEMPOLE     = 0.0d0
+   TEMPOLE_BEEF      = 0.0d0
+   TEMPOLE_DAIRY     = 0.0d0
+   TEMPOLE_SWINE     = 0.0d0
+   TEMPOLE_POULTRY   = 0.0d0
+   TEMPETHA    = 0.0d0
+   TEMPETHA_BEEF      = 0.0d0
+   TEMPETHA_DAIRY     = 0.0d0
+   TEMPETHA_SWINE     = 0.0d0
+   TEMPETHA_POULTRY   = 0.0d0
+   TEMPETOH    = 0.0d0
+   TEMPETOH_BEEF      = 0.0d0
+   TEMPETOH_DAIRY     = 0.0d0
+   TEMPETOH_SWINE     = 0.0d0
+   TEMPETOH_POULTRY   = 0.0d0
+   TEMPMEOH    = 0.0d0
+   TEMPMEOH_BEEF      = 0.0d0
+   TEMPMEOH_DAIRY     = 0.0d0
+   TEMPMEOH_SWINE     = 0.0d0
+   TEMPMEOH_POULTRY   = 0.0d0
+   TEMPBENZ    = 0.0d0
+   TEMPBENZ_BEEF      = 0.0d0
+   TEMPBENZ_DAIRY     = 0.0d0
+   TEMPBENZ_SWINE     = 0.0d0
+   TEMPBENZ_POULTRY   = 0.0d0
+   TEMPTOL     = 0.0d0
+   TEMPTOL_BEEF      = 0.0d0
+   TEMPTOL_DAIRY     = 0.0d0
+   TEMPTOL_SWINE     = 0.0d0
+   TEMPTOL_POULTRY   = 0.0d0
+   TEMPXYLMN   = 0.0d0
+   TEMPXYLMN_BEEF      = 0.0d0
+   TEMPXYLMN_DAIRY     = 0.0d0
+   TEMPXYLMN_SWINE     = 0.0d0
+   TEMPXYLMN_POULTRY   = 0.0d0
+   TEMPALD2    = 0.0d0
+   TEMPALD2_BEEF      = 0.0d0
+   TEMPALD2_DAIRY     = 0.0d0
+   TEMPALD2_SWINE     = 0.0d0
+   TEMPALD2_POULTRY   = 0.0d0
+   TEMPALDX    = 0.0d0
+   TEMPALDX_BEEF      = 0.0d0
+   TEMPALDX_DAIRY     = 0.0d0
+   TEMPALDX_SWINE     = 0.0d0
+   TEMPALDX_POULTRY   = 0.0d0
+   TEMPISOP    = 0.0d0
+   TEMPISOP_BEEF      = 0.0d0
+   TEMPISOP_DAIRY     = 0.0d0
+   TEMPISOP_SWINE     = 0.0d0
+   TEMPISOP_POULTRY   = 0.0d0
+   TEMPACET    = 0.0d0
+   TEMPACET_BEEF      = 0.0d0
+   TEMPACET_DAIRY     = 0.0d0
+   TEMPACET_SWINE     = 0.0d0
+   TEMPACET_POULTRY   = 0.0d0
+   TEMPKET     = 0.0d0
+   TEMPKET_BEEF      = 0.0d0
+   TEMPKET_DAIRY     = 0.0d0
+   TEMPKET_SWINE     = 0.0d0
+   TEMPKET_POULTRY   = 0.0d0
+   TEMPALD2_PRIMARY = 0.0d0
+   TEMPALD2_PRIMARY_BEEF      = 0.0d0
+   TEMPALD2_PRIMARY_DAIRY     = 0.0d0
+   TEMPALD2_PRIMARY_SWINE     = 0.0d0
+   TEMPALD2_PRIMARY_POULTRY   = 0.0d0
+   TEMPSOAALK  = 0.0d0
+   TEMPSOAALK_BEEF      = 0.0d0
+   TEMPSOAALK_DAIRY     = 0.0d0
+   TEMPSOAALK_SWINE     = 0.0d0
+   TEMPSOAALK_POULTRY   = 0.0d0
+
+!
+!  ! Loop over temperature bins
+   DO I1=1,2
+      SELECT CASE ( NINT( Inst%Tlev_LIV(INDX(1,I1)) ) )
+         CASE ( 0 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_010%Arr%Val(I,J)
+            
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_010%Arr%Val(I,J)
+            
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_010%Arr%Val(I,J)
+            
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_010%Arr%Val(I,J)
+            
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_010%Arr%Val(I,J)
+            
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_010%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_010%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_010%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_010%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+
+         CASE ( 10 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_020%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_020%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_020%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_020%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_020%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+
+         CASE ( 20 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_030%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_030%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_030%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_030%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_030%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+         CASE ( 30 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_040%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_040%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_040%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_040%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_040%Arr%Val(I,J)
+
+                 WEIGHT       = WTS(1,I1)
+         CASE ( 40 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_050%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_050%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_050%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_050%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_050%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+         CASE ( 50 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_060%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_060%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_060%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_060%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_060%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+
+         CASE ( 60 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_070%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_070%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_070%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_070%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_070%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+         CASE ( 70 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_080%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_080%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_080%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_080%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_080%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+         CASE ( 80 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_010%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_090%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_090%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_090%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_090%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_090%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+         CASE ( 90 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_100%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_100%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_100%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_100%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_100%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+         CASE ( 100 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_110%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_110%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_110%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_110%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_110%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+         CASE ( 110 )
+            TEMPNH3_BEEF_TMP =   ExtState%MEmisNH3_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPNH3_DAIRY_TMP =  ExtState%MEmisNH3_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPNH3_SWINE_TMP =  ExtState%MEmisNH3_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPNH3_POULTRY_TMP = ExtState%MEmisNH3_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPCH4_BEEF_TMP =   ExtState%MEmisCH4_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPCH4_DAIRY_TMP =  ExtState%MEmisCH4_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPCH4_SWINE_TMP =  ExtState%MEmisCH4_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPCH4_POULTRY_TMP = ExtState%MEmisCH4_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPTERP_BEEF_TMP =   ExtState%MEmisTERP_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPTERP_DAIRY_TMP =  ExtState%MEmisTERP_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPTERP_SWINE_TMP =  ExtState%MEmisTERP_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPTERP_POULTRY_TMP = ExtState%MEmisTERP_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPPAR_BEEF_TMP =   ExtState%MEmisPAR_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPPAR_DAIRY_TMP =  ExtState%MEmisPAR_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPPAR_SWINE_TMP =  ExtState%MEmisPAR_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPPAR_POULTRY_TMP = ExtState%MEmisPAR_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPIOLE_BEEF_TMP =   ExtState%MEmisIOLE_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPIOLE_DAIRY_TMP =  ExtState%MEmisIOLE_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPIOLE_SWINE_TMP =  ExtState%MEmisIOLE_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPIOLE_POULTRY_TMP = ExtState%MEmisIOLE_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPOLE_BEEF_TMP =   ExtState%MEmisOLE_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPOLE_DAIRY_TMP =  ExtState%MEmisOLE_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPOLE_SWINE_TMP =  ExtState%MEmisOLE_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPOLE_POULTRY_TMP = ExtState%MEmisOLE_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPETHA_BEEF_TMP =   ExtState%MEmisETHA_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPETHA_DAIRY_TMP =  ExtState%MEmisETHA_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPETHA_SWINE_TMP =  ExtState%MEmisETHA_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPETHA_POULTRY_TMP = ExtState%MEmisETHA_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPETOH_BEEF_TMP =   ExtState%MEmisETOH_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPETOH_DAIRY_TMP =  ExtState%MEmisETOH_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPETOH_SWINE_TMP =  ExtState%MEmisETOH_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPETOH_POULTRY_TMP = ExtState%MEmisETOH_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPMEOH_BEEF_TMP =   ExtState%MEmisMEOH_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPMEOH_DAIRY_TMP =  ExtState%MEmisMEOH_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPMEOH_SWINE_TMP =  ExtState%MEmisMEOH_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPMEOH_POULTRY_TMP = ExtState%MEmisMEOH_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPBENZ_BEEF_TMP =   ExtState%MEmisBENZ_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPBENZ_DAIRY_TMP =  ExtState%MEmisBENZ_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPBENZ_SWINE_TMP =  ExtState%MEmisBENZ_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPBENZ_POULTRY_TMP = ExtState%MEmisBENZ_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPTOL_BEEF_TMP =   ExtState%MEmisTOL_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPTOL_DAIRY_TMP =  ExtState%MEmisTOL_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPTOL_SWINE_TMP =  ExtState%MEmisTOL_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPTOL_POULTRY_TMP = ExtState%MEmisTOL_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPXYLMN_BEEF_TMP =   ExtState%MEmisXYLMN_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPXYLMN_DAIRY_TMP =  ExtState%MEmisXYLMN_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPXYLMN_SWINE_TMP =  ExtState%MEmisXYLMN_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPXYLMN_POULTRY_TMP = ExtState%MEmisXYLMN_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPALD2_BEEF_TMP =   ExtState%MEmisALD2_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPALD2_DAIRY_TMP =  ExtState%MEmisALD2_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPALD2_SWINE_TMP =  ExtState%MEmisALD2_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPALD2_POULTRY_TMP = ExtState%MEmisALD2_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPALDX_BEEF_TMP =   ExtState%MEmisALDX_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPALDX_DAIRY_TMP =  ExtState%MEmisALDX_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPALDX_SWINE_TMP =  ExtState%MEmisALDX_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPALDX_POULTRY_TMP = ExtState%MEmisALDX_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPISOP_BEEF_TMP =   ExtState%MEmisISOP_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPISOP_DAIRY_TMP =  ExtState%MEmisISOP_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPISOP_SWINE_TMP =  ExtState%MEmisISOP_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPISOP_POULTRY_TMP = ExtState%MEmisISOP_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPACET_BEEF_TMP =   ExtState%MEmisACET_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPACET_DAIRY_TMP =  ExtState%MEmisACET_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPACET_SWINE_TMP =  ExtState%MEmisACET_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPACET_POULTRY_TMP = ExtState%MEmisACET_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPKET_BEEF_TMP =   ExtState%MEmisKET_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPKET_DAIRY_TMP =  ExtState%MEmisKET_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPKET_SWINE_TMP =  ExtState%MEmisKET_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPKET_POULTRY_TMP = ExtState%MEmisKET_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPALD2_PRIMARY_BEEF_TMP =   ExtState%MEmisALD2_PRIMARY_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_DAIRY_TMP =  ExtState%MEmisALD2_PRIMARY_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_SWINE_TMP =  ExtState%MEmisALD2_PRIMARY_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPALD2_PRIMARY_POULTRY_TMP = ExtState%MEmisALD2_PRIMARY_POULTRY_LIV_120%Arr%Val(I,J)
+
+            TEMPSOAALK_BEEF_TMP =   ExtState%MEmisSOAALK_BEEF_LIV_120%Arr%Val(I,J)
+            TEMPSOAALK_DAIRY_TMP =  ExtState%MEmisSOAALK_DAIRY_LIV_120%Arr%Val(I,J)
+            TEMPSOAALK_SWINE_TMP =  ExtState%MEmisSOAALK_SWINE_LIV_120%Arr%Val(I,J)
+            TEMPSOAALK_POULTRY_TMP = ExtState%MEmisSOAALK_POULTRY_LIV_120%Arr%Val(I,J)
+
+            WEIGHT       = WTS(1,I1)
+         CASE DEFAULT
+             MSG = 'LUT error: Temperature interpolation error!'
+             CALL HCO_ERROR(MSG, RC, THISLOC=LOC )
+             RETURN
+      END SELECT
+
+!         !-----------------------------------
+!         ! Final interpolated values
+!         !-----------------------------------
+!         ! Weighted sum of TempNO from the LUT
+          TEMPNH3_BEEF     = TEMPNH3_BEEF     + TEMPNH3_BEEF_TMP      * WEIGHT
+          TEMPNH3_DAIRY    = TEMPNH3_DAIRY    + TEMPNH3_DAIRY_TMP     * WEIGHT
+          TEMPNH3_SWINE    = TEMPNH3_SWINE    + TEMPNH3_SWINE_TMP     * WEIGHT
+          TEMPNH3_POULTRY  = TEMPNH3_POULTRY  + TEMPNH3_POULTRY_TMP   * WEIGHT
+
+          TEMPCH4_BEEF     = TEMPCH4_BEEF     + TEMPCH4_BEEF_TMP      * WEIGHT
+          TEMPCH4_DAIRY    = TEMPCH4_DAIRY    + TEMPCH4_DAIRY_TMP     * WEIGHT
+          TEMPCH4_SWINE    = TEMPCH4_SWINE    + TEMPCH4_SWINE_TMP     * WEIGHT
+          TEMPCH4_POULTRY  = TEMPCH4_POULTRY  + TEMPCH4_POULTRY_TMP   * WEIGHT
+
+          TEMPTERP_BEEF     = TEMPTERP_BEEF     + TEMPTERP_BEEF_TMP      * WEIGHT
+          TEMPTERP_DAIRY    = TEMPTERP_DAIRY    + TEMPTERP_DAIRY_TMP     * WEIGHT
+          TEMPTERP_SWINE    = TEMPTERP_SWINE    + TEMPTERP_SWINE_TMP     * WEIGHT
+          TEMPTERP_POULTRY  = TEMPTERP_POULTRY  + TEMPTERP_POULTRY_TMP   * WEIGHT
+
+          TEMPPAR_BEEF     = TEMPPAR_BEEF     + TEMPPAR_BEEF_TMP      * WEIGHT
+          TEMPPAR_DAIRY    = TEMPPAR_DAIRY    + TEMPPAR_DAIRY_TMP     * WEIGHT
+          TEMPPAR_SWINE    = TEMPPAR_SWINE    + TEMPPAR_SWINE_TMP     * WEIGHT
+          TEMPPAR_POULTRY  = TEMPPAR_POULTRY  + TEMPPAR_POULTRY_TMP   * WEIGHT
+
+          TEMPIOLE_BEEF     = TEMPIOLE_BEEF     + TEMPIOLE_BEEF_TMP      * WEIGHT
+          TEMPIOLE_DAIRY    = TEMPIOLE_DAIRY    + TEMPIOLE_DAIRY_TMP     * WEIGHT
+          TEMPIOLE_SWINE    = TEMPIOLE_SWINE    + TEMPIOLE_SWINE_TMP     * WEIGHT
+          TEMPIOLE_POULTRY  = TEMPIOLE_POULTRY  + TEMPIOLE_POULTRY_TMP   * WEIGHT
+
+          TEMPOLE_BEEF     = TEMPOLE_BEEF     + TEMPOLE_BEEF_TMP      * WEIGHT
+          TEMPOLE_DAIRY    = TEMPOLE_DAIRY    + TEMPOLE_DAIRY_TMP     * WEIGHT
+          TEMPOLE_SWINE    = TEMPOLE_SWINE    + TEMPOLE_SWINE_TMP     * WEIGHT
+          TEMPOLE_POULTRY  = TEMPOLE_POULTRY  + TEMPOLE_POULTRY_TMP   * WEIGHT
+
+          TEMPETHA_BEEF     = TEMPETHA_BEEF     + TEMPETHA_BEEF_TMP      * WEIGHT
+          TEMPETHA_DAIRY    = TEMPETHA_DAIRY    + TEMPETHA_DAIRY_TMP     * WEIGHT
+          TEMPETHA_SWINE    = TEMPETHA_SWINE    + TEMPETHA_SWINE_TMP     * WEIGHT
+          TEMPETHA_POULTRY  = TEMPETHA_POULTRY  + TEMPETHA_POULTRY_TMP   * WEIGHT
+
+          TEMPETOH_BEEF     = TEMPETOH_BEEF     + TEMPETOH_BEEF_TMP      * WEIGHT
+          TEMPETOH_DAIRY    = TEMPETOH_DAIRY    + TEMPETOH_DAIRY_TMP     * WEIGHT
+          TEMPETOH_SWINE    = TEMPETOH_SWINE    + TEMPETOH_SWINE_TMP     * WEIGHT
+          TEMPETOH_POULTRY  = TEMPETOH_POULTRY  + TEMPETOH_POULTRY_TMP   * WEIGHT
+ 
+          TEMPMEOH_BEEF     = TEMPMEOH_BEEF     + TEMPMEOH_BEEF_TMP      * WEIGHT
+          TEMPMEOH_DAIRY    = TEMPMEOH_DAIRY    + TEMPMEOH_DAIRY_TMP     * WEIGHT
+          TEMPMEOH_SWINE    = TEMPMEOH_SWINE    + TEMPMEOH_SWINE_TMP     * WEIGHT
+          TEMPMEOH_POULTRY  = TEMPMEOH_POULTRY  + TEMPMEOH_POULTRY_TMP   * WEIGHT
+ 
+          TEMPBENZ_BEEF     = TEMPBENZ_BEEF     + TEMPBENZ_BEEF_TMP      * WEIGHT
+          TEMPBENZ_DAIRY    = TEMPBENZ_DAIRY    + TEMPBENZ_DAIRY_TMP     * WEIGHT
+          TEMPBENZ_SWINE    = TEMPBENZ_SWINE    + TEMPBENZ_SWINE_TMP     * WEIGHT
+          TEMPBENZ_POULTRY  = TEMPBENZ_POULTRY  + TEMPBENZ_POULTRY_TMP   * WEIGHT
+
+          TEMPTOL_BEEF     = TEMPTOL_BEEF     + TEMPTOL_BEEF_TMP      * WEIGHT
+          TEMPTOL_DAIRY    = TEMPTOL_DAIRY    + TEMPTOL_DAIRY_TMP     * WEIGHT
+          TEMPTOL_SWINE    = TEMPTOL_SWINE    + TEMPTOL_SWINE_TMP     * WEIGHT
+          TEMPTOL_POULTRY  = TEMPTOL_POULTRY  + TEMPTOL_POULTRY_TMP   * WEIGHT
+
+          TEMPXYLMN_BEEF     = TEMPXYLMN_BEEF     + TEMPXYLMN_BEEF_TMP      * WEIGHT
+          TEMPXYLMN_DAIRY    = TEMPXYLMN_DAIRY    + TEMPXYLMN_DAIRY_TMP     * WEIGHT
+          TEMPXYLMN_SWINE    = TEMPXYLMN_SWINE    + TEMPXYLMN_SWINE_TMP     * WEIGHT
+          TEMPXYLMN_POULTRY  = TEMPXYLMN_POULTRY  + TEMPXYLMN_POULTRY_TMP   * WEIGHT
+
+          TEMPALD2_BEEF     = TEMPALD2_BEEF     + TEMPALD2_BEEF_TMP      * WEIGHT
+          TEMPALD2_DAIRY    = TEMPALD2_DAIRY    + TEMPALD2_DAIRY_TMP     * WEIGHT
+          TEMPALD2_SWINE    = TEMPALD2_SWINE    + TEMPALD2_SWINE_TMP     * WEIGHT
+          TEMPALD2_POULTRY  = TEMPALD2_POULTRY  + TEMPALD2_POULTRY_TMP   * WEIGHT
+
+          TEMPALDX_BEEF     = TEMPALDX_BEEF     + TEMPALDX_BEEF_TMP      * WEIGHT
+          TEMPALDX_DAIRY    = TEMPALDX_DAIRY    + TEMPALDX_DAIRY_TMP     * WEIGHT
+          TEMPALDX_SWINE    = TEMPALDX_SWINE    + TEMPALDX_SWINE_TMP     * WEIGHT
+          TEMPALDX_POULTRY  = TEMPALDX_POULTRY  + TEMPALDX_POULTRY_TMP   * WEIGHT
+
+          TEMPISOP_BEEF     = TEMPISOP_BEEF     + TEMPISOP_BEEF_TMP      * WEIGHT
+          TEMPISOP_DAIRY    = TEMPISOP_DAIRY    + TEMPISOP_DAIRY_TMP     * WEIGHT
+          TEMPISOP_SWINE    = TEMPISOP_SWINE    + TEMPISOP_SWINE_TMP     * WEIGHT
+          TEMPISOP_POULTRY  = TEMPISOP_POULTRY  + TEMPISOP_POULTRY_TMP   * WEIGHT
+
+          TEMPACET_BEEF     = TEMPACET_BEEF     + TEMPACET_BEEF_TMP      * WEIGHT
+          TEMPACET_DAIRY    = TEMPACET_DAIRY    + TEMPACET_DAIRY_TMP     * WEIGHT
+          TEMPACET_SWINE    = TEMPACET_SWINE    + TEMPACET_SWINE_TMP     * WEIGHT
+          TEMPACET_POULTRY  = TEMPACET_POULTRY  + TEMPACET_POULTRY_TMP   * WEIGHT
+
+          TEMPKET_BEEF     = TEMPKET_BEEF     + TEMPKET_BEEF_TMP      * WEIGHT
+          TEMPKET_DAIRY    = TEMPKET_DAIRY    + TEMPKET_DAIRY_TMP     * WEIGHT
+          TEMPKET_SWINE    = TEMPKET_SWINE    + TEMPKET_SWINE_TMP     * WEIGHT
+          TEMPKET_POULTRY  = TEMPKET_POULTRY  + TEMPKET_POULTRY_TMP   * WEIGHT
+
+          TEMPALD2_PRIMARY_BEEF     = TEMPALD2_PRIMARY_BEEF     & 
+                  + TEMPALD2_PRIMARY_BEEF_TMP      * WEIGHT
+          TEMPALD2_PRIMARY_DAIRY    = TEMPALD2_PRIMARY_DAIRY    &
+                  + TEMPALD2_PRIMARY_DAIRY_TMP     * WEIGHT
+          TEMPALD2_PRIMARY_SWINE    = TEMPALD2_PRIMARY_SWINE    &
+                  + TEMPALD2_PRIMARY_SWINE_TMP     * WEIGHT
+          TEMPALD2_PRIMARY_POULTRY  = TEMPALD2_PRIMARY_POULTRY  &
+                  + TEMPALD2_PRIMARY_POULTRY_TMP   * WEIGHT
+
+          TEMPSOAALK_BEEF     = TEMPSOAALK_BEEF     + TEMPSOAALK_BEEF_TMP      * WEIGHT
+          TEMPSOAALK_DAIRY    = TEMPSOAALK_DAIRY    + TEMPSOAALK_DAIRY_TMP     * WEIGHT
+          TEMPSOAALK_SWINE    = TEMPSOAALK_SWINE    + TEMPSOAALK_SWINE_TMP     * WEIGHT
+          TEMPSOAALK_POULTRY  = TEMPSOAALK_POULTRY  + TEMPSOAALK_POULTRY_TMP   * WEIGHT
+
+
+   END DO
+
+   IF ( Inst%LIVPRECIP ) THEN
+      X = PRECIP !mm/hr
+!      Beef
+      A     = 0.704176
+      B     = -1.0*(0.340227+0.011827*VARS(1)-0.00013706*VARS(1)*VARS(1))*X
+      C     = 0.273876
+      Y     = A * EXP(B) + C
+       TEMPNH3_BEEF = TEMPNH3_BEEF*Y
+       TEMPCH4_BEEF = TEMPCH4_BEEF*Y
+       TEMPTERP_BEEF = TEMPTERP_BEEF*Y
+       TEMPPAR_BEEF = TEMPPAR_BEEF*Y
+       TEMPIOLE_BEEF = TEMPIOLE_BEEF*Y
+       TEMPOLE_BEEF = TEMPOLE_BEEF*Y
+       TEMPETHA_BEEF = TEMPETHA_BEEF*Y
+       TEMPETOH_BEEF = TEMPETOH_BEEF*Y
+       TEMPMEOH_BEEF = TEMPMEOH_BEEF*Y
+       TEMPBENZ_BEEF = TEMPBENZ_BEEF*Y
+       TEMPTOL_BEEF = TEMPTOL_BEEF*Y
+       TEMPXYLMN_BEEF = TEMPXYLMN_BEEF*Y
+       TEMPALD2_BEEF = TEMPALD2_BEEF*Y
+       TEMPALDX_BEEF = TEMPALDX_BEEF*Y
+       TEMPISOP_BEEF = TEMPISOP_BEEF*Y
+       TEMPACET_BEEF = TEMPACET_BEEF*Y
+       TEMPKET_BEEF = TEMPKET_BEEF*Y
+       TEMPALD2_PRIMARY_BEEF = TEMPALD2_PRIMARY_BEEF*Y
+       TEMPSOAALK_BEEF = TEMPSOAALK_BEEF*Y
+!      Swine
+      A     = 0.741151 - 0.000823*VARS(1) + 0.00000975*VARS(1)*VARS(1)
+      B     = -1.0*(0.448762+0.000833*VARS(1)-0.00000814*VARS(1)*VARS(1))*X
+      C     = (0.242599+0.000846*VARS(1)-0.00000972*VARS(1)*VARS(1))
+      Y     = A * EXP(B) + C
+       TEMPNH3_SWINE = TEMPNH3_SWINE*Y
+       TEMPCH4_SWINE = TEMPCH4_SWINE*Y
+       TEMPTERP_SWINE = TEMPTERP_SWINE*Y
+       TEMPPAR_SWINE = TEMPPAR_SWINE*Y
+       TEMPIOLE_SWINE = TEMPIOLE_SWINE*Y
+       TEMPOLE_SWINE = TEMPOLE_SWINE*Y
+       TEMPETHA_SWINE = TEMPETHA_SWINE*Y
+       TEMPETOH_SWINE = TEMPETOH_SWINE*Y
+       TEMPMEOH_SWINE = TEMPMEOH_SWINE*Y
+       TEMPBENZ_SWINE = TEMPBENZ_SWINE*Y
+       TEMPTOL_SWINE = TEMPTOL_SWINE*Y
+       TEMPXYLMN_SWINE = TEMPXYLMN_SWINE*Y
+       TEMPALD2_SWINE = TEMPALD2_SWINE*Y
+       TEMPALDX_SWINE = TEMPALDX_SWINE*Y
+       TEMPISOP_SWINE = TEMPISOP_SWINE*Y
+       TEMPACET_SWINE = TEMPACET_SWINE*Y
+       TEMPKET_SWINE = TEMPKET_SWINE*Y
+       TEMPALD2_PRIMARY_SWINE = TEMPALD2_PRIMARY_SWINE*Y
+       TEMPSOAALK_SWINE = TEMPSOAALK_SWINE*Y
+!      Dairy
+      A     = 0.075704 - 0.002498*VARS(1) + 0.00003208*VARS(1)*VARS(1)
+      B     = -1.0*(0.525663)*X
+      C     = (0.917940+0.002745*VARS(1)-0.00003523*VARS(1)*VARS(1))
+      Y     = A * EXP(B) + C
+       TEMPNH3_DAIRY = TEMPNH3_DAIRY*Y
+       TEMPCH4_DAIRY = TEMPCH4_DAIRY*Y
+       TEMPTERP_DAIRY = TEMPTERP_DAIRY*Y
+       TEMPPAR_DAIRY = TEMPPAR_DAIRY*Y
+       TEMPIOLE_DAIRY = TEMPIOLE_DAIRY*Y
+       TEMPOLE_DAIRY = TEMPOLE_DAIRY*Y
+       TEMPETHA_DAIRY = TEMPETHA_DAIRY*Y
+       TEMPETOH_DAIRY = TEMPETOH_DAIRY*Y
+       TEMPMEOH_DAIRY = TEMPMEOH_DAIRY*Y
+       TEMPBENZ_DAIRY = TEMPBENZ_DAIRY*Y
+       TEMPTOL_DAIRY = TEMPTOL_DAIRY*Y
+       TEMPXYLMN_DAIRY = TEMPXYLMN_DAIRY*Y
+       TEMPALD2_DAIRY = TEMPALD2_DAIRY*Y
+       TEMPALDX_DAIRY = TEMPALDX_DAIRY*Y
+       TEMPISOP_DAIRY = TEMPISOP_DAIRY*Y
+       TEMPACET_DAIRY = TEMPACET_DAIRY*Y
+       TEMPKET_DAIRY = TEMPKET_DAIRY*Y
+       TEMPALD2_PRIMARY_DAIRY = TEMPALD2_PRIMARY_DAIRY*Y
+       TEMPSOAALK_DAIRY = TEMPSOAALK_DAIRY*Y
+!      Poultry
+      A     = 0.111969 + 0.001879*VARS(1) - 0.00002245*VARS(1)*VARS(1)
+      B     = -1.0*(0.193073+0.004176*VARS(1)-0.00005126*VARS(1)*VARS(1))*X
+      C     = (0.841015 - 0.001985*VARS(1)+0.00002825*VARS(1)*VARS(1))
+      Y     = A * EXP(B) + C
+       TEMPNH3_POULTRY = TEMPNH3_POULTRY*Y
+       TEMPCH4_POULTRY = TEMPCH4_POULTRY*Y
+       TEMPTERP_POULTRY = TEMPTERP_POULTRY*Y
+       TEMPPAR_POULTRY = TEMPPAR_POULTRY*Y
+       TEMPIOLE_POULTRY = TEMPIOLE_POULTRY*Y
+       TEMPOLE_POULTRY = TEMPOLE_POULTRY*Y
+       TEMPETHA_POULTRY = TEMPETHA_POULTRY*Y
+       TEMPETOH_POULTRY = TEMPETOH_POULTRY*Y
+       TEMPMEOH_POULTRY = TEMPMEOH_POULTRY*Y
+       TEMPBENZ_POULTRY = TEMPBENZ_POULTRY*Y
+       TEMPTOL_POULTRY = TEMPTOL_POULTRY*Y
+       TEMPXYLMN_POULTRY = TEMPXYLMN_POULTRY*Y
+       TEMPALD2_POULTRY = TEMPALD2_POULTRY*Y
+       TEMPALDX_POULTRY = TEMPALDX_POULTRY*Y
+       TEMPISOP_POULTRY = TEMPISOP_POULTRY*Y
+       TEMPACET_POULTRY = TEMPACET_POULTRY*Y
+       TEMPKET_POULTRY = TEMPKET_POULTRY*Y
+       TEMPALD2_PRIMARY_POULTRY = TEMPALD2_PRIMARY_POULTRY*Y
+       TEMPSOAALK_POULTRY = TEMPSOAALK_POULTRY*Y
+   ENDIF
+      !Combine animal types to total livestock emissions
+      TEMPNH3 = TEMPNH3_BEEF + TEMPNH3_SWINE + TEMPNH3_DAIRY + TEMPNH3_POULTRY
+      TEMPCH4 = TEMPCH4_BEEF + TEMPCH4_SWINE + TEMPCH4_DAIRY + TEMPCH4_POULTRY
+      TEMPTERP = TEMPTERP_BEEF + TEMPTERP_SWINE + TEMPTERP_DAIRY + TEMPTERP_POULTRY
+      TEMPPAR = TEMPPAR_BEEF + TEMPPAR_SWINE + TEMPPAR_DAIRY + TEMPPAR_POULTRY
+      TEMPIOLE = TEMPIOLE_BEEF + TEMPIOLE_SWINE + TEMPIOLE_DAIRY + TEMPIOLE_POULTRY
+      TEMPOLE = TEMPOLE_BEEF + TEMPOLE_SWINE + TEMPOLE_DAIRY + TEMPOLE_POULTRY
+      TEMPETHA = TEMPETHA_BEEF + TEMPETHA_SWINE + TEMPETHA_DAIRY + TEMPETHA_POULTRY
+      TEMPETOH = TEMPETOH_BEEF + TEMPETOH_SWINE + TEMPETOH_DAIRY + TEMPETOH_POULTRY
+      TEMPMEOH = TEMPMEOH_BEEF + TEMPMEOH_SWINE + TEMPMEOH_DAIRY + TEMPMEOH_POULTRY
+      TEMPBENZ = TEMPBENZ_BEEF + TEMPBENZ_SWINE + TEMPBENZ_DAIRY + TEMPBENZ_POULTRY
+      TEMPTOL = TEMPTOL_BEEF + TEMPTOL_SWINE + TEMPTOL_DAIRY + TEMPTOL_POULTRY
+      TEMPXYLMN = TEMPXYLMN_BEEF + TEMPXYLMN_SWINE + TEMPXYLMN_DAIRY + TEMPXYLMN_POULTRY
+      TEMPALD2 = TEMPALD2_BEEF + TEMPALD2_SWINE + TEMPALD2_DAIRY + TEMPALD2_POULTRY
+      TEMPALDX = TEMPALDX_BEEF + TEMPALDX_SWINE + TEMPALDX_DAIRY + TEMPALDX_POULTRY
+      TEMPISOP = TEMPISOP_BEEF + TEMPISOP_SWINE + TEMPISOP_DAIRY + TEMPISOP_POULTRY
+      TEMPKET = TEMPKET_BEEF + TEMPKET_SWINE + TEMPKET_DAIRY + TEMPKET_POULTRY
+      TEMPALD2_PRIMARY = TEMPALD2_PRIMARY_BEEF + TEMPALD2_PRIMARY_SWINE + &
+              TEMPALD2_PRIMARY_DAIRY + TEMPALD2_PRIMARY_POULTRY
+      TEMPKET = TEMPSOAALK_BEEF + TEMPSOAALK_SWINE + TEMPSOAALK_DAIRY + TEMPSOAALK_POULTRY
+
+!   ! Return w/ success
+   RC = HCO_SUCCESS
+
+  END SUBROUTINE METEMIS_LUT_LIVESTOCK
+
+!------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: metemis_rwc
+!
+! !DESCRIPTION:  Subroutine METEMIS_RWC returns emissions
+! based on temperature binary flag from (Baek et al. 2023;
+! https://doi.org/10.5194/gmd-16-4659-2023)...
+!
+! This uses 1 input variable:
+!     TEMP   : model temperature, K
+!\\
+ !INTERFACE:
+
+ SUBROUTINE METEMIS_RWC( ExtState,  HcoState, Inst, I, J, RC,                          &
+                         TEMPNO,   TEMPNO2,   TEMPHONO,  TEMPCO,   TEMPSO2,            &
+                         TEMPNH3,  TEMPCH4,   TEMPACROLEIN, TEMPBUTADIENE13, TEMPETHY, &
+                         TEMPTERP, TEMPFORM,  TEMPPAR,   TEMPIOLE, TEMPOLE ,           &
+                         TEMPETH , TEMPETHA , TEMPETOH,  TEMPMEOH, TEMPBENZ,           &
+                         TEMPTOL,  TEMPXYLMN, TEMPNAPH,  TEMPALD2, TEMPALDX,           &
+                         TEMPISOP, TEMPPRPA,  TEMPACET,  TEMPKET,  TEMPALD2_PRIMARY,   &
+                 TEMPFORM_PRIMARY, TEMPSOAALK, TEMPPEC,  TEMPPOC,  TEMPPAL,            &
+                         TEMPPCA,  TEMPPCL,   TEMPPFE,   TEMPPH2O, TEMPPK,             &
+                         TEMPPMG,  TEMPPMN,   TEMPPMOTHR, TEMPPNA, TEMPPNCOM,          &
+                         TEMPPNH4, TEMPPNO3,  TEMPPTI,   TEMPPSI,  TEMPPMC,            &
+                         TEMPPSO4)
+
+ !USES:
+   USE HCO_STATE_MOD,        ONLY : HCO_State
+   USE HCOX_STATE_MOD,       ONLY : Ext_State
+!
+! !INPUT PARAMETERS:
+!
+   TYPE(Ext_State), POINTER    :: ExtState
+   TYPE(HCO_State), POINTER    :: HcoState
+   TYPE(MyInst),    POINTER    :: Inst
+   INTEGER, INTENT(IN)         :: I, J      ! Grid indices
+!
+! OUTPUT PARAMETERS:
+!
+! Temp dependent MetEmis emission species 51 in total , kg/m2/s
+!
+   REAL*8, INTENT(OUT)           :: TEMPNO   ! Temp dependent NO emissions, kg/m2/s
+   REAL*8, INTENT(OUT)           :: TEMPNO2
+   REAL*8, INTENT(OUT)           :: TEMPHONO
+   REAL*8, INTENT(OUT)           :: TEMPCO
+   REAL*8, INTENT(OUT)           :: TEMPSO2
+   REAL*8, INTENT(OUT)           :: TEMPNH3
+   REAL*8, INTENT(OUT)           :: TEMPCH4
+   REAL*8, INTENT(OUT)           :: TEMPACROLEIN
+   REAL*8, INTENT(OUT)           :: TEMPBUTADIENE13
+   REAL*8, INTENT(OUT)           :: TEMPETHY
+   REAL*8, INTENT(OUT)           :: TEMPTERP
+   REAL*8, INTENT(OUT)           :: TEMPFORM
+   REAL*8, INTENT(OUT)           :: TEMPPAR
+   REAL*8, INTENT(OUT)           :: TEMPIOLE
+   REAL*8, INTENT(OUT)           :: TEMPOLE
+   REAL*8, INTENT(OUT)           :: TEMPETH
+   REAL*8, INTENT(OUT)           :: TEMPETHA
+   REAL*8, INTENT(OUT)           :: TEMPETOH
+   REAL*8, INTENT(OUT)           :: TEMPMEOH
+   REAL*8, INTENT(OUT)           :: TEMPBENZ
+   REAL*8, INTENT(OUT)           :: TEMPTOL
+   REAL*8, INTENT(OUT)           :: TEMPXYLMN
+   REAL*8, INTENT(OUT)           :: TEMPNAPH
+   REAL*8, INTENT(OUT)           :: TEMPALD2
+   REAL*8, INTENT(OUT)           :: TEMPALDX
+   REAL*8, INTENT(OUT)           :: TEMPISOP
+   REAL*8, INTENT(OUT)           :: TEMPPRPA
+   REAL*8, INTENT(OUT)           :: TEMPACET
+   REAL*8, INTENT(OUT)           :: TEMPKET
+   REAL*8, INTENT(OUT)           :: TEMPALD2_PRIMARY
+   REAL*8, INTENT(OUT)           :: TEMPFORM_PRIMARY
+   REAL*8, INTENT(OUT)           :: TEMPSOAALK
+   REAL*8, INTENT(OUT)           :: TEMPPEC
+   REAL*8, INTENT(OUT)           :: TEMPPOC
+   REAL*8, INTENT(OUT)           :: TEMPPAL
+   REAL*8, INTENT(OUT)           :: TEMPPCA
+   REAL*8, INTENT(OUT)           :: TEMPPCL
+   REAL*8, INTENT(OUT)           :: TEMPPFE
+   REAL*8, INTENT(OUT)           :: TEMPPH2O
+   REAL*8, INTENT(OUT)           :: TEMPPK
+   REAL*8, INTENT(OUT)           :: TEMPPMG
+   REAL*8, INTENT(OUT)           :: TEMPPMN
+   REAL*8, INTENT(OUT)           :: TEMPPMOTHR
+   REAL*8, INTENT(OUT)           :: TEMPPNA
+   REAL*8, INTENT(OUT)           :: TEMPPNCOM
+   REAL*8, INTENT(OUT)           :: TEMPPNH4
+   REAL*8, INTENT(OUT)           :: TEMPPNO3
+   REAL*8, INTENT(OUT)           :: TEMPPTI
+   REAL*8, INTENT(OUT)           :: TEMPPSI
+   REAL*8, INTENT(OUT)           :: TEMPPMC
+   REAL*8, INTENT(OUT)           :: TEMPPSO4
+
+! INPUT/OUTPUT PARAMETERS:
+   INTEGER, INTENT(INOUT)        :: RC      ! Return code
+! Local
+   REAL(sp)                   :: RWC_TEMP, TAIR  !RWC and air temperature
+   REAL(sp), DIMENSION(1)     :: VARS
+
+!  Initialize
+   TEMPNO       = 0.0d0
+   TEMPNO2      = 0.0d0
+   TEMPHONO     = 0.0d0
+   TEMPCO       = 0.0d0
+   TEMPSO2      = 0.0d0
+   TEMPNH3      = 0.0d0
+   TEMPCH4      = 0.0d0
+   TEMPACROLEIN         = 0.0d0
+   TEMPBUTADIENE13      = 0.0d0
+   TEMPETHY      = 0.0d0
+   TEMPTERP      = 0.0d0
+   TEMPFORM      = 0.0d0
+   TEMPPAR       = 0.0d0
+   TEMPIOLE      = 0.0d0
+   TEMPOLE       = 0.0d0
+   TEMPETH       = 0.0d0
+   TEMPETHA      = 0.0d0
+   TEMPETOH      = 0.0d0
+   TEMPMEOH      = 0.0d0
+   TEMPBENZ      = 0.0d0
+   TEMPTOL       = 0.0d0
+   TEMPXYLMN     = 0.0d0
+   TEMPNAPH      = 0.0d0
+   TEMPALD2      = 0.0d0
+   TEMPALDX      = 0.0d0
+   TEMPISOP      = 0.0d0
+   TEMPPRPA      = 0.0d0
+   TEMPACET      = 0.0d0
+   TEMPKET      = 0.0d0
+   TEMPALD2_PRIMARY      = 0.0d0
+   TEMPFORM_PRIMARY      = 0.0d0
+   TEMPSOAALK      = 0.0d0
+   TEMPPEC      = 0.0d0
+   TEMPPOC      = 0.0d0
+   TEMPPAL      = 0.0d0
+   TEMPPCA      = 0.0d0
+   TEMPPCL      = 0.0d0
+   TEMPPFE      = 0.0d0
+   TEMPPH2O     = 0.0d0
+   TEMPPK       = 0.0d0
+   TEMPPMG      = 0.0d0
+   TEMPPMN      = 0.0d0
+   TEMPPMOTHR   = 0.0d0
+   TEMPPNA      = 0.0d0
+   TEMPPNCOM    = 0.0d0
+   TEMPPNH4     = 0.0d0
+   TEMPPNO3     = 0.0d0
+   TEMPPTI      = 0.0d0
+   TEMPPSI      = 0.0d0
+   TEMPPMC      = 0.0d0
+   TEMPPSO4     = 0.0d0
+
+!  Add state RWC emissions
+   TEMPNO = ExtState%MEmisNO_RWC%Arr%Val(I,J)
+   TEMPNO2 = ExtState%MEmisNO2_RWC%Arr%Val(I,J)
+   TEMPHONO = ExtState%MEmisHONO_RWC%Arr%Val(I,J)
+   TEMPCO = ExtState%MEmisCO_RWC%Arr%Val(I,J)
+   TEMPSO2 = ExtState%MEmisSO2_RWC%Arr%Val(I,J)
+   TEMPNH3 = ExtState%MEmisNH3_RWC%Arr%Val(I,J)
+   TEMPCH4 = ExtState%MEmisCH4_RWC%Arr%Val(I,J)
+   TEMPACROLEIN = ExtState%MEmisACROLEIN_RWC%Arr%Val(I,J)
+   TEMPBUTADIENE13 = ExtState%MEmisBUTADIENE13_RWC%Arr%Val(I,J)
+   TEMPETHY = ExtState%MEmisETHY_RWC%Arr%Val(I,J)
+   TEMPTERP = ExtState%MEmisTERP_RWC%Arr%Val(I,J)
+   TEMPFORM = ExtState%MEmisFORM_RWC%Arr%Val(I,J)
+   TEMPPAR = ExtState%MEmisPAR_RWC%Arr%Val(I,J)
+   TEMPIOLE = ExtState%MEmisIOLE_RWC%Arr%Val(I,J)
+   TEMPOLE = ExtState%MEmisOLE_RWC%Arr%Val(I,J)
+   TEMPETH = ExtState%MEmisETH_RWC%Arr%Val(I,J)
+   TEMPETHA = ExtState%MEmisETHA_RWC%Arr%Val(I,J)
+   TEMPETOH = ExtState%MEmisETOH_RWC%Arr%Val(I,J)
+   TEMPMEOH = ExtState%MEmisMEOH_RWC%Arr%Val(I,J)
+   TEMPBENZ = ExtState%MEmisBENZ_RWC%Arr%Val(I,J)
+   TEMPTOL = ExtState%MEmisTOL_RWC%Arr%Val(I,J)
+   TEMPXYLMN = ExtState%MEmisXYLMN_RWC%Arr%Val(I,J)
+   TEMPNAPH = ExtState%MEmisNAPH_RWC%Arr%Val(I,J)
+   TEMPALD2 = ExtState%MEmisALD2_RWC%Arr%Val(I,J)
+   TEMPALDX = ExtState%MEmisALDX_RWC%Arr%Val(I,J)
+   TEMPISOP = ExtState%MEmisISOP_RWC%Arr%Val(I,J)
+   TEMPPRPA = ExtState%MEmisPRPA_RWC%Arr%Val(I,J)
+   TEMPACET = ExtState%MEmisACET_RWC%Arr%Val(I,J)
+   TEMPKET = ExtState%MEmisKET_RWC%Arr%Val(I,J)
+   TEMPALD2_PRIMARY = ExtState%MEmisALD2_PRIMARY_RWC%Arr%Val(I,J)
+   TEMPFORM_PRIMARY = ExtState%MEmisFORM_PRIMARY_RWC%Arr%Val(I,J)
+   TEMPSOAALK = ExtState%MEmisSOAALK_RWC%Arr%Val(I,J)
+   TEMPPEC = ExtState%MEmisPEC_RWC%Arr%Val(I,J)
+   TEMPPOC = ExtState%MEmisPOC_RWC%Arr%Val(I,J)
+   TEMPPAL = ExtState%MEmisPAL_RWC%Arr%Val(I,J)
+   TEMPPCA = ExtState%MEmisPCA_RWC%Arr%Val(I,J)
+   TEMPPCL = ExtState%MEmisPCL_RWC%Arr%Val(I,J)
+   TEMPPFE = ExtState%MEmisPFE_RWC%Arr%Val(I,J)
+   TEMPPH2O = ExtState%MEmisPH2O_RWC%Arr%Val(I,J)
+   TEMPPK = ExtState%MEmisPK_RWC%Arr%Val(I,J)
+   TEMPPMG = ExtState%MEmisPMG_RWC%Arr%Val(I,J)
+   TEMPPMN = ExtState%MEmisPMN_RWC%Arr%Val(I,J)
+   TEMPPMOTHR = ExtState%MEmisPMOTHR_RWC%Arr%Val(I,J)
+   TEMPPNA = ExtState%MEmisPNA_RWC%Arr%Val(I,J)
+   TEMPPNCOM = ExtState%MEmisPNCOM_RWC%Arr%Val(I,J)
+   TEMPPNH4 = ExtState%MEmisPNH4_RWC%Arr%Val(I,J)
+   TEMPPNO3 = ExtState%MEmisPNO3_RWC%Arr%Val(I,J)
+   TEMPPTI = ExtState%MEmisPTI_RWC%Arr%Val(I,J)
+   TEMPPSI = ExtState%MEmisPSI_RWC%Arr%Val(I,J)
+   TEMPPMC = ExtState%MEmisPMC_RWC%Arr%Val(I,J)
+   TEMPPSO4 = ExtState%MEmisPSO4_RWC%Arr%Val(I,J)
+
+   RWC_TEMP = Inst%RWCTEMPF  ! RWC temperature threshold in Fahrenheit from config
+   !Get 2-m air temperature, K
+   TAIR = ExtState%T2M%Arr%Val(I,J)
+
+   !========================================================================
+   ! Load all variables into a single array
+   !========================================================================
+   ! Air Temperature, K --> Fahrenheit for MetEmis consistency
+   VARS(1) = (TAIR - 273.15)*1.8 + 32.0
+   IF (VARS(1) .GT. RWC_TEMP) THEN  !RWC emissions off (zero out)
+        TEMPNO = TEMPNO * 0.0
+        TEMPNO2 = TEMPNO2 * 0.0        
+        TEMPHONO = TEMPHONO * 0.0
+        TEMPCO = TEMPCO * 0.0
+        TEMPSO2 = TEMPSO2 * 0.0
+        TEMPNH3 = TEMPNH3 * 0.0
+        TEMPCH4 = TEMPCH4 * 0.0
+        TEMPACROLEIN = TEMPACROLEIN * 0.0
+        TEMPBUTADIENE13 = TEMPBUTADIENE13 * 0.0
+        TEMPETHY = TEMPETHY * 0.0
+        TEMPTERP = TEMPTERP * 0.0
+        TEMPFORM = TEMPFORM * 0.0
+        TEMPPAR = TEMPPAR * 0.0
+        TEMPIOLE = TEMPIOLE * 0.0
+        TEMPOLE = TEMPOLE * 0.0
+        TEMPETH = TEMPETH * 0.0
+        TEMPETHA = TEMPETHA * 0.0
+        TEMPETOH = TEMPETOH * 0.0
+        TEMPMEOH = TEMPMEOH * 0.0
+        TEMPBENZ = TEMPBENZ * 0.0
+        TEMPTOL = TEMPTOL * 0.0
+        TEMPXYLMN = TEMPXYLMN * 0.0
+        TEMPNAPH = TEMPNAPH * 0.0
+        TEMPALD2 = TEMPALD2 * 0.0
+        TEMPALDX = TEMPALDX * 0.0
+        TEMPISOP = TEMPISOP * 0.0
+        TEMPPRPA = TEMPPRPA * 0.0
+        TEMPACET = TEMPACET * 0.0
+        TEMPKET = TEMPKET * 0.0
+        TEMPALD2_PRIMARY = TEMPALD2_PRIMARY * 0.0
+        TEMPFORM_PRIMARY = TEMPFORM_PRIMARY * 0.0
+        TEMPSOAALK = TEMPSOAALK * 0.0
+        TEMPPEC = TEMPPEC * 0.0
+        TEMPPOC = TEMPPOC * 0.0
+        TEMPPAL = TEMPPAL * 0.0
+        TEMPPCA = TEMPPCA * 0.0
+        TEMPPCL = TEMPPCL * 0.0
+        TEMPPFE = TEMPPFE * 0.0
+        TEMPPH2O = TEMPPH2O * 0.0
+        TEMPPK = TEMPPK * 0.0
+        TEMPPMG = TEMPPMG * 0.0
+        TEMPPMN = TEMPPMN * 0.0
+        TEMPPMOTHR = TEMPPMOTHR * 0.0
+        TEMPPNA = TEMPPNA * 0.0
+        TEMPPNCOM = TEMPPNCOM * 0.0
+        TEMPPNH4 = TEMPPNH4 * 0.0
+        TEMPPNO3 = TEMPPNO3 * 0.0
+        TEMPPTI = TEMPPTI * 0.0
+        TEMPPSI = TEMPPSI * 0.0
+        TEMPPMC = TEMPPMC * 0.0
+        TEMPPSO4 = TEMPPSO4 * 0.0
+    ENDIF
+
+ ! Return w/ success
+   RC = HCO_SUCCESS
+
+  END SUBROUTINE METEMIS_RWC
+
+  !------------------------------------------------------------------------------
+!                  GEOS-Chem Global Chemical Transport Model                  !
+!------------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: metemis_afd
+!
+! !DESCRIPTION:  Subroutine METEMIS_AFD returns emissions
+! based on precipitation binary flag from (Baek et al. 2023;
+! https://doi.org/10.5194/gmd-16-4659-2023)...
+!
+! This uses 1 input variable:
+!     TEMP   : model total precipitation kg/m2/s
+!\\
+ !INTERFACE:
+
+ SUBROUTINE METEMIS_AFD( ExtState,  HcoState, Inst, I, J, RC,                          &
+                         TEMPPEC,  TEMPPOC,  TEMPPAL,            &
+                         TEMPPCA,  TEMPPCL,   TEMPPFE,   TEMPPH2O, TEMPPK,             &
+                         TEMPPMG,  TEMPPMN,   TEMPPMOTHR, TEMPPNA, TEMPPNCOM,          &
+                         TEMPPNH4, TEMPPNO3,  TEMPPTI,   TEMPPSI,  TEMPPMC,            &
+                         TEMPPSO4)
+
+ !USES:
+   USE HCO_STATE_MOD,        ONLY : HCO_State
+   USE HCOX_STATE_MOD,       ONLY : Ext_State
+!
+! !INPUT PARAMETERS:
+!
+   TYPE(Ext_State), POINTER    :: ExtState
+   TYPE(HCO_State), POINTER    :: HcoState
+   TYPE(MyInst),    POINTER    :: Inst
+   INTEGER, INTENT(IN)         :: I, J      ! Grid indices
+!
+! OUTPUT PARAMETERS:
+!
+! Precip dependent MetEmis emission species 19 in total , kg/m2/s
+!
+   REAL*8, INTENT(OUT)           :: TEMPPEC
+   REAL*8, INTENT(OUT)           :: TEMPPOC
+   REAL*8, INTENT(OUT)           :: TEMPPAL
+   REAL*8, INTENT(OUT)           :: TEMPPCA
+   REAL*8, INTENT(OUT)           :: TEMPPCL
+   REAL*8, INTENT(OUT)           :: TEMPPFE
+   REAL*8, INTENT(OUT)           :: TEMPPH2O
+   REAL*8, INTENT(OUT)           :: TEMPPK
+   REAL*8, INTENT(OUT)           :: TEMPPMG
+   REAL*8, INTENT(OUT)           :: TEMPPMN
+   REAL*8, INTENT(OUT)           :: TEMPPMOTHR
+   REAL*8, INTENT(OUT)           :: TEMPPNA
+   REAL*8, INTENT(OUT)           :: TEMPPNCOM
+   REAL*8, INTENT(OUT)           :: TEMPPNH4
+   REAL*8, INTENT(OUT)           :: TEMPPNO3
+   REAL*8, INTENT(OUT)           :: TEMPPTI
+   REAL*8, INTENT(OUT)           :: TEMPPSI
+   REAL*8, INTENT(OUT)           :: TEMPPMC
+   REAL*8, INTENT(OUT)           :: TEMPPSO4
+
+! INPUT/OUTPUT PARAMETERS:
+   INTEGER, INTENT(INOUT)        :: RC      ! Return code
+! Local
+   REAL(sp)                   :: AFD_PRECIP, PRECIP  !AFD and precipitation
+   REAL(sp)                   :: AFD_FRSNO, SNOWFRAC  !AFD and snow fraction
+
+!  Initialize
+   TEMPPEC      = 0.0d0
+   TEMPPOC      = 0.0d0
+   TEMPPAL      = 0.0d0
+   TEMPPCA      = 0.0d0
+   TEMPPCL      = 0.0d0
+   TEMPPFE      = 0.0d0
+   TEMPPH2O     = 0.0d0
+   TEMPPK       = 0.0d0
+   TEMPPMG      = 0.0d0
+   TEMPPMN      = 0.0d0
+   TEMPPMOTHR   = 0.0d0
+   TEMPPNA      = 0.0d0
+   TEMPPNCOM    = 0.0d0
+   TEMPPNH4     = 0.0d0
+   TEMPPNO3     = 0.0d0
+   TEMPPTI      = 0.0d0
+   TEMPPSI      = 0.0d0
+   TEMPPMC      = 0.0d0
+   TEMPPSO4     = 0.0d0
+
+!  Add state AFD emissions
+   TEMPPEC = ExtState%MEmisPEC_AFD%Arr%Val(I,J)
+   TEMPPOC = ExtState%MEmisPOC_AFD%Arr%Val(I,J)
+   TEMPPAL = ExtState%MEmisPAL_AFD%Arr%Val(I,J)
+   TEMPPCA = ExtState%MEmisPCA_AFD%Arr%Val(I,J)
+   TEMPPCL = ExtState%MEmisPCL_AFD%Arr%Val(I,J)
+   TEMPPFE = ExtState%MEmisPFE_AFD%Arr%Val(I,J)
+   TEMPPH2O = ExtState%MEmisPH2O_AFD%Arr%Val(I,J)
+   TEMPPK = ExtState%MEmisPK_AFD%Arr%Val(I,J)
+   TEMPPMG = ExtState%MEmisPMG_AFD%Arr%Val(I,J)
+   TEMPPMN = ExtState%MEmisPMN_AFD%Arr%Val(I,J)
+   TEMPPMOTHR = ExtState%MEmisPMOTHR_AFD%Arr%Val(I,J)
+   TEMPPNA = ExtState%MEmisPNA_AFD%Arr%Val(I,J)
+   TEMPPNCOM = ExtState%MEmisPNCOM_AFD%Arr%Val(I,J)
+   TEMPPNH4 = ExtState%MEmisPNH4_AFD%Arr%Val(I,J)
+   TEMPPNO3 = ExtState%MEmisPNO3_AFD%Arr%Val(I,J)
+   TEMPPTI = ExtState%MEmisPTI_AFD%Arr%Val(I,J)
+   TEMPPSI = ExtState%MEmisPSI_AFD%Arr%Val(I,J)
+   TEMPPMC = ExtState%MEmisPMC_AFD%Arr%Val(I,J)
+   TEMPPSO4 = ExtState%MEmisPSO4_AFD%Arr%Val(I,J)
+
+   AFD_PRECIP = Inst%AFDPRECIP  ! AFD precip threshold in mm/hr from config
+   !Get precip, kg/m2/s
+   PRECIP = ExtState%PRECTOT%Arr%Val(I,J)
+   !   ! Total Precip, kg/m2/s --> mm/hr for MetEmis consistency
+   PRECIP = PRECIP * 3600.0
+
+   AFD_FRSNO = Inst%AFDFRSNO  ! AFD snow fraction from config
+   !Get fraction snow cover, fraction
+   SNOWFRAC = ExtState%FRSNO%Arr%Val(I,J)
+
+   !========================================================================
+   ! Load all variables into a single array
+   !========================================================================
+   IF (PRECIP .GT. AFD_PRECIP .OR. SNOWFRAC .GT. AFD_FRSNO) THEN  !AFD adjustment 
+        TEMPPEC = TEMPPEC * 0.01
+        TEMPPOC = TEMPPOC * 0.01
+        TEMPPAL = TEMPPAL * 0.01
+        TEMPPCA = TEMPPCA * 0.01
+        TEMPPCL = TEMPPCL * 0.01
+        TEMPPFE = TEMPPFE * 0.01
+        TEMPPH2O = TEMPPH2O * 0.01
+        TEMPPK = TEMPPK * 0.01
+        TEMPPMG = TEMPPMG * 0.01
+        TEMPPMN = TEMPPMN * 0.01
+        TEMPPMOTHR = TEMPPMOTHR * 0.01
+        TEMPPNA = TEMPPNA * 0.01
+        TEMPPNCOM = TEMPPNCOM * 0.01
+        TEMPPNH4 = TEMPPNH4 * 0.01
+        TEMPPNO3 = TEMPPNO3 * 0.01
+        TEMPPTI = TEMPPTI * 0.01
+        TEMPPSI = TEMPPSI * 0.01
+        TEMPPMC = TEMPPMC * 0.01
+        TEMPPSO4 = TEMPPSO4 * 0.01
+    ENDIF
+
+ ! Return w/ success
+   RC = HCO_SUCCESS
+
+  END SUBROUTINE METEMIS_AFD
+
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
