@@ -183,8 +183,8 @@ MODULE HCOX_MetEmis_MOD
      LOGICAL               :: MEAFD       ! Turn on MetEmis for AFD Sector
      REAL(hp)              :: AFDPRECIP   ! AFD Precipitation Threshold (mm/hr)
      REAL(hp)              :: AFDFRSNO    ! AFD Snow cover Threshold (fraction)
-     REAL(hp)              :: AFDWIND     ! AFD 10-m wind speed Threshold (m/s)
-     LOGICAL               :: AFDWIND10   ! Apply wind-dependent AFD emissions
+     REAL(hp)              :: AFDWIND10   ! AFD 10-m wind speed Threshold (m/s)
+     LOGICAL               :: MEAFDWIND   ! Apply wind-dependent AFD emissions
 
 
      ! Arrays
@@ -2483,8 +2483,8 @@ CONTAINS
 
       Inst%Tlev_OR           =  0.0e0
       Inst%Tlev_LIV          =  0.0e0
-      Inst%AFDWIND           =  0.0_hp
-      Inst%AFDWIND10         = .FALSE.
+      Inst%AFDWIND10         =  0.0_hp
+      Inst%MEAFDWIND         = .FALSE.
 
       !------------------------------------------------------------------------
       ! Get species IDs
@@ -2715,14 +2715,14 @@ CONTAINS
     ENDIF
 
     CALL GetExtOpt( HcoState%Config, ExtNr, 'AFD 10-m wind (m/s)', &
-                    OptValHp=Inst%AFDWIND, Found=FOUND, RC=RC )
+                    OptValHp=Inst%AFDWIND10, Found=FOUND, RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
     CALL GetExtOpt( HcoState%Config, ExtNr, 'AFD Wind', &
-                    OptValBool=Inst%AFDWIND10, Found=FOUND, RC=RC )
+                    OptValBool=Inst%MEAFDWIND, Found=FOUND, RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
         RETURN
@@ -2784,13 +2784,13 @@ CONTAINS
 
      ! Verbose mode
      IF ( HcoState%amIRoot ) THEN
-       WRITE(MSG,*) ' --> MetEmis AFD 10-m wind (m/s) is ',Inst%AFDWIND
+       WRITE(MSG,*) ' --> MetEmis AFD 10-m wind (m/s) is ',Inst%AFDWIND10
        CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
      ENDIF
 
      ! Verbose mode
      IF ( HcoState%amIRoot ) THEN
-       WRITE(MSG,*) ' --> MetEmis AFD wind scaling option is ',Inst%AFDWIND10
+       WRITE(MSG,*) ' --> MetEmis AFD wind scaling option is ',Inst%MEAFDWIND
        CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
      ENDIF
 
@@ -7880,14 +7880,14 @@ CONTAINS
     ENDIF
 
     ! Increase AFD emissions if 10-m wind speed is above threshold
-    IF ( Inst%AFDWIND10 ) THEN
+    IF ( Inst%MEAFDWIND ) THEN
 
         !Calculate grid cell 10-meter wind speed (m/s)
         WIND10 = SQRT(ExtState%U10M%Arr%Val(I,J)**2 + ExtState%V10M%Arr%Val(I,J)**2)
 
-        IF ( ( Inst%AFDWIND .GT. 0.0_hp ) .AND. &
-             ( WIND10       .GT. Inst%AFDWIND ) ) THEN
-            WIND_MULT  = (WIND10 / Inst%AFDWIND)**3
+        IF ( ( Inst%AFDWIND10 .GT. 0.0_hp ) .AND. &
+             ( WIND10         .GT. Inst%AFDWIND10 ) ) THEN
+            WIND_MULT  = (WIND10 / Inst%AFDWIND10)**3
             TEMPPEC    = TEMPPEC    * WIND_MULT
             TEMPPOC    = TEMPPOC    * WIND_MULT
             TEMPPAL    = TEMPPAL    * WIND_MULT
