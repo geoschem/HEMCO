@@ -183,6 +183,8 @@ MODULE HCOX_MetEmis_MOD
      LOGICAL               :: MEAFD       ! Turn on MetEmis for AFD Sector
      REAL(hp)              :: AFDPRECIP   ! AFD Precipitation Threshold (mm/hr)
      REAL(hp)              :: AFDFRSNO    ! AFD Snow cover Threshold (fraction)
+     REAL(hp)              :: AFDWIND10   ! AFD 10-m wind speed Threshold (m/s)
+     LOGICAL               :: MEAFDWIND   ! Apply wind-dependent AFD emissions
 
 
      ! Arrays
@@ -2481,6 +2483,8 @@ CONTAINS
 
       Inst%Tlev_OR           =  0.0e0
       Inst%Tlev_LIV          =  0.0e0
+      Inst%AFDWIND10         =  0.0_hp
+      Inst%MEAFDWIND         = .FALSE.
 
       !------------------------------------------------------------------------
       ! Get species IDs
@@ -2710,6 +2714,20 @@ CONTAINS
         RETURN
     ENDIF
 
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'AFD 10-m wind (m/s)', &
+                    OptValHp=Inst%AFDWIND10, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
+    CALL GetExtOpt( HcoState%Config, ExtNr, 'AFD Wind', &
+                    OptValBool=Inst%MEAFDWIND, Found=FOUND, RC=RC )
+    IF ( RC /= HCO_SUCCESS ) THEN
+        CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
+        RETURN
+    ENDIF
+
       ! Verbose mode
     IF ( HcoState%amIRoot ) THEN
        WRITE(MSG,*) ' --> MetEmis Onroad option is ',Inst%MEONROAD
@@ -2761,6 +2779,18 @@ CONTAINS
      ! Verbose mode
      IF ( HcoState%amIRoot ) THEN
        WRITE(MSG,*) ' --> MetEmis AFD frsno (fraction) is ',Inst%AFDFRSNO
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+     ENDIF
+
+     ! Verbose mode
+     IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis AFD 10-m wind (m/s) is ',Inst%AFDWIND10
+       CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
+     ENDIF
+
+     ! Verbose mode
+     IF ( HcoState%amIRoot ) THEN
+       WRITE(MSG,*) ' --> MetEmis AFD wind scaling option is ',Inst%MEAFDWIND
        CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
      ENDIF
 
@@ -4435,6 +4465,8 @@ CONTAINS
 !  binary adjustment in subroutine later
    ExtState%PRECTOT%DoUse                      = .TRUE.
    ExtState%FRSNO%DoUse                        = .TRUE.
+   ExtState%U10M%DoUse                         = .TRUE.
+   ExtState%V10M%DoUse                         = .TRUE.
    ExtState%MEmisPEC_AFD%DoUse                 = .TRUE.
    ExtState%MEmisPOC_AFD%DoUse                 = .TRUE.
    ExtState%MEmisPAL_AFD%DoUse                 = .TRUE.
@@ -7768,6 +7800,7 @@ CONTAINS
 ! Local
    REAL(sp)                   :: AFD_PRECIP, PRECIP  !AFD and precipitation
    REAL(sp)                   :: AFD_FRSNO, SNOWFRAC  !AFD and snow fraction
+   REAL(hp)                   :: WIND10, WIND_MULT   !10m wind speed and multiplier
 
 !  Initialize
    TEMPPEC      = 0.0d0
@@ -7844,6 +7877,38 @@ CONTAINS
         TEMPPSI = TEMPPSI * 0.01
         TEMPPMC = TEMPPMC * 0.01
         TEMPPSO4 = TEMPPSO4 * 0.01
+    ENDIF
+
+    ! Increase AFD emissions if 10-m wind speed is above threshold
+    IF ( Inst%MEAFDWIND ) THEN
+
+        !Calculate grid cell 10-meter wind speed (m/s)
+        WIND10 = SQRT(ExtState%U10M%Arr%Val(I,J)**2 + ExtState%V10M%Arr%Val(I,J)**2)
+
+        IF ( ( Inst%AFDWIND10 .GT. 0.0_hp ) .AND. &
+             ( WIND10         .GT. Inst%AFDWIND10 ) ) THEN
+            WIND_MULT  = (WIND10 / Inst%AFDWIND10)**3
+            TEMPPEC    = TEMPPEC    * WIND_MULT
+            TEMPPOC    = TEMPPOC    * WIND_MULT
+            TEMPPAL    = TEMPPAL    * WIND_MULT
+            TEMPPCA    = TEMPPCA    * WIND_MULT
+            TEMPPCL    = TEMPPCL    * WIND_MULT
+            TEMPPFE    = TEMPPFE    * WIND_MULT
+            TEMPPH2O   = TEMPPH2O   * WIND_MULT
+            TEMPPK     = TEMPPK     * WIND_MULT
+            TEMPPMG    = TEMPPMG    * WIND_MULT
+            TEMPPMN    = TEMPPMN    * WIND_MULT
+            TEMPPMOTHR = TEMPPMOTHR * WIND_MULT
+            TEMPPNA    = TEMPPNA    * WIND_MULT
+            TEMPPNCOM  = TEMPPNCOM  * WIND_MULT
+            TEMPPNH4   = TEMPPNH4   * WIND_MULT
+            TEMPPNO3   = TEMPPNO3   * WIND_MULT
+            TEMPPTI    = TEMPPTI    * WIND_MULT
+            TEMPPSI    = TEMPPSI    * WIND_MULT
+            TEMPPMC    = TEMPPMC    * WIND_MULT
+            TEMPPSO4   = TEMPPSO4   * WIND_MULT
+        ENDIF
+
     ENDIF
 
  ! Return w/ success
