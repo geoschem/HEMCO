@@ -692,6 +692,7 @@ CONTAINS
        ! to 74 levels, (3) if you are on 47/48 levels and you are
        ! going to 72 levels. Otherwise, use MESSy (nbalasus, 8/24/2023).
        IF ( Lct%Dct%Dta%Levels == 0 ) THEN
+          IsModelLevel = .FALSE.
 
 #if defined( MODEL_CESM ) || defined( MODEL_WRF )
 
