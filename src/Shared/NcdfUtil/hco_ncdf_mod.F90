@@ -2406,7 +2406,6 @@ CONTAINS
     INTEGER            :: a_type    ! netCDF attribute type
 
     ! Straings
-    CHARACTER(LEN=255) :: stdname
     CHARACTER(LEN=255) :: a_name    ! netCDF attribute name
     CHARACTER(LEN=255) :: a_val     ! netCDF attribute value
 
