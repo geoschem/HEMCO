@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed use-before-initialize in `src/Core/hcoio_read_std_mod.F90`.
 - Fixed `lon_edges`/`lat_edges` variable check, calendar check, and debug output in `src/Shared/NcdfUtil/hco_ncdf_mod.F90`.
 
+## [3.12.1] - 2026-04-08
+### Changed
+- Updated GitHub Actions to the latest versions
+
 ## [3.12.0] - 2026-02-05
 ### Added
 - Added the functionality of selectively applying gridded scaling factor based on the value of mask ID from a gridded file
