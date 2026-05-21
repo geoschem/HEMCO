@@ -26,8 +26,10 @@ can be found in Figure 2 of :cite:t:`Lin_et_al._2021`:
 Settings
 ========
 
-Parameters and variables used by HEMCO are defined in between these
-comment lines:
+You may specify global simulation settings in the **Settings** section
+at the top of the :file:`HEMCO_Config.rc` file.  These must be placed
+between the :literal:`### BEGIN SECTION SETTINGS` and :literal:`###
+END SECTION SETTINGS` comment lines.  The ordering does not matter.
 
 .. code-block:: kconfig
 
@@ -53,9 +55,12 @@ comment lines:
 
    ### END SECTION SETTINGS ###
 
-The order within the settings section is irrelevant. Many of the
-settings described below are optional, and default values will be used
-if not explicitly set.
+A full list of global simulation settings follows below.  Many of
+these settings are optional.  Some of the optional settings are not
+included by default in the :file:`HEMCO_Config.rc` file that ships
+with your run directory (but you can add them manually). Default
+values will be given to global simulation settings that have not been
+explicitly specified in :file:`HEMCO_Config.rc`, as described below.
 
 .. _hco-cfg-set-diagnfile:
 
@@ -72,29 +77,31 @@ diagnostics collection <hco-diag-default>` section.
 DiagnFreq
 ---------
 
-This setting (located in the HEMCO configuration file) specifies
-the output frequency of the :ref:`Default  <hco-diag-default>`
-collection.  Allowable values are:
+Specifies the output frequency of the :ref:`Default
+<hco-diag-default>` collection.  Allowable values are:
 
-+---------------------+------------------------------------------------+
-| Value               | What it does                                   |
-+=====================+================================================+
-| ``Always``          | Archives diagnostics on each time step.        |
-+---------------------+------------------------------------------------+
-| ``Annually``        | Sets the diagnostic period to 1 year.          |
-+---------------------+------------------------------------------------+
-| ``Daily``           | Sets the diagnostic period to 1 day.           |
-+---------------------+------------------------------------------------+
-| ``End``             | Sets the diagnostic period so that output will |
-|                     | only occur at the end of the simulation.       |
-+---------------------+------------------------------------------------+
-| ``Hourly``          | Sets the diagnostic period to 1 hour.          |
-+---------------------+------------------------------------------------+
-| ``Monthly``         | Sets the diagnostic period to 1 month          |
-+---------------------+------------------------------------------------+
-| ``YYYYMMDD hhmnss`` | Sets the diagnostic period to a 15-digit       |
-|                     | string (year-month-day hour-minute-second)     |
-+---------------------+------------------------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 75
+
+   * - Value
+     - What it does
+   * - Always
+     - Archives diagnostics on each time step.
+   * - Annually
+     - Sets the diagnostic period to 1 year.
+   * - Daily
+     - Sets the diagnostic period to 1 day.
+   * - End
+     - Sets the diagnostic period so that output will only occur at
+       the end of the simulation.
+   * - Hourly
+     - Sets the diagnostic period to 1 hour.
+   * - Monthly
+     - Sets the diagnostic period to 1 month.
+   * - :literal:`YYYYMMDD hhmnss`
+     - Sets the diagnostic period to a 15-digit string
+       (year-month-day hour-minute-second).
 
 Some examples of the :literal:`YYYMMDD hhmmss` option are:
 
@@ -111,20 +118,22 @@ Some examples of the :literal:`YYYMMDD hhmmss` option are:
 DiagNoLevDim
 ------------
 
-This option must be explicity added to the HEMCO configuration
-file. If omitted, the default behavior will be :code:`false`.
+Specifies how many dimensions the :literal:`HEMCO_diagnostics.nc` file
+will have:
 
-+-----------+--------------------------------------------------------+
-| Value     | What it does                                           |
-+===========+========================================================+
-| ``true``  | The :file:`HEMCO_diagnostics*.nc` files will be        |
-|           | created with :literal:`(time,lat,lon)` dimensions.     |
-|           | [#B]_                                                  |
-+-----------+--------------------------------------------------------+
-| ``false`` | The :file:`HEMCO_diagnostics*.nc` files will always    |
-|           | be created with :literal:`(time,lev,lat,lon)`          |
-|           | dimensions.                                            |
-+-----------+--------------------------------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 85
+
+   * - Value
+     - What it does
+   * - true
+     - The :file:`HEMCO_diagnostics*.nc` files will be created with
+       :literal:`(time,lat,lon)` dimensions. [#B]_
+   * - false
+     - The :file:`HEMCO_diagnostics*.nc` files will always be created
+       with :literal:`(time,lev,lat,lon)` dimensions. **(DEFAULT
+       BEHAVIOR)**
 
 .. rubric:: Notes for DiagNoLevDim
 
@@ -153,8 +162,8 @@ the text :file:`HEMCO_diagnostics`.
 DiagnRefTime
 ------------
 
-This option must be explicity added to the HEMCO configuration
-file.
+Specifies the reference timestamp of the :file:`HEMCO_diagnostics*.nc`
+files.
 
 By default, the value of the :literal:`time:units` attribute in the
 :file:`HEMCO_diagnostics.*.nc` files will be
@@ -178,129 +187,157 @@ which will reset the :literal:`time:units` attribute in the
 DiagnTimeStamp
 --------------
 
-This option must be explicity added to the HEMCO configuration
-file.  If omitted, the default behavior will be :literal:`End`.
+Specifies the filename timestamp of the :file:`HEMCO_diagnostics*.nc`
+files:
 
-+-----------+--------------------------------------------------------+
-| Value     | What it does                                           |
-+===========+========================================================+
-| ``Start`` | Uses the date and time at the start of the diagnostics |
-|           | period to timestamp diagnostic files. |br|             |
-|           | |br|                                                   |
-|           | With this option, a 1-hour simulation from             |
-|           | :code:`20220101 000000` to :code:`20220101 010000`     |
-|           | will create a diagnostic file named                    |
-|           | :file:`HEMCO_Diagnostics.202201010000.nc`.             |
-+-----------+--------------------------------------------------------+
-| ``Mid``   | Uses the date and time at the midpoint of the          |
-|           | diagnostics period to o timestamp diagnostic           |
-|           | files. |br|                                            |
-|           | |br|                                                   |
-|           | With this option, a 1-hour simulation from             |
-|           | :code:`20220101 000000` to :code:`20220101 010000`     |
-|           | will create a diagnostic file named                    |
-|           | :file:`HEMCO_Diagnostics.202201010030.nc`.             |
-+-----------+--------------------------------------------------------+
-| ``End``   | Uses the date and time at the end of the diagnostics   |
-|           | period to timestamp diagnostic files. |br|             |
-|           | |br|                                                   |
-|           | With this option, a 1-hour simulation from             |
-|           | :code:`20220101 000000` to :code:`20220101 010000`     |
-|           | will create a diagnostic file named                    |
-|           | :file:`HEMCO_Diagnostics.202201010100.nc`.             |
-+-----------+--------------------------------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 85
+
+   * - Value
+     - What it does
+   * - Start
+     - Uses the date and time at the start of the diagnostics period to
+       timestamp diagnostic files. |br|
+       |br|
+
+       With this option, a 1-hour simulation from
+       :code:`20220101 000000` to :code:`20220101 010000`
+       will create a diagnostic file named
+       :file:`HEMCO_Diagnostics.202201010000.nc`.
+   * - Mid
+     - Uses the date and time at the midpoint of the diagnostics period
+       to timestamp diagnostic files. |br|
+       |br|
+
+       With this option, a 1-hour simulation from
+       :code:`20220101 000000` to :code:`20220101 010000`
+       will create a diagnostic file named
+       :file:`HEMCO_Diagnostics.202201010030.nc`.
+   * - End
+     - Uses the date and time at the end of the diagnostics period to
+       timestamp diagnostic files.  **(DEFAULT BEHAVIOR)** |br|
+       |br|
+
+       With this option, a 1-hour simulation from
+       :code:`20220101 000000` to :code:`20220101 010000`
+       will create a diagnostic file named
+       :file:`HEMCO_Diagnostics.202201010100.nc`.
 
 .. _hco-cfg-set-emission-day:
 
 Emission day
 ------------
 
-If present, this emission day will be used regardless of the model
-simulation day. If omitted, the emission day will be set to the model
-simulation day.
+If specified explicitly: this emission day will be used regardless of
+the model simulation day.
+
+If omitted: The emission day will be set to the model simulation day.
 
 .. _hco-cfg-set-emission-hour:
 
 Emission hour
 -------------
 
-If present, this emission month will be used regardless of the model
-simulation hour.  If omitted, the emisison month will be set to the
-model simulation hour.
+If specified explicitly: This emission month will be used regardless
+of the model simulation hour.
 
-.. _hco-cfg-set-emission-year:
-
-Emission year
--------------
-
-If present, this emission year will be used regardless of the model
-simulation year. If omitted, the emission year will be set to the
-model simulation year.
+If omitted: The emisison month will be set to the model simulation
+hour.
 
 .. _hco-cfg-set-emission-month:
 
 Emission month
 --------------
 
-If present, this emission month will be used regardless of the model
-simulation month.  If omitted, the emission month will be set to the
-model simulation month.
+If specified explicitly: This emission month will be used
+regardless of the model simulation month.
+
+If omitted: The emission month will be set to the model simulation
+month.
+
+.. _hco-cfg-set-emission-year:
+
+Emission year
+-------------
+
+If specified explicitly: This emission year will be used
+regardless of the model simulation year.
+
+If omitted: The emission year will be set to the model simulation
+year.
 
 .. _hco-cfg-set-emission-emisscale:
 
 EmisScale_<species-name>
 ------------------------
 
-Optional argument to define a uniform scale factor that will be
-applied across all inventories, categories, hierarchies, and
-extensions.  Examples:
+Defines a uniform scale factor that will be applied across all
+inventories, categories, hierarchies, and extensions.
 
-+-----------------------+--------------------------------------+
-| Value                 | What it does                         |
-+=======================+======================================+
-| ``EmisScale_NO: 1.5`` | Scales all NO emissions up by 50%.   |
-+-----------------------+--------------------------------------+
-| ``EmisScale_CO: 2.0`` | Scales all CO emissions up by 100%.  |
-+-----------------------+--------------------------------------+
+Examples:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Value
+     - What it does
+   * - :literal:`EmisScale_NO: 1.5`
+     - Scales all NO emissions up by 50%.
+   * - :literal:`EmisScale_CO: 2.0`
+     - Scales all CO emissions up by 100%.
+
+If omitted, no uniform scale factor will be applied.
 
 .. _hco-cfg-set-gcapscenario:
 
 GCAPSCENARIO
 ------------
 
-Specifies the future scenario when using GCAP meteorology.  Default
-value: :literal:`not used`
+If specified explicitly: This future scenario will be applied when using
+GCAP meteorology.
+
+If omitted: This will be set to a default value of :literal:`not used`.
 
 .. _hco-cfg-set-gcapvertres:
 
 GCAPVERTRES
 -----------
 
-Specifies the number of vertical levels for GCAP meteorology.  Default
-value: :literal:`47`
+If specified explicitly: This value defines the number of vertical
+levels that will be used with GCAP meteorology.
+
+If omitted: This will be set to a default value of :literal:`47`.
 
 .. _hco-cfg-set-gridfile:
 
 GridFile
 --------
 
-Path and name of the :ref:`HEMCO standalone <hco-sa-guide>` grid
-description file.  This is usually named :file:`HEMCO_sa_Grid.rc`.
+**FOR HEMCO STANDALONE ONLY**
+
+Soecifies the path and name of the :ref:`HEMCO standalone
+<hco-sa-guide>` grid description file.  This is usually named
+:file:`HEMCO_sa_Grid.rc`.
 
 .. _hco-cfg-set-logfile:
 
 LogFile
 -------
 
-Path and name of the output log file.
+Specifies the path and name of the output log file.
 
-+------------------------------------+--------------------------------------------+
-| Value                              | What it does                               |
-+====================================+============================================+
-| ``*``                              | HEMCO will write to stdout (screen output) |
-+------------------------------------+--------------------------------------------+
-| A file path (e.g. ``./HEMCO.log``) | HEMCO will open and write to that file     |
-+------------------------------------+--------------------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 65
+
+   * - Value
+     - What it does
+   * - :literal:`*`
+     - HEMCO will write to stdout (screen output).
+   * - A file path (e.g. :file:`./HEMCO.log`)
+     - HEMCO will open and write to that file.
 
 .. note::
 
@@ -312,24 +349,28 @@ Path and name of the output log file.
 Mask fractions
 --------------
 
-+-----------+------------------------------------------------------+
-| Value     | What it does                                         |
-+===========+======================================================+
-| ``true``  | Fractional mask values are taken into account.  This |
-|           | means that mask values can take any value between    |
-|           | 0.0 and 1.0.                                         |
-+-----------+------------------------------------------------------+
-| ``false`` | Masks are binary, and grid boxes are 100% inside or  |
-|           | outside of a mask region.  **(Default setting)**     |
-+-----------+------------------------------------------------------+
+Specifies if fractional masks are allowed or not.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 85
+
+   * - Value
+     - What it does
+   * - true
+     - Fractional mask values are taken into account. This means that
+       mask values can take any value between 0.0 and 1.0.
+   * - false
+     - Masks are binary, and grid boxes are 100% inside or outside of
+       a mask region. **(DEFAULT BEHAVIOR)**
 
 .. _hco-cfg-set-metdir:
 
 METDIR
 ------
 
-Root folder of meteorology data files that are needed for HEMCO
-extensions.  Usually this is a subdirectory of
+Specifies the root folder of meteorology data files that are needed
+for HEMCO extensions.  Usually this is a subdirectory of
 :ref:`hco-cfg-set-root`.
 
 .. _hco-cfg-set-model:
@@ -337,144 +378,173 @@ extensions.  Usually this is a subdirectory of
 MODEL
 -----
 
-If present, the :literal:`$MODEL` token will be set to the
-value specified.  If omitted, this value is determined from compiler
-switches.
+If specified explicitly, the :literal:`$MODEL` token will be set to
+the value given.
+
+If omitted, this value will be determined from compiler switches.
 
 .. _hco-cfg-set-negative-values:
 
 Negative values
 ---------------
 
-+---------+-----------------------------------------------------------+
-| Value   | What it does                                              |
-+=========+===========================================================+
-| ``0``   | No negative values are allowed **(Default setting)**      |
-+---------+-----------------------------------------------------------+
-| ``1``   | All negative values are set to zero and a warning         |
-|         | message is printed.                                       |
-+---------+-----------------------------------------------------------+
-| ``2``   | Negative values are kept as they are.                     |
-+---------+-----------------------------------------------------------+
+Specifies negative values will be handled.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 85
+
+   * - Value
+     - What it does
+   * - 0
+     - No negative values are allowed. **(DEFAULT BEHAVIOR)**
+   * - 1
+     - All negative values are set to zero and a warning message is
+       printed.
+   * - 2
+     - Negative values are kept as they are.
 
 .. _hco-cfg-set-pbl-dry-deposition:
 
 PBL dry deposition
 ------------------
 
-+-----------+-----------------------------------------------------------+
-| Value     | What it does                                              |
-+===========+===========================================================+
-| ``true``  | Assumes that dry deposition occurs over the entire        |
-|           | planetary boundary layer (PBL).  In this case, extensions |
-|           | that include loss terms (e.g. air-sea exchange) will      |
-|           | calculate a loss term for every grid box that is partly   |
-|           | within the PBL.                                           |
-+-----------+-----------------------------------------------------------+
-| ``false`` | A loss term is calculated for the surface layer only.     |
-|           | **(Default setting)**                                     |
-+-----------+-----------------------------------------------------------+
+Specifies how dry deposition will be handled (for extensions having
+air-to-surface deposition).
+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 85
+
+   * - Value
+     - What it does
+   * - true
+     - Assumes that dry deposition occurs over the entire planetary
+       boundary layer (PBL). In this case, extensions that include loss
+       terms (e.g. air-sea exchange) will calculate a loss term for
+       every grid box that is partly within the PBL.
+   * - false
+     - A loss term is calculated for the surface layer
+       only. **(DEFAULT BEHAVIOR)**
 
 .. _hco-cfg-set-res:
 
 RES
 ---
 
-If present, the :literal:`$RES` token will be set to the value
-specified. If omitted, this value is determined from compiler
-switches.
+If specified explicitly, the :literal:`$RES` token (which defines the
+resolution of the simulation grid) will be set to the value given.
+
+If omitted, this value will be determined from compiler switches.
 
 .. _hco-cfg-set-root:
 
 ROOT
 ----
 
-Root folder containing emissions inventories and other data to be
-read by HEMCO.
+Specifies the root folder containing emissions inventories and other
+data to be read by HEMCO.
 
 .. _hco-cfg-set-separator:
 
 Separator
 ---------
 
-Separator symbol. On Linux/MacOS systems, this should be set to
-:literal:`/`.
+Specifies the file path separator symbol. On Linux/MacOS systems, this
+should be set to :literal:`/`.
 
 .. _hco-cfg-set-specfile:
 
 SpecFile
 --------
 
-Path and name of the HEMCO standalone species description file.  This
-is usually named :file:`HEMCO_sa_Spec.rc`.
+**FOR HEMCO STANDALONE ONLY**
+
+Specfies the path and name of the HEMCO standalone species description
+file.  This is usually named :file:`HEMCO_sa_Spec.rc`.
 
 .. _hco-cfg-set-timefile:
 
 TimeFile
 --------
 
-Path and name of the :ref:`HEMCO standalone <hco-sa-guide>` time
-description file. This is usually named :file:`HEMCO_sa_Time.rc`.
+**FOR HEMCO STANDALONE ONLY**
+
+Specifies the path and name of the :ref:`HEMCO standalone
+<hco-sa-guide>` time description file. This is usually named
+:file:`HEMCO_sa_Time.rc`.
 
 .. _hco-cfg-set-unit-tolerance:
 
 Unit tolerance
 --------------
 
-Integer value denoting the tolerance against differences between
-the units set in the :ref:`HEMCO configuration file <hco-cfg>`
-and the netCDF :literal:`units` attribute found in the source file.
+Specifies how differences between the units set in the :ref:`HEMCO
+configuration file <hco-cfg>` and the netCDF :literal:`units`
+attribute found in the source file should be handled:
 
-+---------+-----------------------------------------------------------+
-| Value   | What it does                                              |
-+=========+===========================================================+
-| ``0``   | **No tolerance**.  A units mismatch will halt a HEMCO     |
-|         | simulation.                                               |
-+---------+-----------------------------------------------------------+
-| ``1``   | **Medium tolerance**.  A units mismatch will print a      |
-|         | warning message, but will not halt a HEMCO simulation.    |
-|         | **(Default setting)**                                     |
-+---------+-----------------------------------------------------------+
-| ``2``   | **High tolerance**.  A units mismatch will be ignored.    |
-+---------+-----------------------------------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 85
+
+   * - Value
+     - What it does
+   * - 0
+     - **No tolerance**. A units mismatch will halt a HEMCO simulation.
+   * - 1
+     - **Medium tolerance**. A units mismatch will print a warning
+       message, but will not halt a HEMCO simulation.
+       **(DEFAULT BEHAVIOR)**
+   * - 2
+     - **High tolerance**. A units mismatch will be ignored.
 
 .. _hco-cfg-set-verbose:
 
 Verbose
 -------
 
-+-----------+--------------------------------------------------------+
-| Value     | What it does                                           |
-+===========+========================================================+
-| ``true``  | Activates additional printout for debugging purposes.  |
-+-----------+--------------------------------------------------------+
-| ``false`` | Deactivates additional printout. **(Default setting)** |
-+-----------+--------------------------------------------------------+
+Specifies how verbose output should be handled.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 85
+
+   * - Value
+     - What it does
+   * - true
+     - Activates additional printout for debugging purposes.
+   * - false
+     - Deactivates additional printout. **(DEFAULT BEHAVIOR)**
 
 .. _hco-cfg-set-verboseoncores:
 
 VerboseOnCores
 --------------
 
-+----------+-----------------------------------------------------------+
-| Value    | What it does                                              |
-+==========+===========================================================+
-| ``root`` | Restricts :ref:`hco-cfg-set-verbose` output to the        |
-|          | root core.  This facilitates running HEMCO in Earth       |
-|          | System Models, where the additional overhead of printing  |
-|          | verbose output on every core could negatively impact      |
-|          | performance.   **(Default setting)**                      |
-+----------+-----------------------------------------------------------+
-| ``all``  | Prints :ref:`hco-cfg-set-verbose` output on all           |
-|          | computational cores.                                      |
-+----------+-----------------------------------------------------------+
+Specifies on how many cores verbose output should be written to.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 85
+
+   * - Value
+     - What it does
+   * - root
+     - Restricts :ref:`hco-cfg-set-verbose` output to the root core.
+       This facilitates running HEMCO in Earth System Models, where the
+       additional overhead of printing verbose output on every core
+       could negatively impact performance. **(DEFAULT BEHAVIOR)**
+   * - all
+     - Prints :ref:`hco-cfg-set-verbose` output on all computational
+       cores.
 
 .. _hco-cfg-set-wildcard:
 
 Wildcard
 --------
 
-Wildcard character.  On Linux/MacOS this should be set to :literal:`*`.
+Specifies the wildcard character.  On Linux/MacOS this should be set
+to :literal:`*`.
 
 .. _hco-cfg-settings-usrdef:
 
@@ -549,13 +619,16 @@ Name of the HEMCO extension.
 On/Off
 ------
 
-+---------+-----------------------------------+
-| Value   | What it does                      |
-+=========+===================================+
-| ``on``  | The extension will be used.       |
-+---------+-----------------------------------+
-| ``off`` | The extension will not be used.   |
-+---------+-----------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 85
+
+   * - Value
+     - What it does
+   * - ``on``
+     - The extension will be used.
+   * - ``off``
+     - The extension will not be used.
 
 .. _hco-cfg-ext-switches-species:
 
@@ -649,30 +722,33 @@ sourceFile
 Specifies the path and name of the input file.  You may include the
 following **name tokens**, which will be evaluated at runtime.
 
-+------------+-----------------------------------------------------------------+
-| Value      | What it does                                                    |
-+============+=================================================================+
-| ``$CFDIR`` | Refers to the location of :ref:`hco-cfg`.                       |
-+------------+-----------------------------------------------------------------+
-| ``$DD``    | Refers to the current simulation day (1-31).                    |
-+------------+-----------------------------------------------------------------+
-| ``$HH``    | Refers to the current simulation hour (0-23).                   |
-+------------+-----------------------------------------------------------------+
-| ``$MODEL`` | Refers to the :ref:`meteorological model <hco-cfg-set-model>`.  |
-+------------+-----------------------------------------------------------------+
-| ``$MM``    | Refers to the current simulation month (1-12).                  |
-+------------+-----------------------------------------------------------------+
-| ``$MN``    | Refers to the current simulation minutes (0-59).                |
-+------------+-----------------------------------------------------------------+
-| ``$RES``   | Refers to the :ref:`model resolution <hco-cfg-set-res>`.        |
-+------------+-----------------------------------------------------------------+
-| ``$ROOT``  | Use the root directory specified in the                         |
-|            | :ref:`hco-cfg-set` section.                                     |
-+------------+-----------------------------------------------------------------+
-| ``$YYYY``  | Refers to the current simulation year.                          |
-+------------+-----------------------------------------------------------------+
-| ``$WD``    | Refers to the current day of the week (1=Sun, 2=Mon .. -7=Sat). |
-+------------+-----------------------------------------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 85
+
+   * - Value
+     - What it does
+   * - ``$CFDIR``
+     - Refers to the location of :ref:`hco-cfg`.
+   * - ``$DD``
+     - Refers to the current simulation day (1-31).
+   * - ``$HH``
+     - Refers to the current simulation hour (0-23).
+   * - ``$MODEL``
+     - Refers to the :ref:`meteorological model <hco-cfg-set-model>`.
+   * - ``$MM``
+     - Refers to the current simulation month (1-12).
+   * - ``$MN``
+     - Refers to the current simulation minutes (0-59).
+   * - ``$RES``
+     - Refers to the :ref:`model resolution <hco-cfg-set-res>`.
+   * - ``$ROOT``
+     - Use the root directory specified in the :ref:`hco-cfg-set`
+       section.
+   * - ``$YYYY``
+     - Refers to the current simulation year.
+   * - ``$WD``
+     - Refers to the current day of the week (1=Sun, 2=Mon .. 7=Sat).
 
 As an alternative to an input file, **geospatial uniform values**
 can directly be specified in the configuration file (see e.g. scale
@@ -687,15 +763,18 @@ times associated with the individual slices.
 If no time attribute is set, HEMCO attempts to determine the time
 slices from the number of data values:
 
-+-------------+---------------------------------+
-| # of values | Interpretation by HEMCO         |
-+=============+=================================+
-| 7           | Days of week (Sun, Mon .. Sat)  |
-+-------------+---------------------------------+
-| 12          | Months (Jan, Feb, .. Dec)       |
-+-------------+---------------------------------+
-| 24          | Hours of day (01, 02, .. 23)    |
-+-------------+---------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - # of values
+     - Interpretation by HEMCO
+   * - 7
+     - Days of week (Sun, Mon .. Sat)
+   * - 12
+     - Months (Jan, Feb, .. Dec)
+   * - 24
+     - Hours of day (01, 02, .. 23)
 
 Uniform values can be combined with **mathematical expressions**. For
 example, to model a sine-wave emission source, enter
@@ -825,7 +904,7 @@ There is a difference between source time attributes
 the first case, the file will be updated annually, while the update
 frequency is monthly in the second case. The token :literal:`$MM`
 simply indicates that the current simulation month shall be used
-whenever the file is updated, but it doesn’t imply a refresh
+whenever the file is updated, but it doesn't imply a refresh
 interval. Thus, if the source time attribute is set to
 :literal:`$YYYY/$MM/$DD/$HH`, the file will be read only once and
 the data of the simulation start date is taken (and used throughout
@@ -947,22 +1026,22 @@ following options are available:
    specified year range, HEMCO will use the data averaged over the
    specified years.  Here are some examples:
 
-   +---------------------------+--------------------------------------------------+
-   | Setting                   | What this does                                   |
-   +===========================+==================================================+
-   | ``2015-2020/1-12/1/0 R``  | Uses monthly mean data only within simulation    |
-   |                           | simulation years 2015-2020, and ignores the data |
-   |                           | outside of this time range.                      |
-   +---------------------------+--------------------------------------------------+
-   | ``2015-2020/1-12/1/0 A``  | HEMCO will always use the 2015-2020 averaged     |
-   |                           | monthly values, even for simulation years 2015   |
-   |                           | through 2020.                                    |
-   +---------------------------+--------------------------------------------------+
-   | ``2015-2020/1-12/1/0 RA`` | Uses the monthly data of the current year if the |
-   |                           | simulation year is within the range 2015-2020,   |
-   |                           | and the 2015-2020 average for years before 2015  |
-   |                           | and after 2020, respectively.                    |
-   +---------------------------+--------------------------------------------------+
+   .. list-table::
+      :header-rows: 1
+      :widths: 30 70
+
+      * - Setting
+        - What this does
+      * - ``2015-2020/1-12/1/0 R``
+        - Uses monthly mean data only within simulation years 2015-2020,
+          and ignores the data outside of this time range.
+      * - ``2015-2020/1-12/1/0 A``
+        - HEMCO will always use the 2015-2020 averaged monthly values,
+          even for simulation years 2015 through 2020.
+      * - ``2015-2020/1-12/1/0 RA``
+        - Uses the monthly data of the current year if the simulation
+          year is within the range 2015-2020, and the 2015-2020 average
+          for years before 2015 and after 2020, respectively.
 
 .. option:: RF
 
@@ -1318,18 +1397,24 @@ to the base emissions through the corresponding
 Oper
 ----
 
-Scale factor operator. Determines the operation performed on the
-scale factor.  Possible values are:
+Scale factor operator. Determines how the scale factor will be used to
+scale the emissions.
 
-+--------+--------------------------------------------+
-| Oper   | What this does                             |
-+========+============================================+
-| ``1``  | Multiplication (Emission = Base \* Scale)  |
-+--------+--------------------------------------------+
-| ``-1`` | Division (Emission = Base / Scale)         |
-+--------+--------------------------------------------+
-| ``2``  | Squared (Emission = Base \* Scale**2)      |
-+--------+--------------------------------------------+
+.. list-table::
+   :header-rows: 1
+
+   * - Value
+     - Operation
+     - Behavior
+   * - 1
+     - Multiplication
+     - Emission = Base \* Scale
+   * - -1
+     - Division
+     - Emission = Base / Scale
+   * - 2
+     - Squared
+     - Emission = Base \* Scale**2
 
 .. _hco-cfg-base-scale-maskid:
 
@@ -1385,14 +1470,36 @@ using):
 
 The required attributes for mask fields are described below:
 
-Options :ref:`hco-cfg-base-scale-scalid` and
-:ref:`hco-cfg-base-scale-oper` are described in
-:ref:`hco-cfg-scalefac`.
+Option :ref:`hco-cfg-base-scale-scalid` is described in
+:ref:`hco-cfg-scalefac`.  Options :ref:`hco-cfg-base-sourcefile`,
+:ref:`hco-cfg-base-sourcevar`, :ref:`hco-cfg-base-sourcetime`,
+:ref:`hco-cfg-base-cre`, :ref:`hco-cfg-base-srcdim`, and
+:ref:`hco-cfg-base-srcunit` are described in :ref:`hco-cfg-base`.
 
-Options :ref:`hco-cfg-base-sourcefile`, :ref:`hco-cfg-base-sourcevar`,
-:ref:`hco-cfg-base-sourcetime`, :ref:`hco-cfg-base-cre`,
-:ref:`hco-cfg-base-srcdim`, and :ref:`hco-cfg-base-srcunit` are
-described in :ref:`hco-cfg-base`.
+The **Oper** setting specifies the mask operator:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Value
+     - Operation
+     - Behavior
+   * - 1
+     - Multiplication
+     - Emission = Base \* Mask
+   * - -1
+     - Division
+     - Emission = Base / Mask
+   * - 2
+     - Squared
+     - Emission = Base \* Mask**2
+   * - 3
+     - Mirror
+     - Emission = Base \* (1 - Mask) |br|
+       |br|
+       Use this option if you wish to exclude emissions from within
+       the mask region and keep emissions outside of the mask region.
+
 
 The :envvar:`Box` option is deprecated.
 
