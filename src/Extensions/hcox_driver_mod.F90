@@ -109,6 +109,7 @@ CONTAINS
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Init
     USE HCOX_Volcano_Mod,       ONLY : HCOX_Volcano_Init
     USE HCOX_Iodine_Mod,        ONLY : HCOX_Iodine_Init
+    USE HCOX_MetEmis_Mod,       ONLY : HCOX_MetEmis_Init
 #if defined( TOMAS )
     USE HCOX_TOMAS_Jeagle_Mod,   ONLY : HCOX_TOMAS_Jeagle_Init
     USE HCOX_TOMAS_DustDead_Mod, ONLY : HCOX_TOMAS_DustDead_Init
@@ -345,6 +346,15 @@ CONTAINS
        ENDIF
 #endif
 
+      !--------------------------------------------------------------------
+       ! Extension for MetEmis emissions
+       !--------------------------------------------------------------------
+       CALL HCOX_MetEmis_Init( HcoState, 'MetEmis', ExtState,  RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error encountered in "HCOX_MetEmis_Init"!'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
+       ENDIF
        !--------------------------------------------------------------------
        ! Add extensions here ...
        !--------------------------------------------------------------------
@@ -416,6 +426,7 @@ CONTAINS
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Run
     USE HCOX_Volcano_Mod,       ONLY : HCOX_Volcano_Run
     USE HCOX_Iodine_Mod,        ONLY : HCOX_Iodine_Run
+    USE HCOX_MetEmis_Mod,       ONLY : HCOX_MetEmis_Run
 #if defined( TOMAS )
     USE HCOX_TOMAS_Jeagle_Mod,   ONLY : HCOX_TOMAS_Jeagle_Run
     USE HCOX_TOMAS_DustDead_Mod, ONLY : HCOX_TOMAS_DustDead_Run
@@ -686,6 +697,18 @@ CONTAINS
        ENDIF
 
        !--------------------------------------------------------------------
+       ! MetEmis emissions
+       !--------------------------------------------------------------------
+       IF ( ExtState%MetEmis > 0 ) THEN
+          CALL HCOX_MetEmis_Run( ExtState, HcoState, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in "HCOX_MetEmis_Run"!'
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
+       ENDIF
+       
+       !--------------------------------------------------------------------
        ! Add extensions here ...
        !--------------------------------------------------------------------
 
@@ -746,6 +769,7 @@ CONTAINS
     USE HCOX_GC_POPs_Mod,       ONLY : HCOX_GC_POPs_Final
     USE HCOX_Volcano_Mod,       ONLY : HCOX_Volcano_Final
     USE HCOX_Iodine_Mod,        ONLY : HCOX_Iodine_Final
+    USE HCOX_MetEmis_Mod,       ONLY : HCOX_MetEmis_Final
 #if defined( TOMAS )
     USE HCOX_TOMAS_Jeagle_Mod,   ONLY : HCOX_TOMAS_Jeagle_Final
     USE HCOX_TOMAS_DustDead_Mod, ONLY : HCOX_TOMAS_DustDead_Final

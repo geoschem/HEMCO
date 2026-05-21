@@ -38,7 +38,7 @@ jobs:
           persist-credentials: false
 
       - name: Install dependencies
-        run: brew install netcdf netcdf-fortran
+        run: brew install netcdf netcdf-fortran gcc@${{ matrix.gcc_version }}
 
       - name: Run Cmake
         run: cmake -S . -B build -D CMAKE_BUILD_TYPE=${{ matrix.build_type }}
