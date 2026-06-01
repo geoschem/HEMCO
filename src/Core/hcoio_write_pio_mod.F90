@@ -1,5 +1,10 @@
 !BOC
 #if defined(MODEL_CESM)
+! The 'PIO' HEMCO I/O modules are used for:
+! - CAM-GC and CAM-Chem / HEMCO-CESM (MODEL_CESM)
+! This module replaces hcoio_write_std_mod.F90 for CESM builds,
+! but it is currently a stub as writes are handled by CAM
+! history infrastructure in CESM.
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -10,7 +15,7 @@
 !
 ! !DESCRIPTION: Module HCOIO\_Write\_Mod is a stub for the HEMCO
 ! diagnostics output module in the CESM environment using PIO.
-! Since diagnostic writing is handled by CAM's history infrastructure
+! Since diagnostic writing is handled by CAM history infrastructure
 ! in CESM, this module is only a stub.
 !\\
 !\\

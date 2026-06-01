@@ -4,6 +4,12 @@
 ! - HEMCO Standalone (HEMCO_STANDALONE)
 ! - GEOS-Chem 'Classic' (MODEL_GCCLASSIC)
 ! - WRF-GC (MODEL_WRF)
+!
+! When using HEMCO in the CESM environment, hcoio_read_pio_mod.F90
+! is used instead.
+! Any changes to this file may also need to be applied to the
+! hcoio_read_pio_mod.F90 file for consistency.
+!
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
