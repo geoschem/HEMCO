@@ -95,7 +95,7 @@ CONTAINS
 ! routines.
 !\\
 !\\
-! Two different regridding algorithm are used: NCREGRID for 3D data with
+! Two different regridding algorithms are used: NCREGRID for 3D data with
 ! vertical regridding, and map\_a2a for all other data. map\_a2a also
 ! supports index-based remapping, while this feature is currently not
 ! possible in combination with NCREGRID.
