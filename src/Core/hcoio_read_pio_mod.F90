@@ -1651,7 +1651,7 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    IF ( fldName(1:4) == "SPC_" .and. INDEX( srcFile, "Restart" ) > 0 ) THEN
+    IF ( ( INDEX( fldName, "SPC_" ) == 1 ) .and. ( INDEX( srcFile, "Restart" ) > 0 ) ) THEN
 
        !---------------------------------------------------------------------
        ! Case 1: GEOS-Chem Classic restart file
