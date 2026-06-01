@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added code blocks for MAPL3 code in development
 - Added C-preprocessor switches USE_ESMF and MAPL3
+- Added an extension for calculating GFAS 3D biomass emission
 
 ### Changed
 - Renamed subroutine HCO_CopyFromIntnal_ESMF to HCO_CopyFromInternal_ESMF
