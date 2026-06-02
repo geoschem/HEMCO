@@ -1,28 +1,22 @@
 !BOC
-#if defined ( MODEL_GCCLASSIC ) || defined( MODEL_WRF ) || defined( HEMCO_STANDALONE )
-! The 'standard' HEMCO I/O module is used for:
-! - HEMCO Standalone (HEMCO_STANDALONE)
-! - GEOS-Chem 'Classic' (MODEL_GCCLASSIC)
-! - WRF-GC (MODEL_WRF)
-!
-! When using HEMCO in the CESM environment, hcoio_read_pio_mod.F90
-! is used instead.
-! Any changes to this file may also need to be applied to the
-! hcoio_read_pio_mod.F90 file for consistency.
-!
+#if defined( MODEL_CESM )
+! The 'PIO' HEMCO I/O module is used for:
+! - CAM-GC and CAM-Chem / HEMCO-CESM (MODEL_CESM)
+! This module replaces hcoio_read_std_mod.F90 for CESM builds,
+! using PIO for parallel I/O instead of vanilla netCDF.
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
-! !MODULE: hcoio_read_std_mod.F90
+! !MODULE: hcoio_read_pio_mod.F90
 !
 ! !DESCRIPTION: Module HCOIO\_read\_mod controls data processing
 ! (file reading, unit conversion, regridding) for HEMCO in the
-! 'standard' environment (i.e. non-ESMF).
+! CESM environment using PIO (Parallel I/O).
 !
-! This module implements the 'standard' environment (i.e. non-ESMF).
+! This module replaces hcoio\_read\_std\_mod.F90 for CESM builds.
 !\\
 !\\
 ! !INTERFACE:
@@ -36,6 +30,7 @@ MODULE HCOIO_Read_Mod
   USE HCO_CharTools_Mod
   USE HCO_State_Mod,       ONLY : Hco_State
   USE HCOIO_Util_Mod
+  USE pio,                  ONLY : file_desc_t
 
   IMPLICIT NONE
   PRIVATE
@@ -66,7 +61,11 @@ MODULE HCOIO_Read_Mod
   ! Parameter used for difference testing of floating points
   REAL(dp), PRIVATE, PARAMETER :: EPSILON = 1.0e-5_dp
 
-#if defined( MODEL_CESM ) || defined( MODEL_WRF )
+  ! PIO cached file descriptor for file buffering
+  ! (replaces the integer FileLun caching from the std module)
+  TYPE(file_desc_t), PRIVATE, SAVE :: cached_pio_fh
+  LOGICAL,           PRIVATE, SAVE :: cached_pio_open = .FALSE.
+
   REAL(hp), PRIVATE            :: GC_72_EDGE_SIGMA(73) = (/ &
     1.000000E+00, 9.849998E-01, 9.699136E-01, 9.548285E-01, 9.397434E-01, 9.246593E-01, &
     9.095741E-01, 8.944900E-01, 8.794069E-01, 8.643237E-01, 8.492406E-01, 8.341584E-01, &
@@ -81,7 +80,6 @@ MODULE HCOIO_Read_Mod
     6.089317E-04, 4.697755E-04, 3.602270E-04, 2.753516E-04, 2.082408E-04, 1.569208E-04, &
     1.184308E-04, 8.783617E-05, 6.513694E-05, 4.737232E-05, 3.256847E-05, 1.973847E-05, &
     9.869233E-06/)
-#endif
 
 CONTAINS
 !EOC
@@ -97,7 +95,7 @@ CONTAINS
 ! routines.
 !\\
 !\\
-! Two different regridding algorithm are used: NCREGRID for 3D data with
+! Two different regridding algorithms are used: NCREGRID for 3D data with
 ! vertical regridding, and map\_a2a for all other data. map\_a2a also
 ! supports index-based remapping, while this feature is currently not
 ! possible in combination with NCREGRID.
@@ -124,12 +122,13 @@ CONTAINS
 !
 ! !USES:
 !
-    USE HCO_Ncdf_Mod,       ONLY : NC_Open
-    USE HCO_Ncdf_Mod,       ONLY : NC_Close
-    USE HCO_Ncdf_Mod,       ONLY : NC_Read_Var
-    USE HCO_Ncdf_Mod,       ONLY : NC_Read_Arr
-    USE HCO_Ncdf_Mod,       ONLY : NC_Get_Grid_Edges
-    USE HCO_Ncdf_Mod,       ONLY : NC_Get_Sigma_Levels
+    USE HCO_PIO_MOD,        ONLY : NC_Open
+    USE HCO_PIO_MOD,        ONLY : NC_Close
+    USE HCO_PIO_MOD,        ONLY : NC_Read_Var
+    USE HCO_PIO_MOD,        ONLY : NC_Read_Arr
+    USE HCO_PIO_MOD,        ONLY : NC_Get_Grid_Edges
+    USE HCO_PIO_MOD,        ONLY : NC_Get_Sigma_Levels
+    USE pio,                 ONLY : file_desc_t, pio_inq_varid, PIO_NOERR
     USE HCO_CHARPAK_MOD,    ONLY : TRANLC
     USE HCO_Unit_Mod,       ONLY : HCO_Unit_Change
     USE HCO_Unit_Mod,       ONLY : HCO_Unit_ScalCheck
@@ -137,8 +136,6 @@ CONTAINS
     USE HCO_Unit_Mod,       ONLY : HCO_IsIndexData
     USE HCO_Unit_Mod,       ONLY : HCO_UnitTolerance
     USE HCO_GeoTools_Mod,   ONLY : HCO_ValidateLon
-    USE HCO_FileData_Mod,   ONLY : FileData_ArrCheck
-    USE HCO_FileData_Mod,   ONLY : FileData_ArrInit
     USE HCO_FileData_Mod,   ONLY : FileData_Cleanup
     USE HCOIO_MESSY_MOD,    ONLY : HCO_MESSY_REGRID
     USE HCO_INTERP_MOD,     ONLY : REGRID_MAPA2A
@@ -148,7 +145,7 @@ CONTAINS
     USE HCO_EXTLIST_MOD,    ONLY : HCO_GetOpt
     USE HCO_TIDX_MOD,       ONLY : tIDx_IsInRange
 
-    include "netcdf.inc"
+    ! PIO module already imported above
 !
 ! !INPUT PARAMETERS:
 !
@@ -173,12 +170,12 @@ CONTAINS
     CHARACTER(LEN=1023)           :: srcFile, srcFile2
     INTEGER                       :: NX, NY
     INTEGER                       :: NCRC, Flag, AS
-    INTEGER                       :: ncLun, ncLun2
+    TYPE(file_desc_t)             :: ncLun, ncLun2
     INTEGER                       :: ierr,   v_id
-    INTEGER                       :: nlon,   nlat,  nlev, nTime
+    LOGICAL                       :: ncLun_valid
+    INTEGER                       :: nlon,   nlat,  nlev
     INTEGER                       :: lev1,   lev2,  dir
     INTEGER                       :: tidx1,  tidx2,  ncYr,  ncMt
-    INTEGER                       :: tidx1b, tidx2b, ncYr2, ncMt2
     INTEGER                       :: HcoID
     INTEGER                       :: ArbIdx
     INTEGER                       :: nlatEdge, nlonEdge
@@ -195,7 +192,6 @@ CONTAINS
     REAL(hp), POINTER             :: LonEdge  (:)
     REAL(hp), POINTER             :: LatEdge  (:)
     REAL(hp)                      :: UnitFactor
-    LOGICAL                       :: KeepSpec
     LOGICAL                       :: FOUND
     LOGICAL                       :: IsModelLevel
     LOGICAL                       :: DoReturn
@@ -216,7 +212,7 @@ CONTAINS
     !=================================================================
     ! HCOIO_READ begins here
     !=================================================================
-    LOC = 'HCOIO_READ (HCOIO_READ_STD_MOD.F90)'
+    LOC = 'HCOIO_READ (HCOIO_READ_PIO_MOD.F90)'
 
     ! Do not try to read a mask file where the mask bounding box limits
     ! are given in the srcFile location, as there is no file to read.
@@ -229,9 +225,9 @@ CONTAINS
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Error encountered in routine "HCO_Enter"!'
-       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-       RETURN
+        MSG = 'Error encountered in routine "HCO_Enter"!'
+        CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+        RETURN
     ENDIF
 
     ! Initialize pointers
@@ -245,22 +241,20 @@ CONTAINS
     LonEdge => NULL()
     LatEdge => NULL()
 
+    ! Initialize ncLun validity flag
+    ncLun_valid = .FALSE.
+
     ! Zero local variables for safety's sake
     dir     =  0
     lev1    =  0
     lev2    =  0
     ncYr    =  0
     ncMt    =  0
-    ncYr2   =  0
-    ncMt2   =  0
     nLon    =  0
     nLat    =  0
     nLev    =  0
-    nTime   =  0
     tIdx1   =  0
     tIdx2   =  0
-    tidx1b  =  0
-    tidx2b  =  0
     wgt1    =  0.0_sp
     wgt2    =  0.0_sp
 
@@ -430,18 +424,21 @@ CONTAINS
     ! Check if file is already in buffer. In that case use existing
     ! open stream. Otherwise open new file. At any given time there
     ! can only be one file in buffer.
-    ncLun = -1
-    IF ( HcoState%ReadLists%FileLun > 0 ) THEN
+    ! (PIO version: use module-level cached_pio_fh instead of FileLun)
+    ncLun_valid = .FALSE.
+    IF ( cached_pio_open ) THEN
        IF ( TRIM(HcoState%ReadLists%FileInArchive) == TRIM(srcFile) ) THEN
-          ncLun = HcoState%ReadLists%FileLun
+          ncLun = cached_pio_fh
+          ncLun_valid = .TRUE.
        ELSE
-          CALL NC_CLOSE ( HcoState%ReadLists%FileLun )
+          CALL NC_CLOSE ( cached_pio_fh )
+          cached_pio_open = .FALSE.
           HcoState%ReadLists%FileLun = -1
        ENDIF
     ENDIF
 
     ! To read from existing stream:
-    IF ( ncLun > 0 ) THEN
+    IF ( ncLun_valid ) THEN
 
        ! Verbose mode
        IF ( HcoState%Config%doVerbose ) THEN
@@ -455,19 +452,17 @@ CONTAINS
 
        ! Verbose mode
        IF ( HcoState%Config%doVerbose ) THEN
-          WRITE(MSG,*) 'Opening file: ', TRIM(srcFile)
+          WRITE(MSG,*) 'Opening file (PIO): ', TRIM(srcFile)
           CALL HCO_MSG( msg, LUN=HcoState%Config%hcoLogLUN )
        ENDIF
 
-#ifndef MODEL_CESM
-       ! Also write to standard output
-       IF ( HcoState%Config%amIRoot ) WRITE( HcoState%Config%stdLogLUN, 100 ) TRIM( srcFile )
-#endif
 100    FORMAT( 'HEMCO: Opening ', a )
 
-       ! This is now the file in archive
+       ! This is now the file in archive (PIO version)
        HcoState%ReadLists%FileInArchive = TRIM(srcFile)
-       HcoState%ReadLists%FileLun       = ncLun
+       cached_pio_fh = ncLun
+       cached_pio_open = .TRUE.
+       HcoState%ReadLists%FileLun = 1  ! flag: file is open
     ENDIF
 
     ! ----------------------------------------------------------------
@@ -488,9 +483,9 @@ CONTAINS
                        wgt1,      wgt2,     oYMDhm1,  &
                        YMDhma,    YMDhm1,   RC        )
     IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Error encountered in routine "Get_TimeIdx" (#1)!'
-       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-       RETURN
+        MSG = 'Error encountered in routine "Get_TimeIdx" (#1)!'
+        CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+        RETURN
     ENDIF
 
     !-----------------------------------------------------------------
@@ -534,8 +529,8 @@ CONTAINS
     ! ----------------------------------------------------------------
     ! Check if variable is in file
     ! ----------------------------------------------------------------
-    ierr = Nf_Inq_Varid( ncLun, Lct%Dct%Dta%ncPara, v_id )
-    IF ( ierr /= NF_NOERR ) THEN
+    ierr = pio_inq_varid( ncLun, Lct%Dct%Dta%ncPara, v_id )
+    IF ( ierr /= PIO_NOERR ) THEN
 
        ! If MustFind flag is enabled, return with error if field is not
        ! found
@@ -606,9 +601,9 @@ CONTAINS
     ! Make sure longitude is steadily increasing.
     CALL HCO_ValidateLon( HcoState, nlon, LonMid, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Error encountered in routine "HCO_ValidateLon" (#2)!'
-       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-       RETURN
+        MSG = 'Error encountered in routine "HCO_ValidateLon" (#2)!'
+        CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+        RETURN
     ENDIF
 
     ! Extract latitude midpoints
@@ -697,8 +692,7 @@ CONTAINS
        ! to 74 levels, (3) if you are on 47/48 levels and you are
        ! going to 72 levels. Otherwise, use MESSy (nbalasus, 8/24/2023).
        IF ( Lct%Dct%Dta%Levels == 0 ) THEN
-
-#if defined( MODEL_CESM ) || defined( MODEL_WRF )
+          IsModelLevel = .FALSE.
 
           ! In WRF/CESM, IsModelLevel has a different meaning of "GEOS-Chem levels"
           ! because the models in WRF and CESM are user-defined and thus fixed input
@@ -720,17 +714,6 @@ CONTAINS
           !     nlev == 47 .or. nlev == 48 .or. nlev == 36 .or. nlev == 72 .or. nlev == 73 ) THEN
               IsModelLevel = .true.
           ENDIF
-
-#else
-
-          CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-             MSG = 'Error encountered in routine "ModelLev_Check"!'
-             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-             RETURN
-          ENDIF
-
-#endif
 
           ! Set level indexes to be read
           lev1 = 1
@@ -790,9 +773,9 @@ CONTAINS
     ! ----------------------------------------------------------------
     CALL GetArbDimIndex( HcoState, ncLun, Lct, ArbIdx, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Error encountered in routine "GetArbDimIndex"!'
-       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-       RETURN
+        MSG = 'Error encountered in routine "GetArbDimIndex"!'
+        CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+        RETURN
     ENDIF
 
     ! ----------------------------------------------------------------
@@ -861,9 +844,9 @@ CONTAINS
           CALL SrcFile_Parse ( HcoState,  Lct, srcFile2, &
                                FOUND, RC, Direction = Direction )
           IF ( RC /= HCO_SUCCESS ) THEN
-             MSG = 'Error encountered in routine "SrcFile_Parse" (#2)!'
-             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-             RETURN
+              MSG = 'Error encountered in routine "SrcFile_Parse" (#2)!'
+              CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+              RETURN
           ENDIF
        ENDIF
 
@@ -881,9 +864,9 @@ CONTAINS
                              wgt1,      wgt2,     oYMDhm2, &
                              YMDhmb,    YMDhm1,   RC       )
           IF ( RC /= HCO_SUCCESS ) THEN
-             MSG = 'Error encountered in routine "Get_TimeIdx" (#2)!'
-             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-             RETURN
+              MSG = 'Error encountered in routine "Get_TimeIdx" (#2)!'
+              CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+              RETURN
           ENDIF
 
           ! Always read first time slice
@@ -912,6 +895,7 @@ CONTAINS
                             RC      = NCRC                 )
           IF ( NCRC /= 0 ) THEN
              MSG = 'Error encountered in routine "NC_Read_Arr" (#2)!'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
              RETURN
           ENDIF
 
@@ -974,9 +958,9 @@ CONTAINS
        CALL HcoClock_Get( HcoState%Clock, cYYYY=cYr, cMM=cMt, cDD=cDy, &
                           cH=cHr, RC=RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          MSG = 'Error encountered in routine "HcoClock_Get" (#1)!'
-          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-          RETURN
+           MSG = 'Error encountered in routine "HcoClock_Get" (#1)!'
+           CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+           RETURN
        ENDIF
 
        ! Determine year range to be read:
@@ -1012,9 +996,9 @@ CONTAINS
              CALL SrcFile_Parse ( HcoState, Lct, srcFile2, &
                                   FOUND, RC, Year=iYear )
              IF ( RC /= HCO_SUCCESS ) THEN
-                MSG = 'Error encountered in routine "SrcFile_Parse" (#3)!'
-                CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-                RETURN
+                 MSG = 'Error encountered in routine "SrcFile_Parse" (#3)!'
+                 CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+                 RETURN
              ENDIF
 
              ! If found, read data. Assume that all meta-data is the same.
@@ -1035,9 +1019,9 @@ CONTAINS
                                 YMDhmb,    YMDhm1,   RC,      &
                                 Year=iYear                    )
              IF ( RC /= HCO_SUCCESS ) THEN
-                MSG = 'Error encountered in routine "Get_TimeIdx" (#3)'
-                CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-                RETURN
+                 MSG = 'Error encountered in routine "Get_TimeIdx" (#3)'
+                 CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+                 RETURN
              ENDIF
 
              ! Do not perform weights
@@ -1196,17 +1180,17 @@ CONTAINS
        IF ( ncYr == 0 ) THEN
           CALL HcoClock_Get( HcoState%Clock, cYYYY = ncYr, RC=RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-             MSG = 'Error encountered in routine "HcoClock_Get" (#2)!'
-             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-             RETURN
+              MSG = 'Error encountered in routine "HcoClock_Get" (#2)!'
+              CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+              RETURN
           ENDIF
        ENDIF
        IF ( ncMt == 0 ) THEN
           CALL HcoClock_Get( HcoState%Clock, cMM   = ncMt, RC=RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-             MSG = 'Error encountered in routine "HcoClock_Get" (#3)!'
-             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-             RETURN
+              MSG = 'Error encountered in routine "HcoClock_Get" (#3)!'
+              CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+              RETURN
           ENDIF
        ENDIF
 
@@ -1303,9 +1287,9 @@ CONTAINS
           CALL NORMALIZE_AREA( HcoState, ncArr,   nlon, &
                                LatEdge,  srcFile, RC     )
           IF ( RC /= HCO_SUCCESS ) THEN
-             MSG = 'Error encountered in routine "NORMALIZE_AREA"!'
-             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-             RETURN
+              MSG = 'Error encountered in routine "NORMALIZE_AREA"!'
+              CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+              RETURN
           ENDIF
 
        ! All other combinations are invalid
@@ -1331,9 +1315,9 @@ CONTAINS
     ENDIF
     CALL HCO_ValidateLon( HcoState, nlonEdge, LonEdge, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-       MSG = 'Error encountered in routine "HCO_ValidateLon" (#2)!'
-       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-       RETURN
+        MSG = 'Error encountered in routine "HCO_ValidateLon" (#2)!'
+        CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+        RETURN
     ENDIF
 
     ! Get latitude edges (only if they have not been read yet
@@ -1371,8 +1355,7 @@ CONTAINS
        UseMESSy = .TRUE.
     ENDIF
 
-#if defined( MODEL_CESM ) || defined( MODEL_WRF )
-    ! If in WRF or the CESM environment, the vertical grid is arbitrary.
+    ! In the CESM environment, the vertical grid is arbitrary.
     ! MESSy regridding ALWAYS has to be used.
     IF ( nlev > 1 ) THEN
       UseMESSy = .TRUE.
@@ -1382,7 +1365,6 @@ CONTAINS
         CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
       ENDIF
     ENDIF
-#endif
 
     IF ( HCO_IsIndexData(Lct%Dct%Dta%OrigUnit) .AND. UseMESSy ) THEN
        MSG = 'Cannot do MESSy regridding for index data: ' // &
@@ -1400,22 +1382,6 @@ CONTAINS
           CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
-#if !defined( MODEL_CESM ) && !defined( MODEL_WRF )
-       ! If we do MESSy regridding, we can only do one time step
-       ! at a time at the moment!
-       IF ( tidx1 /= tidx2 ) THEN
-          MSG = 'Cannot do MESSy regridding for more than one time step; ' &
-                // TRIM(srcFile)
-          CALL HCO_ERROR( MSG, RC )
-          RETURN
-       ENDIF
-
-       ! Note: This seems to be a soft restriction - removing this
-       ! does not conflict with MESSy regridding. Need to check (hplin, 5/30/20)
-       ! This has to be used for WRF-GC and CESM so ifdefd out
-#endif
-
-#if defined( MODEL_WRF ) || defined( MODEL_CESM )
        !--------------------------------------------------------------
        ! Eventually get sigma levels
        ! For files that have hardcoded GEOS-Chem "index"-based levels,
@@ -1423,12 +1389,13 @@ CONTAINS
        ! of the GEOS-Chem levels (sigma = p/ps on INTERFACE)
        !
        ! There are caveats with this. This is essentially a copy of the
-       ! hardcoded hPa lists from the "GEOS-Chem vertical grids"
-       ! chapter of geos-chem.readthedocs.io hard-coded by hand, and we 
-       ! only assume that the data is either 47-levels or 72-levels.
+       ! hardcoded hPa lists from
+       ! http://wiki.seas.harvard.edu/geos-chem/index.php/GEOS-Chem_vertical_grids
+       ! hard-coded by hand, and we only assume that the data is either
+       ! 47-levels or 72-levels.
        !
-       ! Parse the 72 list using regex like so: ^ ?\d{1,2} 
-       ! then remove the lines.  Then you have the 73 edges with:
+       ! Parse the 72 list using regex like so: ^ ?\d{1,2} then remove the lines
+       ! Then you have the 73 edges.
        !
        ! psfc = PEDGE(0) = 1013.250 hPa
        !
@@ -1449,7 +1416,6 @@ CONTAINS
              ENDDO
            ENDDO
        ENDIF
-#endif
 
        !--------------------------------------------------------------
        ! Eventually get sigma levels
@@ -1489,9 +1455,9 @@ CONTAINS
           ! Interpolate onto edges
           CALL SigmaMidToEdges ( HcoState, SigLev, SigEdge, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-             MSG = 'Error encountered in routine "SigmaMidToEdges"!'
-             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-             RETURN
+              MSG = 'Error encountered in routine "SigmaMidToEdges"!'
+              CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+              RETURN
           ENDIF
 
           ! Sigma levels are not needed anymore
@@ -1511,11 +1477,9 @@ CONTAINS
        ! Optional debug tool: make input data constant everywhere
        !NcArr = 1.e-5_sp
 
-#if defined( MODEL_WRF ) || defined( MODEL_CESM )
        ! Input data is "never" on model levels because model levels can change! (hplin, 5/29/20)
        ! Update IsModelLevel to be false when passed to MESSy
        IsModelLevel = .false.
-#endif
 
        ! Now do the regridding
        CALL HCO_MESSY_REGRID ( HcoState,  NcArr,                 &
@@ -1540,9 +1504,9 @@ CONTAINS
 
        CALL REGRID_MAPA2A ( HcoState, NcArr, LonEdge, LatEdge, Lct, RC )
        IF ( RC /= HCO_SUCCESS ) THEN
-          MSG = 'Error encountered in routine "REGRID_MAPA2A"!'
-          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-          RETURN
+           MSG = 'Error encountered in routine "REGRID_MAPA2A"!'
+           CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+           RETURN
        ENDIF
 
     ENDIF
@@ -1556,9 +1520,9 @@ CONTAINS
              CALL Diagn_Update ( HcoState, cName=TRIM(Lct%Dct%cName), &
                                  Array3D=Lct%Dct%Dta%V3(1)%Val, COL=-1, RC=RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                MSG = 'Error encountered in routine "DIAGN_UPDATE" (#1)!'
-                CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-                RETURN
+                 MSG = 'Error encountered in routine "DIAGN_UPDATE" (#1)!'
+                 CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+                 RETURN
              ENDIF
           ENDIF
        ELSEIF ( Lct%Dct%Dta%SpaceDim == 2 .AND. ASSOCIATED(Lct%Dct%Dta%V2) ) THEN
@@ -1566,9 +1530,9 @@ CONTAINS
              CALL Diagn_Update ( HcoState, cName=TRIM(Lct%Dct%cName), &
                                  Array2D=Lct%Dct%Dta%V2(1)%Val, COL=-1, RC=RC )
              IF ( RC /= HCO_SUCCESS ) THEN
-                MSG = 'Error encountered in routine "DIAGN_UPDATE" (#2)!'
-                CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-                RETURN
+                 MSG = 'Error encountered in routine "DIAGN_UPDATE" (#2)!'
+                 CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+                 RETURN
              ENDIF
           ENDIF
        ENDIF
@@ -1606,7 +1570,7 @@ CONTAINS
 !
 ! !USES:
 !
-    USE HCO_Ncdf_Mod,   ONLY : NC_CLOSE
+    USE HCO_PIO_MOD,    ONLY : NC_CLOSE
 !
 ! !INPUT PARAMTERS:
 !
@@ -1617,7 +1581,6 @@ CONTAINS
     INTEGER,          INTENT(INOUT)   :: RC
 !
 ! !REVISION HISTORY:
-!  24 Mar 2016 - C. Keller: Initial version
 !  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
@@ -1626,10 +1589,11 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     !======================================================================
-    ! HCOIO_CloseAll begins here
+    ! HCOIO_CloseAll begins here (PIO version)
     !======================================================================
-    IF ( HcoState%ReadLists%FileLun > 0 ) THEN
-       CALL NC_CLOSE( HcoState%ReadLists%FileLun )
+    IF ( cached_pio_open ) THEN
+       CALL NC_CLOSE( cached_pio_fh )
+       cached_pio_open = .FALSE.
        HcoState%ReadLists%FileLun = -1
     ENDIF
 
@@ -1653,7 +1617,7 @@ CONTAINS
 !
   FUNCTION IO_ErrMsg( fldName, srcFile ) RESULT( errMsg )
 !
-! !INPUT PARAMETERS: 
+! !INPUT PARAMETERS:
 !
     CHARACTER(LEN=*),   INTENT(IN) :: fldName
     CHARACTER(LEN=*),   INTENT(IN) :: srcFile
@@ -1668,7 +1632,7 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    IF ( fldName(1:4) == "SPC_" .and. INDEX( srcFile, "Restart" ) > 0 ) THEN
+    IF ( ( INDEX( fldName, "SPC_" ) == 1 ) .and. ( INDEX( srcFile, "Restart" ) > 0 ) ) THEN
 
        !---------------------------------------------------------------------
        ! Case 1: GEOS-Chem Classic restart file
