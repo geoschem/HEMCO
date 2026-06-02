@@ -694,8 +694,6 @@ CONTAINS
        IF ( Lct%Dct%Dta%Levels == 0 ) THEN
           IsModelLevel = .FALSE.
 
-#if defined( MODEL_CESM )
-
           ! In WRF/CESM, IsModelLevel has a different meaning of "GEOS-Chem levels"
           ! because the models in WRF and CESM are user-defined and thus fixed input
           ! files would never be on the model level. In this case, a check is added
@@ -716,17 +714,6 @@ CONTAINS
           !     nlev == 47 .or. nlev == 48 .or. nlev == 36 .or. nlev == 72 .or. nlev == 73 ) THEN
               IsModelLevel = .true.
           ENDIF
-
-#else
-
-          CALL ModelLev_Check( HcoState, nlev, IsModelLevel, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-              MSG = 'Error encountered in routine "ModelLev_Check"!'
-              CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
-              RETURN
-          ENDIF
-
-#endif
 
           ! Set level indexes to be read
           lev1 = 1
@@ -1368,7 +1355,6 @@ CONTAINS
        UseMESSy = .TRUE.
     ENDIF
 
-#if defined( MODEL_CESM )
     ! In the CESM environment, the vertical grid is arbitrary.
     ! MESSy regridding ALWAYS has to be used.
     IF ( nlev > 1 ) THEN
@@ -1379,7 +1365,6 @@ CONTAINS
         CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
       ENDIF
     ENDIF
-#endif
 
     IF ( HCO_IsIndexData(Lct%Dct%Dta%OrigUnit) .AND. UseMESSy ) THEN
        MSG = 'Cannot do MESSy regridding for index data: ' // &
@@ -1397,7 +1382,6 @@ CONTAINS
           CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
        ENDIF
 
-#if defined( MODEL_CESM )
        !--------------------------------------------------------------
        ! Eventually get sigma levels
        ! For files that have hardcoded GEOS-Chem "index"-based levels,
@@ -1432,7 +1416,6 @@ CONTAINS
              ENDDO
            ENDDO
        ENDIF
-#endif
 
        !--------------------------------------------------------------
        ! Eventually get sigma levels
@@ -1494,11 +1477,9 @@ CONTAINS
        ! Optional debug tool: make input data constant everywhere
        !NcArr = 1.e-5_sp
 
-#if defined( MODEL_CESM )
        ! Input data is "never" on model levels because model levels can change! (hplin, 5/29/20)
        ! Update IsModelLevel to be false when passed to MESSy
        IsModelLevel = .false.
-#endif
 
        ! Now do the regridding
        CALL HCO_MESSY_REGRID ( HcoState,  NcArr,                 &
