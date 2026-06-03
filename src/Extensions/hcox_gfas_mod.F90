@@ -42,20 +42,11 @@ MODULE HCOX_GFAS_MOD
 !
 !    112    GFAS                       : on    CO/CO2/NO/NH3/SO2/OC/BC
 !        --> Vertical Profile Species :       CO
-!        --> Scaling_NO               :       1.5
-!        --> ScaleField_CO            :       NAMASK
 !
-!  HEMCO config (base emissions section):
-!
-!    112 GFAS_CO_3D    /path/gfas_3d.nc   co_emis   ... xyz kg/m2/s * - 1 1
-!    112 GFAS_NO_2D    /path/gfas_2d.nc   no_emis   ... xy  kg/m2/s * - 1 1
-!    112 GFAS_SO2_2D   /path/gfas_2d.nc   so2_emis  ... xy  kg/m2/s * - 1 1
-!    ...
 !
 !  Notes:
-!  - The reference species needs ONLY the GFAS_<ref>_3D entry; its 2D entry
-!    is not read.
-!  - Every other species listed in the extension settings line MUST have a
+!  - The reference species needs ONLY the GFAS_<ref>_3D entry.
+!  - Every species listed in the extension settings line MUST have a
 !    matching GFAS_<SpcName>_2D entry; otherwise the run errors out.
 !  - GFAS data on its native 36 vertical levels is auto-mapped to model
 !    levels 1-36 by HEMCO's I/O (HEMCO/src/Core/hco_interp_mod.F90).
