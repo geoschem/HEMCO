@@ -100,14 +100,23 @@ CONTAINS
 !
 ! !USES:
 !
-    USE HCO_Ncdf_Mod,  ONLY : NC_Read_Time_YYYYMMDDhhmm
-    USE HCO_tIdx_Mod,  ONLY : HCO_GetPrefTimeAttr
+#if defined(MODEL_CESM)
+    USE HCO_PIO_MOD,   ONLY : NC_Read_Time_YYYYMMDDhhmm
+    USE pio,            ONLY : file_desc_t
+#else
+    USE HCO_Ncdf_Mod,   ONLY : NC_Read_Time_YYYYMMDDhhmm
+#endif
+    USE HCO_tIdx_Mod,   ONLY : HCO_GetPrefTimeAttr
 !
 ! !INPUT PARAMETERS:
 !
     TYPE(HCO_State),  POINTER                  :: HcoState  ! HcoState object
     TYPE(ListCont),   POINTER                  :: Lct       ! List container
+#if defined(MODEL_CESM)
+    TYPE(file_desc_t), INTENT(INOUT)           :: ncLun     ! open PIO file
+#else
     INTEGER,          INTENT(IN   )            :: ncLun     ! open ncLun
+#endif
     INTEGER,          INTENT(IN   ), OPTIONAL  :: Year      ! year to be used
 !
 ! !OUTPUT PARAMETERS:
@@ -1992,14 +2001,23 @@ CONTAINS
 !
 ! !USES:
 !
+#if defined(MODEL_CESM)
+    USE pio,                     ONLY : file_desc_t, pio_inq_dimid
+    USE pio,                     ONLY : pio_inq_dimlen, PIO_NOERR
+#else
     USE HCO_m_netcdf_io_checks
     USE HCO_m_netcdf_io_get_dimlen
+#endif
     USE HCO_ExtList_Mod,    ONLY : GetExtOpt
 !
 ! !INPUT PARAMETERS:
 !
     TYPE(HCO_State),  POINTER                 :: HcoState
+#if defined(MODEL_CESM)
+    TYPE(file_desc_t), INTENT(IN   )          :: Lun
+#else
     INTEGER,          INTENT(IN   )           :: Lun
+#endif
     TYPE(ListCont),   POINTER                 :: Lct
 !
 ! !OUTPUT PARAMETERS:
@@ -2021,6 +2039,9 @@ CONTAINS
     CHARACTER(LEN=255)  :: ArbDimVal
     CHARACTER(LEN=511)  :: MSG
     CHARACTER(LEN=255)  :: LOC = 'GetArbDimIndex (hcoio_util_mod.F90)'
+#if defined(MODEL_CESM)
+    INTEGER             :: pio_dimid, pio_ierr
+#endif
 
     !=================================================================
     ! GetArbDimIndex
@@ -2034,7 +2055,12 @@ CONTAINS
     IF ( TRIM(Lct%Dct%Dta%ArbDimName) == 'none' ) RETURN
 
     ! Check if variable exists
+#if defined(MODEL_CESM)
+    pio_ierr = pio_inq_dimid ( Lun, TRIM(Lct%Dct%Dta%ArbDimName), pio_dimid )
+    Found = ( pio_ierr == PIO_NOERR )
+#else
     Found = Ncdoes_Dim_Exist ( Lun, TRIM(Lct%Dct%Dta%ArbDimName) )
+#endif
     IF ( .NOT. Found ) THEN
        MSG = 'Cannot read dimension ' // TRIM(Lct%Dct%Dta%ArbDimName) &
              // ' from file ' // &
@@ -2044,7 +2070,11 @@ CONTAINS
     ENDIF
 
     ! Get dimension length
+#if defined(MODEL_CESM)
+    pio_ierr = pio_inq_dimlen ( Lun, pio_dimid, nVal )
+#else
     CALL Ncget_Dimlen ( Lun, TRIM(Lct%Dct%Dta%ArbDimName), nVal )
+#endif
 
     ! Get value to look for. This is archived in variable ArbDimVal.
     ! Eventually need to extract value from HEMCO settings
