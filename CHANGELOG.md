@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added code blocks for MAPL3 code in development
 - Added C-preprocessor switches `USE_ESMF` and `MAPL3`
 - Added HEMCO I/O module using PIO (`hcoio_read_pio_mod.F90` and `hcoio_write_pio_mod.F90` stub) for coupling to CESM
+- Added an extension for calculating GFAS 3D biomass emission
 
 ### Changed
 - Renamed subroutine `HCO_CopyFromIntnal_ESMF` to `HCO_CopyFromInternal_ESMF`
