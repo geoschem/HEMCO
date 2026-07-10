@@ -23,7 +23,7 @@ function replace() {
 
     #========================================================================
     # Function to replace text in a file via sed.
-    # 
+    #
     # 1st argument: Search pattern
     # 2nd argument: Replacement text
     # 3rd argument: File in which to search and replace
@@ -32,7 +32,7 @@ function replace() {
     sed -i -e "s/${1}/${2}/" "${3}"
 }
 
- 
+
 function exitWithError() {
 
     #========================================================================
@@ -55,6 +55,9 @@ function main() {
     # New version number
     version="${1}"
 
+    # Current date
+    date=$(date -Idate)
+
     # Save this directory path and change to root directory
     thisDir=$(pwd -P)
     cd ..
@@ -62,7 +65,7 @@ function main() {
     #========================================================================
     # Update version numbers in various files
     #========================================================================
-    
+
     # Pattern to match: X.Y.Z
     pattern='[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*'
 
@@ -86,9 +89,21 @@ function main() {
 
     # Pattern to match: "[Unreleased] - TBD"
     pattern='\[.*Unreleased.*\].*'
-    date=$(date -Idate)
     replace "${pattern}" "\[${version}\] - ${date}" "CHANGELOG.md"
     echo "HEMCO version updated to ${version} in CHANGELOG.md"
+
+    #========================================================================
+    # Update date and version in CITATION.cff
+    # NOTE: Only update version but not cff-version
+    #========================================================================
+
+    # Pattern to match: X.Y.Z
+    pattern='^version: .*'
+    replace "${pattern}" "version: ${version}" "CITATION.cff"
+
+    # Pattern to match: YYYY-MM-DD
+    pattern='^date-released: .*'
+    replace "${pattern}" "date-released: ${date}" "CITATION.cff"
 
     # Return to the starting directory
     cd "${thisDir}"
