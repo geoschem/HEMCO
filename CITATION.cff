@@ -1,0 +1,56 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "HEMCO: The Harmonized Emissions Component"
+type: software
+authors:
+  - name: "The International GEOS-Chem User Community"
+version: 3.12.1
+date-released: 2026-04-08
+doi: 10.5281/zenodo.4618253
+url: "https://hemco.readthedocs.io"
+repository-code: "https://github.com/geoschem/HEMCO"
+license: MIT
+keywords:
+  - atmospheric-chemistry
+  - atmospheric-composition
+  - atmospheric-modeling
+  - aws
+  - climate-modeling
+  - cloud-computing
+  - geos-chem
+  - atmospheric-computing
+  - scientific-computing
+preferred-citation:
+  type: article
+  title: "Harmonized Emissions Component (HEMCO) 3.0 as a versatile emissions component for atmospheric models: application in the GEOS-Chem, NASA GEOS, WRF-GC, CESM2, NOAA GEFS-Aerosol, and NOAA UFS models"
+  authors:
+    - family-names: Lin
+      given-names: Haipeng
+    - family-names: Jacob
+      given-names: Daniel J.
+    - family-names: Lundgren
+      given-names: Elizabeth W.
+    - family-names: Sulprizio
+      given-names: Melissa P.
+    - family-names: Keller
+      given-names: Christoph A.
+    - family-names: Fritz
+      given-names: Thibaud M.
+    - family-names: Eastham
+      given-names: Sebastian D.
+    - family-names: Emmons
+      given-names: Louisa K.
+    - family-names: Campbell
+      given-names: Patrick C.
+    - family-names: Baker
+      given-names: Barron
+    - family-names: Saylor
+      given-names: Rick D.
+    - family-names: Montuoro
+      given-names: Raffaele
+  journal: "Geoscientific Model Development"
+  volume: 14
+  start: 5487
+  end: 5506
+  year: 2021
+  doi: 10.5194/gmd-14-5487-2021
