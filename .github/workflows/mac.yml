@@ -37,8 +37,37 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install dependencies
-        run: brew install netcdf netcdf-fortran
+      - name: Install NetCDF-C (Homebrew)
+        run: brew install netcdf
+
+      - name: Cache NetCDF-Fortran (built from source)
+        id: netcdf-fortran-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/netcdf-fortran
+          key: netcdf-fortran-4.6.3-gcc${{ matrix.gcc_version }}-${{ runner.os }}-${{ runner.arch }}
+
+      # Homebrew's netcdf-fortran bottle is always built against whatever "gcc" formula
+      # Homebrew currently treats as default/latest, which does not necessarily match the
+      # gfortran-${{ matrix.gcc_version }} used to compile HEMCO below. gfortran .mod files
+      # are not compatible across major GCC versions, so mixing them causes:
+      #   "Cannot read module file 'netcdf.mod' ... created by a different version of GNU Fortran"
+      # Building NetCDF-Fortran from source with the exact matrix compiler avoids that mismatch.
+      - name: Build NetCDF-Fortran from source
+        if: steps.netcdf-fortran-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch v4.6.3 https://github.com/Unidata/netcdf-fortran.git "$RUNNER_TEMP/netcdf-fortran-src"
+          cmake -S "$RUNNER_TEMP/netcdf-fortran-src" -B "$RUNNER_TEMP/netcdf-fortran-build" \
+            -D CMAKE_INSTALL_PREFIX=$HOME/netcdf-fortran \
+            -D CMAKE_Fortran_COMPILER=gfortran-${{ matrix.gcc_version }} \
+            -D CMAKE_PREFIX_PATH=$(brew --prefix netcdf)
+          cmake --build "$RUNNER_TEMP/netcdf-fortran-build" --parallel
+          cmake --install "$RUNNER_TEMP/netcdf-fortran-build"
+
+      - name: Add NetCDF-Fortran to environment
+        run: |
+          echo "NetCDF_Fortran_ROOT=$HOME/netcdf-fortran" >> "$GITHUB_ENV"
+          echo "$HOME/netcdf-fortran/bin" >> "$GITHUB_PATH"
 
       - name: Run Cmake
         run: cmake -S . -B build -D CMAKE_BUILD_TYPE=${{ matrix.build_type }}

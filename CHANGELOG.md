@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed an error in `src/Shared/GeosUtil/hco_regrid_a2a_mod.F90` where an accumulator was uninitialized before reuse, which may inherit junk data from the previous iteration if the southmost source cell is not found
 - Fixed IF-block logic errors in `SrcFile_Parse` that led to incorrect time-cycling behavior
+- Fixed Mac GitHub Actions workflow (`mac.yml`) failing with a `gfortran` module-version mismatch by building NetCDF-Fortran from source against each matrix `gcc_version`, instead of relying on Homebrew's bottle (which is always built against Homebrew's own default/latest `gcc`)
 
 #### Removed
 - Removed C-preprocessor switch `ESMF_`
