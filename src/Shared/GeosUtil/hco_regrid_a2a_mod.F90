@@ -701,6 +701,7 @@ CONTAINS
     REAL*8               :: dy
     REAL*8               :: qsum, sum
     REAL*8               :: dlat, nlon, miss
+    REAL*8               :: slo
 
     ! YMAP begins here!
     do j=1,jm-ig
@@ -717,7 +718,7 @@ CONTAINS
 
     !$OMP PARALLEL DO                                &
     !$OMP DEFAULT( SHARED                          ) &
-    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY )
+    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO )
     do 1000 i=1,im
        qsum = 0.0d0
        dlat = 0.0d0
@@ -728,12 +729,19 @@ CONTAINS
           ! missing would inherit qsum, dlat from the previous j.
           qsum = 0.0d0
           dlat = 0.0d0
+          ! Clamp the target cell's southern edge to the source's southern
+          ! boundary. A regional source need not reach the south pole, so a
+          ! target cell straddling the source's southern edge would otherwise
+          ! locate no source cell and be left as the missing value. Clamping
+          ! lets it pick up its overlap with the southern-most source cell.
+          slo = sin2(j)
+          if ( sin2(j) < sin1(1) .and. sin2(j+1) > sin1(1) ) slo = sin1(1)
        do 100 m=j0,jm-ig
 
           !=========================================================
           ! locate the southern edge: sin2(i)
           !=========================================================
-          if(sin2(j) .ge. sin1(m) .and. sin2(j) .le. sin1(m+1)) then
+          if(slo .ge. sin1(m) .and. slo .le. sin1(m+1)) then
 
              if(sin2(j+1) .le. sin1(m+1)) then
 
@@ -745,8 +753,8 @@ CONTAINS
 
                 ! South most fractional area
                 if( abs(q1(i,m)-miss)>tiny_r8 ) then
-                   dlat= sin1(m+1)-sin2(j)
-                   qsum=(sin1(m+1)-sin2(j))*q1(i,m)
+                   dlat= sin1(m+1)-slo
+                   qsum=(sin1(m+1)-slo)*q1(i,m)
                 else
                    dlat=0.0d0
                    qsum=0.0d0
@@ -801,10 +809,12 @@ CONTAINS
              endif
           enddo
 
-          if ( nlon > 0.0d0 ) sum = sum / nlon
-          do i=1,im
-             q2(i,1) = sum
-          enddo
+          if ( nlon > 0.0d0 ) then
+             sum = sum / nlon
+             do i=1,im
+                q2(i,1) = sum
+             enddo
+          endif
         endif
 
         ! North pole:
@@ -818,10 +828,12 @@ CONTAINS
              endif
           enddo
 
-          if ( nlon > 0.0d0 ) sum = sum / DBLE( im )
-          do i=1,im
-             q2(i,jn) = sum
-          enddo
+          if ( nlon > 0.0d0 ) then
+             sum = sum / nlon
+             do i=1,im
+                q2(i,jn) = sum
+             enddo
+          endif
         endif
 
      endif
@@ -909,6 +921,7 @@ CONTAINS
     REAL*8               :: dy
     REAL*8               :: qsum, dlat, nlon, sum
     REAL*4               :: miss
+    REAL*4               :: slo
 
     ! YMAP begins here!
     do j=1,jm-ig
@@ -925,7 +938,7 @@ CONTAINS
 
     !$OMP PARALLEL DO                                &
     !$OMP DEFAULT( SHARED                          ) &
-    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY )
+    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO )
     do 1000 i=1,im
        qsum = 0.0d0
        dlat = 0.0d0
@@ -936,12 +949,19 @@ CONTAINS
           ! missing would inherit qsum, dlat from the previous j.
           qsum = 0.0d0
           dlat = 0.0d0
+          ! Clamp the target cell's southern edge to the source's southern
+          ! boundary. A regional source need not reach the south pole, so a
+          ! target cell straddling the source's southern edge would otherwise
+          ! locate no source cell and be left as the missing value. Clamping
+          ! lets it pick up its overlap with the southern-most source cell.
+          slo = sin2(j)
+          if ( sin2(j) < sin1(1) .and. sin2(j+1) > sin1(1) ) slo = sin1(1)
        do 100 m=j0,jm-ig
 
           !=========================================================
           ! locate the southern edge: sin2(i)
           !=========================================================
-          if(sin2(j) .ge. sin1(m) .and. sin2(j) .le. sin1(m+1)) then
+          if(slo .ge. sin1(m) .and. slo .le. sin1(m+1)) then
 
              if(sin2(j+1) .le. sin1(m+1)) then
 
@@ -953,8 +973,8 @@ CONTAINS
 
                 ! South most fractional area
                 if( abs(q1(i,m)-miss)>tiny_r4 ) then
-                   dlat= sin1(m+1)-sin2(j)
-                   qsum=(sin1(m+1)-sin2(j))*q1(i,m)
+                   dlat= sin1(m+1)-slo
+                   qsum=(sin1(m+1)-slo)*q1(i,m)
                 else
                    dlat=0.0d0
                    qsum=0.0d0
@@ -1008,10 +1028,12 @@ CONTAINS
              endif
           enddo
 
-          if ( nlon > 0.0d0 ) sum = sum / nlon
-          do i=1,im
-             q2(i,1) = sum
-          enddo
+          if ( nlon > 0.0d0 ) then
+             sum = sum / nlon
+             do i=1,im
+                q2(i,1) = sum
+             enddo
+          endif
         endif
 
         ! North pole:
@@ -1025,10 +1047,12 @@ CONTAINS
              endif
           enddo
 
-          if ( nlon > 0.0d0 ) sum = sum / nlon
-          do i=1,im
-             q2(i,jn) = sum
-          enddo
+          if ( nlon > 0.0d0 ) then
+             sum = sum / nlon
+             do i=1,im
+                q2(i,jn) = sum
+             enddo
+          endif
         endif
 
      endif
@@ -1116,6 +1140,7 @@ CONTAINS
     REAL*8               :: dy
     REAL*8               :: qsum, sum, dlat
     REAL*8               :: miss
+    REAL*4               :: slo
     REAL*4               :: nlon
 
     ! YMAP begins here!
@@ -1133,7 +1158,7 @@ CONTAINS
 
     !$OMP PARALLEL DO                                &
     !$OMP DEFAULT( SHARED                          ) &
-    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY )
+    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO )
     do 1000 i=1,im
        qsum = 0.0d0
        dlat = 0.0d0
@@ -1144,12 +1169,19 @@ CONTAINS
           ! missing would inherit qsum, dlat from the previous j.
           qsum = 0.0d0
           dlat = 0.0d0
+          ! Clamp the target cell's southern edge to the source's southern
+          ! boundary. A regional source need not reach the south pole, so a
+          ! target cell straddling the source's southern edge would otherwise
+          ! locate no source cell and be left as the missing value. Clamping
+          ! lets it pick up its overlap with the southern-most source cell.
+          slo = sin2(j)
+          if ( sin2(j) < sin1(1) .and. sin2(j+1) > sin1(1) ) slo = sin1(1)
        do 100 m=j0,jm-ig
 
           !=========================================================
           ! locate the southern edge: sin2(i)
           !=========================================================
-          if(sin2(j) .ge. sin1(m) .and. sin2(j) .le. sin1(m+1)) then
+          if(slo .ge. sin1(m) .and. slo .le. sin1(m+1)) then
 
              if(sin2(j+1) .le. sin1(m+1)) then
 
@@ -1161,8 +1193,8 @@ CONTAINS
 
                 ! South most fractional area
                 if( abs(q1(i,m)-miss)>tiny_r8 ) then
-                   dlat= sin1(m+1)-sin2(j)
-                   qsum=(sin1(m+1)-sin2(j))*q1(i,m)
+                   dlat= sin1(m+1)-slo
+                   qsum=(sin1(m+1)-slo)*q1(i,m)
                 else
                    dlat=0.0d0
                    qsum=0.0d0
@@ -1216,10 +1248,12 @@ CONTAINS
              endif
           enddo
 
-          if ( nlon > 0.0 ) sum = sum / nlon
-          do i=1,im
-             q2(i,1) = sum
-          enddo
+          if ( nlon > 0.0 ) then
+             sum = sum / nlon
+             do i=1,im
+                q2(i,1) = sum
+             enddo
+          endif
         endif
 
         ! North pole:
@@ -1233,10 +1267,12 @@ CONTAINS
              endif
           enddo
 
-          if ( nlon > 0.0 ) sum = sum / nlon
-          do i=1,im
-             q2(i,jn) = sum
-          enddo
+          if ( nlon > 0.0 ) then
+             sum = sum / nlon
+             do i=1,im
+                q2(i,jn) = sum
+             enddo
+          endif
         endif
 
      endif
@@ -1324,6 +1360,7 @@ CONTAINS
     REAL*4               :: dy
     REAL*4               :: qsum, sum
     REAL*4               :: dlat, nlon, miss
+    REAL*4               :: slo
 
     ! YMAP begins here!
     do j=1,jm-ig
@@ -1340,7 +1377,7 @@ CONTAINS
 
     !$OMP PARALLEL DO                                &
     !$OMP DEFAULT( SHARED                          ) &
-    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY )
+    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO )
     do 1000 i=1,im
        qsum = 0.0
        dlat = 0.0
@@ -1351,12 +1388,19 @@ CONTAINS
           ! missing would inherit qsum, dlat from the previous j.
           qsum = 0.0
           dlat = 0.0
+          ! Clamp the target cell's southern edge to the source's southern
+          ! boundary. A regional source need not reach the south pole, so a
+          ! target cell straddling the source's southern edge would otherwise
+          ! locate no source cell and be left as the missing value. Clamping
+          ! lets it pick up its overlap with the southern-most source cell.
+          slo = sin2(j)
+          if ( sin2(j) < sin1(1) .and. sin2(j+1) > sin1(1) ) slo = sin1(1)
        do 100 m=j0,jm-ig
 
           !=========================================================
           ! locate the southern edge: sin2(i)
           !=========================================================
-          if(sin2(j) .ge. sin1(m) .and. sin2(j) .le. sin1(m+1)) then
+          if(slo .ge. sin1(m) .and. slo .le. sin1(m+1)) then
 
              if(sin2(j+1) .le. sin1(m+1)) then
 
@@ -1368,7 +1412,7 @@ CONTAINS
 
                 ! South most fractional area
                 if( abs(q1(i,m)-miss)>tiny_r4 ) then
-                   dlat=sin1(m+1)-sin2(j)
+                   dlat=sin1(m+1)-slo
                    qsum=dlat*q1(i,m)
                 else
                    dlat=0.0
@@ -1424,11 +1468,13 @@ CONTAINS
              endif
           enddo
 
-          if ( nlon > 0.0 ) sum = sum / nlon
           !sum = sum / REAL( im, 4 )
-          do i=1,im
-             q2(i,1) = sum
-          enddo
+          if ( nlon > 0.0 ) then
+             sum = sum / nlon
+             do i=1,im
+                q2(i,1) = sum
+             enddo
+          endif
         endif
 
         ! North pole:
@@ -1443,10 +1489,12 @@ CONTAINS
           enddo
 
           !sum = sum / REAL( im, 4 )
-          if ( nlon > 0.0 ) sum = sum / nlon
-          do i=1,im
-             q2(i,jn) = sum
-          enddo
+          if ( nlon > 0.0 ) then
+             sum = sum / nlon
+             do i=1,im
+                q2(i,jn) = sum
+             enddo
+          endif
         endif
      endif
 #endif
@@ -1657,14 +1705,18 @@ CONTAINS
        ! Area preserving mapping
        !================================================================
 
-       qtmp(:) = 0.0d0
+       ! Initialize to the missing value (not zero) so that ghost cells
+       ! outside a regional (non-global) source are treated as missing
+       ! rather than as real zeros, which would otherwise dilute target
+       ! cells straddling the source's western/eastern edge when missval /= 0.
+       qtmp(:) = miss
        do i=1,im
           qtmp(i)=q1(i,j)
        enddo
 
        ! SDE 2017-01-07
        ! Only have shadow regions if we are on a global grid. Otherwise, we
-       ! should keep the zero boundary conditions.
+       ! should keep the missval boundary conditions.
        If (isGlobal) Then
           qtmp(0)=q1(im,j)
           qtmp(im+1)=q1(1,j)
@@ -1952,14 +2004,18 @@ CONTAINS
        ! Area preserving mapping
        !================================================================
 
-       qtmp(:) = 0.0
+       ! Initialize to the missing value (not zero) so that ghost cells
+       ! outside a regional (non-global) source are treated as missing
+       ! rather than as real zeros, which would otherwise dilute target
+       ! cells straddling the source's western/eastern edge when missval /= 0.
+       qtmp(:) = miss
        do i=1,im
           qtmp(i)=q1(i,j)
        enddo
 
        ! SDE 2017-01-07
        ! Only have shadow regions if we are on a global grid. Otherwise, we
-       ! should keep the zero boundary conditions.
+       ! should keep the missval boundary conditions.
        If (isGlobal) Then
           qtmp(0)=q1(im,j)
           qtmp(im+1)=q1(1,j)
@@ -2237,14 +2293,18 @@ CONTAINS
        ! Area preserving mapping
        !================================================================
 
-       qtmp(:) = 0.0d0
+       ! Initialize to the missing value (not zero) so that ghost cells
+       ! outside a regional (non-global) source are treated as missing
+       ! rather than as real zeros, which would otherwise dilute target
+       ! cells straddling the source's western/eastern edge when missval /= 0.
+       qtmp(:) = miss
        do i=1,im
           qtmp(i)=q1(i,j)
        enddo
 
        ! SDE 2017-01-07
        ! Only have shadow regions if we are on a global grid. Otherwise, we
-       ! should keep the zero boundary conditions.
+       ! should keep the missval boundary conditions.
        If (isGlobal) Then
           qtmp(0)=q1(im,j)
           qtmp(im+1)=q1(1,j)
@@ -2413,16 +2473,16 @@ CONTAINS
     Logical              :: isGlobal
     Real*4               :: xSpan
 
-    ! Missing value
-    REAL*8               :: miss
+    ! Missing value: needs to be same precision as qtmp for comparison
+    REAL*4               :: miss
 
     ! Initialize
     lon2 => NULL()
     q2   => NULL()
 
     ! Missing value
-    miss = miss_r8
-    if ( present(missval) ) miss = missval
+    miss = miss_r4
+    if ( present(missval) ) miss = REAL( missval, 4 )
 
     ! XMAP begins here!
     do i=1,im+1
@@ -2521,14 +2581,18 @@ CONTAINS
        ! Area preserving mapping
        !================================================================
 
-       qtmp(:) = 0.0
+       ! Initialize to the missing value (not zero) so that ghost cells
+       ! outside a regional (non-global) source are treated as missing
+       ! rather than as real zeros, which would otherwise dilute target
+       ! cells straddling the source's western/eastern edge when missval /= 0.
+       qtmp(:) = miss
        do i=1,im
           qtmp(i)=q1(i,j)
        enddo
 
        ! SDE 2017-01-07
        ! Only have shadow regions if we are on a global grid. Otherwise, we
-       ! should keep the zero boundary conditions.
+       ! should keep the missval boundary conditions.
        If (isGlobal) Then
           qtmp(0)=q1(im,j)
           qtmp(im+1)=q1(1,j)
@@ -2587,7 +2651,7 @@ CONTAINS
                       endif
                    else
                       ! Right most fractional area
-                      if( abs(qtmp(m)-miss)>tiny_r8 ) then
+                      if( abs(qtmp(mm)-miss)>tiny_r8 ) then
                          dx = lon2(i+1)-x1(mm)
                          qsum=qsum+dx*qtmp(mm)
                          dlon=dlon+dx
