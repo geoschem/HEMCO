@@ -566,7 +566,8 @@ CONTAINS
     USE ESMF
 #ifdef MAPL3
     USE mapl3
-    USE mapl3g_GridGetHorzIJIndex, ONLY : GridGetHorzIJIndex
+    ! ewl: cannot currently find this, so comment out. Only needed for volcano ext.
+    !USE mapl3g_GridGetHorzIJIndex, ONLY : GridGetHorzIJIndex
 #else
     USE MAPLBase_Mod
 #endif
@@ -627,8 +628,9 @@ CONTAINS
 
     ! Get indices
 #ifdef MAPL3
-    CALL GridGetHorzIJIndex( npts=N, ii=idx, jj=jdx,    &
-         lon=LonR, lat=LatR, grid=Grid, _RC)
+    ! ewl: cannot find in mapl3 yet so comment out for now. Only needed for volcano ext.
+    !CALL GridGetHorzIJIndex( npts=N, ii=idx, jj=jdx,    &
+    !     lon=LonR, lat=LatR, grid=Grid, _RC)
 #else
      CALL MAPL_GetHorzIJIndex( npts=N,   II=idx,   JJ=jdx,    &
           lon=LonR, lat=LatR, Grid=Grid, __RC__)
