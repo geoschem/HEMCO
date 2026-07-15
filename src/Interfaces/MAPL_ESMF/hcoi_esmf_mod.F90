@@ -1,3 +1,9 @@
+#ifdef MAPL_ESMF
+#ifdef MAPL3
+#include "MAPL.h"
+#else
+#include "MAPL_Generic.h"
+#endif
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -18,17 +24,13 @@ MODULE HCOI_ESMF_MOD
   USE HCO_ERROR_MOD
   USE HCO_Types_Mod
 
-#ifdef MAPL_ESMF
 #ifdef MAPL3
-#include "MAPL.h"
   USE mapl3
   USE mapl3g_State_API, ONLY : MAPL_StateGetPointer
   USE mapl3g_generic,   ONLY : MAPL_GridCompAddSpec
 #else
-#include "MAPL_Generic.h"
   USE MAPLBase_Mod
   USE MAPL_GenericMod
-#endif
 #endif
   
   IMPLICIT NONE
@@ -1002,4 +1004,4 @@ CONTAINS
       END SUBROUTINE HCO_Imp2Ext2I
 !EOC
 END MODULE HCOI_ESMF_MOD
-
+#endif
