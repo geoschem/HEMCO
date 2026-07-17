@@ -340,14 +340,24 @@ if(NOT MAPL3)
     )
 endif()
 if(MAPL3)
+# Old MAPL3:
+#    target_link_libraries(HEMCOBuildProperties
+#        INTERFACE $<LINK_ONLY:MAPL.base>
+#        INTERFACE $<LINK_ONLY:mapl3g>
+#	INTERFACE $<LINK_ONLY:MAPL.generic3g>
+#    )
+#    target_include_directories(HEMCOBuildProperties
+#        INTERFACE $<TARGET_PROPERTY:MAPL.base,INTERFACE_INCLUDE_DIRECTORIES>
+#        INTERFACE $<TARGET_PROPERTY:mapl3g,INTERFACE_INCLUDE_DIRECTORIES>
+#	INTERFACE $<TARGET_PROPERTY:MAPL.generic3g,INTERFACE_INCLUDE_DIRECTORIES>
+#    )
+# New MAPL3:
     target_link_libraries(HEMCOBuildProperties
-        INTERFACE $<LINK_ONLY:MAPL.base>
-        INTERFACE $<LINK_ONLY:mapl3g>
+        INTERFACE $<LINK_ONLY:MAPL.base3g>
 	INTERFACE $<LINK_ONLY:MAPL.generic3g>
     )
     target_include_directories(HEMCOBuildProperties
-        INTERFACE $<TARGET_PROPERTY:MAPL.base,INTERFACE_INCLUDE_DIRECTORIES>
-        INTERFACE $<TARGET_PROPERTY:mapl3g,INTERFACE_INCLUDE_DIRECTORIES>
+        INTERFACE $<TARGET_PROPERTY:MAPL.base3g,INTERFACE_INCLUDE_DIRECTORIES>
 	INTERFACE $<TARGET_PROPERTY:MAPL.generic3g,INTERFACE_INCLUDE_DIRECTORIES>
     )
     target_compile_definitions(HEMCOBuildProperties
