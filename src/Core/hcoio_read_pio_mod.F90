@@ -1248,7 +1248,8 @@ CONTAINS
        ELSEIF ( AreaFlag == 3 .AND. TimeFlag == 1 ) THEN
           Lct%Dct%Dta%IsConc = .TRUE.
 
-          ncArr = ncArr * HcoState%TS_EMIS
+          ! Preserve HCO_MISSVAL sentinels when scaling
+          WHERE ( ncArr /= HCO_MISSVAL ) ncArr = ncArr * HcoState%TS_EMIS
           MSG = 'Data converted from kg/m3/s to kg/m3: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(thisUnit)
           IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
@@ -1263,7 +1264,8 @@ CONTAINS
 
        ! Emission data that is not per time (kg/m2): convert to kg/m2/s
        ELSEIF ( AreaFlag == 2 .AND. TimeFlag == 0 ) THEN
-          ncArr = ncArr / HcoState%TS_EMIS
+          ! Preserve HCO_MISSVAL sentinels when scaling
+          WHERE ( ncArr /= HCO_MISSVAL ) ncArr = ncArr / HcoState%TS_EMIS
           MSG = 'Data converted from kg/m2 to kg/m2/s: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(thisUnit)
           IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )

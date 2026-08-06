@@ -1465,8 +1465,10 @@ CONTAINS
        AREA = ( 2_hp * HcoState%Phys%PI * DLAT * HcoState%Phys%Re**2 ) &
               / REAL(nlon,hp)
 
-       ! convert array data to m-2
-       ARRAY(:,J,:,:) = ARRAY(:,J,:,:) / AREA
+       ! convert array data to m-2, preserving HCO_MISSVAL sentinels
+       WHERE ( ARRAY(:,J,:,:) /= HCO_MISSVAL )
+          ARRAY(:,J,:,:) = ARRAY(:,J,:,:) / AREA
+       END WHERE
     ENDDO
 
     ! Prompt a warning
