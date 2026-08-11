@@ -8,7 +8,7 @@ Configure a simulation
 
    Another useful resource for instructions on configuring HEMCO run
    directories is our `YouTube tutorial
-   <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`_.
+   <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`__.
 
 Navigate to your new directory, and examine the contents:
 
@@ -38,12 +38,12 @@ HEMCO_sa_Config.rc
 Main configuration file for the HEMCO standalone simulation. This
 file points to the other configuration files used to set up your
 simulation (e.g. :ref:`hco-sa-sim-config-rundir-sa-grid`,
-:ref:`hco-sa-sim-config-rundir-sa-time`, etc):.
+:ref:`hco-sa-sim-config-rundir-sa-time`, etc.).
 
 This file typically references a
 :ref:`hco-sa-sim-config-rundir-sa-hcorc` file using
 
-.. code-block:: none
+.. code-block:: text
 
    >>>include HEMCO_Config.rc
 
@@ -57,7 +57,7 @@ HEMCO_Config.rc
 ---------------
 
 Contains emissions settings. :file:`HEMCO_Config.rc` can be taken
-from a another model (such as GEOS-Chem), or can be built from a
+from another model (such as GEOS-Chem), or can be built from a
 sample file.
 
 For more information on editing :file:`HEMCO_Config.rc`, please
@@ -68,7 +68,7 @@ and :ref:`cfg-ex`.
 
    Make sure that the path to your data directory in the
    :file:`HEMCO_Config.rc` file is correct.  Otherwise, HEMCO
-   standalone will not be able read data from disk.
+   standalone will not be able to read data from disk.
 
 .. _hco-sa-sim-config-rundir-sa-hcodg:
 
@@ -90,8 +90,8 @@ HEMCO_sa_Grid.$RES.rc
 
 Defines the grid specification for resolution :literal:`$RES`. Sample
 files for several horizontal resolutions (4.0 x 5.0, 2.0 x 2.5, 0.5 x
-0.625, and 0.25 x 0.3125 global grids) are stored in the in
-:file:`HEMCO/run/` folder.  These are are automatically copied to the
+0.625, and 0.25 x 0.3125 global grids) are stored in the
+:file:`HEMCO/run/` folder.  These are automatically copied to the
 run directory based on options chosen when running
 :file:`createRunDir.sh`.
 
@@ -111,7 +111,7 @@ You may easily generate a :file:`HEMCO_sa_Spec.rc` corresponding to a
 different GEOS-Chem simulation with the GCPy example script
 :file:`make_hemco_sa_spec.py`.  For usage details, see the `Generate a
 HEMCO_sa_Spec.rc for HEMCO Standalone
-<https://gcpy.readthedocs.io/en/latest/Hemco-Examples.html#generate-a-hemco-sa-spec-rc-file-for-hemco-standalone>`_
+<https://gcpy.readthedocs.io/en/latest/Hemco-Examples.html#generate-a-hemco-sa-spec-rc-file-for-hemco-standalone>`__
 documentation at gcpy.readthedocs.io.
 
 .. _hco-sa-sim-config-rundir-sa-time:

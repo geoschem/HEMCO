@@ -11,15 +11,15 @@ simulation are present on disk.
 .. tip::
 
    If you are located at an institution where there are several other
-   HEMCO and/or `GEOS-Chem <https://geos-chem.readthedocs.io>`_ users,
+   HEMCO and/or `GEOS-Chem <https://geos-chem.readthedocs.io>`__ users,
    then data for HEMCO standalone might already be located in a shared
    folder.  Ask your sysadmin or IT staff.
 
 The :ref:`GEOS-Chem Input Data <gcid>` portal is the main source of
 emissions and meteorology simulations. This data, which is curated by
-the GEOS-Chem Support Team at Washington University in St. Louis, is stored an
+the GEOS-Chem Support Team at Washington University in St. Louis, is stored in an
 Amazon Web Services S3 bucket named `s3://geos-chem
-<https://geos-chem.s3.amazonaws.com/index.html>`_.  You can easily
+<https://geos-chem.s3.amazonaws.com/index.html>`__.  You can easily
 download the data from there to your computer cluster or AWS EC2 cloud
 instance.
 
