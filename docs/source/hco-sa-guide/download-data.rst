@@ -29,6 +29,6 @@ one of the links below for more information.
 .. toctree::
    :maxdepth: 1
 
-   hco-sa-dry-run.rst
-   ../geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
-   hco-sa-globus.rst
+   hco-sa-dry-run
+   ../geos-chem-shared-docs/supplemental-guides/bashdatacatalog
+   hco-sa-globus

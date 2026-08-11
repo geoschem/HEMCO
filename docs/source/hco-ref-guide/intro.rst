@@ -18,14 +18,14 @@ Contents
 .. toctree::
    :maxdepth: 1
 
-   basic-examples.rst
-   hemco-config.rst
-   extensions.rst
-   units.rst
-   diagnostics.rst
-   more-examples.rst
-   under-the-hood.rst
-   input-file-format.rst
+   basic-examples
+   hemco-config
+   extensions
+   units
+   diagnostics
+   more-examples
+   under-the-hood
+   input-file-format
    ../coupling/intro.rst
    known-bugs.rst
    version-history.rst
