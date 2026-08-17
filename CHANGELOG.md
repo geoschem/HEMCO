@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed an error in `src/Shared/GeosUtil/hco_regrid_a2a_mod.F90` where `ymap` southern edge straddling the source cell would be `missval` incorrectly.
 - Fixed an error in `src/Shared/GeosUtil/hco_regrid_a2a_mod.F90` where `xmap` ghost regions were initialized as `0` and not `missval`.
 - Fixed an error in `src/Shared/GeosUtil/hco_regrid_a2a_mod.F90` where `ymap_r8r8` incorrectly uses `im` as the divisor instead of `nlon`; and `sum` is calculated based on `nlon > 0.0`
+- Fixed use-before-initialize in `src/Core/hcoio_read_std_mod.F90`.
+- Fixed `lon_edges`/`lat_edges` variable check, calendar check, and debug output in `src/Shared/NcdfUtil/hco_ncdf_mod.F90`.
 
 #### Removed
 - Removed C-preprocessor switch `ESMF_`
