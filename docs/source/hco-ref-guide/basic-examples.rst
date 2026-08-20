@@ -58,8 +58,7 @@ in :ref:`hco-hood-int`.
    Unit tolerance:              1
    Negative values:             0
    Only unitless scale factors: false
-   Verbose:                     0
-   Warnings:                    1
+   Verbose:                     false
 
    ### END SECTION SETTINGS ###
 
@@ -405,8 +404,7 @@ now looks like this:
    Unit tolerance:              1
    Negative values:             0
    Only unitless scale factors: false
-   Verbose:                     0
-   Warnings:                    1
+   Verbose:                     false
 
    ### END SECTION SETTINGS ###
 

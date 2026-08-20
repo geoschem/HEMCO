@@ -48,6 +48,19 @@ Emissions of mineral dust.
   DSTbin7, TDST
 - **Reference**: :cite:t:`Zhang_et_al._2025`
 
+The :literal:`Mass tuning factor` setting is **required**; DustL23M
+will halt with an error if it is not specified. Its value is
+resolution- and meteorology-dependent, so it must be set separately for
+each grid resolution / meteorological input combination (see the
+sample :file:`HEMCO_Config.rc` files under
+:file:`run/config_for_offline_emissions/` for resolution-specific
+values). For example:
+
+.. code-block:: kconfig
+
+   125    DustL23M          : on    TDST/DSTbin1/DSTbin2/DSTbin3/DSTbin4/DSTbin5/DSTbin6/DSTbin7
+      --> Mass tuning factor :       2.832e-3
+
 .. _hco-ext-list-gcrnpbbe:
 
 GC_Rn-Pb-Be
@@ -56,7 +69,7 @@ GC_Rn-Pb-Be
 Emissions of radionuclide species as used in the `GEOS-Chem
 <https://geos-chem.readthedocs.io>`__ model.
 
-- **Species**: Rn222, Be7, Be7Strat, Be10, Be10Strat
+- **Species**: Rn222, Be7, Be7s, Be10, Be10s
 
 If :literal:`ZHANG_Rn222` is :literal:`on`, then Rn222 emissions
 will be computed according to :cite:t:`Zhang_et_al._2021`.

@@ -233,6 +233,12 @@ diagnostics. For example, the PARANOX extension (used in `GEOS-Chem
 fluxes in the manual diagnostics :literal:`PARANOX_O3_DEPOSITION_FLUX`
 and :literal:`PARANOX_HNO3_DEPOSITION_FLUX`, respectively.
 
+Similarly, if the MEGAN extension's :literal:`InvMEGAN All` setting is
+set to :literal:`true`, MEGAN creates a manual diagnostic for each
+biogenic VOC species it emits, named :literal:`InvMEGAN_<species>`
+(e.g. :literal:`InvMEGAN_ACET_MBOX`, :literal:`InvMEGAN_ACET_DIRECT`,
+:literal:`InvMEGAN_APIN`).
+
 .. _hco-diag-importing:
 
 ===================================================

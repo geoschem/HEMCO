@@ -1421,10 +1421,14 @@ scale the emissions.
 MaskID
 ------
 
-Optional.  :ref:`hco-cfg-base-scale-scalid` of a mask field. This
-optional value can be used if a scale factor shall only be used over a
-given region. The provided MaskID must have a corresponding entry in
-the :ref:`Masks section <hco-cfg-masks>` of the configuration file.
+Optional integer value. If set to a positive integer, HEMCO compares
+this value against the gridded value of the scale factor itself at
+each grid box: where the scale factor's value equals :literal:`MaskID`
+(to within a small tolerance), the effective scale factor is set to
+:literal:`1`; everywhere else it is set to :literal:`0`. This turns a
+gridded field of integer region IDs into a binary regional mask on the
+fly, without requiring a separate entry in the :ref:`Masks section
+<hco-cfg-masks>`.
 
 .. note::
 

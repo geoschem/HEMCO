@@ -84,7 +84,8 @@ would like to use.
      2. 2.0 x 2.5
      3. 0.5 x 0.625
      4. 0.25 x 0.3125
-     5. Custom
+     5. 0.125 x 0.15625
+     6. Custom
 
 ==========================
 Enter HEMCO_Config.rc path

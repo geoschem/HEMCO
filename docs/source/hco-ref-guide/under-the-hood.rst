@@ -469,6 +469,6 @@ linked list.
    Several HEMCO extensions still use global arrays and currently
    cannot be used in multi-instance simulations. As of 8/29/2018, the
    following extensions are likely to cause problems in multi-instance
-   simulations: Ginoux dust emissions, FINN biomass burning, GFED
-   biomass burning, Iodine emissions, PARANOx ship emissions, sea flux
-   emissions, sea salt emissions.
+   simulations: FINN biomass burning, GFED biomass burning, Iodine
+   emissions, PARANOx ship emissions, sea flux emissions, sea salt
+   emissions.

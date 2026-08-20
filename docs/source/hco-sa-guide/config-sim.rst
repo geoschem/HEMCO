@@ -70,6 +70,19 @@ and :ref:`cfg-ex`.
    :file:`HEMCO_Config.rc` file is correct.  Otherwise, HEMCO
    standalone will not be able to read data from disk.
 
+.. _hco-sa-sim-config-rundir-sa-offline:
+
+config_for_offline_emissions/
+------------------------------
+
+Contains sample :file:`HEMCO_Config.rc` files, organized by horizontal
+resolution and meteorological input, that enable individual HEMCO
+extensions (e.g. :ref:`hco-ext-list-dustl23m`) for the purpose of
+generating standalone offline emissions output. Copy the sample file
+that matches your resolution/meteorology combination over
+:file:`HEMCO_Config.rc`, or merge the relevant extension settings into
+your existing :file:`HEMCO_Config.rc`, to reproduce these emissions.
+
 .. _hco-sa-sim-config-rundir-sa-hcodg:
 
 HEMCO_Diagn.rc
@@ -90,8 +103,8 @@ HEMCO_sa_Grid.$RES.rc
 
 Defines the grid specification for resolution :literal:`$RES`. Sample
 files for several horizontal resolutions (4.0 x 5.0, 2.0 x 2.5, 0.5 x
-0.625, and 0.25 x 0.3125 global grids) are stored in the
-:file:`HEMCO/run/` folder.  These are automatically copied to the
+0.625, 0.25 x 0.3125, and 0.125 x 0.15625 global grids) are stored in
+the :file:`HEMCO/run/` folder.  These are automatically copied to the
 run directory based on options chosen when running
 :file:`createRunDir.sh`.
 
