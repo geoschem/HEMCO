@@ -9,7 +9,7 @@ esma_add_library (
   SRCS ${srcs}
   DEPENDENCIES Chem_Shared MAPL HCOI_Standalone HCOI_MAPL_ESMF
   )
-target_compile_definitions (${this} PRIVATE ESMF_ DEVEL GEOS_FP)
+target_compile_definitions (${this} PRIVATE USE_ESMF MAPL_ESMF DEVEL GEOS_FP)
 target_include_directories (${this} PUBLIC ${INC_ESMF} ${INC_NETCDF})
 
 set (acg_headers

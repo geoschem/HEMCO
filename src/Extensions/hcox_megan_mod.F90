@@ -408,11 +408,11 @@ CONTAINS
     Inst%FLUXSOAP   = 0.0_sp
     Inst%FLUXSOAS   = 0.0_sp
 
-#if defined( ESMF_ ) || defined( MODEL_GEOS )
+#ifdef MAPL_ESMF
 
     !----------------------------------------------------------------
-    ! %%%%% ESMF environment: execute these on every call  %%%%%
-    ! %%%%% because this will fill from the External State %%%%%
+    ! %%%%% MAPL/ESMF environment: execute these on every call  %%%%%
+    ! %%%%% because this will fill from the External State      %%%%%
     !----------------------------------------------------------------
 
     ! Generate annual emission factors for MEGAN inventory
@@ -431,7 +431,7 @@ CONTAINS
        RETURN
     ENDIF
 
-    ! Fill restart variables.
+    ! Fill restart variables
     CALL FILL_RESTART_VARS( HcoState, ExtState, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        MSG = 'Error encountered in MEGAN routine FILL_RESTART_VARS!'
@@ -1233,10 +1233,6 @@ CONTAINS
        ENDIF
 
     ENDIF
-
-    ! ----------------------------------------------------------------
-    ! Eventually copy internal values to ESMF internal state object
-    ! ----------------------------------------------------------------
 
     ! LAI_PREVDAY
     CALL HCO_RestartWrite( HcoState, &

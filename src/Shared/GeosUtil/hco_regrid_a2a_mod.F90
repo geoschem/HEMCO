@@ -723,6 +723,11 @@ CONTAINS
        dlat = 0.0d0
        j0 = 1
        do 555 j=1,jn-ig
+          ! Reset qsum and dlat at the start of every target-j iteration.
+          ! Without this, a target cell whose south-most source cell is
+          ! missing would inherit qsum, dlat from the previous j.
+          qsum = 0.0d0
+          dlat = 0.0d0
        do 100 m=j0,jm-ig
 
           !=========================================================
@@ -742,6 +747,9 @@ CONTAINS
                 if( abs(q1(i,m)-miss)>tiny_r8 ) then
                    dlat= sin1(m+1)-sin2(j)
                    qsum=(sin1(m+1)-sin2(j))*q1(i,m)
+                else
+                   dlat=0.0d0
+                   qsum=0.0d0
                 endif
 
                 do mm=m+1,jm-ig
@@ -923,6 +931,11 @@ CONTAINS
        dlat = 0.0d0
        j0 = 1
        do 555 j=1,jn-ig
+          ! Reset qsum and dlat at the start of every target-j iteration.
+          ! Without this, a target cell whose south-most source cell is
+          ! missing would inherit qsum, dlat from the previous j.
+          qsum = 0.0d0
+          dlat = 0.0d0
        do 100 m=j0,jm-ig
 
           !=========================================================
@@ -942,6 +955,9 @@ CONTAINS
                 if( abs(q1(i,m)-miss)>tiny_r4 ) then
                    dlat= sin1(m+1)-sin2(j)
                    qsum=(sin1(m+1)-sin2(j))*q1(i,m)
+                else
+                   dlat=0.0d0
+                   qsum=0.0d0
                 endif
 
                 do mm=m+1,jm-ig
@@ -1123,6 +1139,11 @@ CONTAINS
        dlat = 0.0d0
        j0 = 1
        do 555 j=1,jn-ig
+          ! Reset qsum and dlat at the start of every target-j iteration.
+          ! Without this, a target cell whose south-most source cell is
+          ! missing would inherit qsum, dlat from the previous j.
+          qsum = 0.0d0
+          dlat = 0.0d0
        do 100 m=j0,jm-ig
 
           !=========================================================
@@ -1142,6 +1163,9 @@ CONTAINS
                 if( abs(q1(i,m)-miss)>tiny_r8 ) then
                    dlat= sin1(m+1)-sin2(j)
                    qsum=(sin1(m+1)-sin2(j))*q1(i,m)
+                else
+                   dlat=0.0d0
+                   qsum=0.0d0
                 endif
 
                 do mm=m+1,jm-ig
@@ -1322,6 +1346,11 @@ CONTAINS
        dlat = 0.0
        j0 = 1
        do 555 j=1,jn-ig
+          ! Reset qsum and dlat at the start of every target-j iteration.
+          ! Without this, a target cell whose south-most source cell is
+          ! missing would inherit qsum, dlat from the previous j.
+          qsum = 0.0
+          dlat = 0.0
        do 100 m=j0,jm-ig
 
           !=========================================================
@@ -1341,6 +1370,9 @@ CONTAINS
                 if( abs(q1(i,m)-miss)>tiny_r4 ) then
                    dlat=sin1(m+1)-sin2(j)
                    qsum=dlat*q1(i,m)
+                else
+                   dlat=0.0
+                   qsum=0.0
                 endif
 
                 do mm=m+1,jm-ig
