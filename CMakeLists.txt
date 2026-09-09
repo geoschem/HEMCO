@@ -323,17 +323,36 @@ endif()
 # For HEMCO as submodule in MAPL/ESMF superproject
 #-----------------------------------------------------------------------------
 if(HEMCO_EXTERNAL_CONFIG AND MAPL_ESMF)
+if(NOT MAPL3)
     target_link_libraries(HEMCOBuildProperties
         INTERFACE $<LINK_ONLY:MAPL.base>
+        INTERFACE $<LINK_ONLY:MAPL.shared>
         INTERFACE $<LINK_ONLY:MAPL.generic>
     )
     target_include_directories(HEMCOBuildProperties 
         INTERFACE $<TARGET_PROPERTY:MAPL.base,INTERFACE_INCLUDE_DIRECTORIES>
+	INTERFACE $<TARGET_PROPERTY:MAPL.shared,INTERFACE_INCLUDE_DIRECTORIES>
         INTERFACE $<TARGET_PROPERTY:MAPL.generic,INTERFACE_INCLUDE_DIRECTORIES>
     )
     target_compile_definitions(HEMCOBuildProperties
-        INTERFACE ESMF_ MAPL_ESMF
+        INTERFACE USE_ESMF MAPL_ESMF
     )
+endif()
+if(MAPL3)
+    target_link_libraries(HEMCOBuildProperties
+        INTERFACE $<LINK_ONLY:MAPL.base>
+        INTERFACE $<LINK_ONLY:mapl3g>
+	INTERFACE $<LINK_ONLY:MAPL.generic3g>
+    )
+    target_include_directories(HEMCOBuildProperties
+        INTERFACE $<TARGET_PROPERTY:MAPL.base,INTERFACE_INCLUDE_DIRECTORIES>
+        INTERFACE $<TARGET_PROPERTY:mapl3g,INTERFACE_INCLUDE_DIRECTORIES>
+	INTERFACE $<TARGET_PROPERTY:MAPL.generic3g,INTERFACE_INCLUDE_DIRECTORIES>
+    )
+    target_compile_definitions(HEMCOBuildProperties
+        INTERFACE USE_ESMF MAPL_ESMF MAPL3
+    )
+endif()
 
     # Specify the HEMCO interface being used
     set(HEMCO_INTERFACE

@@ -111,6 +111,7 @@ MODULE HCOX_STATE_MOD
      INTEGER                   :: SeaSalt        ! Seasalt emissions
      INTEGER                   :: GFED           ! GFED biomass burning
      INTEGER                   :: FINN           ! FINN biomass burning
+     INTEGER                   :: GFAS           ! GFAS biomass burning (3D)
      INTEGER                   :: GC_RnPbBe      ! GEOS-Chem Rn-Pb-Be simulation
      INTEGER                   :: GC_POPs        ! GEOS-Chem POPs simulation
      INTEGER                   :: Wetland_CH4    ! Methane emiss from wetlands
@@ -309,6 +310,7 @@ CONTAINS
     ExtState%SeaSalt        = -1
     ExtState%GFED           = -1
     ExtState%FINN           = -1
+    ExtState%GFAS           = -1
     ExtState%GC_RnPbBe      = -1
     ExtState%GC_POPs        = -1
     ExtState%Wetland_CH4    = -1

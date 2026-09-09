@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Added
+- Added code blocks for MAPL3 code in development
+- Added C-preprocessor switches `USE_ESMF` and `MAPL3`
+- Added HEMCO I/O module using PIO (`hcoio_read_pio_mod.F90` and `hcoio_write_pio_mod.F90` stub) for coupling to CESM
+- Added an extension for calculating GFAS 3D biomass emission
+
+### Changed
+- Renamed subroutine `HCO_CopyFromIntnal_ESMF` to `HCO_CopyFromInternal_ESMF`
+- Renamed state objects `HcoState%IMPORT` and `HcoStateEXPORT` to `HcoState%importState` and `HcoState%exportState` respectively
+
+### Fixed
+- Fixed an error in `src/Shared/GeosUtil/hco_regrid_a2a_mod.F90` where an accumulator was uninitialized before reuse, which may inherit junk data from the previous iteration if the southmost source cell is not found
+- Fixed IF-block logic errors in `SrcFile_Parse` that led to incorrect time-cycling behavior
+- Fixed `HCO_MISSVAL` missing-value sentinel getting unit converted or scaled, leading to crashes when files had negative FillValues
+- Fixed an error in `src/Shared/GeosUtil/hco_regrid_a2a_mod.F90` where `ymap` southern edge straddling the source cell would be `missval` incorrectly.
+- Fixed an error in `src/Shared/GeosUtil/hco_regrid_a2a_mod.F90` where `xmap` ghost regions were initialized as `0` and not `missval`.
+- Fixed an error in `src/Shared/GeosUtil/hco_regrid_a2a_mod.F90` where `ymap_r8r8` incorrectly uses `im` as the divisor instead of `nlon`; and `sum` is calculated based on `nlon > 0.0`
+- Fixed use-before-initialize in `src/Core/hcoio_read_std_mod.F90`.
+- Fixed `lon_edges`/`lat_edges` variable check, calendar check, and debug output in `src/Shared/NcdfUtil/hco_ncdf_mod.F90`.
+
+#### Removed
+- Removed C-preprocessor switch `ESMF_`
+
 ## [3.12.1] - 2026-04-08
 ### Changed
 - Updated GitHub Actions to the latest versions

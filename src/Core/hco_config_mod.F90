@@ -1008,8 +1008,8 @@ CONTAINS
                    ENDIF
                 ENDIF
 
-#if defined(ESMF_)
-                ! In an ESMF environment, the source data will be imported
+#ifdef MAPL_ESMF
+                ! In an MAPL/ESMF environment, the source data will be imported
                 ! through ExtData by name, hence need to set ncFile equal to
                 ! container name!
                 IF ( Dta%ncRead ) THEN
@@ -1228,8 +1228,8 @@ CONTAINS
                 ENDIF
              ENDIF
 
-#if defined(ESMF_)
-             ! In an ESMF environment, the source data will be imported
+#ifdef MAPL_ESMF
+             ! In a MAPL/ESMF environment, the source data will be imported
              ! through ExtData by name, hence need to set ncFile equal to
              ! container name!
              IF ( Dta%ncRead ) THEN
@@ -2098,10 +2098,9 @@ CONTAINS
 
     ENDDO
 
-#ifndef MODEL_GEOS
 #ifndef MODEL_WRF
 #ifndef MODEL_CESM
-#ifndef ESMF_
+#ifndef MAPL_ESMF
     !=======================================================================
     ! Look for met field and grid resolution.  When running the HEMCO
     ! standalone these will need to be read from the configuration file.
@@ -2141,7 +2140,6 @@ CONTAINS
        END SELECT
        HcoConfig%GridRes = TRIM( GridRes )
     ENDIF
-#endif
 #endif
 #endif
 #endif
@@ -2447,7 +2445,7 @@ CONTAINS
           !
           ! Thus, the following fix needs to be applied for ESMF environments,
           ! skipping a lot of the calculations below.
-#if defined ( ESMF_ ) || defined( MODEL_WRF ) || defined( MODEL_CESM )
+#if defined ( MAPL_ESMF ) || defined( MODEL_WRF ) || defined( MODEL_CESM )
           ThisCover = -1
 #else
           ! Get mask edges
