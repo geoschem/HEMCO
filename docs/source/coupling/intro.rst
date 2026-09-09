@@ -10,9 +10,9 @@ emissions component to other models.
 
 The description of :program:`HEMCO` coupling to other models is
 available in :cite:`Lin_et_al._2021`, which describes coupling to
-`GEOS-Chem Classic <https://geos-chem.readthedocs.io>`_,
-`GCHP <https://gchp.readthedocs.io>`_,
-`WRF-GC <http://wrf.geos-chem.org>`_,
+`GEOS-Chem Classic <https://geos-chem.readthedocs.io>`__,
+`GCHP <https://gchp.readthedocs.io>`__,
+`WRF-GC <http://wrfgc.readthedocs.io>`__,
 :program:`CESM2-GC`, and future NOAA models.
 
 ========
@@ -22,7 +22,7 @@ Overview
 This work is made possible by a restructuring of :program:`HEMCO`, named HEMCO
 3.0. HEMCO 3.0 separates model-specific components such as I/O,
 Regridding and the model speciation interface, into modular
-components, and isolate the HEMCO emissions Core.
+components, and isolates the HEMCO emissions Core.
 
 This work is currently being actively worked on by the GEOS-Chem
 Support Team and Haipeng Lin (Harvard) as part of coupling GEOS-Chem
@@ -31,11 +31,10 @@ with the CESM model.
 ================
 Useful resources
 ================
-- HEMCO Repository: `geoschem/HEMCO <https://github.com/geoschem/HEMCO geoschem/HEMCO>`_ on GitHub.
+- HEMCO Repository: `geoschem/HEMCO <https://github.com/geoschem/HEMCO>`__ on GitHub.
 - Original description paper: :cite:`Keller_et_al._2014`.
 - Coupling and HEMCO 3.0 description paper: :cite:`Lin_et_al._2021`.
-- `The HEMCO User's Guide <http://wiki.seas.harvard.edu/geos-chem/index.php/The_HEMCO_User%27s_Guide>`_
-- `HEMCO versions <http://wiki.seas.harvard.edu/geos-chem/index.php/HEMCO_versions>`_
+- `The HEMCO User's Guide <https://hemco.readthedocs.io>`__
 
 ===========
 Terminology
@@ -107,7 +106,7 @@ flux/concentrations) include:
    module designed to interface HEMCO with the model. This is so the
    interface can be updated more easily if subroutines within HEMCO
    such as :code:`HCO_GetPtr` change, and the HEMCO state
-   (:code`HcoState`) doesn't need to be passed to everywhere in your
+   (:code:`HcoState`) doesn't need to be passed to everywhere in your
    model that needs to retrieve data from HEMCO. **It is also useful
    so regridding to/from HEMCO can be performed in a centralized
    location, if so needed by the model.** For example, GEOS-Chem wraps
@@ -131,7 +130,7 @@ Reading the HEMCO configuration file and defining species list
 This is a three-step process. First initialize the configuration
 object (:code:`HcoConfig`):
 
-.. code-block:: Fortran
+.. code-block:: fortran
 
    call ConfigInit(HcoConfig, HMRC, nModelSpecies=nSpc)
 
@@ -154,7 +153,7 @@ HcoConfig properties:
 Then open the configuration file in two phases; after phase 1,
 initialize the log file on the MPI root process:
 
-.. code-block:: Fortran
+.. code-block:: fortran
 
    call Config_ReadFile(HcoConfig%amIRoot, HcoConfig, HcoConfigFile, 1, HMRC, IsDryRun=.false.)
 
@@ -172,7 +171,7 @@ initialize the log file on the MPI root process:
    HEMCO Config object*.
 
 Some species physical properties need to be defined for :program:`HEMCO`
-extensions, such as molecular weight and henry's law constants:
+extensions, such as molecular weight and Henry's law constants:
 
 .. code-block:: fortran
 
@@ -253,7 +252,7 @@ Define horizontal grid parameters
 Here we point :program:`HEMCO`'s variables to structures we have
 created in the model. Examples in how to create these structures are
 available `in the HEMCO-CESM interface
-<https://github.com/jimmielin/HEMCO_CESM/blob/development/hco_esmf_grid.F90>`_.
+<https://github.com/jimmielin/HEMCO_CESM/blob/development/hco_esmf_grid.F90>`__.
 
 Defining Met Fields for HEMCO Extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -397,7 +396,7 @@ Retrieving deposition velocities (depv) from HEMCO
    concentrations.
 
 A thorough discussion of this is in `the HEMCO GitHub issue tracker
-<https://github.com/geoschem/HEMCO/issues/72#issuecomment-789409266>`_. The
+<https://github.com/geoschem/HEMCO/issues/72#issuecomment-789409266>`__. The
 code to handle deposition velocities from HEMCO is generally as
 follows:
 

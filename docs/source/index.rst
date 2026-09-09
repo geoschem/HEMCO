@@ -9,13 +9,11 @@ The Harmonized Emissions Component (HEMCO)
    <p>
      <a href="https://github.com/geoschem/hemco/releases"><img src="https://img.shields.io/github/v/release/geoschem/hemco?label=Latest%20Stable%20Release"></a>
      <a href="https://github.com/geoschem/hemco/releases/"><img src="https://img.shields.io/github/release-date/geoschem/hemco"></a>
-     <br />
-     <a href="https://doi.org/10.5281/zenodo.4618253"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4618253.svg" alt="DOI"></a>
+     <a href="https://doi.org/10.5281/zenodo.4618253"><img src="https://img.shields.io/badge/DOI-doi.org%2F10.5281%2Fzenodo.4618253-blue" alt="DOI"></a><br />
      <a href="https://github.com/geoschem/hemco/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
      <a href="https://hemco.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/geos-chem?label=ReadTheDocs"></a>
      <a href="https://github.com/geoschem/hemco/actions/workflows/ubuntu.yml"><img src="https://github.com/geoschem/hemco/actions/workflows/ubuntu.yml/badge.svg" alt="Ubuntu"></a>
      <a href="https://github.com/geoschem/hemco/actions/workflows/mac.yml"><img src="https://github.com/geoschem/hemco/actions/workflows/mac.yml/badge.svg" alt="Mac"></a>
-     <a href="https://github.com/geoschem/hemco/actions/workflows/windows.yml"><img src="https://github.com/geoschem/hemco/actions/workflows/windows.yml/badge.svg" alt="Windows"></a>
    </p>
 
 The **Harmonized Emissions Component (HEMCO)** is a software component
@@ -35,55 +33,55 @@ HEMCO is given in :cite:t:`Keller_et_al._2014` and
    :maxdepth: 2
    :caption: HEMCO Standalone User Guide
 
-   hco-sa-guide/intro.rst
-   hco-sa-guide/hardware.rst
-   hco-sa-guide/software.rst
-   hco-sa-guide/login-env.rst
-   hco-sa-guide/download-code.rst
-   hco-sa-guide/create-rundir.rst
-   hco-sa-guide/compiling.rst
-   hco-sa-guide/config-sim.rst
-   hco-sa-guide/download-data.rst
-   hco-sa-guide/run-standalone.rst
+   hco-sa-guide/intro
+   hco-sa-guide/hardware
+   hco-sa-guide/software
+   hco-sa-guide/login-env
+   hco-sa-guide/download-code
+   hco-sa-guide/create-rundir
+   hco-sa-guide/compiling
+   hco-sa-guide/config-sim
+   hco-sa-guide/download-data
+   hco-sa-guide/run-standalone
 
 .. toctree::
    :maxdepth: 2
    :caption: HEMCO Reference Guide
 
-   hco-ref-guide/intro.rst
-   hco-ref-guide/basic-examples.rst
-   hco-ref-guide/hemco-config.rst
-   hco-ref-guide/extensions.rst
-   hco-ref-guide/units.rst
-   hco-ref-guide/diagnostics.rst
-   hco-ref-guide/more-examples.rst
-   hco-ref-guide/under-the-hood.rst
-   hco-ref-guide/input-file-format.rst
-   coupling/intro.rst
-   hco-ref-guide/key-references.rst
+   hco-ref-guide/intro
+   hco-ref-guide/basic-examples
+   hco-ref-guide/hemco-config
+   hco-ref-guide/extensions
+   hco-ref-guide/units
+   hco-ref-guide/diagnostics
+   hco-ref-guide/more-examples
+   hco-ref-guide/under-the-hood
+   hco-ref-guide/input-file-format
+   coupling/intro
+   hco-ref-guide/key-references
 
 .. toctree::
    :maxdepth: 1
    :caption: Supplemental Guides
 
-   geos-chem-shared-docs/supplemental-guides/load-libraries-guide.rst
-   geos-chem-shared-docs/supplemental-guides/spack-guide.rst
-   geos-chem-shared-docs/supplemental-guides/error-guide.rst
-   geos-chem-shared-docs/supplemental-guides/debug-guide.rst
-   geos-chem-shared-docs/doc/gcid-portal-overview.rst
-   geos-chem-shared-docs/doc/gcid-special-portals.rst
-   geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
-   geos-chem-shared-docs/supplemental-guides/parallel-guide.rst
-   geos-chem-shared-docs/supplemental-guides/netcdf-guide.rst
-   geos-chem-shared-docs/supplemental-guides/coards-guide.rst
-   geos-chem-shared-docs/supplemental-guides/related-docs.rst
+   geos-chem-shared-docs/supplemental-guides/load-libraries-guide
+   geos-chem-shared-docs/supplemental-guides/spack-guide
+   geos-chem-shared-docs/supplemental-guides/error-guide
+   geos-chem-shared-docs/supplemental-guides/debug-guide
+   geos-chem-shared-docs/doc/gcid-portal-overview
+   geos-chem-shared-docs/doc/gcid-special-portals
+   geos-chem-shared-docs/supplemental-guides/bashdatacatalog
+   geos-chem-shared-docs/supplemental-guides/parallel-guide
+   geos-chem-shared-docs/supplemental-guides/netcdf-guide
+   geos-chem-shared-docs/supplemental-guides/coards-guide
+   geos-chem-shared-docs/supplemental-guides/related-docs
 
 .. toctree::
    :maxdepth: 1
    :caption: Help and Reference
 
-   hco-ref-guide/version-history.rst
-   hco-ref-guide/known-bugs.rst
-   reference/CONTRIBUTING.md
-   reference/SUPPORT.md
-   geos-chem-shared-docs/editing_these_docs.rst
+   hco-ref-guide/version-history
+   hco-ref-guide/known-bugs
+   reference/CONTRIBUTING
+   reference/SUPPORT
+   geos-chem-shared-docs/editing_these_docs

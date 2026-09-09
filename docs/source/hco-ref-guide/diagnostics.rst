@@ -90,7 +90,7 @@ simulation date at the time of output will be appended to the
 diagnostics prefix, e.g. the diagnostics for Aug 1, 2008 will be
 written as :file:`HEMCO_Diagnostics.200808010000.nc`. The datetime
 can denote the beginning, middle, or end (default) of the time
-interval, as specified by setting ::ref:`hco-cfg-set-diagntimestamp`.
+interval, as specified by setting :ref:`hco-cfg-set-diagntimestamp`.
 
 Several options for the default diagnostic collection can be specified
 at the top of the :ref:`HEMCO configuration file <hco-cfg>` file.
@@ -229,9 +229,15 @@ HEMCO to the atmospheric model.
 
 Some HEMCO extensions automatically create and fill a number of manual
 diagnostics. For example, the PARANOX extension (used in `GEOS-Chem
-<https://geos-chem.readthedocs.io>`_) stores the O3 and HNO3 loss
+<https://geos-chem.readthedocs.io>`__) stores the O3 and HNO3 loss
 fluxes in the manual diagnostics :literal:`PARANOX_O3_DEPOSITION_FLUX`
 and :literal:`PARANOX_HNO3_DEPOSITION_FLUX`, respectively.
+
+Similarly, if the MEGAN extension's :literal:`InvMEGAN All` setting is
+set to :literal:`true`, MEGAN creates a manual diagnostic for each
+biogenic VOC species it emits, named :literal:`InvMEGAN_<species>`
+(e.g. :literal:`InvMEGAN_ACET_MBOX`, :literal:`InvMEGAN_ACET_DIRECT`,
+:literal:`InvMEGAN_APIN`).
 
 .. _hco-diag-importing:
 

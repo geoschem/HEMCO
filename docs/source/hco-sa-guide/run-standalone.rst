@@ -8,7 +8,7 @@ Run a simulation
 
    Another useful resource for instructions on running :program:`HEMCO` is our
    `YouTube tutorial
-   <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`_.
+   <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`__.
 
 .. _hco-sa-run-int:
 
@@ -29,7 +29,7 @@ You can run HEMCO standalone interactively at the command line by typing:
    $ ./hemco_standalone -c HEMCO_sa_Config.rc
 
 where :literal:`-c` specifies the path to the
-:option:`HEMCO_sa_Config.rc` configuraiton file.
+:file:`HEMCO_sa_Config.rc` configuration file.
 
 .. _hco-sa-run-batch:
 
@@ -43,9 +43,9 @@ directories (:file:`runHEMCO.sh`) is for use with SLURM. You may
 modify this file for your system and preferences as needed.
 
 At the top of all batch job scripts are configurable run
-settings. Most critically are requested # cores, # nodes, time, and
-memory. Figuring out the optimal values for your run can take some
-trial and error.
+settings. Most critical are the requested number of cores, number of
+nodes, time, and memory. Figuring out the optimal values for your run
+can take some trial and error.
 
 To submit a batch job using SLURM:
 
@@ -93,4 +93,4 @@ tips:
 
 If you cannot figure out where the problem is please do not hesitate
 to create a `GitHub issue
-<https://github.com/geoschem/HEMCO/issues/new/choose/>`_.
+<https://github.com/geoschem/HEMCO/issues/new/choose/>`__.

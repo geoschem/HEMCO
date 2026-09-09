@@ -19,7 +19,7 @@ master_doc = 'index'
 # -- Project information -----------------------------------------------------
 
 project = 'HEMCO'
-copyright = '2023, GEOS-Chem Support Team'
+copyright = '2026, GEOS-Chem Support Team'
 author = 'GEOS-Chem Support Team'
 
 # The full version, including alpha/beta/rc tags
@@ -33,7 +33,7 @@ release = '3.12.1'
 extensions = [
     "sphinx_rtd_theme",
     "sphinxcontrib.bibtex",
-    "recommonmark",
+    "myst_parser",
 ]
 bibtex_default_style = 'hcorefstyle'
 bibtex_reference_style = "author_year"
@@ -117,7 +117,6 @@ html_logo = "geos-chem-shared-docs/_static/GEOS-Chem_Logo_Light_Background.png"
 # More theme settings
 html_theme_options = {
     'logo_only': False,                        # Show logo & top text
-    'display_version': False,                  # Don't show version number
     'style_nav_header_background': '#FCFCFC',  # 99% white for top left bkgrnd
 }
 

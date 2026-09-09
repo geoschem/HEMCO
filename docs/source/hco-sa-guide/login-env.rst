@@ -24,7 +24,7 @@ An environment file does the following:
 
   2. Stores settings for HEMCO and its dependent libraries in
      shell variables called `environment variables
-     <https://www.networkworld.com/article/3215965/all-you-need-to-know-about-unix-environment-variables.html>`_.
+     <https://www.networkworld.com/article/3215965/all-you-need-to-know-about-unix-environment-variables.html>`__.
 
 Environment files allow you to easily switch between different sets of
 libraries.  For example, you can keep one environment file to load the
@@ -47,7 +47,7 @@ Sample environment file for GNU 12.2.0 compilers
 Below is a sample environment file (based on an enviroment file for
 the Harvard Cannon computer cluster).  This file will load software
 libraries built with the `GNU 12.2.0 compilers
-<https://gcc.gnu.org/onlinedocs/12.2.0/>`_.
+<https://gcc.gnu.org/onlinedocs/12.2.0/>`__.
 
 .. note::
 
@@ -193,7 +193,7 @@ system) into a file named :file:`~/intel23.env`.
 
    ###############################################################################
    #
-   # Environment file for HEMCO + GNU Compiler Collection 12.2.0
+   # Environment file for HEMCO + Intel Compiler Suite 2023
    #
    ###############################################################################
 
@@ -201,7 +201,7 @@ system) into a file named :file:`~/intel23.env`.
    module purge
 
    # Load modules
-   module load intel/23.0.0-fasrc01           # icc / i++ / gfortran
+   module load intel/23.0.0-fasrc01           # icx / icx / ifort
    module load intelmpi/2021.8.0-fasrc01      # MPI
    module load netcdf-fortran/4.6.0-fasrc03   # netCDF-Fortran
    module load flex/2.6.4-fasrc01             # Flex lexer (needed for KPP)
@@ -283,7 +283,7 @@ To activate the settings contained in the environment file, type:
 
 .. code-block:: console
 
-   $ . intel23.env
+   $ . ~/intel23.env
 
 .. tip::
 
@@ -299,18 +299,26 @@ Set environment variables for compilers
 Add the following environment variables to your environment file to
 specify the compilers that you wish to use:
 
-.. table:: Environment variables that specify the choice of compiler
+.. list-table:: Environment variables that specify the choice of compiler
    :align: center
+   :header-rows: 1
 
-   +---------------+------------------+--------------------+-----------------+
-   | Variable      | Specifies the:   | GNU name           | Intel name      |
-   +===============+==================+====================+=================+
-   | :envvar:`CC`  | C compiler       | :envvar:`gcc`      | :envvar:`icx`   |
-   +---------------+------------------+--------------------+-----------------+
-   | :envvar:`CXX` | C++ compiler     | :envvar:`g++`      | :envvar:`icx`   |
-   +---------------+------------------+--------------------+-----------------+
-   | :envvar:`FC`  | Fortran compiler | :envvar:`gfortran` | :envvar:`ifort` |
-   +---------------+------------------+--------------------+-----------------+
+   * - Variable
+     - Specifies the:
+     - GNU name
+     - Intel name
+   * - :envvar:`CC`
+     - C compiler
+     - :command:`gcc`
+     - :command:`icx`
+   * - :envvar:`CXX`
+     - C++ compiler
+     - :command:`g++`
+     - :command:`icx`
+   * - :envvar:`FC`
+     - Fortran compiler
+     - :command:`gfortran`
+     - :command:`ifort`
 
 These environment variables should be defined in your
 :ref:`environment file <hco-sa-login>`.
@@ -332,9 +340,9 @@ These environment variables should be defined in your
 Set environment variables for parallelization
 =============================================
 
-The HEMCO standalone` uses `OpenMP parallelization
-<Parallelizing_GEOS-Chem>`_, which is an implementation of
-shared-memory (aka serial) parallelization.
+The HEMCO standalone uses `OpenMP parallelization
+<Parallelizing_GEOS-Chem>`__, which is an implementation of
+shared-memory (aka multi-threaded) parallelization.
 
 .. important::
 
@@ -368,7 +376,7 @@ OMP_STACKSIZE
 -------------
 
 In order to use HEMCO standalone with `OpenMP
-parallelization <Parallelizing_GEOS-Chem>`_, you must request the
+parallelization <Parallelizing_GEOS-Chem>`__, you must request the
 maximum amount of stack memory in your login environment. (The
 stack memory is where local automatic variables and temporary
 :envvar:`!$OMP PRIVATE` variables will be created.) Add the

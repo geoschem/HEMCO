@@ -4,7 +4,7 @@
 Download data with Globus
 #########################
 
-Many institutions use the `Globus <https://globus.org>`_ file transfer
+Many institutions use the `Globus <https://globus.org>`__ file transfer
 utility, which has much higher data download speeds than normal SSH,
 FTP, or HTTP connections.
 

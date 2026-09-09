@@ -18,12 +18,12 @@ Steps to follow:
 .. toctree::
    :maxdepth: 1
 
-   hardware.rst
-   software.rst
-   login-env.rst
-   download-code.rst
-   create-rundir.rst
-   compiling.rst
-   config-sim.rst
-   download-data.rst
+   hardware
+   software
+   login-env
+   download-code
+   create-rundir
+   compiling
+   config-sim
+   download-data
    run-standalone.rst
