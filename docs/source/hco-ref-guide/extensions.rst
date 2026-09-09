@@ -77,6 +77,32 @@ will be computed according to :cite:t:`Zhang_et_al._2021`.
 If :literal:`ZHANG_Rn222` is :literal:`off`, then Rn222 emissions
 will be computed according to :cite:t:`Jacob_et_al._1997`.
 
+.. _hco-ext-list-gfas:
+
+GFAS
+----
+
+Biomass-burning emissions from GFAS (Global Fire Assimilation System),
+using a 3D vertical injection profile.
+
+A single reference species (default :literal:`CO`, set via the
+:literal:`Vertical Profile Species` option) supplies the 3D vertical
+structure of the emissions. Every other listed species is emitted using
+a 2D field that is redistributed vertically using the column-normalized
+fraction of the reference species' 3D field.
+
+- **Species**: ACET, ACR, ACTA, ALD2, ALK4, BCPI, BCPO, BENZ, C2H2, C2H4, C2H6, C3H8, C4H6, CH2O, CO, DMS, EOH, FURA, GLYX, HCOOH, ISOP, MEK, MGLY, MOH, MTPA, MVK, NAP, NH3, NO, OCPI, OCPO, pFe, PHEN, POG1, POG2, PRPE, RCHO, SO2, SOAP, STYR, TOLU, XYLE
+- **Reference**: :cite:t:`Singh_et_al._2025`
+
+The reference species requires a base-emissions field named
+:literal:`GFAS_<RefSpc>_3D` (with :literal:`SrcDim=xyz`). Every other
+listed species requires a matching :literal:`GFAS_<SpcName>_2D` field.
+
+.. code-block:: kconfig
+
+   112     GFAS                   : on   ACET/ACR/ACTA/ALD2/ALK4/BCPI/BCPO/BENZ/C2H2/C2H4/C2H6/C3H8/C4H6/CH2O/CO/DMS/EOH/FURA/GLYX/HCOOH/ISOP/MEK/MGLY/MOH/MTPA/MVK/NAP/NH3/NO/OCPI/OCPO/pFe/PHEN/POG1/POG2/PRPE/RCHO/SO2/SOAP/STYR/TOLU/XYLE
+       --> Vertical Profile Species:      CO
+
 .. _hco-ext-list-gfed:
 
 GFED
@@ -681,7 +707,7 @@ Extensions supporting built-in scaling/masking
 
 The following extensions currently support the built-in scaling/masking
 tools: :ref:`hco-ext-list-soilnox`, :ref:`hco-ext-list-gfed`,
-:ref:`hco-ext-list-finn`.
+:ref:`hco-ext-list-finn`, :ref:`hco-ext-list-gfas`.
 
 ===========================
 Adding new HEMCO extensions
