@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Added
+- Added code blocks for MAPL3 code in development
+- Added C-preprocessor switches `USE_ESMF` and `MAPL3`
+- Added HEMCO I/O module using PIO (`hcoio_read_pio_mod.F90` and `hcoio_write_pio_mod.F90` stub) for coupling to CESM
+- Added an extension for calculating GFAS 3D biomass emission
+
+### Changed
+- Renamed subroutine `HCO_CopyFromIntnal_ESMF` to `HCO_CopyFromInternal_ESMF`
+- Renamed state objects `HcoState%IMPORT` and `HcoStateEXPORT` to `HcoState%importState` and `HcoState%exportState` respectively
+- Added AI disclosure section to `.github/PULL_REQUEST_TEMPLATE.md`
+
+### Fixed
+- Fixed an error in `src/Shared/GeosUtil/hco_regrid_a2a_mod.F90` where an accumulator was uninitialized before reuse, which may inherit junk data from the previous iteration if the southmost source cell is not found
+- Fixed IF-block logic errors in `SrcFile_Parse` that led to incorrect time-cycling behavior
+- Fixed Mac GitHub Actions workflow (`mac.yml`) failing with a `gfortran` module-version mismatch by building NetCDF-Fortran from source against each matrix `gcc_version`, instead of relying on Homebrew's bottle (which is always built against Homebrew's own default/latest `gcc`)
+
+#### Removed
+- Removed C-preprocessor switch `ESMF_`
+
 ## [3.12.1] - 2026-04-08
 ### Changed
 - Updated GitHub Actions to the latest versions

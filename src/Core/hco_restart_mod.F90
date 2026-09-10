@@ -74,8 +74,8 @@ MODULE HCO_RESTART_MOD
 !
 ! !PRIVATE MEMBER FUNCTIONS:
 !
-#if defined(ESMF_)
-  PRIVATE :: HCO_CopyFromIntnal_ESMF
+#ifdef MAPL_ESMF 
+  PRIVATE :: HCO_CopyFromInternal_ESMF
 #endif
 
   INTERFACE HCO_RestartDefine
@@ -319,12 +319,12 @@ CONTAINS
     ! Is the output array filled yet?
     FLD = .FALSE.
 
+#ifdef MAPL_ESMF
     ! ------------------------------------------------------------------
     ! Try to get from ESMF internal state
     ! ------------------------------------------------------------------
-#if defined(ESMF_)
-    CALL HCO_CopyFromIntnal_ESMF( HcoState, TRIM(Name),   &
-                                  1,        FLD,      RC, Arr3D=Arr3D )
+    CALL HCO_CopyFromInternal_ESMF( HcoState, TRIM(Name), 1,  &
+         FLD, RC, Arr3D=Arr3D )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
         RETURN
@@ -484,12 +484,12 @@ CONTAINS
     ! Is the output array filled yet?
     FLD = .FALSE.
 
+#ifdef MAPL_ESMF
     ! ------------------------------------------------------------------
     ! Try to get from ESMF internal state
     ! ------------------------------------------------------------------
-#if defined(ESMF_)
-    CALL HCO_CopyFromIntnal_ESMF( HcoState, TRIM(Name),   &
-                                  1,        FLD,      RC, Arr2D=Arr2D )
+    CALL HCO_CopyFromInternal_ESMF( HcoState, TRIM(Name), 1,  &
+         FLD, RC, Arr2D=Arr2D )
     IF ( RC /= HCO_SUCCESS ) THEN
         CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
         RETURN
@@ -643,9 +643,9 @@ CONTAINS
     ! Data written to internal state?
     WRITTEN = .FALSE.
 
-#if defined(ESMF_)
-    CALL HCO_CopyFromIntnal_ESMF( HcoState, TRIM(Name), &
-                                  -1,       WRITTEN,    RC, Arr3D=Arr3D )
+#ifdef MAPL_ESMF
+    CALL HCO_CopyFromInternal_ESMF( HcoState, TRIM(Name), -1, &
+         WRITTEN, RC, Arr3D=Arr3D )
 #endif
 
     ! Pass to output
@@ -711,9 +711,9 @@ CONTAINS
     ! Data written to internal state?
     WRITTEN = .FALSE.
 
-#if defined(ESMF_)
-    CALL HCO_CopyFromIntnal_ESMF( HcoState, TRIM(Name), &
-                                  -1,       WRITTEN,    RC, Arr2D=Arr2D )
+#ifdef MAPL_ESMF
+    CALL HCO_CopyFromInternal_ESMF( HcoState, TRIM(Name), -1, &
+         WRITTEN, RC, Arr2D=Arr2D )
 #endif
 
     ! Pass to output
@@ -726,30 +726,41 @@ CONTAINS
 
   END SUBROUTINE HCO_RestartWrite_2D
 !EOC
-#if defined(ESMF_)
+#ifdef MAPL_ESMF
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
 !BOP
 !
-! !ROUTINE: HCO_CopyFromIntnal_ESMF
+! !ROUTINE: HCO_CopyFromInternal_ESMF
 !
-! !DESCRIPTION: Subroutine HCO\_CopyFromIntnal\_ESMF attempts to transfer
+! !DESCRIPTION: Subroutine HCO\_CopyFromInternal\_ESMF attempts to transfer
 ! data to and from the ESMF/MAPL internal state.
 !\\
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE HCO_CopyFromIntnal_ESMF ( HcoState,  Name,    &
+  SUBROUTINE HCO_CopyFromInternal_ESMF ( HcoState,  Name,    &
                                        Direction, Found, RC, Arr2D, Arr3D )
 !
 ! !USES:
 !
+#ifdef MAPL3    
+#include "MAPL.h"
+#else
 #include "MAPL_Generic.h"
+#endif
+
     USE ESMF
+#ifdef MAPL3
+    USE mapl3
+    USE mapl3g_Generic,   only : MAPL_GridCompGetInternalState
+    USE mapl3g_State_API, only : MAPL_StateGetPointer
+#else
     USE ESMFL_MOD
     USE MAPL_GenericMod
     USE MAPL_ErrorHandlingMod
+#endif
     USE HCO_STATE_MOD,   ONLY : Hco_State
 !
 ! !ARGUMENTS:
@@ -772,40 +783,63 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
     INTEGER                      :: STAT
-    TYPE(MAPL_MetaComp), POINTER :: STATE
-    TYPE(ESMF_STATE)             :: INTERNAL
+    TYPE(ESMF_STATE)             :: internalState
     REAL,                POINTER :: Ptr2D(:,:)
     REAL,                POINTER :: Ptr3D(:,:,:)
-
+#ifdef MAPL3
+    INTEGER                      :: status
+#else
+    TYPE(MAPL_MetaComp), POINTER :: maplState
+#endif
+    
     ! ================================================================
-    ! HCO_CopyFromIntnal_ESMF begins here
+    ! HCO_CopyFromInternal_ESMF begins here
     ! ================================================================
 
+#ifndef MAPL3
     ! For MAPL/ESMF error handling (defines Iam and STATUS)
-    __Iam__('HCO_CopyFromIntnal_ESMF (hco_restart_mod.F90)')
+    __Iam__('HCO_CopyFromInternal_ESMF (hco_restart_mod.F90)')
+#endif
 
     ! Init
     Ptr2D => NULL()
     Ptr3D => NULL()
 
     ! Get internal state
-    CALL MAPL_GetObjectFromGC( HcoState%GridComp, STATE, __RC__ )
-    CALL MAPL_Get ( STATE, INTERNAL_ESMF_STATE=INTERNAL, __RC__ )
+#ifdef MAPL3
+    CALL MAPL_GridCompGetInternalState(HcoState%GridComp, internalState, _RC)
+#else
+    CALL MAPL_GetObjectFromGC( HcoState%GridComp, maplState, __RC__ )
+    CALL MAPL_Get ( maplState, INTERNAL_ESMF_STATE=internalState, __RC__ )
+#endif
 
     ! Try to import field
     IF ( PRESENT(Arr2D) ) THEN
-       CALL MAPL_GetPointer( INTERNAL, Ptr2D, TRIM(Name), &
+#ifdef MAPL3
+       CALL MAPL_StateGetPointer( internalState, Ptr2D, TRIM(Name), _RC )
+#else
+       CALL MAPL_GetPointer( internalState, Ptr2D, TRIM(Name), &
                              NotFoundOk=.TRUE., __RC__ )
+#endif
 
        ! Eventually copy data to or from output array
        IF ( ASSOCIATED(Ptr2D) ) THEN
 
+#ifdef MAPL3
+          ! Make sure we can copy the data
+          _ASSERT(SIZE(Arr2D,1)==SIZE(Ptr2D,1),'First dimension size mismatch in 2D arrays!')
+          _ASSERT(SIZE(Arr2D,2)==SIZE(Ptr2D,2),'Second dimension size mismatch in 2D arrays!')
+
+          ! transfer direction must be 1 or -1
+          _ASSERT(Direction==1 .OR. Direction==-1,'Dimension must be either 1 or -1!')
+#else
           ! Make sure we can copy the data
           ASSERT_(SIZE(Arr2D,1)==SIZE(Ptr2D,1))
           ASSERT_(SIZE(Arr2D,2)==SIZE(Ptr2D,2))
 
           ! transfer direction must be 1 or -1
           ASSERT_(Direction==1 .OR. Direction==-1)
+#endif
 
           ! Transfer data
           IF ( Direction == 1 ) THEN
@@ -824,12 +858,25 @@ CONTAINS
 
     ! Try to import field
     IF ( PRESENT(Arr3D) ) THEN
-       CALL MAPL_GetPointer( INTERNAL, Ptr3D, TRIM(Name), &
+#ifdef MAPL3
+       CALL MAPL_StateGetPointer( internalState, Ptr3D, TRIM(Name), _RC )
+#else
+       CALL MAPL_GetPointer( internalState, Ptr3D, TRIM(Name), &
                              NotFoundOk=.TRUE., __RC__ )
-
+#endif
+       
        ! Eventually copy data to or from output array
        IF ( ASSOCIATED(Ptr3D) ) THEN
 
+#ifdef MAPL3
+          ! Make sure we can copy the data
+          _ASSERT(SIZE(Arr3D,1)==SIZE(Ptr3D,1),'First dimension size mismatch in 3D arrays!')
+          _ASSERT(SIZE(Arr3D,2)==SIZE(Ptr3D,2),'Second dimension size mismatch in 3D arrays!')
+          _ASSERT(SIZE(Arr3D,3)==SIZE(Ptr3D,3),'Third dimension size mismatch in 3D arrays!')
+
+          ! transfer direction must be 1 or -1
+          _ASSERT(Direction==1 .OR. Direction==-1,'Direction must be 1 or -1!')
+#else
           ! Make sure we can copy the data
           ASSERT_(SIZE(Arr3D,1)==SIZE(Ptr3D,1))
           ASSERT_(SIZE(Arr3D,2)==SIZE(Ptr3D,2))
@@ -837,6 +884,7 @@ CONTAINS
 
           ! transfer direction must be 1 or -1
           ASSERT_(Direction==1 .OR. Direction==-1)
+#endif
 
           ! Transfer data
           IF ( Direction == 1 ) THEN
@@ -856,7 +904,7 @@ CONTAINS
     ! Return success
     RC = HCO_SUCCESS
 
-  END SUBROUTINE HCO_CopyFromIntnal_ESMF
+  END SUBROUTINE HCO_CopyFromInternal_ESMF
 !EOC
 #endif
 END MODULE HCO_RESTART_MOD
