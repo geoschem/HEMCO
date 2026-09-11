@@ -44,7 +44,7 @@ The :program:`Intel Compiler Suite` is our recommended proprietary
 compiler suite.
 
 Intel compilers produce well-optimized code that runs extremely
-efficiency on machines with Intel CPUs. Many universities and
+efficiently on machines with Intel CPUs. Many universities and
 institutions will have an Intel site license that allows you to use
 these compilers.
 
@@ -63,7 +63,7 @@ may work as well):
 **Best way to install:** With :ref:`Spack <spackguide>` (Intel 2021
 and later); `Directly
 from Intel
-<https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/fortran-compiler.html>`_
+<https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/fortran-compiler.html>`__
 (older versions).
 
 .. _hco-sa-soft-gnu:
@@ -104,23 +104,23 @@ Required software packages for HEMCO
 
 Git
 ---
-`Git <https://git-scm.com>`_ is the de-facto software industry
+`Git <https://git-scm.com>`__ is the de-facto software industry
 standard package for source code management. A version of Git usually
 ships with most Linux OS builds.
 
 The HEMCO source code can be downloaded using the Git source code
-management system from the `https://github.com/HEMCO
-<https://github.com/HEMCO>`_ repository.
+management system from the `geoschem/HEMCO
+<https://github.com/geoschem/HEMCO>`__ repository.
 
 **Best way to install:** `git-scm.com/downloads
-<https://git-scm.com/downloads>`_.  But first check if you have a
+<https://git-scm.com/downloads>`__.  But first check if you have a
 version of Git pre-installed.
 
 .. _hco-sa-soft-cmake:
 
 CMake
 -----
-`CMake <https://cmake.org/>`_ is software that creates **Makefiles**,
+`CMake <https://cmake.org/>`__ is software that creates **Makefiles**,
 or scripts that direct how the HEMCO source code will be compiled
 into an executable.  You will need CMake version 3.13 or later to
 build HEMCO.
@@ -131,7 +131,7 @@ build HEMCO.
 
 GNU Make
 --------
-`GNU Make <https://www.gnu.org/software/make/>`_ (sometimes just known
+`GNU Make <https://www.gnu.org/software/make/>`__ (sometimes just known
 as **make**) is software that can build executables from source code.
 It executes the instructions in the Makefiles created by
 :ref:`hco-sa-soft-cmake`.
@@ -145,7 +145,7 @@ The netCDF library (plus dependencies)
 
 HEMCO input and output data files use the netCDF file format
 (cf. :ref:`netCDF <ncguide>`). NetCDF is a self-describing file format
-hat allows meadata (descriptive text) to be stored alongside data
+that allows metadata (descriptive text) to be stored alongside data
 values.
 
 **Best way to install:**  :ref:`With Spack <spackguide>`.
@@ -161,7 +161,7 @@ Optional but recommended software packages
 GCPy
 ----
 
-`GCPy <https://gcpy.readthedocs.io>`_ is our recommended python
+`GCPy <https://gcpy.readthedocs.io>`__ is our recommended python
 companion software to HEMCO.
 
 While GCPy is not a general-purpose plotting package, it
@@ -176,8 +176,8 @@ generate plots and tables from HEMCO benchmark simulations.
 
 gdb and cgdb
 ------------
-`The GNU debugger (gdb) <https://gnu.org/software/GDB>`_  and `its
-graphical interface (cgdb) <https://cgdb.github.io/>`_ are very useful
+`The GNU debugger (gdb) <https://gnu.org/software/GDB>`__  and `its
+graphical interface (cgdb) <https://cgdb.github.io/>`__ are very useful
 tools for tracking down the source of HEMCO errors, such
 as segmentation faults, out-of-bounds errors, etc.
 
@@ -187,7 +187,7 @@ as segmentation faults, out-of-bounds errors, etc.
 
 ncview
 ------
-The `ncview <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_
+The `ncview <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`__
 program is a netCDF file viewer. While it does not produce
 publication-quality output, ncview can let you easily examine the
 contents of a netCDF data file (such as those which are input and
@@ -198,7 +198,7 @@ output by HEMCO). Ncview is very useful for debugging and development.
 nco
 ---
 `The netCDF operators (nco)
-<http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_ are
+<http://nco.sourceforge.net/>`__ are
 powerful command-line tools for editing and manipulating data in
 netCDF format.
 
@@ -209,7 +209,7 @@ netCDF format.
 cdo
 ---
 `The Climate Data Operators (cdo)
-<https://code.mpimet.mpg.de/projects/cdo/l>`_ are powerful
+<https://code.mpimet.mpg.de/projects/cdo/>`__ are powerful
 command-line utilities for editing and manipulating data in netCDF
 format.
 

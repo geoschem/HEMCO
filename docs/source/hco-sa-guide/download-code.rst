@@ -6,8 +6,7 @@ Download the source code
 
 The :program:`HEMCO` source code may be downloaded (aka "cloned") with
 Git.  By default the :command:`git clone` command will give you the
-**main** branch by default:
-default.
+**main** branch by default.
 
 .. code-block:: console
 

@@ -8,7 +8,7 @@ Build the executable
 
    Another useful resource for HEMCO build instructions is our
    `YouTube tutorial
-   <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`_.
+   <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`__.
 
 Once you have created a :ref:`run directory <hco-sa-rundir>`, you may
 proceed to compile the HEMCO standalone source code into an executable
@@ -18,7 +18,7 @@ file.  You will compile HEMCO standalone from your :ref:`run directory
 There are two steps to build HEMCO. The first step is to **configure your
 build settings** with :ref:`hco-sa-soft-cmake`.  Build settings cover
 options like enabling or disabling components or whether HEMCO should
-be compiled in :option:`Debug` mode.
+be compiled in :literal:`Debug` mode.
 
 The second step is to **compile the source code into an executable**.
 For this, you will use :ref:`make <hco-sa-soft-make>`, which builds the
@@ -51,7 +51,7 @@ point to erase the HEMCO standalone build and its configuration.  Most
 users will typically only need to build HEMCO standalone once, so we
 recommend using the :file:`build` subdirectory of the :ref:`run
 directory <hco-sa-rundir>` as the location to create the HEMCO
-standalone exectuable.
+standalone executable.
 
 .. important::
 
@@ -74,13 +74,13 @@ Then navigate to the :file:`build` folder within:
 
    $ cd build
 
-.. _ hco-sa-compile-init:
+.. _hco-sa-compile-init:
 
 ==============================
 Initialize the build directory
 ==============================
 
-Run :ref:`hco-sa-soft-cmake` to initialze the build directory.
+Run :ref:`hco-sa-soft-cmake` to initialize the build directory.
 
 .. code-block:: console
 
@@ -93,7 +93,7 @@ The option :literal:`-DRUNDIR=..` specifies that the
 directory where we will run HEMCO standalone is one level above
 us. This makes sense as our :file:`build` folder is a subdirectory of
 the run directory.  (More about :ref:`build options
-<hco-sa-compile-options>` below:
+<hco-sa-compile-options>` below.)
 
 You will see output similar to this:
 
@@ -123,7 +123,7 @@ You will see output similar to this:
 In the above example output, the version number :literal:`X.Y.Z` will
 refer to the actual HEMCO version number (e.g. :literal:`3.4.0`,
 :literal:`3.5.0`, etc.).  Also the paths :file:`/path/to/...` in your
-output instead be the actual paths to the compiler and libraries.
+output will instead be the actual paths to the compiler and libraries.
 
 .. _hco-sa-compile-config:
 
@@ -200,7 +200,7 @@ manually, or you can do
    $ make install
 
 which copies :file:`./bin/hemco_standalone` (and some supplemental
-files) to the run directories specified in :option:`RUNDIR`.
+files) to the run directories specified in :literal:`RUNDIR`.
 
 Now you have compiled HEMCO!  You can now navigate back from the
 :file:`build` folder to the run directory (which we remember is one
@@ -219,7 +219,7 @@ Recompile when you change the source code
 You need to recompile :program:`HEMCO` if you update a build setting
 or make a modification to the source code. However, with
 :ref:`hco-sa-soft-cmake`, you don't need to clean before
-recompiling. The build system automatically figure out which
+recompiling. The build system automatically figures out which
 files need to be recompiled based on your modification. This is known
 as incremental compiling.
 
@@ -244,7 +244,7 @@ RUNDIR
 
 Paths to run directories where :command:`make install` installs
 HEMCO standalone. Multiple run directories can be specified by a
-semicolon separated list. A warning is issues if one of these
+semicolon separated list. A warning is issued if one of these
 directories does not look like a run directory.
 
 These paths can be relative paths or absolute paths. Relative paths

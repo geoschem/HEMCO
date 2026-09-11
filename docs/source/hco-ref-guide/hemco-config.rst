@@ -11,7 +11,7 @@ The HEMCO configuration file
 The HEMCO Configuration file is composed of several sections:
 :ref:`Settings <hco-cfg-set>`,
 :ref:`Base Emissions <hco-cfg-base>`,
-:ref:`Scale Factors, <hco-cfg-scalefac>`, and
+:ref:`Scale Factors <hco-cfg-scalefac>`, and
 :ref:`Masks <hco-cfg-masks>`.
 
 An overview of the structure and key formats of the HEMCO configuration file
@@ -242,7 +242,7 @@ Emission hour
 If specified explicitly: This emission month will be used regardless
 of the model simulation hour.
 
-If omitted: The emisison month will be set to the model simulation
+If omitted: The emission hour will be set to the model simulation
 hour.
 
 .. _hco-cfg-set-emission-month:
@@ -317,7 +317,7 @@ GridFile
 
 **FOR HEMCO STANDALONE ONLY**
 
-Soecifies the path and name of the :ref:`HEMCO standalone
+Specifies the path and name of the :ref:`HEMCO standalone
 <hco-sa-guide>` grid description file.  This is usually named
 :file:`HEMCO_sa_Grid.rc`.
 
@@ -460,7 +460,7 @@ SpecFile
 
 **FOR HEMCO STANDALONE ONLY**
 
-Specfies the path and name of the HEMCO standalone species description
+Specifies the path and name of the HEMCO standalone species description
 file.  This is usually named :file:`HEMCO_sa_Spec.rc`.
 
 .. _hco-cfg-set-timefile:
@@ -578,7 +578,7 @@ Extension switches
 ==================
 
 HEMCO performs automatic emission calculations using all fields that
-belong to the :ref:`base emisisons extension <hco-cfg-base>`. Additional
+belong to the :ref:`base emissions extension <hco-cfg-base>`. Additional
 emissions that depend on environmental parameter such as wind speed or
 air temperature--and/or that use non-linear parameterizations--are
 calculated through :ref:`hco-ext`.  A list of currently implemented
@@ -597,7 +597,7 @@ ExtNr
 
 Extension number associated with this field. All
 :ref:`base emissions <hco-cfg-base>` should have extension number
-zero.  The extension number` of the data listed in section
+zero.  The extension number of the data listed in section
 :ref:`hco-ext` data must match with the corresponding extension
 number.
 
@@ -651,10 +651,10 @@ Additional extension-specific settings can also be specified in the
 extension definition.
 
 HEMCO expects an extension with extension number zero, denoted the
-:ref:`Base Emisisons extension <hco-cfg-base>` extension. All emission
+:ref:`Base Emissions extension <hco-cfg-base>` extension. All emission
 fields linked to the base extension will be used for automatic
 emission calculation. Fields assigned to any other extension number
-will not be inlcuded in the base emissions calculation, but they are
+will not be included in the base emissions calculation, but they are
 still read/regridded by HEMCO (and can be made available readily
 anywhere in the model code). These data are only read if the
 corresponding extension is enabled.
@@ -706,7 +706,7 @@ characters (:literal:`__`) can be used to attach a 'tag' to a
 name. This is only of relevance if multiple base emission fields
 share the same species, category, hierarchy, and scale factors. In
 this case, emission calculation can be optimized by assigning field
-names that onlydiffer by its tag to those fields
+names that only differ by its tag to those fields
 (e.g. :literal:`DATA__SECTOR1`, :literal:`DATA__SECTOR2`, etc.).
 
 For fields assigned to extensions other than the base extension
@@ -1092,7 +1092,7 @@ following options are available:
 
 .. option:: EC
 
-   **Exact, Read/Query Contiuously.**.
+   **Exact, Read/Query Continuously.**.
 
 .. option:: ECF
 
@@ -1103,13 +1103,13 @@ following options are available:
    **Exact, Forced, Simulation Year, Once**: Same as :option:`EF`,
    with the following additions:
 
-   - :envvar:`Y`: HEMCO will stop thie simulation if the simulation
+   - :envvar:`Y`: HEMCO will stop the simulation if the simulation
 	year does not match the year in the file timestamp.
    - :envvar:`O`: HEMCO will only read the file once.
 
    This setting is typically only used for model restart files
    (such as `GEOS-Chem Classic restart files
-   <https://geos-chem.readthedocs.io/en/stable/gcc-guide/04-data/restart-files-gc.html>`_).
+   <https://geos-chem.readthedocs.io/en/stable/gcc-guide/04-data/restart-files-gc.html>`__).
    This ensures that the simulation will stop unless the restart
    file timestamp matches the simulation start date and time.
 
@@ -1118,11 +1118,11 @@ following options are available:
       Consider changing the time cycle flag from :option:`EFYO` to
       :option:`CYS` if you would like your simulation to read a
       data file (such as a simulation restart file) whose file
-      timestamp differs from the simulaton start date and time.
+      timestamp differs from the simulation start date and time.
 
 .. option:: EY
 
-   **Exact, Use Smulation Year:** Same as :option:`E`, except it
+   **Exact, Use Simulation Year:** Same as :option:`E`, except it
    does not allow :envvar:`Emission year` setting to override the
    simulation year.
 
@@ -1153,7 +1153,7 @@ following options are available:
    used data is calculated as a weighted mean for the 2005 and 2010
    data, with 0.8 weight given to 2005 and 0.2 weight given to 2010
    values. Once the simulation year changes to 2007, the weights
-   hange to 0.6 for 2005 and 0.4 for 2010, etc. The interpolation
+   change to 0.6 for 2005 and 0.4 for 2010, etc. The interpolation
    frequency is determined by :ref:`hco-cfg-base-sourcetime` the source time
    attribute.
 
@@ -1210,7 +1210,7 @@ examples that illustrate its use.
      - Emits the lowest 5 levels of the input data into HEMCO levels 1
        through 5.
    * - :literal:`xy-5`
-     - Emits the tompmost 5 levels of the input data into HEMCO levels
+     - Emits the topmost 5 levels of the input data into HEMCO levels
        1 through 5 (i.e. in reversed order, so that the topmost level
        is placed into HEMCO level 1, etc.)
    * - :literal:`xyL=5`
@@ -1282,7 +1282,7 @@ ScalIDs
 
 Identification numbers of all scale factors and masks that shall be
 applied to this base emission field. Multiple entries must be
-separated by the separator character. ScalIDs must csorrespond to the
+separated by the separator character. ScalIDs must correspond to the
 numbers provided in the :ref:`hco-cfg-scalefac` and
 :ref:`hco-cfg-masks` sections.
 
@@ -1315,7 +1315,7 @@ between anthropogenic, biofuels, and/or trash emissions
 
 For example, the CEDS inventory uses categories :literal:`1/2/12`
 because CEDS lumps both biofuel emissions and trash emissions with
-anthropogenic Because. The :literal:`1/2/12` category designation
+anthropogenic emissions. The :literal:`1/2/12` category designation
 means "Put everything into the first listed category
 (1=anthropogenic), and set the other listed categories (2=biofuels,
 12=trash) to zero.
@@ -1421,10 +1421,14 @@ scale the emissions.
 MaskID
 ------
 
-Optional.  :ref:`hco-cfg-base-scale-scalid` of a mask field. This
-optional value can be used if a scale factor shall only be used over a
-given region. The provided MaskID must have a corresponding entry in
-the :ref:`Masks section <hco-cfg-masks>` of the configuration file.
+Optional integer value. If set to a positive integer, HEMCO compares
+this value against the gridded value of the scale factor itself at
+each grid box: where the scale factor's value equals :literal:`MaskID`
+(to within a small tolerance), the effective scale factor is set to
+:literal:`1`; everywhere else it is set to :literal:`0`. This turns a
+gridded field of integer region IDs into a binary regional mask on the
+fly, without requiring a separate entry in the :ref:`Masks section
+<hco-cfg-masks>`.
 
 .. note::
 
