@@ -85,3 +85,37 @@ HEMCO is given in :cite:t:`Keller_et_al._2014` and
    reference/CONTRIBUTING
    reference/SUPPORT
    geos-chem-shared-docs/editing_these_docs
+
+
+.. toctree::
+   :hidden:
+
+   geos-chem-shared-docs/doc/geoschem-config
+   geos-chem-shared-docs/doc/hemco-config
+   geos-chem-shared-docs/doc/hemco-diagn
+   geos-chem-shared-docs/doc/phot-chem
+   geos-chem-shared-docs/doc/spec-db
+   geos-chem-shared-docs/simulations/aerosol-only
+   geos-chem-shared-docs/simulations/carbon
+   geos-chem-shared-docs/simulations/fullchem
+   geos-chem-shared-docs/simulations/hg
+   geos-chem-shared-docs/simulations/metals
+   geos-chem-shared-docs/simulations/tago3
+   geos-chem-shared-docs/simulations/transport-tracers
+   geos-chem-shared-docs/supplemental-guides/aerosols-guide
+   geos-chem-shared-docs/supplemental-guides/apm-guide
+   geos-chem-shared-docs/supplemental-guides/ate-guide
+   geos-chem-shared-docs/supplemental-guides/cloud-conv-guide
+   geos-chem-shared-docs/supplemental-guides/custom-emissions-guide
+   geos-chem-shared-docs/supplemental-guides/customize-guide
+   geos-chem-shared-docs/supplemental-guides/drydep-guide
+   geos-chem-shared-docs/supplemental-guides/history-diag-guide
+   geos-chem-shared-docs/supplemental-guides/pbl-mixing-guide
+   geos-chem-shared-docs/supplemental-guides/photolysis-guide
+   geos-chem-shared-docs/supplemental-guides/phys-consts-guide
+   geos-chem-shared-docs/supplemental-guides/pm25-pm10-guide
+   geos-chem-shared-docs/supplemental-guides/rrtmg-guide
+   geos-chem-shared-docs/supplemental-guides/science-guides
+   geos-chem-shared-docs/supplemental-guides/tomas-guide
+   geos-chem-shared-docs/supplemental-guides/using-kpp-standalone
+   geos-chem-shared-docs/supplemental-guides/wetdep-guide
