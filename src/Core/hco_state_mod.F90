@@ -34,7 +34,7 @@ MODULE HCO_State_Mod
   USE HCO_Arr_Mod
   USE HCO_VertGrid_Mod
 
-#if defined(ESMF_)
+#ifdef MAPL_ESMF
   USE ESMF
 #endif
 
@@ -115,10 +115,10 @@ MODULE HCO_State_Mod
      TYPE(DiagnBundle),  POINTER :: Diagn  => NULL()
 
      !%%%%%  ESMF objects
-#if defined(ESMF_)
-     TYPE(ESMF_GridComp), POINTER :: GridComp
-     TYPE(ESMF_State),    POINTER :: IMPORT
-     TYPE(ESMF_State),    POINTER :: EXPORT
+#ifdef MAPL_ESMF
+     TYPE(ESMF_GridComp), POINTER :: gridComp
+     TYPE(ESMF_State),    POINTER :: importState
+     TYPE(ESMF_State),    POINTER :: exportState
 #endif
 #ifdef ADJOINT
      LOGICAL                      :: isAdjoint
@@ -477,10 +477,10 @@ CONTAINS
     IF ( .NOT. Found ) HcoState%Options%VertWeight = .TRUE.
 
     ! Make sure ESMF pointers are not dangling
-#if defined(ESMF_)
-    HcoState%GridComp => NULL()
-    HcoState%IMPORT   => NULL()
-    HcoState%EXPORT   => NULL()
+#ifdef MAPL_ESMF
+    HcoState%gridComp    => NULL()
+    HcoState%importState => NULL()
+    HcoState%exportState => NULL()
 #endif
 
     ! Read unit tolerance
@@ -599,10 +599,10 @@ CONTAINS
     IF ( ASSOCIATED ( HcoState%Options ) ) DEALLOCATE ( HcoState%Options )
     IF ( ASSOCIATED ( HcoState%Phys    ) ) DEALLOCATE ( HcoState%Phys    )
 
-#if defined(ESMF_)
-    HcoState%GridComp => NULL()
-    HcoState%IMPORT   => NULL()
-    HcoState%EXPORT   => NULL()
+#ifdef MAPL_ESMF
+    HcoState%gridComp    => NULL()
+    HcoState%importState => NULL()
+    HcoState%exportState => NULL()
 #endif
 
   END SUBROUTINE HcoState_Final

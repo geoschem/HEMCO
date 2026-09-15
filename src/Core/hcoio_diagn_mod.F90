@@ -167,16 +167,16 @@ CONTAINS
 #endif
           END SELECT
 
-#if       !defined ( ESMF_ )
-          ! If not ESMF environment, never write the manual diagnostics
-          ! to disk. Instead, the content of the manual diagnostics needs
-          ! to be fetched explicitly.
-          IF ( I == 3 ) CYCLE
-#else
+#ifdef MAPL_ESMF
           ! Don't write restart variables to EXPORT in an ESMF environment.
           ! They are already passed to the INTERNAL state when calling
           ! HCO_RestartWrite. (ckeller, 10/9/17)
           IF ( I == 2 ) CYCLE
+#else
+          ! If not ESMF environment, do not write the manual diagnostics
+          ! to disk. Instead, the content of the manual diagnostics needs
+          ! to be fetched explicitly.
+          IF ( I == 3 ) CYCLE
 #endif
 
           ! Restart file
@@ -249,9 +249,9 @@ CONTAINS
     thisLoc = 'HCOIO_DIAGN_WRITEOUT (src/Core/hcoio_diagn_mod.F90)'
 
 
-#if defined(ESMF_)
+#ifdef MAPL_ESMF
     !------------------------------------------------------------------------
-    ! ESMF environment: call ESMF output routines
+    ! ESMF environment: call ESMF output routine
     !------------------------------------------------------------------------
     CALL HCOIO_Write( HcoState,                                              &
                       RC,                                                    &

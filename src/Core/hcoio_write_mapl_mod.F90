@@ -1,5 +1,5 @@
 !BOC
-#if defined ( ESMF_ )
+#ifdef MAPL_ESMF
 ! The 'standard' HEMCO I/O module is used for:
 ! - GEOS-Chem High Performance / GCHP and GEOS (ESMF_)
 !EOC
@@ -83,12 +83,15 @@ CONTAINS
 !
 ! !USES:
 !
-    USE ESMF
+#ifdef MAPL3
+#include "MAPL.h"
+    USE mapl3g_State_API, only: MAPL_StateGetPointer
+#else
+#include "MAPL_Generic.h"
     USE MAPLBase_MOD
+#endif
     USE HCO_Types_Mod, ONLY : DiagnCont
     USE HCO_State_Mod, ONLY : HCO_State
-
-# include "MAPL_Generic.h"
 !
 ! !INPUT PARAMETERS:
 !
@@ -175,8 +178,14 @@ CONTAINS
 
        ! 2D...
        IF ( ThisDiagn%SpaceDim == 2 ) THEN
-          CALL MAPL_GetPointer ( HcoState%EXPORT, Ptr2D, &
-             TRIM(ThisDiagn%cName), NotFoundOk=.TRUE., RC=STAT )
+#ifdef MAPL3
+          CALL MAPL_StateGetPointer ( HcoState%exportState, Ptr2D, &
+               TRIM(ThisDiagn%cName), RC=STAT )
+#else
+          CALL MAPL_GetPointer ( HcoState%exportState, Ptr2D, &
+               TRIM(ThisDiagn%cName), NotFoundOk=.TRUE., RC=STAT )
+#endif
+
           IF ( ASSOCIATED(Ptr2D) ) THEN
              IF ( ASSOCIATED(ThisDiagn%Arr2D) ) THEN
                 Ptr2D = ThisDiagn%Arr2D%Val
@@ -186,8 +195,13 @@ CONTAINS
 
        ! ... or 3D
        ELSEIF ( ThisDiagn%SpaceDim == 3 ) THEN
-          CALL MAPL_GetPointer ( HcoState%EXPORT, Ptr3D, &
-             TRIM(ThisDiagn%cName), NotFoundOk=.TRUE., RC=STAT )
+#ifdef MAPL3
+          CALL MAPL_StateGetPointer ( HcoState%exportState, Ptr3D, &
+               TRIM(ThisDiagn%cName), RC=STAT )
+#else
+          CALL MAPL_GetPointer ( HcoState%exportState, Ptr3D, &
+               TRIM(ThisDiagn%cName), NotFoundOk=.TRUE., RC=STAT )
+#endif
           IF ( ASSOCIATED(Ptr3D) ) THEN
              IF ( ASSOCIATED(ThisDiagn%Arr3D) ) THEN
                 Ptr3D(:,:,:) = ThisDiagn%Arr3D%Val(:,:,HcoState%NZ:1:-1)

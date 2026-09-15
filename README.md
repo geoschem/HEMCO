@@ -4,12 +4,11 @@
   <a href="https://github.com/geoschem/hemco/releases"><img
   src="https://img.shields.io/github/v/release/geoschem/hemco?label=Latest%20Stable%20Release" alt="Latest release"></a>
   <a href="https://github.com/geoschem/hemco/releases/"><img src="https://img.shields.io/github/release-date/geoschem/hemco" alt="Release date"></a>
-  <a href="https://doi.org/10.5281/zenodo.4618253"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4618253.svg" alt="DOI"></a><br />
+  <a href="https://doi.org/10.5281/zenodo.4618253"><img src="https://img.shields.io/badge/DOI-doi.org%2F10.5281%2Fzenodo.4618253-blue" alt="DOI"></a><br />
   <a href="https://github.com/geoschem/hemco/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
   <a href="https://hemco.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/geos-chem?label=ReadTheDocs" alt="ReadTheDocs"></a>
   <a href="https://github.com/geoschem/hemco/actions/workflows/ubuntu.yml"><img src="https://github.com/geoschem/hemco/actions/workflows/ubuntu.yml/badge.svg" alt="Ubuntu"></a>
   <a href="https://github.com/geoschem/hemco/actions/workflows/mac.yml"><img src="https://github.com/geoschem/hemco/actions/workflows/mac.yml/badge.svg" alt="Mac"></a>
-  <a href="https://github.com/geoschem/hemco/actions/workflows/windows.yml"><img src="https://github.com/geoschem/hemco/actions/workflows/windows.yml/badge.svg" alt="Windows"></a>
 </p>
 
 ## Description

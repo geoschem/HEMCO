@@ -539,7 +539,7 @@ CONTAINS
 
   END SUBROUTINE HCO_GetSUNCOS
 !EOC
-#if defined(ESMF_)
+#ifdef MAPL_ESMF
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -557,9 +557,19 @@ CONTAINS
 !
 ! !USES
 !
+#ifdef MAPL3
+#include "MAPL.h"
+#else
 #include "MAPL_Generic.h"
+#endif
+
     USE ESMF
+#ifdef MAPL3
+    USE mapl3
+    USE mapl3g_GridGetHorzIJIndex, ONLY : GridGetHorzIJIndex
+#else
     USE MAPLBase_Mod
+#endif
     USE HCO_STATE_MOD,   ONLY : HCO_STATE
 !
 ! !INPUT PARAMETERS:
@@ -586,32 +596,43 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+#ifdef MAPL3
+    INTEGER          :: status    
+#endif
     REAL             :: LonR(N), LatR(N)
     REAL, PARAMETER  :: radToDeg = 57.2957795
     TYPE(ESMF_Grid)  :: Grid
 
+#ifndef MAPL3
     ! Defined Iam and STATUS
     __Iam__("HCO_GetHorzIJIndex (hco_geotools_mod.F90)")
-
+#endif
+    
     !-------------------------------
     ! HCO_GetHorzIJIndex begins here
     !-------------------------------
 
     ! Get grid
+#ifdef MAPL3
+    _ASSERT(ASSOCIATED(HcoState%GridComp),'HcoState%GridComp must be associated!')
+    CALL ESMF_GridCompGet( HcoState%GridComp, Grid=Grid, _RC )
+#else
     ASSERT_(ASSOCIATED(HcoState%GridComp))
     CALL ESMF_GridCompGet( HcoState%GridComp, Grid=Grid, __RC__ )
+#endif
 
     ! Shadow variables
     LonR(:) = Lon / radToDeg
     LatR(:) = Lat / radToDeg
 
-    ! Get indeces
-    CALL MAPL_GetHorzIJIndex( npts=N,   II=idx,   JJ=jdx,    &
-                              lon=LonR, lat=LatR, Grid=Grid, &
-                              __RC__)
-
-!!! old version of MAPL:
-!    CALL MAPL_GetHorzIJIndex(N,idx,jdx,LonR,LatR,Grid=Grid,__RC__)
+    ! Get indices
+#ifdef MAPL3
+    CALL GridGetHorzIJIndex( npts=N, ii=idx, jj=jdx,    &
+         lon=LonR, lat=LatR, grid=Grid, _RC)
+#else
+     CALL MAPL_GetHorzIJIndex( npts=N,   II=idx,   JJ=jdx,    &
+          lon=LonR, lat=LatR, Grid=Grid, __RC__)
+#endif
 
     ! Return w/ success
     RC =  HCO_SUCCESS

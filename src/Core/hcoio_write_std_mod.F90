@@ -1,10 +1,9 @@
 !BOC
-#if defined ( MODEL_GCCLASSIC ) || defined( MODEL_WRF ) || defined( MODEL_CESM ) || defined( HEMCO_STANDALONE )
+#if defined ( MODEL_GCCLASSIC ) || defined( MODEL_WRF ) || defined( HEMCO_STANDALONE )
 ! The 'standard' HEMCO I/O module is used for:
 ! - HEMCO Standalone (HEMCO_STANDALONE)
 ! - GEOS-Chem 'Classic' (MODEL_GCCLASSIC)
 ! - WRF-GC (MODEL_WRF)
-! - CESM-GC and CAM-Chem / HEMCO-CESM (MODEL_CESM)
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !

@@ -16,7 +16,7 @@ configuration file <hco-cfg>`, which is named :file:`HEMCO_Config.rc`.
 
 Modification of the HEMCO source code (and recompilation) is only
 required if new extensions are added, or to use HEMCO in a new model
-environent (see sections :ref:`hco-hood` and :ref:`hco-hood-int`).
+environment (see sections :ref:`hco-hood` and :ref:`hco-hood-int`).
 
 In the sections that follow, we provide some basic examples that
 demonstrate how to modify the configuration file to customize your
@@ -39,10 +39,10 @@ hourly scale factors applied to it (the latter taken from variable
 
 The horizontal grid and simulation datetimes employed by HEMCO depends
 on the HEMCO-to-model interface. If HEMCO is coupled to an external
-model (such as `GEOS-Chem <https://geos-chem.readthedocs.io>`_) these
+model (such as `GEOS-Chem <https://geos-chem.readthedocs.io>`__) these
 values are taken from the chemistry model. If run standalone, the grid
-specification and desired datetimes need be specified as described in
-Interfaces.
+specification and desired datetimes need to be specified as described
+in :ref:`hco-hood-int`.
 
 .. code-block:: kconfig
 
@@ -58,8 +58,7 @@ Interfaces.
    Unit tolerance:              1
    Negative values:             0
    Only unitless scale factors: false
-   Verbose:                     0
-   Warnings:                    1
+   Verbose:                     false
 
    ### END SECTION SETTINGS ###
 
@@ -117,7 +116,7 @@ contained between the brackets :literal:`(((MACCITY` and
 
 These files will be ignored if you set
 
-.. code-block::
+.. code-block:: text
 
    --> MACCITY           :       false
 
@@ -405,8 +404,7 @@ now looks like this:
    Unit tolerance:              1
    Negative values:             0
    Only unitless scale factors: false
-   Verbose:                     0
-   Warnings:                    1
+   Verbose:                     false
 
    ### END SECTION SETTINGS ###
 
@@ -509,19 +507,19 @@ now looks like this:
 
 .. _edit-hco-cfg-ex6:
 
-======================================================================================
+===================================================================================
 Example 6: Add inventories that do not separate out biofuels and/or trash emissions
-======================================================================================
+===================================================================================
 
 Several emissions inventories (e.g. CEDS and EDGAR) lump biofuels
-and/or and trash emissions together with anthropogenic emissions. For
+and/or trash emissions together with anthropogenic emissions. For
 inventories such as these, HEMCO allows you to specify up to 3
 multiple categories for each species listing in the HEMCO
 configuration file. All of the emissions will go into the first listed
 category, and the other listed categories will be set to zero.
 
 In this example, all NO emissions from the EDGAR inventory power
-sector will be placed into the the anthropogenic emissions category
+sector will be placed into the anthropogenic emissions category
 (:literal:`Cat=1`), while the biofuel emissions category (Cat=2) will
 be set to zero.
 
@@ -530,7 +528,7 @@ be set to zero.
    0 EDGAR_NO_POW EDGAR_v43.NOx.POW.0.1x0.1.nc emi_nox 1970-2010/1/1/0 C xy kg/m2/s NO 1201/25/115  1/2  2
 
 In this example, all NO emissions from CEDS inventory agriculture
-sector will be placed into the the anthropogenic emissions category
+sector will be placed into the anthropogenic emissions category
 (:literal:`Cat=1`), while the biofuel emissions category
 (:literal:`Cat=2`) and trash emissions category (:literal:`Cat=12`)
 will be set to zero.

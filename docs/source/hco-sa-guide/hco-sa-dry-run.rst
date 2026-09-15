@@ -60,12 +60,12 @@ Initialize the GCPy Python environment
 
 You will need to activate a Python environment before you can start
 downloading data.  We recommend using the Python environment for `GCPy
-<https://gcpy.readthedocs.io>`_, as it has all of the relevant
+<https://gcpy.readthedocs.io>`__, as it has all of the relevant
 packages installed. If you `installed GCPy from PyPI
-<https://gcpy.readthedocs.io/en/stable/Getting-Started-with-GCPy.html#install-gcpy-from-pypi>`_,
+<https://gcpy.readthedocs.io/en/stable/Getting-Started-with-GCPy.html#install-gcpy-from-pypi>`__,
 then no further action is needed.  On the other hand, if you
 `installed GCPy from conda-forge
-<https://gcpy.readthedocs.io/en/stable/Getting-Started-with-GCPy.html#install-gcpy-from-conda-forge>`_,
+<https://gcpy.readthedocs.io/en/stable/Getting-Started-with-GCPy.html#install-gcpy-from-conda-forge>`__,
 you will need to activate the GCPy Python environment with this
 command:
 
@@ -139,7 +139,7 @@ For example, to download data from the :ref:`GEOS-Chem Input Data
    (gcpy_env) $ ./download_data.py log.dryrun geoschem+http
 
 But if you have `AWS CLI (command-line interface)
-<https://aws.amazon.com/cli/>`_ set up on your machine, use
+<https://aws.amazon.com/cli/>`__ set up on your machine, use
 this command instead:
 
 .. code-block:: console
@@ -186,15 +186,15 @@ looks similar to this:
 
     ... etc ...
 
-This name of this "unique" log file will be the same as the log file
-with dryrun ouptut, with :file:`.unique` appended. In our above
+The name of this "unique" log file will be the same as the log file
+with dryrun output, with :file:`.unique` appended. In our above
 example, we passed :file:`log.dryrun` to :file:`download_data.py`, so
 the "unique" log file will be named :file:`log.dryrun.unique`. This
 "unique" log file can be very useful for documentation purposes.
 
 If you wish to only produce the **log of unique data files** without
 downloading any data, then use :literal:`skip-download` in place of
-the :literal:`PORTAL-NAME` when running :file:`donwload_data.py`:
+the :literal:`PORTAL-NAME` when running :file:`download_data.py`:
 
 .. code-block:: console
 

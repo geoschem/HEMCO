@@ -1,4 +1,8 @@
+#ifdef MAPL3
+#include "MAPL.h"
+#else
 #include "MAPL_Generic.h"
+#endif
 !------------------------------------------------------------------------------
 !     NASA/GSFC, Global Modeling and Assimilation Office, Code 610.1          !
 !------------------------------------------------------------------------------
@@ -892,9 +896,9 @@ CONTAINS
     ! Manually set some settings
 
     ! Pass ESMF/MAPL states to HEMCO state object
-    Inst%HcoState%GRIDCOMP => GC
-    Inst%HcoState%IMPORT   => Import
-    Inst%HcoState%EXPORT   => Export
+    Inst%HcoState%gridComp    => GC
+    Inst%HcoState%importState => Import
+    Inst%HcoState%exportState => Export
 
     ! Don't let HEMCO schedule the diag output (will be scheduled manually)
     Inst%HcoState%Options%HcoWritesDiagn = .FALSE.
@@ -934,9 +938,9 @@ CONTAINS
     _ASSERT(HCRC==HCO_SUCCESS,'needs informative message')
 
     ! Nullify pointers
-    Inst%HcoState%GRIDCOMP => NULL()
-    Inst%HcoState%IMPORT   => NULL() 
-    Inst%HcoState%EXPORT   => NULL() 
+    Inst%HcoState%gridComp    => NULL()
+    Inst%HcoState%importState => NULL() 
+    Inst%HcoState%exportState => NULL() 
 
     ! Return w/ success
     RETURN_(ESMF_SUCCESS)
@@ -1007,9 +1011,9 @@ CONTAINS
     ! ------------------------------------------------------------------
 
     ! Pass ESMF/MAPL states to HEMCO state object
-    Inst%HcoState%GRIDCOMP => GC
-    Inst%HcoState%IMPORT   => Import
-    Inst%HcoState%EXPORT   => Export
+    Inst%HcoState%gridComp    => GC
+    Inst%HcoState%importState => Import
+    Inst%HcoState%exportState => Export
 
     ! ------------------------------------------------------------------
     ! Set time 
@@ -1085,9 +1089,9 @@ CONTAINS
     ! ------------------------------------------------------------------
 
     ! Nullify pointers
-    Inst%HcoState%GRIDCOMP => NULL()
-    Inst%HcoState%IMPORT   => NULL() 
-    Inst%HcoState%EXPORT   => NULL() 
+    Inst%HcoState%gridComp    => NULL()
+    Inst%HcoState%importState => NULL() 
+    Inst%HcoState%exportState => NULL() 
 
     ! Return w/ success
     RETURN_(ESMF_SUCCESS)
@@ -1243,14 +1247,24 @@ CONTAINS
     ExtState => Inst%ExtState
 
     ! Get imports
-!    CALL MAPL_GetPointer ( HcoState%IMPORT,      TH,      'TH', __RC__ ) 
-    CALL MAPL_GetPointer ( HcoState%IMPORT,     PLE,     'PLE', __RC__ ) 
-    CALL MAPL_GetPointer ( HcoState%IMPORT,     ZLE,     'ZLE', __RC__ ) 
-    CALL MAPL_GetPointer ( HcoState%IMPORT,       Q,       'Q', __RC__ ) 
-    CALL MAPL_GetPointer ( HcoState%IMPORT,      PS,      'PS', __RC__ ) 
-    CALL MAPL_GetPointer ( HcoState%IMPORT,    AREA,    'AREA', __RC__ )
-    CALL MAPL_GetPointer ( HcoState%IMPORT, AIRDENS, 'AIRDENS', __RC__ )
-
+#ifdef MAPL3
+    !CALL MAPL_StateGetPointer ( HcoState%importState,      TH,      'TH', _RC ) 
+    CALL MAPL_StateGetPointer ( HcoState%importState,     PLE,     'PLE', _RC ) 
+    CALL MAPL_StateGetPointer ( HcoState%importState,     ZLE,     'ZLE', _RC ) 
+    CALL MAPL_StateGetPointer ( HcoState%importState,       Q,       'Q', _RC ) 
+    CALL MAPL_StateGetPointer ( HcoState%importState,      PS,      'PS', _RC ) 
+    CALL MAPL_StateGetPointer ( HcoState%importState,    AREA,    'AREA', _RC )
+    CALL MAPL_StateGetPointer ( HcoState%importState, AIRDENS, 'AIRDENS', _RC )
+#else
+    !CALL MAPL_GetPointer ( HcoState%importState,      TH,      'TH', __RC__ )
+    CALL MAPL_GetPointer ( HcoState%importState,     PLE,     'PLE', __RC__ )
+    CALL MAPL_GetPointer ( HcoState%importState,     ZLE,     'ZLE', __RC__ )
+    CALL MAPL_GetPointer ( HcoState%importState,       Q,       'Q', __RC__ )
+    CALL MAPL_GetPointer ( HcoState%importState,      PS,      'PS', __RC__ )
+    CALL MAPL_GetPointer ( HcoState%importState,    AREA,    'AREA', __RC__ )
+    CALL MAPL_GetPointer ( HcoState%importState, AIRDENS, 'AIRDENS', __RC__ )
+#endif
+    
     ! ---------------------------------------------------------------- 
     ! Define grid quantities 
     ! ---------------------------------------------------------------- 
@@ -1400,7 +1414,7 @@ CONTAINS
        ExtState%SZAFACT%Arr%Val(:,:) = 0.0_hp
 
        ! Emission time step
-       CALL MAPL_GetObjectFromGC ( HcoState%GRIDCOMP, STATE, __RC__ ) 
+       CALL MAPL_GetObjectFromGC ( HcoState%gridComp, STATE, __RC__ ) 
        CALL MAPL_Get( STATE, RUNALARM=ALARM, __RC__ ) 
        CALL ESMF_AlarmGet( ALARM, RingInterval=emisInterval, __RC__ )
        CALL ESMF_TimeIntervalGet( emisInterval, s_r8=dt_r8, __RC__ )
@@ -1443,7 +1457,7 @@ CONTAINS
 
 !       CALL GET_SUMCOSZA(HcoState,Clock,HcoState%NX,HcoState%NY,tsEmis,SUMCOSZA, __RC__ )
 
-!       CALL MAPL_GetObjectFromGC ( HcoState%GRIDCOMP, STATE, __RC__ ) 
+!       CALL MAPL_GetObjectFromGC ( HcoState%gridComp, STATE, __RC__ ) 
 !       CALL MAPL_Get( STATE, RUNALARM=ALARM, __RC__ ) 
 !       CALL ESMF_AlarmGet( ALARM, RingInterval=emisInterval, __RC__ )
 !       CALL ESMF_TimeIntervalGet( emisInterval, s_r8=dt_r8, __RC__ )
@@ -1455,7 +1469,7 @@ CONTAINS
 !
 !       ! Get the Orbit object (of type MAPL_SunOrbit),
 !       ! which is used in the call to MAPL_SunGetInsolation
-!       CALL MAPL_GetObjectFromGC ( HcoState%GRIDCOMP, STATE, __RC__ ) 
+!       CALL MAPL_GetObjectFromGC ( HcoState%gridComp, STATE, __RC__ ) 
 !       CALL MAPL_Get( STATE,                       &
 !                      LONS      = lonCtr,             &
 !                      LATS      = latCtr,             &
@@ -1596,7 +1610,7 @@ CONTAINS
 
     ! Get the Orbit object (of type MAPL_SunOrbit),
     ! which is used in the call to MAPL_SunGetInsolation
-    CALL MAPL_GetObjectFromGC ( HcoState%GRIDCOMP, STATE, __RC__ ) 
+    CALL MAPL_GetObjectFromGC ( HcoState%gridComp, STATE, __RC__ ) 
     CALL MAPL_Get( STATE,           &
                    LONS   = lonCtr, &
                    LATS   = latCtr, &
@@ -1759,7 +1773,7 @@ CONTAINS
     CALL ESMF_TimeGet( currTime, dayOfYear=DOY, h=HOUR, __RC__ )
 
     ! Get grid centers
-    CALL MAPL_GetObjectFromGC ( HcoState%GRIDCOMP, STATE, __RC__ ) 
+    CALL MAPL_GetObjectFromGC ( HcoState%gridComp, STATE, __RC__ ) 
     CALL MAPL_Get( STATE,           &
                    LONS   = lonCtr, &
                    LATS   = latCtr, &

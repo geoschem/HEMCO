@@ -93,7 +93,7 @@ List containers and generic linked list routines are defined  in
 :code:`ConfigList`, :code:`ReadList` and :code:`EmisList` are defined
 in :file:`src/Core/hco_config_mod.F90`,
 :file:`src/Core/hco_readlist_mod.F90`, and
-and :file:`src/Core/hco_emislist_mod.F90` respectively.
+:file:`src/Core/hco_emislist_mod.F90` respectively.
 
 .. _hco-hood-core:
 
@@ -115,7 +115,7 @@ including a list of the defined HEMCO species,  emission grid
 information, configuration file name, and additional run options. More
 details on the HEMCO state object can be found in
 :file:`src/Core/hco_state_mod.F90`. :code:`HcoState` is defined at the
-interface level and then passed down to all HEMCO routines
+interface level and then passed down to all HEMCO routines.
 
 .. _hco-hood-init:
 
@@ -144,8 +144,8 @@ properly. The initialization of HEMCO occurs in three steps:
    :code:`ConfigList`, but sorted by data update frequency. Data that
    is not used at all (e.g. scale factors that are not used by any
    base emission, or regional emissions that are outside of the
-   emission grid). The :code:`EmisList` linked list is only created in
-   the run call.
+   emission grid) is excluded from :code:`ReadList`. The
+   :code:`EmisList` linked list is only created in the run call.
 
 Note that steps 1 and 2 occur at the :ref:`the HEMCO-to-model
 interface level <hco-hood-int-to-model>`.
@@ -240,10 +240,10 @@ These subroutines invoke the corresponding calls of all (enabled)
 (after the core routines).
 
 Extension settings (as specified in the configuration file, see also
-:ref:`hco-cfg-ext-switches`) areautomatically read by HEMCO. For any
+:ref:`hco-cfg-ext-switches`) are automatically read by HEMCO. For any
 given extension, routines :code:`GetExtNr` and :code:`GetExtOpt` can
 be used to obtain the extension number
-(:ref:`hco-cfg-ext-switches-ExtNr`) and desired setting value,
+(:ref:`hco-cfg-ext-switches-extnr`) and desired setting value,
 respectively (see :file:`src/Core/HCO_ExtList_Mod.F90`). Routine
 :code:`HCO_GetExtHcoID` should be used to extract the HEMCO species
 IDs of all species registered for this extension.
@@ -296,7 +296,7 @@ Initialization:
    :file:`src/Core/hco_config_mod.F90`). |br|
    |br|
 
--  Initialize :code:`HcoState object` (:code:`HcoState_Init` in
+-  Initialize the :code:`HcoState` object (:code:`HcoState_Init` in
    :file:`src/Core/hco_state_mod.F90`). |br|
    |br|
 
@@ -344,8 +344,8 @@ Initialization:
    :file:`src/Core/hco_driver_mod.F90`) |br|
    |br|
 
--  Initialize HEMCO extensions (code:`HCOX_Init` in
-   :file:`src/Core/hcox_driver_mod.F90`)
+-  Initialize HEMCO extensions (:code:`HCOX_Init` in
+   :file:`src/Extensions/hcox_driver_mod.F90`)
 
 
 .. _hco-hood-int-to-model-run:
@@ -371,7 +371,7 @@ Run:
    |br|
 
 -  Run :ref:`hco-ext` to add extensions emissions (:code:`HCOX_Run` in
-   :file:`src/Core/hcox_driver_mod.F90`) |br|
+   :file:`src/Extensions/hcox_driver_mod.F90`) |br|
    |br|
 
 -  Export HEMCO emissions into desired environment
@@ -469,6 +469,6 @@ linked list.
    Several HEMCO extensions still use global arrays and currently
    cannot be used in multi-instance simulations. As of 8/29/2018, the
    following extensions are likely to cause problems in multi-instance
-   simulations: Ginoux dust emissions, FINN biomass burning, GFED
-   biomass burning, Iodine emissions, PARANOx ship emissions, sea flux
-   emissions, sea salt emissions.
+   simulations: FINN biomass burning, GFED biomass burning, Iodine
+   emissions, PARANOx ship emissions, sea flux emissions, sea salt
+   emissions.

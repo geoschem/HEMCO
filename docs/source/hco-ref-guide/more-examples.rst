@@ -32,12 +32,12 @@ utilize this feature, you must first specify a mask file in the
    * COUNTRY_MASK /path/to/file/countrymask_0.1x0.1.nc CountryID 2000/1/1/0 C xy count * - 1 1
 
 The mask file specified above was created from a shapefile obtained
-from the `GADM database <http://www.gadm.org>`_. The country mask
+from the `GADM database <http://www.gadm.org>`__. The country mask
 netCDF file (`countrymask_0.1x0.1.nc
-<http://geoschemdata.wustl.edu/ExtData/HEMCO/MASKS/v2014-07/countrymask_0.1x0.1.nc>`_
+<https://geos-chem.s3-us-west-2.amazonaws.com/HEMCO/MASKS/v2014-07/countrymask_0.1x0.1.nc>`__
 ) identifies countries by their ISO 3166-1 numeric code. Countries and
 their ISO3166-1-numeric codes are listed in the `country_codes.csv
-<http://geoschemdata.wustl.edu/ExtData/HEMCO/MASKS/v2014-07/country_codes.csv>`_
+<https://geos-chem.s3-us-west-2.amazonaws.com/HEMCO/MASKS/v2014-07/country_codes.csv>`__
 file.
 
 The country-specific scale factors can be specified in a separate
@@ -209,8 +209,8 @@ factor, with all scale factors being 1.0 except for months
 June-August, where the scale factor becomes 0.5. The last column of
 the :literal:`SOILNOX_SCALE` entry assigns mask number :literal:`5000`
 to this scale factor. This ensures that the scale factor will only be
-applied over the region spanned by mask :literal:`5000`. This musk
-mast be defined in the :ref:`hco-cfg-masks` section of :ref:`the HEMCO
+applied over the region spanned by mask :literal:`5000`. This mask
+must be defined in the :ref:`hco-cfg-masks` section of :ref:`the HEMCO
 configuration file <hco-cfg>`:
 
 .. code-block:: kconfig
@@ -264,7 +264,7 @@ Going back to the example above, let's add a mask to :literal:`TEST_2`:
    0 TEST_1 file.nc var 2000/1/1/0 C xy 1 1 CO -    1 1
    0 TEST_2 file.nc var 2000/1/1/0 C xy 1 1 CO 1000 1 2
 
-and let´s define the following :ref:`mask <hco-cfg-masks>`:
+and let's define the following :ref:`mask <hco-cfg-masks>`:
 
 .. code-block:: kconfig
 
@@ -273,7 +273,7 @@ and let´s define the following :ref:`mask <hco-cfg-masks>`:
 HEMCO uses the mask range (:literal:`180/180/-90/90`) to define the
 extension of this mask. If that range covers the entire HEMCO grid
 domain, it considers every emission inventory linked with this mask as
-¨global¨. In our example, :literal:`TEST_2` would still be considered
+"global". In our example, :literal:`TEST_2` would still be considered
 global because the mask extends over the entire globe, and
 :literal:`TEST_1` is thus ignored by HEMCO.
 
@@ -358,10 +358,10 @@ Create emissions for geographically tagged species
    future HEMCO version.
 
 If you are using HEMCO interfaced to an external model, and need to
-create emissions for geographically tagged species, follow thse steps.
+create emissions for geographically tagged species, follow these steps.
 
 #. Define masks for your geographic regions in the :ref:`hco-cfg-masks`
-   secton of :ref:`the HEMCO configuration file <hco-cfg>`:
+   section of :ref:`the HEMCO configuration file <hco-cfg>`:
 
    .. code-block:: kconfig
 
@@ -370,7 +370,7 @@ create emissions for geographically tagged species, follow thse steps.
       #==============================================================================
       1001 MASK_1  -30/30/45/70    - 2000/1/1/0 C xy 1 1 -30/30/45/70
       1002 MASK_2  -118/17/-95/33  - 2000/1/1/0 C xy 1 1 -118/17/-95/33
-      1003 MASK_3  my_mask_file.nc - 2000/1/1/0 C xy 1 1 105/-46/160/–10
+      1003 MASK_3  my_mask_file.nc - 2000/1/1/0 C xy 1 1 105/-46/160/-10
 
       # ... etc ...
 
@@ -402,7 +402,7 @@ create emissions for geographically tagged species, follow thse steps.
       0 CH4_COAL__1B1_a  -                   -         -               - -  -       CH4_a 1001 2 1
       0 CH4_COAL__1B1_b  -                   -         -               - -  -       CH4_b 1002 2 1
       0 CH4_COAL__1B1_c  -                   -         -               - -  -       CH4_c 1003 2 1
-      # ... etc ...``
+      # ... etc ...
 
 
 This will put the total emissions into your CH4 tracer (tracer #1). It
@@ -482,7 +482,7 @@ containing the archived :ref:`hco-ext-list-megan` emissions.
       HEMCO category :literal:`Cat = 4` is reserved for biogenic emissions.
 
 #. Run HEMCO in either standalone mode, or coupled to an external
-   model, dependingon your application.
+   model, depending on your application.
 
 .. _cfg-ex-ext-emit-2d-levels:
 
@@ -513,7 +513,7 @@ and assign :ref:`Scale Factors <hco-cfg-scalefac>` (e.g. 150, 151,
 
    151 EMEP_LEV1_FRAC 0.5 - - - xy 1 1
    152 EMEP_LEV2_FRAC 0.1 - - - xy 1 1
-   153 EMEP_LEV3_FRAC 0.1 - - - xy 1 1``
+   153 EMEP_LEV3_FRAC 0.1 - - - xy 1 1
 
 But this approach is somewhat cumbersome. Also, this won’t give you
 the possibility to specifically emit a fraction above the PBL given
@@ -547,7 +547,7 @@ layer:
    # Emit from the surface to the PBL top
    0 EMEP_CO_L1 EMEP.nc CO 2000-2014/1-12/1/0 C xyL=1:PBL kg/m2/s CO 1 1001 1 2
 
-HEMCO can also read the emission levvel from an external source
+HEMCO can also read the emission level from an external source
 (e.g. netCDF file) that is listed as a scale factor.  This field can
 then be referred to using its scale factor ID.  As an example, let's
 assume daily varying emission heights for 2009-2010 are archived in
@@ -580,7 +580,7 @@ Vertically distributing emissions
 In HEMCO 3.0.0 and later versions, the capability to vertically
 allocate emissions has been added. To achieve this, HEMCO first copies
 emissions to all levels when dimensions :literal:`xyL*` are specified.
-Scale factors can then be applied to determine distribute the
+Scale factors can then be applied to distribute the
 emissions vertically.
 
 For example, let's assume that we have a file :file:`vert_alloc.nc`
@@ -611,7 +611,7 @@ field into each emissions level:
 
    0 CEDS_CO_ENE CO-em-total-anthro_CEDS_$YYYY.nc  CO_ene  1970-2017/1-12/1/0 C xyL* kg/m2/s CO 26/37/35/315 1  5
    0 CEDS_CO_IND CO-em-total-anthro_CEDS_$YYYY.nc  CO_ind  1970-2017/1-12/1/0 C xyL* kg/m2/s CO 26/316       1  5
-   0 CEDS_CO_SHP CO-em-total-anthro_CEDS_$YYYY.nc  CO_shp  1970-2017/1-12/1/0 C xyL*`kg/m2/s CO 26/317       10 5
+   0 CEDS_CO_SHP CO-em-total-anthro_CEDS_$YYYY.nc  CO_shp  1970-2017/1-12/1/0 C xyL* kg/m2/s CO 26/317       10 5
 
 .. _cfg-ex-other-math:
 
@@ -731,7 +731,7 @@ Assign emissions to passive species in an external model
 
 The HEMCO passive species module allows you to run a suite of passive
 species alongside any simulation, i.e. it works with all simulation
-types. To use the passive species within GEOS-Chem, follow these steps:
+types. To use the passive species module, follow these steps:
 
 Let's assume you are using HEMCO in an external model, and that you
 have two passive species named :literal:`PASV1` and :literal:`PASV2`
