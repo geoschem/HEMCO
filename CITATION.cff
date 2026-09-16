@@ -4,8 +4,8 @@ title: "HEMCO: The Harmonized Emissions Component"
 type: software
 authors:
   - name: "The International GEOS-Chem User Community"
-version: 3.12.1
-date-released: 2026-04-08
+version: 3.13.0
+date-released: 2026-09-09
 doi: 10.5281/zenodo.4618253
 url: "https://hemco.readthedocs.io"
 repository-code: "https://github.com/geoschem/HEMCO"
