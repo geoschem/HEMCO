@@ -22,9 +22,9 @@ The [GEOS-Chem Support Team](https://geoschem.github.io/support-team.html), base
 
 2. The Working Group forwards the request to the GCSC, which sets its priority and target version at a quarterly meeting.
 
-3. The contributor submits the update as a pull request against this repository, following the checklist in `CONTRIBUTING.md` (Fortran-90 free format, thorough comments, a `CHANGELOG.md` entry, and matching GCHP/GEOS-Chem Classic config updates where applicable).
+3. The contributor submits the update as a pull request against the appropriate development branch of this repository (not `main`). Updates that do not change model output ("zero-diff" updates) go to `dev/no-diff-to-benchmark`. Updates that change model output go to the development branch for the target version, `dev/X.Y.Z` (for example `dev/3.14.0`). The pull request should follow the checklist in `CONTRIBUTING.md` (Fortran-90 free format, thorough comments, a `CHANGELOG.md` entry, and matching GCHP/GEOS-Chem Classic config updates where applicable).
 
-4. The GCST reviews and merges the update into the development branch, then includes it in the next tagged release. Releases here are picked up as pinned submodule updates by the host models that couple to HEMCO — [GCClassic](https://github.com/geoschem/GCClassic), [GCHP](https://github.com/geoschem/GCHP), NASA GEOS, CESM2, WRF-GC, and NOAA GEFS-Aerosol/UFS.
+4. The GCST reviews and merges the update into that development branch, then includes it in the next tagged release. `main` receives only released versions. Releases here are picked up as pinned submodule updates by the host models that couple to HEMCO — [GCClassic](https://github.com/geoschem/GCClassic), [GCHP](https://github.com/geoschem/GCHP), NASA GEOS, CESM2, WRF-GC, and NOAA GEFS-Aerosol/UFS.
 
 ## Sponsors
 

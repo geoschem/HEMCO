@@ -12,10 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `CITATION.cff` with citation metadata for the HEMCO GitHub repository
 - Added `GOVERNANCE.md` describing the GEOS-Chem governance structure
 - Added `SECURITY.md` describing how to report a security vulnerability privately
-- Added `.gitattributes` to enforce LF line endings in the repository
+- Added `.gitattributes` to enforce LF line endings in the repository (CRLF for Windows `*.bat` files)
 
 ### Changed
-- Updated `.release/changeVersionNumbers.sh` to also update `version` and `date-released` in `CITATION.cff`
+- Updated `.release/changeVersionNumbers.sh` to also update `version` and `date-released` in `CITATION.cff`, and to exit with an error if those edits did not land
 
 ### Fixed
 - Fixed Mac GitHub Actions workflow (`mac.yml`) failing with a `gfortran` module-version mismatch by building NetCDF-Fortran from source against each matrix `gcc_version`, instead of relying on Homebrew's bottle (which is always built against Homebrew's own default/latest `gcc`)

@@ -35,13 +35,23 @@ Current version: **HEMCO 3.13.0**.
 
 **HEMCO** (Harmonized Emissions Component) is a Fortran component for computing atmospheric emissions from multiple data inventories, scale factors, and non-linear parameterizations ("extensions"). It is not run standalone in most contexts — this repo is normally checked out as a **git submodule** of a host model:
 
-- `geoschem/GCClassic` — GEOS-Chem Classic (couples via the `gcclassic` interface)
-- NASA GEOS / MAPL/ESMF-based models (couples via the `mapl`/ESMF interface)
+- `geoschem/GCClassic` — GEOS-Chem Classic (couples via the `gcclassic` interface; its root `CMakeLists.txt` sets `GCCLASSIC_WRAPPER` and `HEMCO_EXTERNAL_CONFIG`)
+- `geoschem/GCHP` — GEOS-Chem High Performance (couples via the `mapl` interface; `src/GCHP_GridComp/GEOSChem_GridComp/CMakeLists.txt` sets `MAPL_ESMF` and `HEMCO_EXTERNAL_CONFIG` and links `HCOI_MAPL_ESMF`)
+- NASA GEOS / other MAPL/ESMF-based models (couple via the `mapl`/ESMF interface)
 - CESM2, WRF-GC, NOAA GEFS-Aerosol/UFS (couple via their own build systems, bypassing CMake)
 
 It can also be built and run in **standalone mode** (`HEMCO_EXTERNAL_CONFIG` not set), driven entirely by `.rc` config files in `run/`, with no host atmospheric model.
 
-If you arrived here via the GCClassic superproject, remember: `run`/`test` there are symlinks into the GEOS-Chem submodule, not this one. This repo's own `run/` directory holds the HEMCO **standalone** run-directory templates. There is no `test/` directory in this repo.
+The two GEOS-Chem superprojects vendor this repo at **different paths**:
+
+| Superproject | This repo's path | GEOS-Chem submodule path |
+|---|---|---|
+| GCClassic | `src/HEMCO` | `src/GEOS-Chem` |
+| GCHP | `src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/HEMCO` | `src/GCHP_GridComp/GEOSChem_GridComp/geos-chem` |
+
+In GCHP the outer `HEMCO/` directory belongs to the GCHP repo. Its `CMakeLists.txt` adds this repo with `add_subdirectory(HEMCO EXCLUDE_FROM_ALL)` and injects the `TOMAS`, `TOMAS15`/`TOMAS40`, `ADJOINT`, and `REVERSE_OPERATORS` defines into `HEMCOBuildProperties`. So those switches reach HEMCO from GCHP's side, not from this repo's CMake.
+
+If you arrived here via either superproject, remember: `run`/`test` there are symlinks into the GEOS-Chem submodule, not this one. This repo's own `run/` directory holds the HEMCO **standalone** run-directory templates. There is no `test/` directory in this repo.
 
 ## Building
 
@@ -84,7 +94,7 @@ Two things to keep in mind:
 
 ### Directory layout (`src/`)
 
-- **`Core/`** — the HEMCO engine itself (34 modules). Config file parsing (`hco_config_mod`, `hco_extlist_mod`); the emissions list and calculation engine (`hco_emislist_mod`, `hco_calc_mod`, `hco_readlist_mod`, `hco_datacont_mod`, `hco_filedata_mod`); state objects (`hco_state_mod`, `hco_types_mod`, `hco_arr_mod`, `hco_fluxarr_mod`); diagnostics (`hco_diagn_mod`, `hcoio_diagn_mod`); and supporting machinery you will likely need: `hco_clock_mod` and `hco_tidx_mod` (time), `hco_timeshift_mod`, `hco_interp_mod` and `hco_vertgrid_mod` (vertical/temporal regridding), `hco_geotools_mod`, `hco_unit_mod`, `hco_scale_mod`, `hco_restart_mod`, `hco_chartools_mod`, `hco_error_mod`, `hco_logfile_mod`. `hco_driver_mod.F90` is the INIT/RUN/FINAL driver (`HCO_Init`/`HCO_Run`/`HCO_Final`) for everything *not* handled by an extension.
+- **`Core/`** — the HEMCO engine itself (39 `.F90` files, including the I/O backends described below). Config file parsing (`hco_config_mod`, `hco_extlist_mod`); the emissions list and calculation engine (`hco_emislist_mod`, `hco_calc_mod`, `hco_readlist_mod`, `hco_datacont_mod`, `hco_filedata_mod`); state objects (`hco_state_mod`, `hco_types_mod`, `hco_arr_mod`, `hco_fluxarr_mod`); diagnostics (`hco_diagn_mod`, `hcoio_diagn_mod`); and supporting machinery you will likely need: `hco_clock_mod` and `hco_tidx_mod` (time), `hco_timeshift_mod`, `hco_interp_mod` and `hco_vertgrid_mod` (vertical/temporal regridding), `hco_geotools_mod`, `hco_unit_mod`, `hco_scale_mod`, `hco_restart_mod`, `hco_chartools_mod`, `hco_error_mod`, `hco_logfile_mod`. `hco_driver_mod.F90` is the INIT/RUN/FINAL driver (`HCO_Init`/`HCO_Run`/`HCO_Final`) for everything *not* handled by an extension.
 - **`Extensions/`** — self-contained emission/parameterization modules (`hcox_*_mod.F90`): MEGAN (biogenic), GFED/FINN/GFAS (biomass burning), sea salt/seaflux/paranox, dust, lightning NOx, soil NOx, volcano, iodine, POPs, Rn-Pb-Be, TOMAS aerosol variants. **17 extensions** are registered. Also here, and not extensions themselves: `hcox_state_mod.F90` (the `ExtState` object), `hcox_tools_mod.F90`, `drydep_toolbox_mod.F90`, `ocean_toolbox_mod.F90`, and `Preprocess/` (`finn.pl`, `gfed.pl` — offline inventory preprocessing).
 - **`Interfaces/`** — the boundary between HEMCO and each host model:
   - `Standalone/` — `hemco_standalone.F90` + `hcoi_standalone_mod.F90`, the standalone driver/executable. Always built.
@@ -169,7 +179,9 @@ make -C docs html      # output in docs/build/html
 
 ## Versioning and changes
 
-- **Don't hand-edit version numbers.** Run `./changeVersionNumbers.sh X.Y.Z` from `.release/`. It updates all five places the version appears: `CMakeLists.txt` (the `VERSION` keyword of `project()`), `docs/source/conf.py`, `src/Core/hco_error_mod.F90` (`HCO_VERSION`), `CHANGELOG.md` (rewriting `[Unreleased] - TBD` to `[X.Y.Z] - <date>`), and `CITATION.cff` (`version:` and `date-released:`). There is also a reminder comment in `CMakeLists.txt` about keeping it in sync with `hco_error_mod.F90`. `.zenodo.json` carries no version and needs no bump.
+- **Don't hand-edit version numbers.** Run `./changeVersionNumbers.sh X.Y.Z` from `.release/`. It updates all five places the version appears: `CMakeLists.txt` (the `VERSION` keyword of `project()`), `docs/source/conf.py`, `src/Core/hco_error_mod.F90` (`HCO_VERSION`), `CHANGELOG.md` (rewriting `[Unreleased] - TBD` to `[X.Y.Z] - <date>`), and `CITATION.cff` (`version:` and `date-released:`). There is also a reminder comment in `CMakeLists.txt` about keeping it in sync with `hco_error_mod.F90`. `.zenodo.json` carries no version and needs no bump. Two caveats:
+  - For the first three files the script replaces the first `X.Y.Z`-shaped string on **every line**. Each file currently has exactly one such line, but adding another dotted three-part number to any of them (a dependency version, say) would get it rewritten too.
+  - `sed` exits 0 whether or not it matched. The `CITATION.cff` edits are checked with `grep` and exit with an error if they did not land; the other files are not checked, so confirm with `git diff` after a bump.
 - `CHANGELOG.md` follows Keep a Changelog / SemVer. **Every change needs an entry** — this is item 4 of `CONTRIBUTING.md`'s code checklist, not a suggestion.
 
 `CONTRIBUTING.md`'s code checklist, in full:
@@ -186,9 +198,11 @@ For data-file contributions there is a separate 8-item checklist (final naming c
 
 ### Pull requests
 
-- `CONTRIBUTING.md` says only that the project uses GitHub Flow; it does **not** name a target branch. Judging from CI triggers (`main`, `dev`, `dev/**`, `release`, `release/**`) and `GOVERNANCE.md`'s reference to merging into "the development branch", a `dev` or `dev/X.Y.Z` branch is the usual target — confirm rather than assume.
+- **Target a development branch, not `main`.** Updates that do not change model output ("zero-diff" updates) go to `dev/no-diff-to-benchmark`. Updates that change model output go to the target version's branch, `dev/X.Y.Z` (e.g. `dev/3.14.0`). `main` receives only released versions. This is stated in `GOVERNANCE.md`; `CONTRIBUTING.md` says only that the project uses GitHub Flow.
 - `.github/PULL_REQUEST_TEMPLATE.md` has an **AI disclosure** section asking contributors to disclose whether AI tools were used in preparing the PR. It is a free-text disclosure request, not a prohibition, and it is not mentioned in `CONTRIBUTING.md`. If you helped write a change here, fill it in.
 - `GOVERNANCE.md` describes the roles (GEOS-Chem Steering Committee, Working Groups, GCST) and the path from proposal to release.
-- `SECURITY.md`: report vulnerabilities privately via GitHub Security advisories, not a public issue. Only the most recently released version gets fixes. Scientific-correctness bugs and numerical issues are explicitly **not** security reports — those are ordinary issues.
+- `SECURITY.md`: report vulnerabilities privately via GitHub Security advisories, not a public issue. It names arbitrary code execution when reading a data/config file (`.rc` configs, `run/download_data.yml`, NetCDF inventories) as the primary threat class. Only the most recently released version gets fixes. Scientific-correctness bugs and numerical issues are explicitly **not** security reports — those are ordinary issues.
+
+`.gitattributes` sets `* text=auto eol=lf`, except `*.bat text eol=crlf` so that `docs/make.bat` keeps the CRLF endings `cmd.exe` needs. Never introduce CRLF into `.F90`, `.sh`, `.rc`, or `.yml` files.
 
 There is no `CODE_OF_CONDUCT.md`, `.editorconfig`, `CODEOWNERS`, or coverage tooling in this repo.
