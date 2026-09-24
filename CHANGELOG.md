@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `GOVERNANCE.md` describing the GEOS-Chem governance structure
 - Added `SECURITY.md` describing how to report a security vulnerability privately
 - Added `.gitattributes` to enforce LF line endings in the repository (CRLF for Windows `*.bat` files)
+- Added `.github/dependabot.yml` to open monthly version-update PRs for GitHub Actions against `main`
 
 ### Changed
 - Updated `.release/changeVersionNumbers.sh` to also update `version` and `date-released` in `CITATION.cff`, and to exit with an error if those edits did not land
