@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated `.release/changeVersionNumbers.sh` to also update `version` and `date-released` in `CITATION.cff`, and to exit with an error if those edits did not land
+- Added read-only `permissions` blocks to the `ubuntu.yml`, `mac.yml`, and `windows.yml` GitHub Actions
 
 ### Fixed
 - Fixed Mac GitHub Actions workflow (`mac.yml`) failing with a `gfortran` module-version mismatch by building NetCDF-Fortran from source against each matrix `gcc_version`, instead of relying on Homebrew's bottle (which is always built against Homebrew's own default/latest `gcc`)
