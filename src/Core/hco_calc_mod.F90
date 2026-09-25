@@ -1974,15 +1974,11 @@ CONTAINS
        MaskVal = 1.0_sp
     ENDIF
 
-    ! For operator set to 3, mirror value
-    ! MaskVal=1 becomes 0 and MaskVal=0/missing becomes 1
-    IF ( Oper == 3 ) THEN
-       IF ( MaskVal == 0.0_sp .or. MaskVal == HCO_MISSVAL ) THEN
-          MaskVal = 1.0_sp
-       ELSE IF ( MaskVal == 1.0_sp ) THEN
-          MaskVal = 1.0_sp - MaskVal
-       ENDIF
-    ENDIF
+    ! For operator set to 3, mirror value.  MaskVal is already in [0,1]
+    ! (missing values were set to 0 above), so e.g. 1 becomes 0,
+    ! 0/missing becomes 1, and fractional values such as 0.3 become 0.7.
+    ! Mirroring happens before the binary threshold below.
+    IF ( Oper == 3 ) MaskVal = 1.0_sp - MaskVal
 
     ! Treat as binary?
     IF ( .NOT. Fractions ) THEN

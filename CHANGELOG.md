@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Converted `GetMaskVal` in `src/Core/hco_calc_mod.F90` to an `ELEMENTAL` function, which lets `HCO_MaskFld` evaluate the mask with a single array assignment instead of an OpenMP loop
+- Converted `GetMaskVal` in `src/Core/hco_calc_mod.F90` to an `ELEMENTAL` function instead of an OpenMP loop
 
 ### Fixed
-- Fixed a data race in `src/Core/hco_calc_mod.F90` where OpenMP threads all wrote to the shared `RC` argument via `GetMaskVal` (in `HCO_MaskFld` and the legacy emissions loop), and where `EXIT` only left the inner loop
+- Fixed a data race in `src/Core/hco_calc_mod.F90` where OpenMP threads all wrote to the shared `RC` argument via `GetMaskVal`
+- Fixed `GetMaskVal` in `src/Core/hco_calc_mod.F90` so that fractional values are mirrored properly when `Oper == 3`
 
 ## [3.13.0] - 2026-09-09
 ### Added
