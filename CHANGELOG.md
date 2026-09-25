@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- Converted `GetMaskVal` in `src/Core/hco_calc_mod.F90` to an `ELEMENTAL` function, which lets `HCO_MaskFld` evaluate the mask with a single array assignment instead of an OpenMP loop
+
+### Fixed
+- Fixed a data race in `src/Core/hco_calc_mod.F90` where OpenMP threads all wrote to the shared `RC` argument via `GetMaskVal` (in `HCO_MaskFld` and the legacy emissions loop), and where `EXIT` only left the inner loop
+
 ## [3.13.0] - 2026-09-09
 ### Added
 - Added code blocks for MAPL3 code in development

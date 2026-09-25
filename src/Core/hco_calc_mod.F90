@@ -1212,11 +1212,9 @@ CONTAINS
              IF ( ScalDct%DctType == HCO_DCTTYPE_MASK ) THEN
 
                 ! Get mask value
-                CALL GetMaskVal( ScalDct, I, J, TMPVAL, MaskFractions, EC )
-                IF ( EC /= HCO_SUCCESS ) THEN
-                   error = 4
-                   CYCLE
-                ENDIF
+                TMPVAL = GetMaskVal( ScalDct%Dta%V2(1)%Val(I,J),             &
+                                     ScalDct%Oper,                           &
+                                     MaskFractions                          )
 
                 ! Pass to output mask
                 mask(I,J,:) = mask(I,J,:) * TMPVAL
@@ -1366,8 +1364,6 @@ CONTAINS
                    msg = 'Illegal mathematical operator for scale factor: '
                 CASE( 3 )
                    msg = 'Encountered negative time index for scale factor: '
-                CASE( 4 )
-                   msg = 'Error applying mask to scale factor: '
                 CASE DEFAULT
                    msg = 'Error when applying scale factor: '
              END SELECT
@@ -1938,59 +1934,52 @@ CONTAINS
 !
 ! !IROUTINE: GetMaskVal
 !
-! !DESCRIPTION: Subroutine GetMaskVal is a helper routine to get the mask
-!  value at a given location.
+! !DESCRIPTION: Function GetMaskVal is a helper routine to evaluate a raw
+!  mask value (e.g. from a mask container's data array).  Because it is
+!  ELEMENTAL, it may be called either with a scalar (the value in a single
+!  grid box) or with an entire array (e.g. similar to SQRT etc. functions)
 !\\
 !\\
 ! !INTERFACE:
 !
-  SUBROUTINE GetMaskVal ( Dct, I, J, MaskVal, Fractions, RC )
-!
-! !USES:
-!
+  ELEMENTAL FUNCTION GetMaskVal( RawVal, Oper, Fractions ) RESULT( MaskVal )
 !
 ! !INPUT PARAMETERS:
 !
-    INTEGER,         INTENT(IN   ) :: I                   ! # of lons
-    INTEGER,         INTENT(IN   ) :: J                   ! # of lats
-    LOGICAL,         INTENT(IN   ) :: Fractions           ! Use fractions?
+    REAL(sp), INTENT(IN) :: RawVal      ! Raw mask value
+    INTEGER,  INTENT(IN) :: Oper        ! Mask cont. operator
+    LOGICAL,  INTENT(IN) :: Fractions   ! Can mask have fractional values?
 !
-! !INPUT/OUTPUT PARAMETERS:
+! !RETURN VALUE:
 !
-    TYPE(DataCont),  POINTER       :: Dct                 ! Mask container
-    REAL(sp),        INTENT(INOUT) :: MaskVal
-    INTEGER,         INTENT(INOUT) :: RC
+    REAL(sp)             :: MaskVal     ! Evaluated mask val
 !
 ! !REVISION HISTORY:
-!  09 Apr 2015 - C. Keller   - Initial Version
 !  See https://github.com/geoschem/hemco for complete history
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-!
-! !LOCAL VARIABLES:
-!
 
-    !=================================================================
+    !========================================================================
     ! GetMaskVal begins here
-    !=================================================================
+    !========================================================================
 
     ! Mask value over this grid box
-    MaskVal = Dct%Dta%V2(1)%Val(I,J)
+    MaskVal = RawVal
 
     ! Negative mask values are treated as zero (exclude).
-    IF ( (MaskVal <= 0.0_sp) .OR. (MaskVal == HCO_MISSVAL) ) THEN
+    IF ( MaskVal <= 0.0_sp .or. MaskVal == HCO_MISSVAL ) THEN
        MaskVal = 0.0_sp
-    ELSEIF ( MaskVal > 1.0_sp ) THEN
+    ELSE IF ( MaskVal > 1.0_sp ) THEN
        MaskVal = 1.0_sp
     ENDIF
 
     ! For operator set to 3, mirror value
     ! MaskVal=1 becomes 0 and MaskVal=0/missing becomes 1
-    IF ( Dct%Oper == 3 ) THEN
-       IF ( (MaskVal == 0.0_sp) .OR. (MaskVal == HCO_MISSVAL) ) THEN
+    IF ( Oper == 3 ) THEN
+       IF ( MaskVal == 0.0_sp .or. MaskVal == HCO_MISSVAL ) THEN
           MaskVal = 1.0_sp
-       ELSEIF ( MaskVal == 1.0_sp ) THEN
+       ELSE IF ( MaskVal == 1.0_sp ) THEN
           MaskVal = 1.0_sp - MaskVal
        ENDIF
     ENDIF
@@ -2004,10 +1993,7 @@ CONTAINS
        ENDIF
     ENDIF
 
-    ! Return w/ success
-    RC = HCO_SUCCESS
-
-  END SUBROUTINE GetMaskVal
+  END FUNCTION GetMaskVal
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -2055,9 +2041,7 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER                 :: I, J, FLAG
-
-    LOGICAL                 :: FND, ERR
+    LOGICAL                 :: FND
     LOGICAL                 :: Fractions
 
     TYPE(ListCont), POINTER :: MaskLct
@@ -2074,7 +2058,6 @@ CONTAINS
 
     ! Init: default is mask value of 1
     MASK = 1.0_sp
-    ERR  = .FALSE.
     FND  = .FALSE.
 
     ! Search for mask field within EmisList
@@ -2109,27 +2092,12 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! Do for every grid box
-       !$OMP PARALLEL DO            &
-       !$OMP DEFAULT( SHARED      ) &
-       !$OMP PRIVATE( I, J        )
-       DO J = 1, HcoState%NY
-       DO I = 1, HcoState%NX
-          CALL GetMaskVal( MaskLct%Dct, I, J, Mask(I,J), Fractions, RC )
-          IF ( RC /= HCO_SUCCESS ) THEN
-             ERR = .TRUE.
-             EXIT
-          ENDIF
-       ENDDO
-       ENDDO
-       !$OMP END PARALLEL DO
-
-       ! Error check
-       IF ( ERR ) THEN
-          MSG = 'Error in GetMaskVal'
-          CALL HCO_ERROR ( MSG, RC, THISLOC=LOC )
-          RETURN
-       ENDIF
+       ! Evaluate the mask in every grid box.  GetMaskVal is ELEMENTAL,
+       ! so it is applied to each element of the array.  This is cheap
+       ! and memory-bound, so we do not parallelize it with OpenMP.
+       Mask = GetMaskVal( MaskLct%Dct%Dta%V2(1)%Val,                         &
+                          MaskLct%Dct%Oper,                                  &
+                          Fractions                                         )
 
     ENDIF
 
@@ -3114,12 +3082,9 @@ END FUNCTION GetEmisLUnit
           IF ( ScalDct%DctType == HCO_DCTTYPE_MASK ) THEN
 
              ! Get mask value
-             CALL GetMaskVal ( ScalDct, I, J, &
-                               TMPVAL,    MaskFractions, RC )
-             IF ( RC /= HCO_SUCCESS ) THEN
-                ERROR = 4
-                EXIT
-             ENDIF
+             TMPVAL = GetMaskVal( ScalDct%Dta%V2(1)%Val(I,J), &
+                                  ScalDct%Oper,               &
+                                  MaskFractions              )
 
              ! Pass to output mask
              MASK(I,J,:) = MASK(I,J,:) * TMPVAL
@@ -3270,8 +3235,6 @@ END FUNCTION GetEmisLUnit
              MSG = 'Illegal mathematical operator for scale factor: ' // TRIM(ScalDct%cName)
           ELSEIF ( ERROR == 3 ) THEN
              MSG = 'Encountered negative time index for scale factor: ' // TRIM(ScalDct%cName)
-          ELSEIF ( ERROR == 4 ) THEN
-             MSG = 'Mask error in ' // TRIM(ScalDct%cName)
           ELSE
              MSG = 'Error when applying scale factor: ' // TRIM(ScalDct%cName)
           ENDIF
