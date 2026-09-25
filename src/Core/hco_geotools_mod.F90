@@ -401,14 +401,15 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER              :: I, J,   DOY, HOUR
-    LOGICAL              :: ERR
-    REAL(hp)             :: YMID_R, S_YMID_R,  C_YMID_R
-    REAL(hp)             :: R,      DEC
-    REAL(hp)             :: S_DEC,  C_DEC
-    REAL(hp)             :: SC,     LHR
-    REAL(hp)             :: AHR
-
+    INTEGER              :: I,      J
+    INTEGER              :: DOY,    HOUR
+    REAL(hp)             :: YMID_R, S_YMID_R, C_YMID_R
+    REAL(hp)             :: R,      DEC,      S_DEC
+    REAL(hp)             :: C_DEC,  LHR,      AHR
+    CHARACTER(LEN=255)   :: LOC
+!
+! !DEFINED PARAMETERS
+!
     ! Coefficients for solar declination angle
     REAL(hp),  PARAMETER :: A0 = 0.006918e+0_hp
     REAL(hp),  PARAMETER :: A1 = 0.399912e+0_hp
@@ -418,17 +419,18 @@ CONTAINS
     REAL(hp),  PARAMETER :: B2 = 0.000907e+0_hp
     REAL(hp),  PARAMETER :: B3 = 0.000148e+0_hp
 
-    CHARACTER(LEN=255) :: LOC
-
-    !-------------------------------
+    !========================================================================
     ! HCO_GetSUNCOS starts here!
-    !-------------------------------
+    !========================================================================
+
+    ! Initialize
+    RC  = HCO_SUCCESS
     LOC = 'HCO_GetSUNCOS (HCO_GEOTOOLS_MOD.F90)'
 
     ! Get current time information
     CALL HcoClock_Get( HcoState%Clock, cDOY=DOY, cH=HOUR, RC=RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
+        CALL HCO_ERROR( 'Error in call to HcoClock_Get', RC, THISLOC=LOC )
         RETURN
     ENDIF
 
@@ -439,103 +441,65 @@ CONTAINS
     IF ( HOUR < 0 ) THEN
        HOUR = HOUR + 24
        DOY  = DOY  - 1
-    ELSEIF ( HOUR > 23 ) THEN
+    ELSE IF ( HOUR > 23 ) THEN
        HOUR = HOUR - 24
        DOY  = DOY  + 1
     ENDIF
 
     ! Make sure DOY is within valid range of 1 to 365
-    DOY = MAX(MIN(DOY,365),1)
+    DOY   = MAX(MIN(DOY,365),1)
 
     ! Path length of earth's orbit traversed since Jan 1 [radians]
-    R        = ( 2e+0_hp * HcoState%Phys%PI / 365e+0_hp ) * DBLE( DOY - 1 )
+    R     = ( 2e+0_hp * HcoState%Phys%PI / 365e+0_hp ) * DBLE( DOY - 1 )
 
     ! Solar declination angle (low precision formula) [radians]
-    DEC      = A0 - A1*COS(         R ) + B1*SIN(         R ) &
-                  - A2*COS( 2e+0_hp*R ) + B2*SIN( 2e+0_hp*R ) &
-                  - A3*COS( 3e+0_hp*R ) + B3*SIN( 3e+0_hp*R )
+    DEC   = A0 - A1*COS(        R ) + B1*SIN(        R )                     &
+               - A2*COS( 2.0_hp*R ) + B2*SIN( 2.0_hp*R )                     &
+               - A3*COS( 3.0_hp*R ) + B3*SIN( 3.0_hp*R )
 
     ! Pre-compute sin & cos of DEC outside of DO loops (for efficiency)
-    S_DEC    = SIN( DEC )
-    C_DEC    = COS( DEC )
+    S_DEC = SIN( DEC )
+    C_DEC = COS( DEC )
 
-    ! Init
-    ERR = .FALSE.
-
-    !=================================================================
+    !========================================================================
     ! Compute cosine of solar zenith angle
-    !=================================================================
-!$OMP PARALLEL DO                                         &
-!$OMP DEFAULT( SHARED )                                   &
-!$OMP PRIVATE( I,      J,   YMID_R, S_YMID_R,  C_YMID_R ) &
-!$OMP PRIVATE( LHR,    AHR, SC,     RC                  )
+    !========================================================================
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J, YMID_R, S_YMID_R, C_YMID_R, LHR, AHR               )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( STATIC                                                  )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
-         ! Latitude of grid box [radians]
-         YMID_R     = HcoState%Grid%YMID%Val(I,J) * HcoState%Phys%PI_180
+       ! Latitude of grid box [radians]
+       YMID_R     = HcoState%Grid%YMID%Val(I,J) * HcoState%Phys%PI_180
 
-         ! Pre-compute sin & cos of DEC outside of I loop (for efficiency)
-         S_YMID_R   = SIN( YMID_R )
-         C_YMID_R   = COS( YMID_R )
+       ! Sin & cos of grid box latitude [1]
+       S_YMID_R   = SIN( YMID_R )
+       C_YMID_R   = COS( YMID_R )
 
-         !==============================================================
-         ! Compute cosine of SZA at the midpoint of the chem timestep
-         ! Required for photolysis, chemistry, emissions, drydep
-         !==============================================================
+       !-------------------------------------------------------------------
+       ! Compute cosine of SZA at the midpoint of the chem timestep
+       ! Required for photolysis, chemistry, emissions, drydep
+       !-------------------------------------------------------------------
 
-!-----------------------------------------------------------------------------
-! Prior to 3/2/17:
-! Seb Eastham suggested to comment out the call to HcoClock_GetLocal.  If
-! the Voronoi timezones are used, this will compute the timezones on political
-! boundaries and not strictly on longitude.  This will cause funny results.
-! Replace this with a strict longitudinal local time. (bmy, 3/27/17)
-!         ! Local time [hours] at box (I,J) at the midpt of the chem timestep
-!         CALL HcoClock_GetLocal ( HcoState, I, J, cH=LHR, RC=RC )
-!
-!         IF ( RC /= HCO_SUCCESS ) THEN
-!            ERR = .TRUE.
-!            EXIT
-!         ENDIF
-!-----------------------------------------------------------------------------
-! Prior to 3/2/17:
-! Seb Eastham says that HOUR (in the new formula below) already contains DT.
-! so we need to comment this out and just use HOUR + LONGITUDE/15.
-! (bmy, 3/2/17)
-!         ! Adjust for time shift
-!         LHR = LHR + DT
-!----------------------------------------------------------------------------
+       ! Compute local time as UTC + longitude/15 (bmy, 3/2/17)
+       LHR = HOUR + ( HcoState%Grid%XMid%Val(I,J) / 15.0_hp )
 
-         ! Compute local time as UTC + longitude/15 (bmy, 3/2/17)
-         LHR = HOUR + ( HcoState%Grid%XMid%Val(I,J) / 15.0_hp )
+       IF ( LHR <   0.0_hp ) LHR = LHR + 24.0_hp
+       IF ( LHR >= 24.0_hp ) LHR = LHR - 24.0_hp
 
-         IF ( LHR <   0.0_hp ) LHR = LHR + 24.0_hp
-         IF ( LHR >= 24.0_hp ) LHR = LHR - 24.0_hp
+       ! Hour angle at box (I,J) [radians]
+       AHR = ABS( LHR - 12.0_hp ) * 15.0_hp * HcoState%Phys%PI_180
 
-         ! Hour angle at box (I,J) [radians]
-         AHR = ABS( LHR - 12.0_hp ) * 15.0_hp * HcoState%Phys%PI_180
+       ! Corresponding cosine( SZA ) at box (I,J) [unitless]
+       SUNCOS(I,J) = ( S_YMID_R * S_DEC              )                       &
+                   + ( C_YMID_R * C_DEC * COS( AHR ) )
 
-         ! Corresponding cosine( SZA ) at box (I,J) [unitless]
-         SC = ( S_YMID_R * S_DEC              ) &
-            + ( C_YMID_R * C_DEC * COS( AHR ) )
-
-         ! COS(SZA) at the current time
-         SUNCOS(I,J) = SC
-
-      ENDDO
-      ENDDO
-!$OMP END PARALLEL DO
-
-    ! Check error status
-    IF ( ERR ) THEN
-       CALL HCO_ERROR ( &
-         'Cannot calculate SZA', RC, &
-          THISLOC='HCO_GetSUNCOS (hco_geotools_mod.F90)' )
-       RETURN
-    ENDIF
-
-    ! Leave w/ success
-    RC = HCO_SUCCESS
+    ENDDO
+    ENDDO
+    !$OMP END PARALLEL DO
 
   END SUBROUTINE HCO_GetSUNCOS
 !EOC
@@ -827,8 +791,7 @@ CONTAINS
     REAL(hp), ALLOCATABLE, TARGET :: TmpTK(:,:,:)
     REAL(hp), POINTER             :: ThisTK(:,:,:)
     CHARACTER(LEN=255)            :: MSG
-    CHARACTER(LEN=255)            :: LOC = 'HCO_CalcVertGrid (hco_geotools_mod.F90)'
-
+    CHARACTER(LEN=255)            :: LOC
     LOGICAL, SAVE                 :: FIRST         = .TRUE.
     LOGICAL, SAVE                 :: EVAL_PSFC     = .TRUE.
     LOGICAL, SAVE                 :: EVAL_ZSFC     = .TRUE.
@@ -837,9 +800,9 @@ CONTAINS
     LOGICAL, SAVE                 :: EVAL_BXHEIGHT = .TRUE.
     LOGICAL, SAVE                 :: DO_SCALE_PSFC = .FALSE.
 
-    !-------------------------------
+    !========================================================================
     ! HCO_CalcVertGrid begins here
-    !-------------------------------
+    !========================================================================
 
     ! Init
     Verb          = .FALSE.
@@ -849,6 +812,8 @@ CONTAINS
     FoundPEDGE    = .FALSE.
     FoundBXHEIGHT = .FALSE.
     ThisTK        => NULL()
+    MSG           = ''
+    LOC           = 'HCO_CalcVertGrid (hco_geotools_mod.F90)'
 
     ! Verbose statements
     IF ( HcoState%amIRoot .AND. FIRST .AND. &
@@ -894,16 +859,18 @@ CONTAINS
        ALLOCATE(TmpTK(HcoState%NX,HcoState%NY,HcoState%NZ))
        CALL HCO_EvalFld( HcoState, 'TK', TmpTK, RC, FOUND=FoundTK )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error encountered in call to "HCO_EvalFld" (TK)'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
 
        ! TK is sometimes listed as TMPU, so look for that too (bmy, 3/5/21)
        IF ( .not. FoundTK ) THEN
           CALL HCO_EvalFld( HcoState, 'TMPU', TmpTK, RC, FOUND=FoundTK )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
-              RETURN
+             MSG = 'Error encountered in call to "HCO_EvalFld" (TMPU)'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+             RETURN
           ENDIF
        ENDIF
 
@@ -927,8 +894,9 @@ CONTAINS
     ! ------------------------------------------------------------------
     CALL HCO_ArrAssert( HcoState%Grid%PSFC, HcoState%NX, HcoState%NY, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in call to "HCO_ArrAssert" (PSFC)'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! If associated, make sure that array size is correct
@@ -958,8 +926,9 @@ CONTAINS
        CALL HCO_EvalFld( HcoState, 'PSFC', HcoState%Grid%PSFC%Val, RC, &
             FOUND=FoundPSFC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error encountered in call to "HCO_EvalFld" (PSFC)'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
 
        ! PSFC is sometimes listed as PS, so look for that too (bmy, 3/4/21)
@@ -967,8 +936,9 @@ CONTAINS
           CALL HCO_EvalFld( HcoState, 'PS', HcoState%Grid%PSFC%Val, RC, &
                FOUND=FoundPSFC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
-              RETURN
+             MSG = 'Error encountered in call to "HCO_EvalFld" (PS)'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+             RETURN
           ENDIF
        ENDIF
 
@@ -991,8 +961,9 @@ CONTAINS
     ! ------------------------------------------------------------------
     CALL HCO_ArrAssert( HcoState%Grid%ZSFC, HcoState%NX, HcoState%NY, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in call to "HCO_ArrAssert" (ZSFC)'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! If associated, make sure that array size is correct
@@ -1021,8 +992,9 @@ CONTAINS
     ELSEIF ( EVAL_ZSFC ) THEN
        CALL HCO_EvalFld ( HcoState, 'ZSFC', HcoState%Grid%ZSFC%Val, RC, FOUND=FoundZSFC )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error encountered in call to "HCO_EvalFld" (ZSFC)'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
        EVAL_ZSFC = FoundZSFC
 
@@ -1044,8 +1016,9 @@ CONTAINS
     CALL HCO_ArrAssert( HcoState%Grid%PEDGE, HcoState%NX, &
                         HcoState%NY,         HcoState%NZ+1, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in call to "HCO_ArrAssert" (PEDGE)'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     IF ( ASSOCIATED( PEDGE ) ) THEN
@@ -1074,8 +1047,9 @@ CONTAINS
        CALL HCO_EvalFld ( HcoState, 'PEDGE', &
                           HcoState%Grid%PEDGE%Val, RC, FOUND=FoundPEDGE )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error encountered in call to "HCO_EvalFld" (PEDGE)'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
        EVAL_PEDGE = FoundPEDGE
 
@@ -1097,8 +1071,9 @@ CONTAINS
     CALL HCO_ArrAssert( HcoState%Grid%BXHEIGHT_M, HcoState%NX, &
                         HcoState%NY,              HcoState%NZ, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 10', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in call to "HCO_ArrAssert" (BXHEIGHT)'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     IF ( ASSOCIATED( BXHEIGHT ) ) THEN
@@ -1128,8 +1103,9 @@ CONTAINS
        CALL HCO_EvalFld ( HcoState, 'BXHEIGHT_M', &
                           HcoState%Grid%BXHEIGHT_M%Val, RC, FOUND=FoundBXHEIGHT )
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 11', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error encountered in call to "HCO_EvalFld" (BXHEIGHT_M)'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
        EVAL_BXHEIGHT = FoundBXHEIGHT
 
@@ -1216,17 +1192,17 @@ CONTAINS
     ! (e.g. HEMCO standalone), then compute it here using the surface
     ! pressure PSFC and the Ap and Bp hybrid grid parameters.
     IF ( .NOT. FoundPEDGE ) THEN
-       !$OMP PARALLEL DO        &
-       !$OMP DEFAULT( SHARED  ) &
-       !$OMP PRIVATE( I, J, L ) &
-       !$OMP COLLAPSE( 3      )
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J, L                                               )&
+       !$OMP COLLAPSE( 3                                                    )&
+       !$OMP SCHEDULE( STATIC                                               )
        DO L = 1, HcoState%NZ+1
        DO J = 1, HcoState%NY
        DO I = 1, HcoState%NX
-          HcoState%Grid%PEDGE%Val(I,J,L) &
-           = HcoState%Grid%zGrid%AP(L)   &
-           + ( HcoState%Grid%zGrid%BP(L) &
-             * HcoState%Grid%PSFC%Val(I,J) )
+          HcoState%Grid%PEDGE%Val(I,J,L) = HcoState%Grid%zGrid%AP(L)         &
+                                         + ( HcoState%Grid%zGrid%BP(L)       &
+                                         *   HcoState%Grid%PSFC%Val(I,J) )
        ENDDO
        ENDDO
        ENDDO
@@ -1242,6 +1218,7 @@ CONTAINS
     ENDIF
 
     ! Set surface height and/or grid box height
+    ! Note, split into 2 loops to avoid data race conditions
     IF ( .NOT. FoundZSFC .OR. .NOT. FoundBXHEIGHT ) THEN
        IF ( FoundTK .AND. FoundPEDGE ) THEN
 
@@ -1253,52 +1230,75 @@ CONTAINS
           CALL HCO_ArrAssert( HcoState%Grid%BXHEIGHT_M, HcoState%NX, &
                               HcoState%NY,              HcoState%NZ, RC )
           IF ( RC /= HCO_SUCCESS ) THEN
-              CALL HCO_ERROR( 'ERROR 12', RC, THISLOC=LOC )
-              RETURN
+             MSG = 'Error encountered in call to "HCO_ArrAssert" (BXHEIGHT_M)'
+             CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+             RETURN
           ENDIF
 
-          !$OMP PARALLEL DO                &
-          !$OMP DEFAULT( SHARED          ) &
-          !$OMP PRIVATE( I, J, L, P1, P2 )
-          DO L = 1, HcoState%NZ
-          DO J = 1, HcoState%NY
-          DO I = 1, HcoState%NX
+          ! BXHEIGHT, grid box height (hydrostatic equation)
+          IF ( .NOT. FoundBXHEIGHT ) THEN
 
-             ! BOXHEIGHT (hydrostatic equation)
-             IF ( .NOT. FoundBXHEIGHT ) THEN
-                P1 = HcoState%Grid%PEDGE%Val(I,J,L)
+             ! NOTE: Give each thread its own copy of ERRBX and combine
+             ! the result at the end of the loop with the .OR. reduction.
+             ! If all threads do not encounter an error, ERRBX will be
+             ! false.  If at least 1 thread encounters an error, ERRBX
+             ! will be true.  This is a thread-safe implementation.
+             !$OMP PARALLEL DO                                               &
+             !$OMP DEFAULT( SHARED                                          )&
+             !$OMP PRIVATE( I, J, L, P1, P2                                 )&
+             !$OMP REDUCTION( .OR.: ERRBX                                   )&
+             !$OMP COLLAPSE( 3                                              )&
+             !$OMP SCHEUDLE( STATIC                                         )
+             DO L = 1, HcoState%NZ
+             DO J = 1, HcoState%NY
+             DO I = 1, HcoState%NX
+                P1 = HcoState%Grid%PEDGE%Val(I,J,L  )
                 P2 = HcoState%Grid%PEDGE%Val(I,J,L+1)
                 IF ( P2 == 0.0_hp ) THEN
                    ERRBX = .TRUE.
-                ELSE
-                   HcoState%Grid%BXHEIGHT_M%Val(I,J,L) = HcoState%Phys%Rdg0 &
-                                                       * ThisTK(I,J,1)      &
-                                                       * LOG( P1 / P2 )
+                   CYCLE
                 ENDIF
-             ENDIF
+                HcoState%Grid%BXHEIGHT_M%Val(I,J,L) = HcoState%Phys%Rdg0     &
+                                                    * ThisTK(I,J,1)          &
+                                                    * LOG( P1 / P2 )
+             ENDDO
+             ENDDO
+             ENDDO
+             !$OMP END PARALLEL DO
+          ENDIF
 
-             ! ZSFC
-             IF ( L == 1 .AND. .NOT. FoundZSFC ) THEN
-                P1 = 101325.0_hp
+          ! ZSFC, surface geopotential height
+          IF ( .NOT. FoundZSFC ) THEN
+
+             ! NOTE: Make ERRZSFC thread-safe as we did with ERRBX above.
+             !$OMP PARALLEL DO                                               &
+             !$OMP DEFAULT( SHARED                                          )&
+             !$OMP PRIVATE( I, J, P2                                        )&
+             !$OMP REDUCTION( .OR.: ERRZSFC                                 )&
+             !$OMP COLLAPSE( 2                                              )&
+             !$OMP SCHEDULE( STATIC                                         )
+             DO J = 1, HcoState%NY
+             DO I = 1, HcoState%NX
                 P2 = HcoState%Grid%PEDGE%Val(I,J,1)
                 IF ( P2 == 0.0_hp ) THEN
                    ERRZSFC = .TRUE.
-                ELSE
-                   HcoState%Grid%ZSFC%Val(I,J) = HcoState%Phys%Rdg0 &
-                                               * ThisTK(I,J,1)      &
-                                               * LOG( P1 / P2 )
+                   CYCLE
                 ENDIF
-             ENDIF
-          ENDDO
-          ENDDO
-          ENDDO
-          !$OMP END PARALLEL DO
+                HcoState%Grid%ZSFC%Val(I,J) = HcoState%Phys%Rdg0             &
+                                            * ThisTK(I,J,1)                  &
+                                            * LOG( 101325.0_hp / P2 )
+             ENDDO
+             ENDDO
+             !$OMP END PARALLEL DO
+          ENDIF
 
+          ! Exit if at least one thread could not compute ZSFC
           IF ( ERRZSFC ) THEN
-             MSG = 'Cannot calculate surface geopotential heights - at least one ' // &
-                   'surface pressure value is zero! You can either provide an '    // &
-                   'updated pressure edge field (PEDGE) or add a field with the '  // &
-                   'surface geopotential height to your configuration file (ZSFC)'
+             MSG = 'Cannot calculate surface geopotential heights - at '  // &
+                   'least one surface pressure value is zero!  You can '  // &
+                   'either provide an updated pressure edge field '       // &
+                   '(PEDGE) or add a field with the surface geopotential '// &
+                   'height to your configuration file (ZSFC).'
              CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
              RETURN
           ELSE
@@ -1306,17 +1306,21 @@ CONTAINS
 
              ! Verbose
              IF ( Verb ) THEN
-                WRITE(MSG,*) ' - ZSFC calculated from PSFC and T (min, max): ', &
-                   MINVAL(HcoState%Grid%ZSFC%Val), MAXVAL(HcoState%Grid%ZSFC%Val)
+                WRITE( MSG, * )                                              &
+                   ' - ZSFC calculated from PSFC and T (min, max): ',        &
+                   MINVAL(HcoState%Grid%ZSFC%Val),                           &
+                   MAXVAL(HcoState%Grid%ZSFC%Val)
                 CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
           ENDIF
 
+          ! Exit if at least one thread could not compute BXHEIGHT
           IF ( ERRBX ) THEN
-             MSG = 'Cannot calculate grid box heights - at least one ' // &
-                   'pressure value is zero! You can either provide an '    // &
-                   'updated pressure edge field (PEDGE) or add a field with the '  // &
-                   'grid box heights to your configuration file (BOXHEIGHT_M)'
+             MSG = 'Cannot calculate grid box heights - at least one '    // &
+                   'pressure value is zero! You can either provide an '   // &
+                   'updated pressure edge field (PEDGE) or add a field '  // &
+                   'with the grid box heights to your configuration '     // &
+                   'file (BOXHEIGHT_M).'
              CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
              RETURN
           ELSE
@@ -1324,8 +1328,10 @@ CONTAINS
 
              ! Verbose
              IF ( Verb ) THEN
-                WRITE(MSG,*) ' - Boxheights calculated from PEDGE and T (min, max): ', &
-                   MINVAL(HcoState%Grid%BXHEIGHT_M%Val), MAXVAL(HcoState%Grid%BXHEIGHT_M%Val)
+                WRITE( MSG, * )                                              &
+                   ' - Boxheights calculated from PEDGE and T (min, max): ', &
+                   MINVAL(HcoState%Grid%BXHEIGHT_M%Val),                     &
+                   MAXVAL(HcoState%Grid%BXHEIGHT_M%Val)
                 CALL HCO_MSG(MSG,LUN=HcoState%Config%hcoLogLUN)
              ENDIF
           ENDIF
@@ -1337,14 +1343,18 @@ CONTAINS
                    'some extensions to fail. HEMCO tries to calculate '   // &
                    'ZSFC from surface pressure and air temperature, but ' // &
                    'at least one of these variables seem to be missing.'
-             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
+             IF ( HcoState%Config%doVerbose ) THEN
+                CALL HCO_WARNING( MSG, THISLOC=LOC )
+             ENDIF
           ENDIF
           IF ( .NOT. FoundBXHEIGHT .AND. FIRST .AND. HcoState%amIRoot ) THEN
-             MSG = 'Cannot set boxheights BXHEIGHT_M. This may cause '      // &
-                   'some extensions to fail. HEMCO tries to calculate '     // &
-                   'BXHEIGHT from pressure edges and air temperature, but ' // &
-                   'at least one of these variables seem to be missing.'
-             IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG, THISLOC=LOC )
+             MSG = 'Cannot set boxheights BXHEIGHT_M. This may cause '    // &
+                   'some extensions to fail. HEMCO tries to calculate '   // &
+                   'BXHEIGHT from pressure edges and air temperature, '   // &
+                   'but at least one of these variables seem to be missing.'
+             IF ( HcoState%Config%doVerbose ) THEN
+                CALL HCO_WARNING( MSG, THISLOC=LOC )
+             ENDIF
           ENDIF
        ENDIF
     ENDIF
