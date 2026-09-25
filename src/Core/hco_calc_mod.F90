@@ -2660,6 +2660,7 @@ END FUNCTION GetEmisLUnit
 
   END SUBROUTINE GetDilFact
 #ifdef ADJOINT
+!------------------------------------------------------------------------------
 !BOP
 !
 ! !IROUTINE: Get_Current_Emissions
@@ -2742,7 +2743,7 @@ END FUNCTION GetEmisLUnit
     INTEGER                 :: tIDx, IDX
     INTEGER                 :: I, J, L, N
     INTEGER                 :: LowLL, UppLL, ScalLL, TmpLL
-    INTEGER                 :: ERROR
+    INTEGER                 :: ERROR, EC
     INTEGER                 :: TotLL, nnLL
     CHARACTER(LEN=255)      :: MSG, LOC
     LOGICAL                 :: NegScalExist
@@ -2875,7 +2876,7 @@ END FUNCTION GetEmisLUnit
     ! Loop over all latitudes and longitudes
 !$OMP PARALLEL DO                                                            &
 !$OMP DEFAULT( SHARED                                                       )&
-!$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL                 )&
+!$OMP PRIVATE( I, J, L, tIdx, TMPVAL, DilFact, LowLL, UppLL, EC             )&
 !$OMP COLLAPSE( 2                                                           )&
 !$OMP SCHEDULE( DYNAMIC, 4                                                  )&
 !$OMP REDUCTION( +:totLL                                                    )&
@@ -2883,9 +2884,13 @@ END FUNCTION GetEmisLUnit
     DO J = 1, nJ
     DO I = 1, nI
 
-       ! Zero for safety's sake
-       totLL = 0
-       nnLL  = 0
+       ! Continue to end of loop if an error has occurred
+       ! (we cannot exit from a parallel loop)
+       IF ( ERROR > 0 ) CYCLE
+
+       ! Zero private variables for safety's sake.  NOTE: Do not zero
+       ! totLL and nnLL here, as they are summed across the whole loop.
+       EC = HCO_SUCCESS
 
        ! Get current time index for this container and at this location
        tIDx = tIDx_GetIndx( HcoState, BaseDct%Dta, I, J )
@@ -2893,19 +2898,19 @@ END FUNCTION GetEmisLUnit
           WRITE(MSG,*) 'Cannot get time slice index at location ',I,J,&
                        ': ', TRIM(BaseDct%cName), tIDx
           ERROR = 1
-          EXIT
+          CYCLE
        ENDIF
 
        ! Get lower and upper vertical index
        CALL GetVertIndx ( HcoState,     BaseDct,   isLevDct1, LevDct1,       &
                           LevDct1_Unit, isLevDct2, LevDct2,   LevDct2_Unit,  &
                           I,            J,         LowLL,     UppLL,         &
-                          RC                                                )
-       IF ( RC /= HCO_SUCCESS ) THEN
+                          EC                                                )
+       IF ( EC /= HCO_SUCCESS ) THEN
           WRITE(MSG,*) 'Error getting vertical index at location ',I,J,&
                        ': ', TRIM(BaseDct%cName)
           ERROR = 1 ! Will cause error
-          EXIT
+          CYCLE
        ENDIF
 
        ! average upper level
@@ -2916,43 +2921,35 @@ END FUNCTION GetEmisLUnit
        DO L = LowLL, UppLL
 
           ! Get base value. Use uniform value if scalar field.
-          IF ( BaseDct%Dta%SpaceDim == 1 ) THEN
-             TMPVAL = BaseDct%Dta%V2(tIDx)%Val(1,1)
-          ELSEIF ( BaseDct%Dta%SpaceDim == 2 ) THEN
-             TMPVAL = BaseDct%Dta%V2(tIDx)%Val(I,J)
-          ELSE
-             TMPVAL = BaseDct%Dta%V3(tIDx)%Val(I,J,L)
-          ENDIF
+          TMPVAL = Get_Value_From_DataCont( I, J, L, tIdx, BaseDct )
 
           ! If it's a missing value, mask box as unused and set value to zero
           IF ( TMPVAL == HCO_MISSVAL ) THEN
              MASK(I,J,:)      = 0.0_hp
              OUTARR_3D(I,J,L) = 0.0_hp
-
-          ! Pass base value to output array
-          ELSE
-
-             ! Get dilution factor. Never dilute 3D emissions.
-             IF ( BaseDct%Dta%SpaceDim == 3 ) THEN
-                DilFact = 1.0_hp !1.0
-
-             ! 2D dilution factor
-             ELSE
-                CALL GetDilFact ( HcoState,    BaseDct%Dta%EmisL1, &
-                                  BaseDct%Dta%EmisL1Unit, BaseDct%Dta%EmisL2,  &
-                                  BaseDct%Dta%EmisL2Unit, I, J, L, LowLL,  &
-                                  UppLL, DilFact, RC )
-                IF ( RC /= HCO_SUCCESS ) THEN
-                   WRITE(MSG,*) 'Error getting dilution factor at ',I,J,&
-                                ': ', TRIM(BaseDct%cName)
-                   ERROR = 1
-                   EXIT
-                ENDIF
-             ENDIF
-
-             ! Scale base emission by dilution factor
-             OUTARR_3D(I,J,L) = DilFact * TMPVAL
+             CYCLE
           ENDIF
+
+          ! Get dilution factor. Never dilute 3D emissions.
+          IF ( BaseDct%Dta%SpaceDim == 3 ) THEN
+             DilFact = 1.0_hp
+
+          ! 2D dilution factor
+          ELSE
+             CALL GetDilFact ( HcoState,    BaseDct%Dta%EmisL1, &
+                               BaseDct%Dta%EmisL1Unit, BaseDct%Dta%EmisL2,  &
+                               BaseDct%Dta%EmisL2Unit, I, J, L, LowLL,  &
+                               UppLL, DilFact, EC )
+             IF ( EC /= HCO_SUCCESS ) THEN
+                WRITE(MSG,*) 'Error getting dilution factor at ',I,J,&
+                             ': ', TRIM(BaseDct%cName)
+                ERROR = 1
+                EXIT  ! Leave L loop; the ERROR check skips the other boxes
+             ENDIF
+          ENDIF
+
+          ! Scale base emission by dilution factor
+          OUTARR_3D(I,J,L) = DilFact * TMPVAL
        ENDDO !L
 
     ENDDO !I
@@ -3045,11 +3042,16 @@ END FUNCTION GetEmisLUnit
        ! Loop over all latitudes and longitudes
 !$OMP PARALLEL DO                                                            &
 !$OMP DEFAULT( SHARED )                                                      &
-!$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale        )&
+!$OMP PRIVATE( I, J, tIdx, TMPVAL, L, LowLL, UppLL, tmpLL, MaskScale, EC    )&
 !$OMP COLLAPSE( 2                                                           )&
 !$OMP SCHEDULE( DYNAMIC, 4                                                  )
        DO J = 1, nJ
        DO I = 1, nI
+
+          ! Continue to end of loop if an error has occurred
+          ! (we cannot exit from a parallel loop)
+          IF ( ERROR > 0 ) CYCLE
+          EC = HCO_SUCCESS
 
           ! ------------------------------------------------------------
           ! If there is a mask associated with this scale factors, check
@@ -3066,7 +3068,7 @@ END FUNCTION GetEmisLUnit
              WRITE(*,*) 'Cannot get time slice index at location ',I,J,&
                           ': ', TRIM(ScalDct%cName), tIDx
              ERROR = 3
-             EXIT
+             CYCLE
           ENDIF
 
           ! Check if this is a mask. If so, add mask values to the MASK
@@ -3108,32 +3110,19 @@ END FUNCTION GetEmisLUnit
           CALL GetVertIndx( HcoState, BaseDct,       isLevDct1,              &
                             LevDct1,  LevDct1_Unit,  isLevDct2,              &
                             LevDct2,  LevDct2_Unit,  I,                      &
-                            J,        LowLL,         UppLL,      RC         )
-          IF ( RC /= HCO_SUCCESS ) THEN
+                            J,        LowLL,         UppLL,      EC         )
+          IF ( EC /= HCO_SUCCESS ) THEN
              ERROR = 1 ! Will cause error
-             EXIT
+             CYCLE
           ENDIF
 
           ! Loop over all vertical levels of the base field
           DO L = LowLL,UppLL
              ! If the vertical level exceeds the number of available
              ! scale factor levels, use the highest available level.
-             IF ( L > ScalLL ) THEN
-                TmpLL = ScalLL
              ! Otherwise use the same vertical level index.
-             ELSE
-                TmpLL = L
-             ENDIF
-
-             ! Get scale factor for this grid box. Use same uniform
-             ! value if it's a scalar field
-             IF ( ScalDct%Dta%SpaceDim == 1 ) THEN
-                TMPVAL = ScalDct%Dta%V2(tidx)%Val(1,1)
-             ELSEIF ( ScalDct%Dta%SpaceDim == 2 ) THEN
-                TMPVAL = ScalDct%Dta%V2(tidx)%Val(I,J)
-             ELSE
-                TMPVAL = ScalDct%Dta%V3(tidx)%Val(I,J,TmpLL)
-             ENDIF
+             TmpLL = L
+             IF ( L > ScalLL ) TmpLL = ScalLL
 
              !------------------------------------------------------------
              ! Get scale factor for this grid box. Use same uniform
@@ -3172,34 +3161,24 @@ END FUNCTION GetEmisLUnit
                    WRITE(*,*) 'Negative scale factor at ',I,J,TmpLL,tidx,&
                               ': ', TRIM(ScalDct%cName), TMPVAL
                    ERROR = 1 ! Will cause error
-                   EXIT
+                   EXIT  ! Leave L loop; the ERROR check skips the other boxes
                 ENDIF
              ENDIF
 
              ! -------------------------------------------------------
              ! Apply scale factor in accordance to field operator
+             ! (Oper 3 is only allowed for masks, and will cause error)
              ! -------------------------------------------------------
-
-             ! Oper 1: multiply
-             IF ( ScalDct%Oper == 1 ) THEN
-                OUTARR_3D(I,J,L) = OUTARR_3D(I,J,L) * TMPVAL
-
-             ! Oper -1: divide
-             ELSEIF ( ScalDct%Oper == -1 ) THEN
-                ! Ignore zeros to avoid NaN
-                IF ( TMPVAL /= 0.0_sp ) THEN
-                   OUTARR_3D(I,J,L) = OUTARR_3D(I,J,L) / TMPVAL
-                ENDIF
-
-             ! Oper 2: square
-             ELSEIF ( ScalDct%Oper == 2 ) THEN
-                OUTARR_3D(I,J,L) = OUTARR_3D(I,J,L) * TMPVAL * TMPVAL
-
-             ! Return w/ error otherwise (Oper 3 is only allowed for masks!)
-             ELSE
-                WRITE(*,*) 'Illegal operator for ', TRIM(ScalDct%cName), ScalDct%Oper
+             CALL Apply_Scale_Factor( I       = I,                           &
+                                      J       = J,                           &
+                                      L       = L,                           &
+                                      ScalDct = ScalDct,                     &
+                                      scalFac = TMPVAL,                      &
+                                      dataVal = OUTARR_3D(I,J,L),            &
+                                      RC      = EC                          )
+             IF ( EC /= HCO_SUCCESS ) THEN
                 ERROR = 2 ! Will cause error
-                EXIT
+                EXIT  ! Leave L loop; the ERROR check skips the other boxes
              ENDIF
 
           ENDDO !LL
