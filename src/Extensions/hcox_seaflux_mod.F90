@@ -419,17 +419,21 @@ CONTAINS
     ! Write out original warning status
     OLDWARN = WARN
 
-    ! Initialize error code (1=KH, 2=HEFF, 3=KG) and temperature-cap flag.
-    ! Both are combined across threads with a reduction (see below).
+    ! Initialize error code (1=KH, 2=HEFF, 3=KG).  Use REDUCTION( MAX )
+    ! in the loop below, which will returns the highest integer value of 
+    ! ERR over all the threads.  This is a thread-safe implementation.
     ERR     = 0
+
+    ! Initialize and temperature-cap flag.  Use REDUCTION( .OR. ) in the
+    ! looip below, which will set TCapped to true if at least one thread 
+    ! sets it to true (otherwise it will remain false).  This is thread-safe.
     TCapped = .FALSE.
 
     ! Loop over all grid boxes. Only emit into lowest layer
     !$OMP PARALLEL DO                                                        &
     !$OMP DEFAULT( SHARED                                                   )&
-    !$OMP PRIVATE( I,  J,     N,        TK,        TC                       )&
-    !$OMP PRIVATE( P,  V,     KH,       EC,        HEFF                     )&
-    !$OMP PRIVATE( KG, IJSRC, PBL_MAX,  DEP_HEIGHT                          )&
+    !$OMP PRIVATE( I,  J,  N,    TK, TC,    P,       V                      )&
+    !$OMP PRIVATE( KH, EC, HEFF, KG, IJSRC, PBL_MAX, DEP_HEIGHT             )&
     !$OMP REDUCTION( MAX: ERR                                               )&
     !$OMP REDUCTION( .OR.: TCapped                                          )&
     !$OMP COLLAPSE( 2                                                       )&
@@ -437,9 +441,11 @@ CONTAINS
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
-       ! Continue to end of loop if an error has occurred
-       ! (we cannot exit from a parallel loop)
+       ! Exit the loop if an error happened on the previous iteration
        IF ( ERR > 0 ) CYCLE
+
+       ! EC will be used to determine if routines exited with success
+       ! or failure.  Each thread will get its own private copy.
        EC = HCO_SUCCESS
 
        ! Make sure we have no negative seawater concentrations
@@ -461,7 +467,7 @@ CONTAINS
 
           ! Error check: the Schmidt number may become negative for
           ! very high temperatures - hence cap temperature at specified
-          ! limit
+          ! limit.  Set Tcapped to true to denote the cap has been applied.
           IF ( TK > TMAX ) THEN
              TCapped = .TRUE.
              TK      = TMAX
@@ -487,17 +493,19 @@ CONTAINS
 
           ! Henry gas over liquid dimensionless constant and
           ! effective Henry constant [both unitless].
-          CALL CALC_KH ( K0, CR, TK, KH, EC )  ! liquid over gas
-          ! Skip to end of loop if error. Use error flags from henry_mod.F!
+          ! Skip to end of loop upon error.
+          CALL CALC_KH ( K0, CR, TK, KH, EC )
           IF ( EC /= 0 ) THEN
-             WRITE(MSG,*) 'Cannot calculate KH: ', K0, CR, TK
+             WRITE( MSG, * ) 'Cannot calculate KH: ', I, J, K0, CR, TK
              ERR = 1
              CYCLE
           ENDIF
-          CALL CALC_HEFF ( PKA, PH, KH, HEFF, EC )  ! liquid over gas
-          ! Skip to end of loop if error. Use error flags from henry_mod.F!
+
+          ! Compute effective Henry's law constant (applying pH
+          ! correction if necessary).  Skip to end of loop upon error.
+          CALL CALC_HEFF ( PKA, PH, KH, HEFF, EC )
           IF ( EC /= 0 ) THEN
-             WRITE(MSG,*) 'Cannot calculate HEFF: ', PKA, PH, KH
+             WRITE( MSG, * ) 'Cannot calculate HEFF: ', I, J, PKA, PH, KH
              ERR = 2
              CYCLE
           ENDIF
@@ -567,14 +575,16 @@ CONTAINS
     ENDDO !J
     !$OMP END PARALLEL DO
 
-    ! Check exit status
+    ! Since it is not thread-safe to exit from a parallel loop, we will
+    ! exit this routine with failure status if any of the grid boxes
+    ! in the loop above encountered an error.
     IF ( ERR > 0 ) THEN
        RC = HCO_FAIL
        CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
 
-    ! Record whether the temperature was capped in any grid box
+    ! Record whether the temperature was capped in any grid box.
     IF ( TCapped ) WARN = 1
 
     ! Warning?
