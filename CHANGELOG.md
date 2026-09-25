@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed various OpenMP parallelization issues (eliminating race conditions, adding COLLAPSE statement, changing SCHEDULE settings)
 
+### Removed
+- Removed obsolete variables from `hcox_seasalt_mod.F90`
+
 ## [3.13.0] - 2026-09-09
 ### Added
 - Added code blocks for MAPL3 code in development

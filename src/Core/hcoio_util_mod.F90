@@ -3190,11 +3190,11 @@ CONTAINS
 
     ! Check for every grid box if mid point is within mask region.
     ! Set to 1.0 if this is the case.
-!$OMP PARALLEL DO                        &
-!$OMP DEFAULT( SHARED                 )  &
-!$OMP PRIVATE( I, J, ILON, ILAT       )  &
-!$OMP PRIVATE( XDG1, XDG2, YDG1, YDG2 )  &
-!$OMP SCHEDULE( DYNAMIC               )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J, ILON, ILAT, XDG1, XDG2, YDG1, YDG2                 )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( STATIC                                                  )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -3228,7 +3228,7 @@ CONTAINS
 
     ENDDO
     ENDDO
-!$OMP END PARALLEL DO
+    !$OMP END PARALLEL DO
 
     ! Return w/ success
     RC = HCO_SUCCESS

@@ -659,10 +659,11 @@ CONTAINS
     FLUX_2D = 0e+0_hp
 
     ! Loop over each land grid-box, removed loop over landpoints
-!$OMP PARALLEL DO                                                            &
-!$OMP DEFAULT( SHARED )                                                      &
-!$OMP PRIVATE( I, J, Dep_Fert, SoilFrt, FertDiag, IJflux                    )&
-!$OMP COLLAPSE( 2                                                           )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J, Dep_Fert, SoilFrt, FertDiag, IJflux                )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( GUIDED                                                  )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -706,9 +707,9 @@ CONTAINS
        ! Update diagnostics
        Inst%FertNO_Diag(I,J) = FertDiag
 
-    ENDDO !J
     ENDDO !I
-!$OMP END PARALLEL DO
+    ENDDO !J
+    !$OMP END PARALLEL DO
 
     !-----------------------------------------------------------------
     ! EVENTUALLY ADD SCALE FACTORS
@@ -1214,13 +1215,16 @@ CONTAINS
     REAL(hp),        INTENT(IN)  :: UNITCONV   ! ng N to kg NO
     REAL(hp),        INTENT(IN)  :: R_CANOPY(:)! Resist of canopy to NOx [1/s]
 !
+! !INPUT/OUTPUT PARAMETERS:
+!
+    REAL(sp),        INTENT(INOUT) :: GWET_PREV  ! Soil Moisture Prev timestep
+    REAL(sp),        INTENT(INOUT) :: DRYPERIOD  ! Dry period length in hours
+    REAL(sp),        INTENT(INOUT) :: PFACTOR    ! Pulsing Factor
+!
 ! !OUTPUT PARAMETERS:
 !
-    REAL(hp),        INTENT(OUT) :: SOILNOx    ! Soil NOx emissions [kg/m2/s]
-    REAL(sp),        INTENT(OUT) :: GWET_PREV  ! Soil Moisture Prev timestep
-    REAL(sp),        INTENT(OUT) :: DRYPERIOD  ! Dry period length in hours
-    REAL(sp),        INTENT(OUT) :: PFACTOR    ! Pulsing Factor
-    REAL(hp),        INTENT(OUT) :: FERTDIAG   ! Fert emissions [kg/m2/s]
+    REAL(hp),        INTENT(OUT)   :: SOILNOx    ! Soil NOx emissions [kg/m2/s]
+    REAL(hp),        INTENT(OUT)   :: FERTDIAG   ! Fert emissions [kg/m2/s]
 !
 ! !REMARKS:
 !  R_CANOPY is computed in routine GET_CANOPY_NOX of "canopy_nox_mod.f".

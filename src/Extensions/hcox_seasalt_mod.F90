@@ -204,8 +204,6 @@ CONTAINS
 
     ! New variables (jaegle 5/11/11)
     REAL*8                 :: SST, SCALE
-    ! jpp, 3/2/10
-    REAL*8                 :: SALT_NR
     ! B. Gantt, M. Johnson (7,9/15)
     REAL*8                 :: OMSS1, OMSS2
 
@@ -218,7 +216,7 @@ CONTAINS
     REAL*8                 :: PSI, QSPRIME, UT, APRIM
     REAL*8                 :: QS, QSNOWICE_FYI, QSNOWICE_MYI,QBSALT, QB0
     REAL*8                 :: SLNT, SLNT_FYI, SLNT_MYI
-    REAL*8                 :: AGE, ISFROST
+    REAL*8                 :: AGE
 
     ! New parameters for blowiung snow (huang, 04/09/20)
     REAL*8, PARAMETER      :: LS = 2839d3    ! Latent heat of sublimation @ T=-30C (J/kg).
@@ -249,7 +247,6 @@ CONTAINS
     REAL(hp), TARGET       :: SNOWSALC  (HcoState%NX,HcoState%NY)
 
     ! Error handling
-    LOGICAL                :: ERR
     CHARACTER(LEN=255)     :: MSG, LOC
 
     !=================================================================
@@ -266,9 +263,6 @@ CONTAINS
         CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
         RETURN
     ENDIF
-
-    ! Exit status
-    ERR = .FALSE.
 
     ! Get instance
     Inst   => NULL()
@@ -320,19 +314,20 @@ CONTAINS
     !=================================================================
     ! Emission is integrated over a given size range for each bin
     !=================================================================
-!$OMP PARALLEL DO                                                      &
-!$OMP DEFAULT( SHARED )                                                &
-!$OMP PRIVATE( I, J, A_M2, W10M, SST, SCALE, N                       ) &
-!$OMP PRIVATE( SALT, SALT_N, R, SALT_NR, RC                          ) &
-!$OMP PRIVATE( OMSS1, OMSS2, CHLR                                    ) &
-!$OMP PRIVATE( FROPEN, SNOWSALT, AGE                                 ) &
-!$OMP PRIVATE( FRICTVEL, WVMR, TEMP, PRESS, P_ICE, RH_ICE            ) &
-!$OMP PRIVATE( D, FK, FD, PSI, QSPRIME, APRIM, UT, FRFIRST           ) &
-!$OMP PRIVATE( SLNT, SLNT_FYI, SLNT_MYI                              ) &
-!$OMP PRIVATE( QBSALT, QB0, QS, QSNOWICE_FYI, QSNOWICE_MYI           ) &
-!$OMP SCHEDULE( DYNAMIC )
 
     ! Loop over surface boxes
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I,     J,            A_M2,         W10M,   SST           )&
+    !$OMP PRIVATE( SCALE, N,            SALT,         SALT_N, R             )&
+    !$OMP PRIVATE( OMSS1, OMSS2,        CHLR,         FROPEN, SNOWSALT      )&
+    !$OMP PRIVATE( AGE,   FRICTVEL,     WVMR,         TEMP,   PRESS         )&
+    !$OMP PRIVATE( P_ICE, RH_ICE,       D,            FK,     FD            )&
+    !$OMP PRIVATE( PSI,   QSPRIME,      APRIM,        UT,     FRFIRST       )&
+    !$OMP PRIVATE( SLNT,  SLNT_FYI,     SLNT_MYI,     QBSALT, QB0           )&
+    !$OMP PRIVATE( QS,    QSNOWICE_FYI, QSNOWICE_MYI                        )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( DYNAMIC, 8                                              )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -588,13 +583,7 @@ CONTAINS
 
     ENDDO !I
     ENDDO !J
-!$OMP END PARALLEL DO
-
-    ! Check exit status
-    IF ( ERR ) THEN
-       RC = HCO_FAIL
-       RETURN
-    ENDIF
+    !$OMP END PARALLEL DO
 
     !=================================================================
     ! PASS TO HEMCO STATE AND UPDATE DIAGNOSTICS
