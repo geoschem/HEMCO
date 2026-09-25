@@ -145,11 +145,12 @@ CONTAINS
     FLUXICE  = 0.0_hp
     FLUXWIND = 0.0_hp
 
-!$OMP PARALLEL DO                                            &
-!$OMP DEFAULT( SHARED )                                      &
-!$OMP PRIVATE( I, J, W10M, LANDTYPE                        ) &
-!$OMP SCHEDULE( DYNAMIC )
     ! Loop over surface grid boxes
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J, W10M, LANDTYPE                                     )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( STATIC                                                  )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -181,7 +182,7 @@ CONTAINS
 
     ENDDO !I
     ENDDO !J
-!$OMP END PARALLEL DO
+    !$OMP END PARALLEL DO
 
     ! Check exit status
     IF ( ERR ) THEN

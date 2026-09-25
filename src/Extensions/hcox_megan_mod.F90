@@ -488,14 +488,15 @@ CONTAINS
     HNEWFRAC = TS_EMIS / ( TAU_HOURS * 3600.0_hp )
     HOLDFRAC = 1.0_hp - HNEWFRAC
 
-    !$OMP PARALLEL DO       &
-    !$OMP DEFAULT( SHARED ) &
-    !$OMP PRIVATE( I, J,      EMIS_ISOP, EMIS_MBOX, EMIS_APIN, EMIS_BPIN   ) &
-    !$OMP PRIVATE( EMIS_LIMO, EMIS_SABI, EMIS_MYRC, EMIS_CARE, EMIS_OCIM   ) &
-    !$OMP PRIVATE( EMIS_OMON, EMIS_MONO, EMIS_MOH,  EMIS_EOH,  EMIS_FAXX   ) &
-    !$OMP PRIVATE( EMIS_AAXX, EMIS_ACET, EMIS_PRPE, EMIS_C2H4, TMP         ) &
-    !$OMP PRIVATE( EMIS_FARN, EMIS_BCAR, EMIS_OSQT, EMIS_ALD2, EMIS_OTHR   ) &
-    !$OMP PRIVATE( X, Y, RC )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J,      EMIS_ISOP, EMIS_MBOX, EMIS_APIN, EMIS_BPIN    )&
+    !$OMP PRIVATE( EMIS_LIMO, EMIS_SABI, EMIS_MYRC, EMIS_CARE, EMIS_OCIM    )&
+    !$OMP PRIVATE( EMIS_OMON, EMIS_MONO, EMIS_MOH,  EMIS_EOH,  EMIS_FAXX    )&
+    !$OMP PRIVATE( EMIS_AAXX, EMIS_ACET, EMIS_PRPE, EMIS_C2H4, TMP          )&
+    !$OMP PRIVATE( EMIS_FARN, EMIS_BCAR, EMIS_OSQT, EMIS_ALD2, EMIS_OTHR    )&
+    !$OMP PRIVATE( X,         Y,         RC                                 )&
+    !$OMP SCHEDULE( STATIC                                                  )
 
     !-----------------------------------------------------------------
     ! Loop over all grid boxes

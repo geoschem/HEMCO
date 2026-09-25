@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Converted `GetMaskVal` in `src/Core/hco_calc_mod.F90` to an `ELEMENTAL` function instead of an OpenMP loop
 - Updated error messages in `src/Core/hco_geotools_mod.F90` to be more descriptive
+- Added explicit `SCHEDULE( STATIC )` clauses to OpenMP parallel loops that did not specify a schedule
 
 ### Fixed
 - Fixed various OpenMP parallelization issues (eliminating race conditions, adding COLLAPSE statement, changing SCHEDULE settings)
+- Fixed `Calc_SeaFlux` in `src/Extensions/hcox_seaflux_mod.F90` so that errors raised inside the OpenMP loop are no longer discarded
 
 ### Removed
 - Removed obsolete variables from `hcox_seasalt_mod.F90`

@@ -178,9 +178,11 @@ CONTAINS
 
        ! Don't call XMAP if both grids have the same # of longitudes
        ! but save the input data in the QTMP array
-       !$OMP PARALLEL DO       &
-       !$OMP DEFAULT( SHARED ) &
-       !$OMP PRIVATE( I, J )
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J                                                  )&
+       !$OMP COLLAPSE( 2                                                    )&
+       !$OMP SCHEDULE( STATIC                                               )
        DO j=1,jm-ig
        DO i=1,im
           qtmp(i,j+ig) = q1(i,j+ig)
@@ -191,7 +193,7 @@ CONTAINS
     ELSE
 
        ! Otherwise, call XMAP to regrid in the E-W direction
-       CALL xmap_r8r8(im, jm-ig, lon1, q1(1,1+ig),in, lon2, qtmp(1,1+ig), &
+       CALL xmap_r8r8(im, jm-ig, lon1, q1(1,1+ig),in, lon2, qtmp(1,1+ig),    &
                       missval=missval )
 
     ENDIF
@@ -205,9 +207,11 @@ CONTAINS
 
        ! Don't call XMAP if both grids have the same # of longitudes,
        ! but assign the value of QTMP to the output Q2 array
-       !$OMP PARALLEL DO       &
-       !$OMP DEFAULT( SHARED ) &
-       !$OMP PRIVATE( I, J )
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J                                                  )&
+       !$OMP COLLAPSE( 2                                                    )&
+       !$OMP SCHEDULE( STATIC                                               )
        DO j=1,jm-ig
        DO i=1,in
           q2(i,j+ig) = qtmp(i,j+ig)
@@ -310,9 +314,11 @@ CONTAINS
 
        ! Don't call XMAP if both grids have the same # of longitudes
        ! but save the input data in the QTMP array
-       !$OMP PARALLEL DO       &
-       !$OMP DEFAULT( SHARED ) &
-       !$OMP PRIVATE( I, J )
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J                                                  )&
+       !$OMP COLLAPSE( 2                                                    )&
+       !$OMP SCHEDULE( STATIC                                               )
        DO j=1,jm-ig
        DO i=1,im
           qtmp(i,j+ig) = q1(i,j+ig)
@@ -323,7 +329,7 @@ CONTAINS
     ELSE
 
        ! Otherwise, call XMAP to regrid in the E-W direction
-       CALL xmap_r4r4(im, jm-ig, lon1, q1(1,1+ig),in, lon2, qtmp(1,1+ig), &
+       CALL xmap_r4r4(im, jm-ig, lon1, q1(1,1+ig),in, lon2, qtmp(1,1+ig),    &
                       missval=missval )
 
     ENDIF
@@ -331,15 +337,17 @@ CONTAINS
     !===================================================================
     ! N-S regridding
     !===================================================================
-    IF ( jm         == jn         .and. &
-         sin1(1)    == sin2(1)    .and. &
+    IF ( jm         == jn         .and.                                      &
+         sin1(1)    == sin2(1)    .and.                                      &
          sin1(jm+1) == sin2(jn+1)        ) THEN
 
        ! Don't call XMAP if both grids have the same # of longitudes,
        ! but assign the value of QTMP to the output Q2 array
-       !$OMP PARALLEL DO       &
-       !$OMP DEFAULT( SHARED ) &
-       !$OMP PRIVATE( I, J )
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J                                                  )&
+       !$OMP COLLAPSE( 2                                                    )&
+       !$OMP SCHEDULE( STATIC                                               )
        DO j=1,jm-ig
        DO i=1,in
           q2(i,j+ig) = qtmp(i,j+ig)
@@ -443,9 +451,11 @@ CONTAINS
 
        ! Don't call XMAP if both grids have the same # of longitudes
        ! but save the input data in the QTMP array
-       !$OMP PARALLEL DO       &
-       !$OMP DEFAULT( SHARED ) &
-       !$OMP PRIVATE( I, J )
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J                                                  )&
+       !$OMP COLLAPSE( 2                                                    )&
+       !$OMP SCHEDULE( STATIC                                               )
        DO j=1,jm-ig
        DO i=1,im
           qtmp(i,j+ig) = q1(i,j+ig)
@@ -456,7 +466,7 @@ CONTAINS
     ELSE
 
        ! Otherwise, call XMAP to regrid in the E-W direction
-       CALL xmap_r4r8(im, jm-ig, lon1, q1(1,1+ig),in, lon2, qtmp(1,1+ig), &
+       CALL xmap_r4r8(im, jm-ig, lon1, q1(1,1+ig),in, lon2, qtmp(1,1+ig),    &
                       missval=missval )
 
     ENDIF
@@ -470,9 +480,11 @@ CONTAINS
 
        ! Don't call XMAP if both grids have the same # of longitudes,
        ! but assign the value of QTMP to the output Q2 array
-       !$OMP PARALLEL DO       &
-       !$OMP DEFAULT( SHARED ) &
-       !$OMP PRIVATE( I, J )
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J                                                  )&
+       !$OMP COLLAPSE( 2                                                    )&
+       !$OMP SCHEDULE( STATIC                                               )
        DO j=1,jm-ig
        DO i=1,in
           q2(i,j+ig) = qtmp(i,j+ig)
@@ -576,9 +588,12 @@ CONTAINS
 
        ! Don't call XMAP if both grids have the same # of longitudes
        ! but save the input data in the QTMP array
-       !$OMP PARALLEL DO       &
-       !$OMP DEFAULT( SHARED ) &
-       !$OMP PRIVATE( I, J )
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J                                                  )&
+       !$OMP COLLAPSE( 2                                                    )&
+       !$OMP SCHEDULE( STATIC                                               )
+
        DO j=1,jm-ig
        DO i=1,im
           qtmp(i,j+ig) = q1(i,j+ig)
@@ -603,9 +618,11 @@ CONTAINS
 
        ! Don't call XMAP if both grids have the same # of longitudes,
        ! but assign the value of QTMP to the output Q2 array
-       !$OMP PARALLEL DO       &
-       !$OMP DEFAULT( SHARED ) &
-       !$OMP PRIVATE( I, J )
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J                                                  )&
+       !$OMP COLLAPSE( 2                                                    )&
+       !$OMP SCHEDULE( STATIC                                               )
        DO j=1,jm-ig
        DO i=1,in
           q2(i,j+ig) = qtmp(i,j+ig)
@@ -716,9 +733,10 @@ CONTAINS
     ! Area preserving mapping
     !===============================================================
 
-    !$OMP PARALLEL DO                                &
-    !$OMP DEFAULT( SHARED                          ) &
-    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO                     )&
+    !$OMP SCHEDULE( STATIC                                                  )
     do 1000 i=1,im
        qsum = 0.0d0
        dlat = 0.0d0
@@ -936,9 +954,10 @@ CONTAINS
     ! Area preserving mapping
     !===============================================================
 
-    !$OMP PARALLEL DO                                &
-    !$OMP DEFAULT( SHARED                          ) &
-    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO                     )&
+    !$OMP SCHEDULE( STATIC                                                  )
     do 1000 i=1,im
        qsum = 0.0d0
        dlat = 0.0d0
@@ -1156,9 +1175,10 @@ CONTAINS
     ! Area preserving mapping
     !===============================================================
 
-    !$OMP PARALLEL DO                                &
-    !$OMP DEFAULT( SHARED                          ) &
-    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO                     )&
+    !$OMP SCHEDULE( STATIC                                                  )
     do 1000 i=1,im
        qsum = 0.0d0
        dlat = 0.0d0
@@ -1375,9 +1395,10 @@ CONTAINS
     ! Area preserving mapping
     !===============================================================
 
-    !$OMP PARALLEL DO                                &
-    !$OMP DEFAULT( SHARED                          ) &
-    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I, J0, J, M, QSUM, DLAT, MM, DY, SLO                     )&
+    !$OMP SCHEDULE( STATIC                                                  )
     do 1000 i=1,im
        qsum = 0.0
        dlat = 0.0
@@ -1696,9 +1717,10 @@ CONTAINS
        endif
     enddo
 
-    !$OMP PARALLEL DO                                      &
-    !$OMP DEFAULT( SHARED                                ) &
-    !$OMP PRIVATE( J, QTMP, I, I0, M, QSUM, DLON, MM, DX )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( J, QTMP, I, I0, M, QSUM, DLON, MM, DX                    )&
+    !$OMP SCHEDULE( STATIC                                                  )
     do 1000 j=1,jm
 
        !=================================================================
@@ -1995,9 +2017,10 @@ CONTAINS
        endif
     enddo
 
-    !$OMP PARALLEL DO                                      &
-    !$OMP DEFAULT( SHARED                                ) &
-    !$OMP PRIVATE( J, QTMP, I, I0, M, QSUM, DLON, MM, DX )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( J, QTMP, I, I0, M, QSUM, DLON, MM, DX                    )&
+    !$OMP SCHEDULE( STATIC                                                  )
     do 1000 j=1,jm
 
        !=================================================================
@@ -2284,9 +2307,10 @@ CONTAINS
        endif
     enddo
 
-    !$OMP PARALLEL DO                                      &
-    !$OMP DEFAULT( SHARED                                ) &
-    !$OMP PRIVATE( J, QTMP, I, I0, M, QSUM, DLON, MM, DX )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( J, QTMP, I, I0, M, QSUM, DLON, MM, DX                    )&
+    !$OMP SCHEDULE( STATIC                                                  )
     do 1000 j=1,jm
 
        !=================================================================
@@ -2572,9 +2596,10 @@ CONTAINS
        endif
     enddo
 
-    !$OMP PARALLEL DO                                      &
-    !$OMP DEFAULT( SHARED                                ) &
-    !$OMP PRIVATE( J, QTMP, I, I0, M, QSUM, DLON, MM, DX )
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( J, QTMP, I, I0, M, QSUM, DLON, MM, DX                    )&
+    !$OMP SCHEDULE( STATIC                                                  )
     do 1000 j=1,jm
 
        !=================================================================

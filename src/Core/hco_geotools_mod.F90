@@ -1248,7 +1248,7 @@ CONTAINS
              !$OMP PRIVATE( I, J, L, P1, P2                                 )&
              !$OMP REDUCTION( .OR.: ERRBX                                   )&
              !$OMP COLLAPSE( 3                                              )&
-             !$OMP SCHEUDLE( STATIC                                         )
+             !$OMP SCHEDULE( STATIC                                         )
              DO L = 1, HcoState%NZ
              DO J = 1, HcoState%NY
              DO I = 1, HcoState%NX
