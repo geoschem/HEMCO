@@ -347,20 +347,24 @@ CONTAINS
 
     TYPE(MyInst), POINTER :: Inst
 
-    !=================================================================
+    !========================================================================
     ! HCOX_Megan_Run begins here!
-    !=================================================================
-    LOC = 'HCOX_Megan_Run (HCOX_MEGAN_MOD.F90)'
+    !========================================================================
+    
+    ! Initialize
+    RC  = HCO_SUCCESS
+    LOC = 'HCOX_Megan_Run (hcox_megan_mod.F90)'
 
     ! Enter
     CALL HCO_ENTER( HcoState%Config%Err, LOC, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 0', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error calling "HCO_Enter" (HCOX_Megan_Run)'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
-    ERR = .FALSE.
 
-    ! Nullify
+    ! Initialize
+    ERR   = .FALSE.
     Arr2d => NULL()
     Inst  => NULL()
 
@@ -368,7 +372,7 @@ CONTAINS
     CALL InstGet ( ExtState%Megan, Inst, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
        WRITE(MSG,*) 'Cannot find Megan instance Nr. ', ExtState%Megan
-       CALL HCO_ERROR(MSG,RC)
+       CALL HCO_ERROR( MSG, RC, LOC )
        RETURN
     ENDIF
 
@@ -410,10 +414,10 @@ CONTAINS
 
 #ifdef MAPL_ESMF
 
-    !----------------------------------------------------------------
-    ! %%%%% MAPL/ESMF environment: execute these on every call  %%%%%
-    ! %%%%% because this will fill from the External State      %%%%%
-    !----------------------------------------------------------------
+    !-----------------------------------------------------------------------
+    ! %%%%%%%% MAPL/ESMF environment: execute these on every call  %%%%%%%%
+    ! %%%%%%%% because this will fill from the External State      %%%%%%%%
+    !-----------------------------------------------------------------------
 
     ! Generate annual emission factors for MEGAN inventory
     CALL CALC_AEF( HcoState, ExtState, Inst, RC )
@@ -441,10 +445,10 @@ CONTAINS
 
 #else
 
-    !----------------------------------------------------------------
-    ! %%%%% Standard environment: Execute these only once     %%%%%
-    ! %%%%% to avoid constantly overwriting restart variables %%%%%
-    !----------------------------------------------------------------
+    !------------------------------------------------------------------------
+    ! %%%%%%%%% Standard environment: Execute these only once     %%%%%%%%%
+    ! %%%%%%%%% to avoid constantly overwriting restart variables %%%%%%%%%
+    !------------------------------------------------------------------------
     IF ( FIRST ) THEN
 
        ! Generate annual emission factors for MEGAN inventory
@@ -488,6 +492,9 @@ CONTAINS
     HNEWFRAC = TS_EMIS / ( TAU_HOURS * 3600.0_hp )
     HOLDFRAC = 1.0_hp - HNEWFRAC
 
+    !------------------------------------------------------------------------
+    ! Loop over all grid boxes
+    !------------------------------------------------------------------------
     !$OMP PARALLEL DO                                                        &
     !$OMP DEFAULT( SHARED                                                   )&
     !$OMP PRIVATE( I, J,      EMIS_ISOP, EMIS_MBOX, EMIS_APIN, EMIS_BPIN    )&
@@ -496,13 +503,18 @@ CONTAINS
     !$OMP PRIVATE( EMIS_AAXX, EMIS_ACET, EMIS_PRPE, EMIS_C2H4, TMP          )&
     !$OMP PRIVATE( EMIS_FARN, EMIS_BCAR, EMIS_OSQT, EMIS_ALD2, EMIS_OTHR    )&
     !$OMP PRIVATE( X,         Y,         RC                                 )&
-    !$OMP SCHEDULE( STATIC                                                  )
-
-    !-----------------------------------------------------------------
-    ! Loop over all grid boxes
-    !-----------------------------------------------------------------
+    !$OMP REDUCTION( .OR.: ERR                                              )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( DYNAMIC, 8                                              )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
+
+       ! ERR has been declared with REDUCTION( .OR. ), so that it will be
+       ! true if any of the routines in the loop below fail.  In that event,
+       ! we will continue cycling to the end of the loop and exit this
+       ! routine with failure status after the loop finishes.  This is the
+       ! correct thread-safe implemenation.
+       IF ( ERR ) CYCLE
 
        ! Zero biogenic species
        EMIS_ISOP  = 0.0_hp
@@ -529,7 +541,7 @@ CONTAINS
        EMIS_BCAR  = 0.0_hp
        EMIS_OSQT  = 0.0_hp
 
-       !--------------------------------------------------------------
+       !---------------------------------------------------------------------
        ! Calculate VOC emissions
        !
        ! The GET_EMIS*_MEGAN calls now use the annual scale factors
@@ -537,20 +549,17 @@ CONTAINS
        ! of kg/m2/s. ckeller, 14/01/25.
        !
        ! Updated to new MEGAN routine (dbm, 12/2012)
-       !--------------------------------------------------------------
+       !---------------------------------------------------------------------
 
-       !--------------------------------------------------------------------
-       ! MEGAN Isoprene
-       !--------------------------------------------------------------------
-
-       ! Isoprene [kg/m2/s]
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst, &
-                                 I, J, 'ISOP', EMIS_ISOP, RC )
+       !---------------------------------------------------------------------
+       ! MEGAN Isoprene [kg/m2/s]
+       !---------------------------------------------------------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'ISOP',   EMIS_ISOP, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_ISOP', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_ISOP', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
 
        !FP_ISOP (6/2009)
@@ -574,203 +583,202 @@ CONTAINS
        ENDIF
 
        !--------------------------------------------------------------------
-       ! MEGAN monoterpenes
+       ! MEGAN monoterpenes, lump of several species [kg/m2/s]
        !--------------------------------------------------------------------
 
-       ! ---------------------------------------------------
-       ! Alpha Pinene emissions
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'APIN', EMIS_APIN, RC)
+       !----------------------
+       ! Alpha Pinene
+       !----------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,          &
+                                 J,        'APIN',   EMIS_APIN, RC         )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_APIN', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_APIN', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXAPIN(I,J) = EMIS_APIN
 
-       ! ---------------------------------------------------
-       ! Beta Pinene emissions
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'BPIN', EMIS_BPIN, RC)
+       !----------------------
+       ! Beta Pinene
+       !----------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'BPIN',   EMIS_BPIN, RC          ) 
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_BPIN', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_BPIN', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXBPIN(I,J) = EMIS_BPIN
 
-       ! ---------------------------------------------------
-       ! Limonene emissions
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'LIMO', EMIS_LIMO, RC)
+       !----------------------
+       ! Limonene
+       !----------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'LIMO',   EMIS_LIMO, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_LIMO', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_LIMO', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXLIMO(I,J) = EMIS_LIMO
 
-       ! ---------------------------------------------------
-       ! Sabinene emissions
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'SABI', EMIS_SABI, RC)
+       !----------------------
+       ! Sabinene
+       !----------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'SABI',   EMIS_SABI, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_SABI', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_SABI', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXSABI(I,J) = EMIS_SABI
 
-       ! ---------------------------------------------------
-       ! Mycrene emissions
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'MYRC', EMIS_MYRC, RC)
+       !----------------------
+       ! Mycrene
+       !----------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'MYRC',   EMIS_MYRC, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_MYRC', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_MYRC', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXMYRC(I,J) = EMIS_MYRC
 
-       ! ---------------------------------------------------
-       ! 3-Carene emissions
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'CARE', EMIS_CARE, RC)
+       !-------------------
+       ! 3-Carene
+       !-------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'CARE',   EMIS_CARE, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_CARE', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_CARE', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXCARE(I,J) = EMIS_CARE
 
-       ! ---------------------------------------------------
-       ! Ocimene emissions
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'OCIM', EMIS_OCIM, RC)
+       !------------------
+       ! Ocimene
+       !-------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'OCIM',   EMIS_OCIM, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_OCIM', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_OCIM', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXOCIM(I,J) = EMIS_OCIM
 
-       ! ---------------------------------------------------
+       !-------------------
        ! Other monoterpenes
-       ! (added 12/2012; dbm)
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'OMON', EMIS_OMON, RC)
+       !-------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'OMON',   EMIS_OMON, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_OMON', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_OMON', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXOMON(I,J) = EMIS_OMON
 
-       ! ---------------------------------------------------
-       ! Total monoterpenes = sum of individual
-       ! dbm, now add other lumped monoterpenes (11/2012)
-       EMIS_MONO = EMIS_APIN + EMIS_BPIN + EMIS_LIMO + EMIS_SABI + &
+       !--------------------
+       ! Total monoterpenes
+       !--------------------
+       EMIS_MONO = EMIS_APIN + EMIS_BPIN + EMIS_LIMO + EMIS_SABI +           &
                    EMIS_MYRC + EMIS_CARE + EMIS_OCIM + EMIS_OMON
 
        ! Add to tracer tendency array [kg/m2/s]
        Inst%FLUXMONO(I,J) = EMIS_MONO
 
-       !--------------------------------------------------------------------
-       ! MEGAN Acetaldehyde
-       !--------------------------------------------------------------------
+       !---------------------------------------------------------------------
+       ! MEGAN Acetaldehyde [kg/m2/s]
+       !---------------------------------------------------------------------
        IF ( Inst%IDTALD2 > 0 ) THEN
-          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                    Inst, I, J, 'ALD2', EMIS_ALD2, RC)
+          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,        &
+                                    J,        'ALD2',   EMIS_ALD2, RC)
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( &
-                             'GET_MEGAN_EMISSIONS_ALD2', RC )
+             CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_ALD2', RC, LOC )
              ERR = .TRUE.
-             EXIT
+             CYCLE
           ENDIF
 
           ! Add to tracer tendency array [kg/m2/s]
           Inst%FLUXALD2(I,J) = EMIS_ALD2
        ENDIF
 
-       ! ---------------------------------------------------
-       ! MEGAN Methanol
+       !---------------------------------------------------------------------
+       ! MEGAN Methanol [kg/m2/s]
+       !---------------------------------------------------------------------
        IF ( Inst%IDTMOH > 0 ) THEN
-          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                    Inst, I, J, 'MOH', EMIS_MOH, RC)
+          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,     I,         &
+                                    J,        'MOH',    EMIS_MOH, RC        )
           IF ( RC /= HCO_SUCCESS ) THEN 
-             CALL HCO_ERROR(  &
-                             'GET_MEGAN_EMISSIONS_MOH', RC )
+             CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_MOH', RC, LOC )
              ERR = .TRUE.
-             EXIT
+             CYCLE
           ENDIF
 
           ! Add to tracer tendency array [kg/m2/s]
           Inst%FLUXMOH(I,J) = EMIS_MOH
        ENDIF
 
-       ! ---------------------------------------------------
-       ! MEGAN Ethanol
+       !---------------------------------------------------------------------
+       ! MEGAN Ethanol [kg/2m/s]
+       !---------------------------------------------------------------------
        IF ( Inst%IDTEOH > 0 ) THEN
-          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                    Inst, I, J, 'EOH', EMIS_EOH, RC)
+          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,     I,         &
+                                    J,        'EOH',    EMIS_EOH, RC        )
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( &
-                             'GET_MEGAN_EMISSIONS_EOH', RC )
+             CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_EOH', RC, LOC )
              ERR = .TRUE.
-             EXIT
+             CYCLE
           ENDIF
 
           ! Add to tracer tendency array [kg/m2/s]
           Inst%FLUXEOH(I,J) = EMIS_EOH
        ENDIF
 
-       !--------------------------------------------------------------------
+       !---------------------------------------------------------------------
        ! Other MEGAN biogenics
        ! Calls included here for future incorporation or
        ! specialized simulations. (dbm, 12/2012)
-       !--------------------------------------------------------------------
+       !---------------------------------------------------------------------
 
-       ! ---------------------------------------------------
-       ! Methyl butenol
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'MBOX', EMIS_MBOX, RC)
+       !---------------------------------------------------------------------
+       ! Methyl butenol [kg/m2/s]
+       !---------------------------------------------------------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'MBOX',   EMIS_MBOX, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
           CALL HCO_ERROR( &
                           'GET_MEGAN_EMISSIONS_MBOX', RC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXMBOX(I,J) = EMIS_MBOX
 
-       ! ---------------------------------------------------
-       ! MEGAN Formic acid
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'FAXX', EMIS_FAXX, RC )
+       !---------------------------------------------------------------------
+       ! MEGAN Formic acid [kg/m2/s]
+       !---------------------------------------------------------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'FAXX',   EMIS_FAXX, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_FAXX', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_FAXX', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXFAXX(I,J) = EMIS_FAXX
 
-       ! ---------------------------------------------------
-       ! MEGAN Acetic acid
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'AAXX', EMIS_AAXX, RC )
+       !---------------------------------------------------------------------
+       ! MEGAN Acetic acid [kg/m2/s]
+       !---------------------------------------------------------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'AAXX',   EMIS_AAXX, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_AAXX', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_AAXX', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXAAXX(I,J) = EMIS_AAXX
 
@@ -780,15 +788,15 @@ CONTAINS
        IF ( Inst%IDTACET > 0 ) THEN
 
           !-----------------------------------------------------------------
-          ! (1) BIOGENIC ACETONE FROM METHYL BUTENOL -- NORTH AMERICA
+          ! BIOGENIC ACETONE FROM METHYL BUTENOL -- NORTH AMERICA
           !
           ! Methyl Butenol (a.k.a. MBO) produces acetone with a molar yield
           ! of 0.6 [Alvarado (1999)].  The biogenic source of MBO is thought
           ! to be restricted to North America.  According to Guenther (1999)
           ! North america emits 3.2Tg-C of MBO, producing 1.15 Tg-C of
           ! Acetone in North America.
-          ! 
-          !
+          !-----------------------------------------------------------------
+
           ! Lon and lat of grid box (I,J) in degrees
           X = HcoState%Grid%XMID%Val( I, J )
           IF ( X >= 180.0_hp ) X = X - 360.0_hp
@@ -806,18 +814,18 @@ CONTAINS
              Inst%FLUXACETmb(I,J) = TMP * MB_SCALE2
           ENDIF
 
-          !-----------------------------------------------------------------
-          ! (3) BIOGENIC ACETONE -- DIRECT EMISSION
+          !------------------------------------------------------------------
+          ! BIOGENIC ACETONE -- DIRECT EMISSION
           !
           ! Direct Emission now includes emission
           ! from grasses and emission from dry leaf matter
-          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                    Inst, I, J, 'ACET', EMIS_ACET, RC)
+          !------------------------------------------------------------------
+          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,        &
+                                    J,        'ACET',   EMIS_ACET, RC       )
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( &
-                             'GET_MEGAN_EMISSIONS_ACET', RC )
+             CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_ACET', RC, LOC )
              ERR = .TRUE.
-             EXIT
+             CYCLE
           ENDIF
 
           ! Write to array
@@ -825,12 +833,12 @@ CONTAINS
 
        ENDIF
 
-       !--------------------------------------------------------------------
+       !---------------------------------------------------------------------
        ! Biogenic emissions of SOA and SOA-Precursor from monoterpenes
        !
        ! NOTE: These emission factors appear to be based on emissions
        !  in kgC/m2/s. Convert from kg/m2/s to kgC/m2/s.
-       !--------------------------------------------------------------------
+       !---------------------------------------------------------------------
        IF ( Inst%IDTSOAP>0 ) THEN
           Inst%FLUXSOAP(I,J) = Inst%FLUXSOAP(I,J) + &
                ( EMIS_MONO * MONOtoC ) * Inst%MONOTOSOAP
@@ -840,19 +848,18 @@ CONTAINS
                ( EMIS_MONO * MONOtoC ) * Inst%MONOTOSOAS
        ENDIF
 
-       !--------------------------------------------------------------------
+       !---------------------------------------------------------------------
        ! Biogenic emissions of PRPE
        !
        ! Now uses MEGAN2.1 (dbm, 12/2012)
-       !--------------------------------------------------------------------
+       !---------------------------------------------------------------------
        IF ( Inst%IDTPRPE > 0 ) THEN
-          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                    Inst, I, J, 'PRPE', EMIS_PRPE, RC)
+          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,        & 
+                                    J,        'PRPE',   EMIS_PRPE, RC       )
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( &
-                             'GET_MEGAN_EMISSIONS_PRPE', RC )
+             CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_PRPE', RC, LOC )
              ERR = .TRUE.
-             EXIT
+             CYCLE
           ENDIF
 
           ! Add to tracer tendency array [kg/m2/s]
@@ -860,26 +867,25 @@ CONTAINS
 
        ENDIF
 
-       !--------------------------------------------------------------------
+       !---------------------------------------------------------------------
        ! Biogenic emissions of ethene (C2H4)
        !
        ! Now uses MEGAN2.1 (dbm, 12/2012)
-       !--------------------------------------------------------------------
+       !---------------------------------------------------------------------
        IF ( Inst%IDTC2H4 > 0 ) THEN
-          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                    Inst, I, J, 'C2H4', EMIS_C2H4, RC)
+          CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,        &
+                                    J,        'C2H4',   EMIS_C2H4, RC       )
           IF ( RC /= HCO_SUCCESS ) THEN
-             CALL HCO_ERROR( &
-                             'GET_MEGAN_EMISSIONS_C2H4', RC )
+             CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_C2H4', RC, LOC )
              ERR = .TRUE.
-             EXIT
+             CYCLE
           ENDIF
 
           ! Add to tracer tendency array [kg/m2/s]
           Inst%FLUXC2H4(I,J) = EMIS_C2H4
        ENDIF
 
-       ! ----------------------------------------------------------------
+       ! --------------------------------------------------------------------
        ! The new MEGAN implementation has speciated information
        ! (hotp 3/7/10)
        ! as of 7/28/10 for year 2000 GEOS4 2x2.5 in Tg/yr:
@@ -905,82 +911,84 @@ CONTAINS
        ! SESQ        farnesene  (FARN), b-caryoph (BCAR),
        !             other sesq (OSQT)
        ! =========   ==========================================
-
-       !--------------------------------------------------------------
-       ! MEGAN MTPA
-       !--------------------------------------------------------------
-       ! MTPA=a-,b-pinene,sabinene,carene (hotp 5/20/10)
+       !
+       !---------------------------------------------------------------------
+       ! MEGAN MTPA = a-,b-pinene,sabinene,carene [kg/m2/s]
+       !---------------------------------------------------------------------
        IF ( Inst%IDTMTPA > 0 ) THEN
           Inst%FLUXMTPA(I,J) = EMIS_APIN + EMIS_BPIN + EMIS_SABI + EMIS_CARE
        ENDIF
 
-       !--------------------------------------------------------------
-       ! MEGAN Limonene
-       !--------------------------------------------------------------
-       ! [kg/m2/s]
+       !---------------------------------------------------------------------
+       ! MEGAN Limonene [kg/m2/s]
+       !---------------------------------------------------------------------
        IF ( Inst%IDTLIMO > 0 ) THEN
           Inst%FLUXLIMO(I,J) = EMIS_LIMO
        ENDIF
 
-       !--------------------------------------------------------------
+       !---------------------------------------------------------------------
        ! MEGAN MTPO
-       !--------------------------------------------------------------
+       !
        ! MTPO is all other monoterpenes (MEGAN categories:
        ! myrcene, ocimene, OMON) (hotp 5/20/10)
        ! All other monoterpenes (mostly camphene, linalool,
        ! terpinolene, terpinolene, phellandrene) (hotp 3/10/10)
        ! 14-18% of OMTP is terpinene and terpinolene
+       !---------------------------------------------------------------------
        IF ( Inst%IDTMTPO > 0 ) THEN
           Inst%FLUXMTPO(I,J) = EMIS_MYRC + EMIS_OCIM + EMIS_OMON
        ENDIF
 
-       !--------------------------------------------------------------
-       ! MEGAN sesquiterpenes
-       !--------------------------------------------------------------
+       !---------------------------------------------------------------------
+       ! MEGAN sesquiterpenes [kg/m2/s]
+       !---------------------------------------------------------------------
 
-       ! ---------------------------------------------------
+       !----------------------
        ! a-Farnesene
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'FARN', EMIS_FARN, RC )
+       !----------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'FARN',   EMIS_FARN, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_FARN', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_FARN', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXFARN(I,J) = EMIS_FARN
 
-       ! ---------------------------------------------------
+       !----------------------
        ! b_Caryophyllene
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'BCAR', EMIS_BCAR, RC )
+       !----------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'BCAR',   EMIS_BCAR, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_BCAR', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_BCAR', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXBCAR(I,J) = EMIS_BCAR
 
-       ! ---------------------------------------------------
+       !------------------------
        ! Other sesquiterpene
-       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, &
-                                 Inst, I, J, 'OSQT', EMIS_OSQT, RC )
+       !------------------------
+       CALL GET_MEGAN_EMISSIONS( HcoState, ExtState, Inst,      I,           &
+                                 J,        'OSQT',   EMIS_OSQT, RC          )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'GET_MEGAN_EMISSIONS_OSQT', RC )
+          CALL HCO_ERROR( 'GET_MEGAN_EMISSIONS_OSQT', RC, LOC )
           ERR = .TRUE.
-          EXIT
+          CYCLE
        ENDIF
        Inst%FLUXOSQT(I,J) = EMIS_OSQT
 
-       ! ---------------------------------------------------
-       ! Total sesquiterpenes from MEGAN (hotp 3/10/10)
+       ! ------------------------
+       ! Total sesquiterpenes
+       !-------------------------
        IF ( Inst%IDTSESQ > 0 ) THEN
           Inst%FLUXSESQ(I,J) = EMIS_FARN + EMIS_BCAR + EMIS_OSQT
        ENDIF
 
+       !----------------------
        ! Other terpenes
+       !----------------------
        EMIS_OTHR = EMIS_FARN + EMIS_BCAR + EMIS_OSQT
 
        !--------------------------------------------------------------------
@@ -998,18 +1006,18 @@ CONTAINS
                ( EMIS_OTHR * MONOtoC ) * Inst%OTHRTOSOAS
        ENDIF
 
-       !-----------------------------------------------------------------
+       !---------------------------------------------------------------------
        ! Update historical temperature / radiation values
-       !-----------------------------------------------------------------
-       ! Do this now on every time step. The arrays are simply the
-       ! the running means over the intentend time window (24 hours
-       ! and NUM_DAYS, respectively). This hugely faciliates warm
-       ! model restarts, irrespective of simulation start/end dates
-       ! and times. It also makes sure that all environmental
-       ! variables are incorporated into the time averages (e.g. if
-       ! emission time step is less than 60 minutes, all values will
-       ! be used to calculate the daily mean).
+       !
+       ! Do this now on every time step. The arrays are simply the the 
+       ! running means over the intentend time window (24 hours and NUM_DAYS,
+       ! respectively). This hugely faciliates warm model restarts, 
+       ! irrespective of simulation start/end dates and times. It also makes
+       ! sure that all environmental variables are incorporated into the time
+       ! averages (e.g. if emission time step is less than 60 minutes, all 
+       ! values will be used to calculate the daily mean). 
        ! (ckeller, 11/05/2015)
+       !---------------------------------------------------------------------
 
        ! Updated LAI of last 24 hours
        Inst%LAI_PREVDAY(I,J) = ( HOLDFRAC * Inst%LAI_PREVDAY(I,J) ) + &
@@ -1035,249 +1043,192 @@ CONTAINS
     ENDDO !J
     !$OMP END PARALLEL DO
 
+    ! Exit this routine with failure state if any of the above routines
+    ! encountered an error.  This is thread-safe.
     IF ( ERR ) THEN
        RC = HCO_FAIL
        RETURN
     ENDIF
 
-    !=================================================================
+    !========================================================================
     ! PASS TO HEMCO STATE AND UPDATE DIAGNOSTICS
-    !=================================================================
+    !========================================================================
 
-    ! ----------------------------------------------------------------
     ! ISOPRENE
     IF ( Inst%IDTISOP > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXISOP, Inst%IDTISOP, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXISOP, Inst%IDTISOP,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXISOP', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXISOP', RC, LOC )
           RETURN
        ENDIF
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! ACETALDEHYDE
     IF ( Inst%IDTALD2 > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXALD2, Inst%IDTALD2, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXALD2, Inst%IDTALD2,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXALD2', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXALD2', RC, LOC )
           RETURN
        ENDIF
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! METHANOL
     IF ( Inst%IDTMOH > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXMOH, Inst%IDTMOH, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXMOH, Inst%IDTMOH,                &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXMOH', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXMOH', RC, LOC )
           RETURN 
        ENDIF
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! ETHANOL
     IF ( Inst%IDTEOH > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXEOH, Inst%IDTEOH, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXEOH, Inst%IDTEOH,                &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXEOH', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXEOH', RC, LOC )
           RETURN
        ENDIF
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! ACETONE
     IF ( Inst%IDTACET > 0 ) THEN
-
-       ! Add flux to emission array
        Inst%FLUXACET = Inst%FLUXACETbg + Inst%FLUXACETmb
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXACET, Inst%IDTACET, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXACET, Inst%IDTACET,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXACET', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXACET', RC, LOC )
           RETURN
        ENDIF
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! SOA-Precursor (SOAP)
-    IF (  Inst%IDTSOAP > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXSOAP, Inst%IDTSOAP, &
+    IF ( Inst%IDTSOAP > 0 ) THEN
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXSOAP, Inst%IDTSOAP,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXSOAP', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSOAP', RC, LOC )
           RETURN
        ENDIF
-
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! SOA-Simplified (SOAS)
     IF (  Inst%IDTSOAS > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXSOAS, Inst%IDTSOAS, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXSOAS, Inst%IDTSOAS,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXSOAS', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSOAS', RC, LOC )
           RETURN
        ENDIF
-
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! ALKENES
     IF ( Inst%IDTPRPE > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXPRPE, Inst%IDTPRPE, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXPRPE, Inst%IDTPRPE,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXPRPE', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXPRPE', RC, LOC )
           RETURN
        ENDIF
-
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! ETHENE
     IF ( Inst%IDTC2H4 > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXC2H4, Inst%IDTC2H4, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXC2H4, Inst%IDTC2H4,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXC2H4', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXC2H4', RC, LOC )
           RETURN
        ENDIF
-
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! MTPA
     IF ( Inst%IDTMTPA > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXMTPA, Inst%IDTMTPA, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXMTPA, Inst%IDTMTPA,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXMTPA', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXMTPA', RC, LOC )
           RETURN
        ENDIF
-
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! MTPO
     IF ( Inst%IDTMTPO > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXMTPO, Inst%IDTMTPO, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXMTPO, Inst%IDTMTPO,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXMTPO', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXMTPO', RC, LOC )
           RETURN
        ENDIF
-
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! LIMONENE
     IF ( Inst%IDTLIMO > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXLIMO, Inst%IDTLIMO, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXLIMO, Inst%IDTLIMO,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXLIMO', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXLIMO', RC, LOC )
           RETURN
        ENDIF
-
     ENDIF
 
-    ! ----------------------------------------------------------------
     ! SESQ
     IF ( Inst%IDTSESQ > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, Inst%FLUXSESQ, Inst%IDTSESQ, &
+       CALL HCO_EmisAdd( HcoState, Inst%FLUXSESQ, Inst%IDTSESQ,              &
                          RC, ExtNr=Inst%ExtNr )
        IF ( RC /= HCO_SUCCESS ) THEN
-          CALL HCO_ERROR( &
-                          'HCO_EmisAdd error: FLUXSESQ', RC )
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXSESQ', RC, LOC )
           RETURN
        ENDIF
 
     ENDIF
 
     ! LAI_PREVDAY
-    CALL HCO_RestartWrite( HcoState, &
-                           'LAI_PREVDAY', Inst%LAI_PREVDAY, RC )
+    CALL HCO_RestartWrite( HcoState, 'LAI_PREVDAY', Inst%LAI_PREVDAY, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 1', RC, THISLOC=LOC )
-        RETURN
+       MSG = "HCO_RestartWrite error: LAI_PREVDAY"
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! T_LAST24H
-    CALL HCO_RestartWrite( HcoState, &
-                           'T_PREVDAY',  Inst%T_LAST24H, RC )
+    CALL HCO_RestartWrite( HcoState, 'T_PREVDAY',  Inst%T_LAST24H, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 2', RC, THISLOC=LOC )
-        RETURN
+       MSG = "HCO_RestartWrite error: T_PREVDAY"
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! T_LASTXDAYS
-    CALL HCO_RestartWrite( HcoState, &
-                           'T_DAVG',     Inst%T_LASTXDAYS, RC )
+    CALL HCO_RestartWrite( HcoState, 'T_DAVG', Inst%T_LASTXDAYS, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-        RETURN
+       MSG = "HCO_RestartWrite error: T_DAVG"
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! PARDR_LASTXDAYS
-    CALL HCO_RestartWrite( HcoState, &
-                           'PARDR_DAVG', Inst%PARDR_LASTXDAYS, RC )
+    CALL HCO_RestartWrite( HcoState, 'PARDR_DAVG', Inst%PARDR_LASTXDAYS, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-        RETURN
+       MSG = "HCO_RestartWrite error: PARDR_DAVG"
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! PARDF_LASTXDAYS
-    CALL HCO_RestartWrite( HcoState, &
-                           'PARDF_DAVG', Inst%PARDF_LASTXDAYS, RC )
+    CALL HCO_RestartWrite( HcoState, 'PARDF_DAVG', Inst%PARDF_LASTXDAYS, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
-        RETURN
+       MSG = "HCO_RestartWrite error: PARDF_DAVG"
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
-    !=================================================================
+    !========================================================================
     ! ALL DONE!
-    !=================================================================
+    !========================================================================
 
     ! Cleanup
     Inst => NULL()
