@@ -362,6 +362,8 @@ CONTAINS
     REAL(hp)            :: DEP_HEIGHT
     INTEGER             :: OLDWARN
     INTEGER             :: PBL_MAX
+    INTEGER             :: EC, ERR
+    LOGICAL             :: TCapped
     INTEGER, SAVE       :: WARN = 0
 
     ! For now, hardcode salinity
@@ -417,17 +419,28 @@ CONTAINS
     ! Write out original warning status
     OLDWARN = WARN
 
+    ! Initialize error code (1=KH, 2=HEFF, 3=KG) and temperature-cap flag.
+    ! Both are combined across threads with a reduction (see below).
+    ERR     = 0
+    TCapped = .FALSE.
+
     ! Loop over all grid boxes. Only emit into lowest layer
-
-!$OMP PARALLEL DO                                     &
-!$OMP DEFAULT( SHARED )                               &
-!$OMP PRIVATE( I,  J,     N,        TK,        TC   ) &
-!$OMP PRIVATE( P,  V,     KH,       RC,        HEFF ) &
-!$OMP PRIVATE( KG, IJSRC, PBL_MAX,  DEP_HEIGHT      ) &
-!$OMP SCHEDULE( DYNAMIC )
-
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I,  J,     N,        TK,        TC                       )&
+    !$OMP PRIVATE( P,  V,     KH,       EC,        HEFF                     )&
+    !$OMP PRIVATE( KG, IJSRC, PBL_MAX,  DEP_HEIGHT                          )&
+    !$OMP REDUCTION( MAX: ERR                                               )&
+    !$OMP REDUCTION( .OR.: TCapped                                          )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( DYNAMIC, 8                                              )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
+
+       ! Continue to end of loop if an error has occurred
+       ! (we cannot exit from a parallel loop)
+       IF ( ERR > 0 ) CYCLE
+       EC = HCO_SUCCESS
 
        ! Make sure we have no negative seawater concentrations
        IF ( SeaConc(I,J) < 0.0_hp ) SeaConc(I,J) = 0.0_hp
@@ -450,8 +463,8 @@ CONTAINS
           ! very high temperatures - hence cap temperature at specified
           ! limit
           IF ( TK > TMAX ) THEN
-             WARN = 1
-             TK   = TMAX
+             TCapped = .TRUE.
+             TK      = TMAX
           ENDIF
 
           ! Temperature in C
@@ -474,19 +487,19 @@ CONTAINS
 
           ! Henry gas over liquid dimensionless constant and
           ! effective Henry constant [both unitless].
-          CALL CALC_KH ( K0, CR, TK, KH, RC )  ! liquid over gas
-          ! Exit here if error. Use error flags from henry_mod.F!
-          IF ( RC /= 0 ) THEN
-             RC  = HCO_FAIL
+          CALL CALC_KH ( K0, CR, TK, KH, EC )  ! liquid over gas
+          ! Skip to end of loop if error. Use error flags from henry_mod.F!
+          IF ( EC /= 0 ) THEN
              WRITE(MSG,*) 'Cannot calculate KH: ', K0, CR, TK
-             EXIT
+             ERR = 1
+             CYCLE
           ENDIF
-          CALL CALC_HEFF ( PKA, PH, KH, HEFF, RC )  ! liquid over gas
-          ! Exit here if error. Use error flags from henry_mod.F!
-          IF ( RC /= 0 ) THEN
-             RC  = HCO_FAIL
+          CALL CALC_HEFF ( PKA, PH, KH, HEFF, EC )  ! liquid over gas
+          ! Skip to end of loop if error. Use error flags from henry_mod.F!
+          IF ( EC /= 0 ) THEN
              WRITE(MSG,*) 'Cannot calculate HEFF: ', PKA, PH, KH
-             EXIT
+             ERR = 2
+             CYCLE
           ENDIF
 
           ! Gas over liquid
@@ -502,11 +515,11 @@ CONTAINS
           ! is denoted Ka in Johnson, 2010!
           ! Use effective Henry constant here to account for
           ! hydrolysis!
-          CALL CALC_KG( TC, P, V, S, HEFF, VB, MW, SCW, KG, RC )
-          IF ( RC /= 0 ) THEN
-             RC = HCO_FAIL
+          CALL CALC_KG( TC, P, V, S, HEFF, VB, MW, SCW, KG, EC )
+          IF ( EC /= 0 ) THEN
              WRITE(MSG,*) 'Cannot calculate KG: ', TC, P, V, S, HEFF
-             EXIT
+             ERR = 3
+             CYCLE
           ENDIF
 
           !-----------------------------------------------------------
@@ -547,19 +560,22 @@ CONTAINS
           SINK(I,J) = KG / DEP_HEIGHT
 
           ! Check validity of value
-          CALL HCO_CheckDepv( HcoState, SINK(I,J), RC )
+          CALL HCO_CheckDepv( HcoState, SINK(I,J), EC )
 
        ENDIF !Over ocean
     ENDDO !I
     ENDDO !J
-!$OMP END PARALLEL DO
-
+    !$OMP END PARALLEL DO
 
     ! Check exit status
-    IF ( RC /= HCO_SUCCESS ) THEN
+    IF ( ERR > 0 ) THEN
+       RC = HCO_FAIL
        CALL HCO_ERROR(MSG, RC )
        RETURN
     ENDIF
+
+    ! Record whether the temperature was capped in any grid box
+    IF ( TCapped ) WARN = 1
 
     ! Warning?
     IF ( WARN /= OLDWARN ) THEN
