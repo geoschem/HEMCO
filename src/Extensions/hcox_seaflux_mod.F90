@@ -362,6 +362,8 @@ CONTAINS
     REAL(hp)            :: DEP_HEIGHT
     INTEGER             :: OLDWARN
     INTEGER             :: PBL_MAX
+    INTEGER             :: EC, ERR
+    LOGICAL             :: TCapped
     INTEGER, SAVE       :: WARN = 0
 
     ! For now, hardcode salinity
@@ -417,17 +419,34 @@ CONTAINS
     ! Write out original warning status
     OLDWARN = WARN
 
+    ! Initialize error code (1=KH, 2=HEFF, 3=KG).  Use REDUCTION( MAX )
+    ! in the loop below, which will returns the highest integer value of 
+    ! ERR over all the threads.  This is a thread-safe implementation.
+    ERR     = 0
+
+    ! Initialize and temperature-cap flag.  Use REDUCTION( .OR. ) in the
+    ! looip below, which will set TCapped to true if at least one thread 
+    ! sets it to true (otherwise it will remain false).  This is thread-safe.
+    TCapped = .FALSE.
+
     ! Loop over all grid boxes. Only emit into lowest layer
-
-!$OMP PARALLEL DO                                     &
-!$OMP DEFAULT( SHARED )                               &
-!$OMP PRIVATE( I,  J,     N,        TK,        TC   ) &
-!$OMP PRIVATE( P,  V,     KH,       RC,        HEFF ) &
-!$OMP PRIVATE( KG, IJSRC, PBL_MAX,  DEP_HEIGHT      ) &
-!$OMP SCHEDULE( DYNAMIC )
-
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I,  J,  N,    TK, TC,    P,       V                      )&
+    !$OMP PRIVATE( KH, EC, HEFF, KG, IJSRC, PBL_MAX, DEP_HEIGHT             )&
+    !$OMP REDUCTION( MAX: ERR                                               )&
+    !$OMP REDUCTION( .OR.: TCapped                                          )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( DYNAMIC, 8                                              )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
+
+       ! Exit the loop if an error happened on the previous iteration
+       IF ( ERR > 0 ) CYCLE
+
+       ! EC will be used to determine if routines exited with success
+       ! or failure.  Each thread will get its own private copy.
+       EC = HCO_SUCCESS
 
        ! Make sure we have no negative seawater concentrations
        IF ( SeaConc(I,J) < 0.0_hp ) SeaConc(I,J) = 0.0_hp
@@ -448,10 +467,10 @@ CONTAINS
 
           ! Error check: the Schmidt number may become negative for
           ! very high temperatures - hence cap temperature at specified
-          ! limit
+          ! limit.  Set Tcapped to true to denote the cap has been applied.
           IF ( TK > TMAX ) THEN
-             WARN = 1
-             TK   = TMAX
+             TCapped = .TRUE.
+             TK      = TMAX
           ENDIF
 
           ! Temperature in C
@@ -474,19 +493,21 @@ CONTAINS
 
           ! Henry gas over liquid dimensionless constant and
           ! effective Henry constant [both unitless].
-          CALL CALC_KH ( K0, CR, TK, KH, RC )  ! liquid over gas
-          ! Exit here if error. Use error flags from henry_mod.F!
-          IF ( RC /= 0 ) THEN
-             RC  = HCO_FAIL
-             WRITE(MSG,*) 'Cannot calculate KH: ', K0, CR, TK
-             EXIT
+          ! Skip to end of loop upon error.
+          ! NOTE: Do not write to MSG here, as MSG is shared; the error
+          ! message is built from ERR after the loop.
+          CALL CALC_KH ( K0, CR, TK, KH, EC )
+          IF ( EC /= 0 ) THEN
+             ERR = 1
+             CYCLE
           ENDIF
-          CALL CALC_HEFF ( PKA, PH, KH, HEFF, RC )  ! liquid over gas
-          ! Exit here if error. Use error flags from henry_mod.F!
-          IF ( RC /= 0 ) THEN
-             RC  = HCO_FAIL
-             WRITE(MSG,*) 'Cannot calculate HEFF: ', PKA, PH, KH
-             EXIT
+
+          ! Compute effective Henry's law constant (applying pH
+          ! correction if necessary).  Skip to end of loop upon error.
+          CALL CALC_HEFF ( PKA, PH, KH, HEFF, EC )
+          IF ( EC /= 0 ) THEN
+             ERR = 2
+             CYCLE
           ENDIF
 
           ! Gas over liquid
@@ -502,11 +523,10 @@ CONTAINS
           ! is denoted Ka in Johnson, 2010!
           ! Use effective Henry constant here to account for
           ! hydrolysis!
-          CALL CALC_KG( TC, P, V, S, HEFF, VB, MW, SCW, KG, RC )
-          IF ( RC /= 0 ) THEN
-             RC = HCO_FAIL
-             WRITE(MSG,*) 'Cannot calculate KG: ', TC, P, V, S, HEFF
-             EXIT
+          CALL CALC_KG( TC, P, V, S, HEFF, VB, MW, SCW, KG, EC )
+          IF ( EC /= 0 ) THEN
+             ERR = 3
+             CYCLE
           ENDIF
 
           !-----------------------------------------------------------
@@ -547,19 +567,33 @@ CONTAINS
           SINK(I,J) = KG / DEP_HEIGHT
 
           ! Check validity of value
-          CALL HCO_CheckDepv( HcoState, SINK(I,J), RC )
+          CALL HCO_CheckDepv( HcoState, SINK(I,J), EC )
 
        ENDIF !Over ocean
     ENDDO !I
     ENDDO !J
-!$OMP END PARALLEL DO
+    !$OMP END PARALLEL DO
 
-
-    ! Check exit status
-    IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR(MSG, RC )
+    ! Since it is not thread-safe to exit from a parallel loop, we will
+    ! exit this routine with failure status if any of the grid boxes
+    ! in the loop above encountered an error.
+    IF ( ERR > 0 ) THEN
+       SELECT CASE( ERR )
+          CASE( 1 )
+             MSG = 'Cannot calculate KH (Henry constant)!'
+          CASE( 2 )
+             MSG = 'Cannot calculate HEFF (effective Henry constant)!'
+          CASE DEFAULT
+             MSG = 'Cannot calculate KG (exchange velocity)!'
+       END SELECT
+       MSG = TRIM( MSG ) // ' Species: ' // TRIM( HcoState%Spc(HcoID)%SpcName )
+       RC  = HCO_FAIL
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
+
+    ! Record whether the temperature was capped in any grid box.
+    IF ( TCapped ) WARN = 1
 
     ! Warning?
     IF ( WARN /= OLDWARN ) THEN

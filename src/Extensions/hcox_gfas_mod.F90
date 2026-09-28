@@ -267,19 +267,19 @@ CONTAINS
 
           ENDIF
 
-!$OMP PARALLEL DO                                            &
-!$OMP DEFAULT( SHARED )                                      &
-!$OMP PRIVATE( I, J, L )                                     &
-!$OMP SCHEDULE( DYNAMIC, 8 )                                 &
-!$OMP COLLAPSE( 3 )
+          !$OMP PARALLEL DO                                                  &
+          !$OMP DEFAULT( SHARED                                             )&
+          !$OMP PRIVATE( I, J, L                                            )&
+          !$OMP COLLAPSE( 3                                                 )&
+          !$OMP SCHEDULE( STATIC                                            )
           DO L = 1, HcoState%NZ
-            DO J = 1, HcoState%NY
-              DO I = 1, HcoState%NX
-                SpcArr3D(I,J,L) = Inst%Spc2D(I,J) * Inst%Frac3D(I,J,L)
-              ENDDO
-            ENDDO
+          DO J = 1, HcoState%NY
+          DO I = 1, HcoState%NX
+             SpcArr3D(I,J,L) = Inst%Spc2D(I,J) * Inst%Frac3D(I,J,L)
           ENDDO
-!$OMP END PARALLEL DO
+          ENDDO
+          ENDDO
+          !$OMP END PARALLEL DO
 
        ENDIF
 

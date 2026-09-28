@@ -405,6 +405,8 @@
 !$OMP+PRIVATE( I,     J,      P1,    P2,   PTHICK,  PMID, TLON        )
 !$OMP+PRIVATE( THLON, ULON,   VLON,  BHT2, Q_H2O,   ORO,  SNW_HGT_LQD )
 !$OMP+PRIVATE( N,     YMID_R, DSRC,  RC,   AREA_M2                    )
+!$OMP+REDUCTION( .OR.: ERR )
+!$OMP+SCHEDULE( STATIC )
 
       ! Loop over latitudes
       DO J = 1, HcoState%NY
@@ -2313,8 +2315,10 @@
       !=================================================================
 
 !$OMP PARALLEL DO
-!$OMP+DEFAULT( SHARED )
-!$OMP+PRIVATE( I, J )
+!$OMP+DEFAULT( SHARED  )
+!$OMP+PRIVATE( I, J    )
+!$OMP+COLLAPSE( 2      )
+!$OMP+SCHEDULE( STATIC )
       DO J = 1, HcoState%NY
       DO I = 1, HcoState%NX
 

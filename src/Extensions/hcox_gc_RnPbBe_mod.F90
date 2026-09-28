@@ -238,11 +238,12 @@ CONTAINS
           ! Use default Rn222 emissions, based on Jacob et al 1997
           !------------------------------------------------------------------
           !$OMP PARALLEL DO                                                  &
-          !$OMP DEFAULT( SHARED )                                            &
-          !$OMP PRIVATE( I,          J,          LAT,        DENOM         ) &
-          !$OMP PRIVATE( F_BELOW_70, F_BELOW_60, F_ABOVE_60, Rn_LAND       ) &
-          !$OMP PRIVATE( Rn_WATER,   F_LAND,     F_WATER,    ADD_Rn        ) &
-          !$OMP SCHEDULE( DYNAMIC )
+          !$OMP DEFAULT( SHARED                                             )&
+          !$OMP PRIVATE( I,          J,          LAT,        DENOM          )&
+          !$OMP PRIVATE( F_BELOW_70, F_BELOW_60, F_ABOVE_60, Rn_LAND        )&
+          !$OMP PRIVATE( Rn_WATER,   F_LAND,     F_WATER,    ADD_Rn         )&
+          !$OMP COLLAPSE( 2                                                 )&
+          !$OMP SCHEDULE( STATIC                                            )
           DO J = 1, HcoState%Ny
           DO I = 1, HcoState%Nx
 
@@ -388,10 +389,12 @@ CONTAINS
     ! 7Be and 10Be have identical source distributions (Koch and Rind, 1998)
     !=======================================================================
     IF ( Inst%IDTBe7 > 0 .or. Inst%IDTBe10 > 0 ) THEN
-!$OMP PARALLEL DO                                                   &
-!$OMP DEFAULT( SHARED )                                             &
-!$OMP PRIVATE( I, J, L, LAT_TMP, P_TMP, Be_TMP, ADD_Be7, ADD_Be10 ) &
-!$OMP SCHEDULE( DYNAMIC )
+
+       !$OMP PARALLEL DO                                                     &
+       !$OMP DEFAULT( SHARED                                                )&
+       !$OMP PRIVATE( I, J, L, LAT_TMP, P_TMP, Be_TMP, ADD_Be7, ADD_Be10    )&
+       !$OMP COLLAPSE( 3                                                    )&
+       !$OMP SCHEDULE( STATIC                                               )
        DO L = 1, HcoState%Nz
        DO J = 1, HcoState%Ny
        DO I = 1, HcoState%Nx

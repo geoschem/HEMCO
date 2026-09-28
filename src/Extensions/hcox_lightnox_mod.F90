@@ -326,20 +326,20 @@ CONTAINS
         RETURN
     ENDIF
 
-    !=================================================================
+    !========================================================================
     ! Compute lightning NOx emissions for each (I,J) column
-    !=================================================================
-
-!$OMP PARALLEL DO                                                     &
-!$OMP DEFAULT( SHARED )                                               &
-!$OMP PRIVATE( I,         J,           L,        A_M2,        A_KM2  ) &
-!$OMP PRIVATE( YMID,      XMID,        LTOP,     MTYPE               ) &
-!$OMP PRIVATE( LNDTYPE,   SFCTYPE,     TROPP                         ) &
-!$OMP PRIVATE( RATE,      RATE_SAVE,   H0,       IC_CG_RATIO         ) &
-!$OMP PRIVATE( TOTAL,     TOTAL_IC,    TOTAL_CG, VERTPROF,    X      ) &
-!$OMP SCHEDULE( DYNAMIC )
+    !========================================================================
 
     ! Loop over surface boxes
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I,           J,     L,        A_M2,      A_KM2           )&
+    !$OMP PRIVATE( YMID,        XMID,  LTOP,     MTYPE,     LNDTYPE         )&
+    !$OMP PRIVATE( SFCTYPE,     TROPP, RATE,     RATE_SAVE, H0              )&
+    !$OMP PRIVATE( IC_CG_RATIO, TOTAL, TOTAL_IC, TOTAL_CG,  VERTPROF        )&
+    !$OMP PRIVATE( X                                                        )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( DYNAMIC, 8                                              )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 

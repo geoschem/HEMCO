@@ -1040,7 +1040,8 @@ CONTAINS
     !$OMP PARALLEL DO                                                        &
     !$OMP DEFAULT( SHARED                                                   )&
     !$OMP PRIVATE( I, J, w, w_t                                             )&
-    !$OMP COLLAPSE( 2                                                       )
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( STATIC                                                  )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -1192,7 +1193,8 @@ CONTAINS
     !$OMP PARALLEL DO                                                        &
     !$OMP DEFAULT( SHARED                                                   )&
     !$OMP PRIVATE( I, J, K                                                  )&
-    !$OMP COLLAPSE( 2                                                       )
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( STATIC                                                  )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -1595,7 +1597,8 @@ CONTAINS
     !$OMP PARALLEL DO                                                        &
     !$OMP DEFAULT( SHARED                                                   )&
     !$OMP PRIVATE( I, J                                                     )&
-    !$OMP COLLAPSE( 2                                                       )
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( STATIC                                                  )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
@@ -1675,7 +1678,8 @@ CONTAINS
     !$OMP PARALLEL DO                                                        &
     !$OMP DEFAULT( SHARED                                                   )&
     !$OMP PRIVATE( I, J, C_d, f_bare, kappa, DUST_EMIS_FLUX_Tmp             )&
-    !$OMP COLLAPSE( 2                                                       )
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( STATIC                                                  )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
