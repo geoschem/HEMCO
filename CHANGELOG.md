@@ -8,14 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Changed
 - Converted `GetMaskVal` in `src/Core/hco_calc_mod.F90` to an `ELEMENTAL` function instead of an OpenMP loop
-- Updated error messages in `src/Core/hco_geotools_mod.F90` to be more descriptive
+- Updated error messages such as `ERROR 1` to be more descriptive
 - Added explicit `SCHEDULE( STATIC )` clauses to OpenMP parallel loops that did not specify a schedule
 
 ### Fixed
 - Fixed various OpenMP parallelization issues (eliminating race conditions, adding COLLAPSE statement, changing SCHEDULE settings)
-- Fixed `Calc_SeaFlux` in `src/Extensions/hcox_seaflux_mod.F90` so that errors raised inside the OpenMP loop are no longer discarded
-- Restored the OpenMP parallel loop in `Evolve_Plume` (`src/Extensions/hcox_paranox_mod.F90`), with a private return code and a thread-safe error flag
-- Fixed `INTERPOL_LINWEIGHTS` in `src/Extensions/hcox_paranox_mod.F90` so that it can no longer index past the end of the LUT node array
+- Fixed `Calc_SeaFlux` (in `src/Extensions/hcox_seaflux_mod.F90`) so that errors raised inside the OpenMP loop are no longer discarded
+- Fixed a race condition in `Calc_SeaFlux` where OpenMP threads wrote error messages into a shared string
+- Fixed `GetMaskVal` in `src/Core/hco_calc_mod.F90` so that fractional values are mirrored properly when `Oper == 3`
+- Restored the OpenMP parallel loop in `Evolve_Plume` (`src/Extensions/hcox_paranox_mod.F90`)
+- Fixed out-of-bounds error in routine `INTERPOL_LINWEIGHTS` (in `src/Extensions/hcox_paranox_mod.F90`)
 
 ### Removed
 - Removed obsolete variables from `hcox_seasalt_mod.F90`

@@ -494,9 +494,10 @@ CONTAINS
           ! Henry gas over liquid dimensionless constant and
           ! effective Henry constant [both unitless].
           ! Skip to end of loop upon error.
+          ! NOTE: Do not write to MSG here, as MSG is shared; the error
+          ! message is built from ERR after the loop.
           CALL CALC_KH ( K0, CR, TK, KH, EC )
           IF ( EC /= 0 ) THEN
-             WRITE( MSG, * ) 'Cannot calculate KH: ', I, J, K0, CR, TK
              ERR = 1
              CYCLE
           ENDIF
@@ -505,7 +506,6 @@ CONTAINS
           ! correction if necessary).  Skip to end of loop upon error.
           CALL CALC_HEFF ( PKA, PH, KH, HEFF, EC )
           IF ( EC /= 0 ) THEN
-             WRITE( MSG, * ) 'Cannot calculate HEFF: ', I, J, PKA, PH, KH
              ERR = 2
              CYCLE
           ENDIF
@@ -525,7 +525,6 @@ CONTAINS
           ! hydrolysis!
           CALL CALC_KG( TC, P, V, S, HEFF, VB, MW, SCW, KG, EC )
           IF ( EC /= 0 ) THEN
-             WRITE(MSG,*) 'Cannot calculate KG: ', TC, P, V, S, HEFF
              ERR = 3
              CYCLE
           ENDIF
@@ -579,8 +578,17 @@ CONTAINS
     ! exit this routine with failure status if any of the grid boxes
     ! in the loop above encountered an error.
     IF ( ERR > 0 ) THEN
-       RC = HCO_FAIL
-       CALL HCO_ERROR(MSG, RC )
+       SELECT CASE( ERR )
+          CASE( 1 )
+             MSG = 'Cannot calculate KH (Henry constant)!'
+          CASE( 2 )
+             MSG = 'Cannot calculate HEFF (effective Henry constant)!'
+          CASE DEFAULT
+             MSG = 'Cannot calculate KG (exchange velocity)!'
+       END SELECT
+       MSG = TRIM( MSG ) // ' Species: ' // TRIM( HcoState%Spc(HcoID)%SpcName )
+       RC  = HCO_FAIL
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
