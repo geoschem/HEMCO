@@ -344,23 +344,19 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
-    INTEGER                  :: I, J, L
+    INTEGER                  :: I, J, EC
     LOGICAL                  :: ERR
     LOGICAL                  :: FILLED
     LOGICAL                  :: FIRST
     LOGICAL                  :: DefScaleEmis
-    REAL(hp)                 :: iFlx, TMP
+    REAL(hp)                 :: iFlx
     CHARACTER(LEN=255)       :: MSG, LOC
-    CHARACTER(LEN=1)         :: CHAR1
 
     ! Arrays
     REAL(hp), TARGET         :: FLUXNO  (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: FLUXNO2 (HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: FLUXHNO3(HcoState%NX,HcoState%NY)
     REAL(hp), TARGET         :: FLUXO3  (HcoState%NX,HcoState%NY)
-!%%% Comment out unused code
-!%%%!    REAL(hp), TARGET         :: DEPO3   (HcoState%NX,HcoState%NY)
-!%%%!    REAL(hp), TARGET         :: DEPHNO3 (HcoState%NX,HcoState%NY)
 
     ! Pointers
     REAL(hp), POINTER        :: Arr2D(:,:)
@@ -374,8 +370,6 @@ CONTAINS
     ! Paranox update
     REAL(dp)                 :: SHIP_FNOx, SHIP_DNOx, SHIP_OPE, SHIP_MOE
     REAL(dp)                 :: FNO_NOx
-    REAL(hp)                 :: iMass
-    REAL(hp)                 :: ExpVal
 !%%% Comment out debug code
 !%%%!    ! testing only
 !%%%!    REAL*8             :: FRAC, TOTPRES, DELTPRES
@@ -386,13 +380,14 @@ CONTAINS
     !=================================================================
     ! EVOLVE_PLUME begins here!
     !=================================================================
-    LOC = 'EVOLVE_PLUE (HCOX_PARANOX_MOD.F90)'
+    LOC = 'EVOLVE_PLUME (HCOX_PARANOX_MOD.F90)'
 
     ! Enter
     CALL HCO_ENTER(HcoState%Config%Err, LOC, RC)
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 3', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in "HCO_Enter"!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Leave here if none of the tracers defined
@@ -452,8 +447,9 @@ CONTAINS
     ! SC5 holds the SUNCOS values of 5 hours ago.
     CALL HCO_getSUNCOS( HcoState, Inst%SC5, -5, RC )
     IF ( RC /= HCO_SUCCESS ) THEN
-        CALL HCO_ERROR( 'ERROR 4', RC, THISLOC=LOC )
-        RETURN
+       MSG = 'Error encountered in "HCO_GetSunCos"!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+       RETURN
     ENDIF
 
     ! Error check
@@ -479,33 +475,40 @@ CONTAINS
 !%%%!    print*, '### SC5 : ', SUM   ( SC5 ), MAXVAL(SC5)
 !%%%!    print*, '### EMIS: ', SUM   ( SHIPNOEMIS(:,:,1) ), MAXVAL(SHIPNOEMIS(:,:,1))
 
+    !------------------------------------------------------------------------
     ! Loop over all grid boxes
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ! Note: there seems to be a problem with the OMP loop in that
-    ! the species concentrations (O3molec, NOmolec, NO2molec)
-    ! differ slightly in a few grid boxes. Don't know exactly what
-    ! is going on here, but uncomment for now! Needs more
-    ! evaluation and testing.
     !
-    ! Now use #if defined( 0 ) to block of this code (bmy, 6/6/14)
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    !!!$OMP PARALLEL DO                                                   &
-    !!!$OMP DEFAULT( SHARED )                                             &
-    !!!$OMP PRIVATE( I, J, L,   MSG, iFlx, iMass,    TMP                ) &
-    !!!$OMP PRIVATE( SHIP_FNOx, SHIP_DNOx, SHIP_OPE, SHIP_MOE, FNO_NOx  ) &
-    !!!$OMP SCHEDULE( DYNAMIC )
+    ! Each iteration reads and writes only box (I,J), so results do not
+    ! depend on thread order.  The per-box return code EC is private, so
+    ! one thread cannot overwrite another thread's failure status.
+    ! DYNAMIC scheduling balances the load, because only boxes with ship
+    ! emissions do the LUT interpolation.
+    !------------------------------------------------------------------------
+    !$OMP PARALLEL DO                                                        &
+    !$OMP DEFAULT( SHARED                                                   )&
+    !$OMP PRIVATE( I,         J,         EC,        iFlx                    )&
+    !$OMP PRIVATE( SHIP_FNOx, SHIP_DNOx, SHIP_OPE,  SHIP_MOE,  FNO_NOx      )&
+    !$OMP REDUCTION( .OR.: ERR                                              )&
+    !$OMP COLLAPSE( 2                                                       )&
+    !$OMP SCHEDULE( DYNAMIC, 8                                              )
     DO J = 1, HcoState%NY
     DO I = 1, HcoState%NX
 
+       ! ERR has been declared with REDUCTION( .OR. ), so that it will be
+       ! true if any of the routines in the loop below fail.  In that event,
+       ! we will continue cycling to the end of the loop and exit this
+       ! routine with failure status after the loop finishes.  This is the
+       ! correct thread-safe implemenation.
+       IF ( ERR ) CYCLE
+
        ! Zero private variables for safety's sake
+       EC        = HCO_SUCCESS
        FNO_NOx   = 0.0_dp
        iFlx      = 0.0_hp
-       iMass     = 0.0_hp
        SHIP_FNOx = 0.0_dp
        SHIP_DNOx = 0.0_dp
        SHIP_OPE  = 0.0_dp
        SHIP_MOE  = 0.0_dp
-       TMP       = 0.0_hp
 
        !---------------------------------------------------------------------
        ! Skip if no ship emissions in this grid box
@@ -518,10 +521,11 @@ CONTAINS
        ! Updated for HEMCO (ckeller, 02/04/2015)
        !---------------------------------------------------------------------
        CALL PARANOX_LUT( ExtState,  HcoState,  Inst,      I,                  &
-                         J,         RC,        SHIP_FNOx, SHIP_DNOx,          &
+                         J,         EC,        SHIP_FNOx, SHIP_DNOx,          &
                          SHIP_OPE,  SHIP_MOE                                 )
-       IF ( RC /= HCO_SUCCESS ) THEN
-          ERR = .TRUE.; EXIT
+       IF ( EC /= HCO_SUCCESS ) THEN
+          ERR = .TRUE.
+          CYCLE
        ENDIF
 
 !%%% Comment out debug code
@@ -721,11 +725,14 @@ CONTAINS
 
     ENDDO !I
     ENDDO !J
-    !!!$OMP END PARALLEL DO
+    !$OMP END PARALLEL DO
 
-    ! Error check
+    ! If any of the threads encountered an error in the loop above,
+    ! exit this routine with failure status.  This is thread-safe.
     IF ( ERR ) THEN
-       RC = HCO_FAIL
+       RC  = HCO_FAIL
+       MSG = 'Error encountered in "PARANOX_LUT"!'
+       CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
        RETURN
     ENDIF
 
@@ -754,40 +761,44 @@ CONTAINS
     DefScaleEmis               = HcoState%Options%ScaleEmis
     HcoState%Options%ScaleEmis = .FALSE.
 
-    ! NO
+    ! Add NO flux [kg/m2/s] to emission array 
     IF ( Inst%IDTNO > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, FLUXNO, Inst%IDTNO, &
-                         RC,       ExtNr=Inst%ExtNr )
+       CALL HCO_EmisAdd( HcoState, FLUXNO,           Inst%IDTNO,             &
+                         RC,       ExtNr=Inst%ExtNr                         )
        IF ( RC /= HCO_SUCCESS ) THEN
           CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXNO', RC )
           RETURN
        ENDIF
     ENDIF
 
-    ! NO2
+    ! Add NO2 flux [kg/m2/s] to emission array
     IF ( Inst%IDTNO2 > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, FLUXNO2, Inst%IDTNO2, &
-                         RC,       ExtNr=Inst%ExtNr )
+       CALL HCO_EmisAdd( HcoState, FLUXNO2,          Inst%IDTNO2,            &
+                         RC,       ExtNr=Inst%ExtNr                         )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXNO2', RC )
+          RETURN
+       ENDIF
     ENDIF
 
-    ! HNO3
+    ! Add HNO3 flux [kg/m2/s] to emission array
     IF ( Inst%IDTHNO3 > 0 ) THEN
-
-       ! Add flux to emission array
-       CALL HCO_EmisAdd( HcoState, FLUXHNO3, Inst%IDTHNO3, &
-                         RC,       ExtNr=Inst%ExtNr )
+       CALL HCO_EmisAdd( HcoState, FLUXHNO3,         Inst%IDTHNO3,           &
+                         RC,       ExtNr=Inst%ExtNr                         )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXHNO3', RC )
+          RETURN
+       ENDIF
     ENDIF
 
-    ! O3
+    ! Add O3 flux [kg/m2/s] to emission array
     IF ( Inst%IDTO3 > 0 ) THEN
-
-       ! Add flux to emission array (kg/m2/s)
-       CALL HCO_EmisAdd( HcoState, FLUXO3, Inst%IDTO3, &
-                         RC,       ExtNr=Inst%ExtNr )
+       CALL HCO_EmisAdd( HcoState, FLUXO3,           Inst%IDTO3,             & 
+                         RC,       ExtNr=Inst%ExtNr                         )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          CALL HCO_ERROR( 'HCO_EmisAdd error: FLUXO3', RC )
+          RETURN
+       ENDIF
     ENDIF
 
 
@@ -798,8 +809,9 @@ CONTAINS
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 5', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error in "Diagn_Update" (PARANOX_NOXFRAC_REMAINING)!'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
        Arr2D => NULL()
 
@@ -808,8 +820,9 @@ CONTAINS
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 6', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error in "Diagn_Update" (PARANOX_OPE)!'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
        Arr2D => NULL()
 
@@ -818,8 +831,9 @@ CONTAINS
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 7', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error in "Diagn_Update" (PARANOX_O3_PRODUCTION)!'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
        Arr2D => NULL()
 
@@ -828,8 +842,9 @@ CONTAINS
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 8', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error in "Diagn_Update" (PARANOX_TOTAL_SHIPNOX)!'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
        Arr2D => NULL()
 
@@ -838,8 +853,9 @@ CONTAINS
        CALL Diagn_Update( HcoState, ExtNr=Inst%ExtNr, &
                           cName=TRIM(DiagnName), Array2D=Arr2D, RC=RC)
        IF ( RC /= HCO_SUCCESS ) THEN
-           CALL HCO_ERROR( 'ERROR 9', RC, THISLOC=LOC )
-           RETURN
+          MSG = 'Error in "Diagn_Update" (PARANOX_NO_PRODUCTION)!'
+          CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+          RETURN
        ENDIF
        Arr2D => NULL()
     ENDIF
@@ -1105,35 +1121,35 @@ CONTAINS
       ! FNOX
       ALLOCATE( Inst%FRACNOX_LUT02(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'FRACNOX_LUT02', RC )
+         CALL HCO_ERROR ( 'FRACNOX_LUT02', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%FRACNOX_LUT02 = 0.0_sp
 
       ALLOCATE( Inst%FRACNOX_LUT06(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'FRACNOX_LUT06', RC )
+         CALL HCO_ERROR ( 'FRACNOX_LUT06', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%FRACNOX_LUT06 = 0.0_sp
 
       ALLOCATE( Inst%FRACNOX_LUT10(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'FRACNOX_LUT10', RC )
+         CALL HCO_ERROR ( 'FRACNOX_LUT10', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%FRACNOX_LUT10 = 0.0_sp
 
       ALLOCATE( Inst%FRACNOX_LUT14(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'FRACNOX_LUT014', RC )
+         CALL HCO_ERROR ( 'FRACNOX_LUT014', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%FRACNOX_LUT14 = 0.0_sp
 
       ALLOCATE( Inst%FRACNOX_LUT18(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'FRACNOX_LUT18', RC )
+         CALL HCO_ERROR ( 'FRACNOX_LUT18', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%FRACNOX_LUT18 = 0.0_sp
@@ -1141,35 +1157,35 @@ CONTAINS
       ! OPE
       ALLOCATE( Inst%OPE_LUT02(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'OPE_LUT02', RC )
+         CALL HCO_ERROR ( 'OPE_LUT02', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%OPE_LUT02 = 0.0_sp
 
       ALLOCATE( Inst%OPE_LUT06(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'OPE_LUT06', RC )
+         CALL HCO_ERROR ( 'OPE_LUT06', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%OPE_LUT06 = 0.0_sp
 
       ALLOCATE( Inst%OPE_LUT10(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= 0 ) THEN
-         CALL HCO_ERROR ( 'OPE_LUT10', RC )
+         CALL HCO_ERROR ( 'OPE_LUT10', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%OPE_LUT10 = 0.0_sp
 
       ALLOCATE( Inst%OPE_LUT14(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= 0 ) THEN
-         CALL HCO_ERROR ( 'OPE_LUT014', RC )
+         CALL HCO_ERROR ( 'OPE_LUT014', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%OPE_LUT14 = 0.0_sp
 
       ALLOCATE( Inst%OPE_LUT18(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'OPE_LUT18', RC )
+         CALL HCO_ERROR ( 'OPE_LUT18', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%OPE_LUT18 = 0.0_sp
@@ -1177,35 +1193,35 @@ CONTAINS
       ! MOE
       ALLOCATE( Inst%MOE_LUT02(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'MOE_LUT02', RC )
+         CALL HCO_ERROR ( 'MOE_LUT02', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%MOE_LUT02 = 0.0_sp
 
       ALLOCATE( Inst%MOE_LUT06(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'MOE_LUT06', RC )
+         CALL HCO_ERROR ( 'MOE_LUT06', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%MOE_LUT06 = 0.0_sp
 
       ALLOCATE( Inst%MOE_LUT10(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'MOE_LUT10', RC )
+         CALL HCO_ERROR ( 'MOE_LUT10', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%MOE_LUT10 = 0.0_sp
 
       ALLOCATE( Inst%MOE_LUT14(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'MOE_LUT014', RC )
+         CALL HCO_ERROR ( 'MOE_LUT014', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%MOE_LUT14 = 0.0_sp
 
       ALLOCATE( Inst%MOE_LUT18(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'MOE_LUT18', RC )
+         CALL HCO_ERROR ( 'MOE_LUT18', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%MOE_LUT18 = 0.0_sp
@@ -1213,35 +1229,35 @@ CONTAINS
       ! DNOx
       ALLOCATE( Inst%DNOx_LUT02(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'DNOx_LUT02', RC )
+         CALL HCO_ERROR ( 'DNOx_LUT02', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%DNOx_LUT02 = 0.0_sp
 
       ALLOCATE( Inst%DNOx_LUT06(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'DNOx_LUT06', RC )
+         CALL HCO_ERROR ( 'DNOx_LUT06', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%DNOx_LUT06 = 0.0_sp
 
       ALLOCATE( Inst%DNOx_LUT10(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'DNOx_LUT10', RC )
+         CALL HCO_ERROR ( 'DNOx_LUT10', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%DNOx_LUT10 = 0.0_sp
 
       ALLOCATE( Inst%DNOx_LUT14(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'DNOx_LUT014', RC )
+         CALL HCO_ERROR ( 'DNOx_LUT014', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%DNOx_LUT14 = 0.0_sp
 
       ALLOCATE( Inst%DNOx_LUT18(nT,nJ,nO3,nSEA,nSEA,nJ,nNOx), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'DNOx_LUT18', RC )
+         CALL HCO_ERROR ( 'DNOx_LUT18', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%DNOx_LUT18 = 0.0_sp
@@ -1249,7 +1265,7 @@ CONTAINS
       ALLOCATE(Inst%DEPO3  (HcoState%NX,HcoState%NY),        &
                Inst%DEPHNO3(HcoState%NX,HcoState%NY), STAT=RC )
       IF ( RC /= HCO_SUCCESS ) THEN
-         CALL HCO_ERROR ( 'Deposition arrays', RC )
+         CALL HCO_ERROR ( 'Deposition arrays', RC, THISLOC=LOC )
          RETURN
       ENDIF
       Inst%DEPO3   = 0.0_sp
@@ -1345,7 +1361,7 @@ CONTAINS
    !------------------------------------------------------------------------
    ALLOCATE ( Inst%ShipNO(HcoState%NX,HcoState%NY,HcoState%NZ), STAT=RC )
    IF ( RC /= HCO_SUCCESS ) THEN
-      CALL HCO_ERROR ( 'ShipNO', RC )
+      CALL HCO_ERROR ( 'ShipNO', RC, THISLOC=LOC )
       RETURN
    ENDIF
    Inst%ShipNO = 0.0_hp
@@ -1353,7 +1369,7 @@ CONTAINS
    ! Allocate variables for SunCosMid from 5 hours ago.
    ALLOCATE ( Inst%SC5(HcoState%NX,HcoState%NY), STAT=RC )
    IF ( RC /= HCO_SUCCESS ) THEN
-      CALL HCO_ERROR ( 'SC5', RC )
+      CALL HCO_ERROR ( 'SC5', RC, THISLOC=LOC )
       RETURN
    ENDIF
    Inst%SC5 = 0.0_hp
@@ -1382,8 +1398,9 @@ CONTAINS
                        COL = HcoState%Diagn%HcoDiagnIDManual,                &
                        RC       = RC                                        )
    IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( 'ERROR 17', RC, THISLOC=LOC )
-       RETURN
+      MSG = 'Error in "Diagn_Create" (PARANOX_O3_DEPOSITION_FLUX)"!' 
+      CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+      RETURN
    ENDIF
 
    CALL Diagn_Create ( HcoState,                                             &
@@ -1394,8 +1411,9 @@ CONTAINS
                        COL = HcoState%Diagn%HcoDiagnIDManual,                &
                        RC       = RC                                         )
    IF ( RC /= HCO_SUCCESS ) THEN
-       CALL HCO_ERROR( 'ERROR 18', RC, THISLOC=LOC )
-       RETURN
+      MSG = 'Error in "Diagn_Create" (PARANOX_HNO3_DEPOSITION_FLUX)"!' 
+      CALL HCO_ERROR( MSG, RC, THISLOC=LOC )
+      RETURN
    ENDIF
 
    !------------------------------------------------------------------------
@@ -2400,7 +2418,9 @@ CONTAINS
 
    ! Loop over interpolation nodes until we find the largest node value
    ! that is less than the desired value
-   DO I=1, SIZE(NODES)
+   ! Stop at SIZE-1 so that NODES(I+1) stays in bounds even if VALUE
+   ! never satisfies the test (e.g. if VALUEIN is NaN)
+   DO I=1, SIZE(NODES)-1
       INDICES(1) = I
       IF ( VALUE <= NODES(I+1) ) EXIT
    END DO
@@ -2409,6 +2429,8 @@ CONTAINS
    INDICES(2) = INDICES(1) + 1
 
    ! Weights for the corresponding node indices
+   ! (Use INDICES(1), not I, which is SIZE(NODES) if the loop completes)
+   I          = INDICES(1)
    WEIGHTS(1) = ( NODES(I+1) - VALUE ) / ( NODES(I+1) - NODES(I) )
    WEIGHTS(2) = 1.0 - WEIGHTS(1)
 
@@ -2501,7 +2523,7 @@ CONTAINS
    REAL(sp), POINTER          :: MOE_LUT    (:,:,:,:,:,:,:)
 
    CHARACTER(LEN=255)         :: MSG
-   CHARACTER(LEN=255)         :: LOC = 'PARANOX_LUT'
+   CHARACTER(LEN=*), PARAMETER :: LOC = 'PARANOX_LUT (hcox_paranox_mod.F90)'
 
    !=================================================================
    ! PARANOX_LUT begins here!

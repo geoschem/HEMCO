@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed various OpenMP parallelization issues (eliminating race conditions, adding COLLAPSE statement, changing SCHEDULE settings)
 - Fixed `Calc_SeaFlux` in `src/Extensions/hcox_seaflux_mod.F90` so that errors raised inside the OpenMP loop are no longer discarded
+- Restored the OpenMP parallel loop in `Evolve_Plume` (`src/Extensions/hcox_paranox_mod.F90`), with a private return code and a thread-safe error flag
+- Fixed `INTERPOL_LINWEIGHTS` in `src/Extensions/hcox_paranox_mod.F90` so that it can no longer index past the end of the LUT node array
 
 ### Removed
 - Removed obsolete variables from `hcox_seasalt_mod.F90`
