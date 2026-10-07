@@ -16,4 +16,4 @@ This project is maintained by the **GEOS-Chem Support Team (GCST)** on a best-ef
 
 ## Out of Scope
 
-Scientific-correctness bugs, numerical issues, and general "how do I..." questions are **not** security reports. Please use the normal channels described in `SUPPORT.md` and `CONTRIBUTING.md` ([GitHub issues](https://github.com/geoschem/geos-chem/issues/new/choose)) for those instead.
+Scientific-correctness bugs, numerical issues, and general "how do I..." questions are **not** security reports. Please use the normal channels described in `SUPPORT.md` and `CONTRIBUTING.md` ([GitHub issues](https://github.com/geoschem/hemco/issues/new/choose)) for those instead.
