@@ -1,3 +1,10 @@
+#ifdef MAPL_ESMF
+#ifdef MAPL3
+#include "MAPL.h"
+#else
+#include "MAPL_Generic.h"
+#endif
+#endif
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -745,17 +752,11 @@ CONTAINS
 !
 ! !USES:
 !
-#ifdef MAPL3    
-#include "MAPL.h"
-#else
-#include "MAPL_Generic.h"
-#endif
-
     USE ESMF
 #ifdef MAPL3
-    USE mapl3
-    USE mapl3g_Generic,   only : MAPL_GridCompGetInternalState
-    USE mapl3g_State_API, only : MAPL_StateGetPointer
+    USE MAPL_ErrorHandling_Mod, ONLY : MAPL_Assert, MAPL_Verify
+    USE MAPL,                   ONLY : MAPL_GridCompGetInternalState
+    USE MAPL_State_API,         ONLY : MAPL_StateGetPointer
 #else
     USE ESMFL_MOD
     USE MAPL_GenericMod

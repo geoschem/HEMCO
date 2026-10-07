@@ -55,7 +55,7 @@ MODULE HCO_inquireMod
 !
 #ifdef MAPL_ESMF
 #ifdef MAPL3
-    USE mapl_ErrorHandlingMod, only: MAPL_Verify
+    USE MAPL, ONLY : MAPL_Verify
 #else
     USE ESMF
     USE MAPLBase_Mod

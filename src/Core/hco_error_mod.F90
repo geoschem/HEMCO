@@ -1,3 +1,10 @@
+#ifdef MAPL_ESMF
+#ifdef MAPL3
+#include "MAPL.h"
+#else
+#include "MAPL_Generic.h"
+#endif
+#endif
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -81,7 +88,9 @@ MODULE HCO_Error_Mod
 ! !USES:
 !
 #if defined( MAPL_ESMF )
-    USE MAPL_Base, ONLY: MAPL_UNDEF
+#ifdef MAPL3
+    USE MAPL, ONLY: MAPL_UNDEF
+#endif
 #endif
   USE ISO_Fortran_Env, ONLY : INT32, INT64, REAL32, REAL64
 
@@ -186,10 +195,8 @@ CONTAINS
 #ifdef MAPL_ESMF
     USE ESMF
 #ifdef MAPL3
-#include "MAPL.h"
-    USE mapl3
+    USE MAPL, ONLY : MAPL_Verify
 #else
-#include "MAPL_Generic.h"
     USE MAPLBase_Mod
 #endif
 #endif
@@ -230,7 +237,6 @@ CONTAINS
 #ifdef MAPL_ESMF
     ! Get current thread number
     CALL ESMF_VMGetCurrent(VM, RC=STATUS)
-    !CALL ESMF_VmGet( VM, localPET=localPET, __RC__ )
     CALL ESMF_VmGet( VM, localPET=localPET, _RC )
     WRITE(localPETchar,'(I4.4)') localPET
     MSG = 'HEMCO ERROR [' // TRIM( localPETchar ) //']: '// TRIM( ErrMsg )

@@ -1,3 +1,10 @@
+#ifdef MAPL_ESMF
+#ifdef MAPL3
+#include "MAPL.h"
+#else
+#include "MAPL_Generic.h"
+#endif
+#endif
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -557,16 +564,10 @@ CONTAINS
 !
 ! !USES
 !
-#ifdef MAPL3
-#include "MAPL.h"
-#else
-#include "MAPL_Generic.h"
-#endif
-
     USE ESMF
 #ifdef MAPL3
-    USE mapl3
-    USE mapl3g_GridGetHorzIJIndex, ONLY : GridGetHorzIJIndex
+    USE MAPL, ONLY : MAPL_Assert, MAPL_Verify
+    USE MAPL, ONLY : MAPL_GridGetHorzIJIndex
 #else
     USE MAPLBase_Mod
 #endif
@@ -627,11 +628,11 @@ CONTAINS
 
     ! Get indices
 #ifdef MAPL3
-    CALL GridGetHorzIJIndex( npts=N, ii=idx, jj=jdx,    &
+    CALL MAPL_GridGetHorzIJIndex( npts=N, ii=idx, jj=jdx,    &
          lon=LonR, lat=LatR, grid=Grid, _RC)
 #else
-     CALL MAPL_GetHorzIJIndex( npts=N,   II=idx,   JJ=jdx,    &
-          lon=LonR, lat=LatR, Grid=Grid, __RC__)
+    CALL MAPL_GetHorzIJIndex( npts=N,   II=idx,   JJ=jdx,    &
+         lon=LonR, lat=LatR, Grid=Grid, __RC__)
 #endif
 
     ! Return w/ success

@@ -1,8 +1,13 @@
-!BOC
 #ifdef MAPL_ESMF
+#ifdef MAPL3
+#include "MAPL.h"
+#else
+#include "MAPL_Generic.h"
+#endif
+!
 ! The 'standard' HEMCO I/O module is used for:
 ! - GEOS-Chem High Performance / GCHP and GEOS
-!EOC
+!
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -63,11 +68,9 @@ CONTAINS
 !
     USE ESMF
 #ifdef MAPL3    
-#include "MAPL.h"
-    USE mapl3
-    USE mapl3g_State_API, only: MAPL_StateGetPointer
+    USE MAPL, ONLY : MAPL_Verify, MAPL_Assert
+    USE MAPL, ONLY : MAPL_StateGetPointer
 #else
-#include "MAPL_Generic.h"
     USE MAPLBase_mod
 #endif
     USE HCO_FILEDATA_MOD, ONLY : FileData_ArrInit
