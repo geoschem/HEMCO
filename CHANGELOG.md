@@ -6,12 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - TBD
+### Added
+- Added AI disclosure section to `.github/PULL_REQUEST_TEMPLATE.md`
+- Added `CLAUDE.md` with guidance for working in this repository with Claude Code
+- Added `CITATION.cff` with citation metadata for the HEMCO GitHub repository
+- Added `GOVERNANCE.md` describing the GEOS-Chem governance structure
+- Added `SECURITY.md` describing how to report a security vulnerability privately
+- Added `.gitattributes` to enforce LF line endings in the repository (CRLF for Windows `*.bat` files)
+- Added `.github/dependabot.yml` to open monthly version-update PRs for GitHub Actions against `main`
+
 ### Changed
+- Updated `.release/changeVersionNumbers.sh` to also update `version` and `date-released` in `CITATION.cff`, and to exit with an error if those edits did not land
+- Added read-only `permissions` blocks to the `ubuntu.yml`, `mac.yml`, and `windows.yml` GitHub Actions
 - Converted `GetMaskVal` in `src/Core/hco_calc_mod.F90` to an `ELEMENTAL` function instead of an OpenMP loop
 - Updated error messages such as `ERROR 1` to be more descriptive
 - Added explicit `SCHEDULE( STATIC )` clauses to OpenMP parallel loops that did not specify a schedule
 
 ### Fixed
+- Fixed Mac GitHub Actions workflow (`mac.yml`) failing with a `gfortran` module-version mismatch by building NetCDF-Fortran from source against each matrix `gcc_version`, instead of relying on Homebrew's bottle (which is always built against Homebrew's own default/latest `gcc`)
+- Fixed stale version number and release date in `CITATION.cff` (now 3.13.0)
 - Fixed various OpenMP parallelization issues (eliminating race conditions, adding COLLAPSE statement, changing SCHEDULE settings)
 - Fixed `Calc_SeaFlux` (in `src/Extensions/hcox_seaflux_mod.F90`) so that errors raised inside the OpenMP loop are no longer discarded
 - Fixed a race condition in `Calc_SeaFlux` where OpenMP threads wrote error messages into a shared string
