@@ -16,6 +16,7 @@ add_library(HCOX STATIC EXCLUDE_FROM_ALL
 	hcox_lightnox_mod.F90
 	hcox_megan_mod.F90
 	hcox_paranox_mod.F90
+	hcox_metemis_mod.F90
 	hcox_seaflux_mod.F90
 	hcox_seasalt_mod.F90
 	hcox_soilnox_mod.F90
