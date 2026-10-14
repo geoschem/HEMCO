@@ -48,21 +48,60 @@ Emissions of mineral dust.
   DSTbin7, TDST
 - **Reference**: :cite:t:`Zhang_et_al._2025`
 
+The :literal:`Mass tuning factor` setting is **required**; DustL23M
+will halt with an error if it is not specified. Its value is
+resolution- and meteorology-dependent, so it must be set separately for
+each grid resolution / meteorological input combination (see the
+sample :file:`HEMCO_Config.rc` files under
+:file:`run/config_for_offline_emissions/` for resolution-specific
+values). For example:
+
+.. code-block:: kconfig
+
+   125    DustL23M          : on    TDST/DSTbin1/DSTbin2/DSTbin3/DSTbin4/DSTbin5/DSTbin6/DSTbin7
+      --> Mass tuning factor :       2.832e-3
+
 .. _hco-ext-list-gcrnpbbe:
 
 GC_Rn-Pb-Be
 -----------
 
 Emissions of radionuclide species as used in the `GEOS-Chem
-<https://geos-chem.readthedocs.io>`_ model.
+<https://geos-chem.readthedocs.io>`__ model.
 
-- **Species**: Rn222, Be7, Be7Strat, Be10, Be10Strat
+- **Species**: Rn222, Be7, Be7s, Be10, Be10s
 
 If :literal:`ZHANG_Rn222` is :literal:`on`, then Rn222 emissions
 will be computed according to :cite:t:`Zhang_et_al._2021`.
 
 If :literal:`ZHANG_Rn222` is :literal:`off`, then Rn222 emissions
 will be computed according to :cite:t:`Jacob_et_al._1997`.
+
+.. _hco-ext-list-gfas:
+
+GFAS
+----
+
+Biomass-burning emissions from GFAS (Global Fire Assimilation System),
+using a 3D vertical injection profile.
+
+A single reference species (default :literal:`CO`, set via the
+:literal:`Vertical Profile Species` option) supplies the 3D vertical
+structure of the emissions. Every other listed species is emitted using
+a 2D field that is redistributed vertically using the column-normalized
+fraction of the reference species' 3D field.
+
+- **Species**: ACET, ACR, ACTA, ALD2, ALK4, BCPI, BCPO, BENZ, C2H2, C2H4, C2H6, C3H8, C4H6, CH2O, CO, DMS, EOH, FURA, GLYX, HCOOH, ISOP, MEK, MGLY, MOH, MTPA, MVK, NAP, NH3, NO, OCPI, OCPO, pFe, PHEN, POG1, POG2, PRPE, RCHO, SO2, SOAP, STYR, TOLU, XYLE
+- **Reference**: :cite:t:`Singh_et_al._2025`
+
+The reference species requires a base-emissions field named
+:literal:`GFAS_<RefSpc>_3D` (with :literal:`SrcDim=xyz`). Every other
+listed species requires a matching :literal:`GFAS_<SpcName>_2D` field.
+
+.. code-block:: kconfig
+
+   112     GFAS                   : on   ACET/ACR/ACTA/ALD2/ALK4/BCPI/BCPO/BENZ/C2H2/C2H4/C2H6/C3H8/C4H6/CH2O/CO/DMS/EOH/FURA/GLYX/HCOOH/ISOP/MEK/MGLY/MOH/MTPA/MVK/NAP/NH3/NO/OCPI/OCPO/pFe/PHEN/POG1/POG2/PRPE/RCHO/SO2/SOAP/STYR/TOLU/XYLE
+       --> Vertical Profile Species:      CO
 
 .. _hco-ext-list-gfed:
 
@@ -72,8 +111,8 @@ GFED
 Biomass burning emissions from the GFED model.
 
 - **Version**: GFED3 and GFED4 are available.
-- **Species**: NO, CO, ALK4, ACET, MEK, ALD2, PRPE, C2H2, C2H4, C3H8, CH2O
-  C2H6, SO2, NH3, BCPO, BCPI, OCPO, OCPI, POG1, POG2, MTPA, BENZ, TOLU, XYLE
+- **Species**: NO, CO, ALK4, ACET, MEK, ALD2, PRPE, C2H2, C2H4, C3H8, CH2O,
+  C2H6, SO2, NH3, BCPO, BCPI, OCPO, OCPI, POG1, POG2, MTPA, BENZ, TOLU, XYLE,
   NAP, EOH, MOH, SOAP, and others
 - :literal:`GFED_daily` option: Applies a daily scale factor to
   emissions computed by GFED.
@@ -105,7 +144,7 @@ LightNOx
 Emissions of NOx from lightning.
 
 - **Species**: NO
-- **Species**: :cite:`Murray_et_al._2012`
+- **Reference**: :cite:`Murray_et_al._2012`
 
 .. _hco-ext-list-megan:
 
@@ -155,7 +194,7 @@ Sea salt aerosol emission.
 SoilNOx
 -------
 
-Emissons of NOx from soils and fertilizers.
+Emissions of NOx from soils and fertilizers.
 
 - **Species**: NO
 - **Reference**: :cite:t:`Hudman_et_al._2012`
@@ -166,7 +205,7 @@ TOMAS_Jeagle
 ------------
 
 Size-resolved sea salt emissions for `TOMAS aerosol microphysics
-<http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`_
+<http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`__
 simulations.
 
 - **Species**: SS1, SS2, SS3, SS4, SS5, SS6, SS7, SS8, SS9, SS10,
@@ -181,7 +220,7 @@ TOMAS_DustDead
 --------------
 
 Size-resolved dust emissions for `TOMAS aerosol microphysics
-<http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`_
+<http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`__
 simulations.
 
 - **Species**: DUST1, DUST2, DUST3, DUST4, DUST5, DUST6, DUST7,
@@ -220,7 +259,7 @@ atmospheric model. The field name provided in the HEMCO configuration
 file must exactly match the name of the HEMCO environmental parameter.
 
 To use the NCEP reanalysis monthly surface wind fields
-(http:, , www.esrl.noaa.gov, psd, data, gridded, data.ncep.reanalysis.derived.surface.html)
+(http://www.esrl.noaa.gov/psd/data/gridded/data.ncep.reanalysis.derived.surface.html)
 in all HEMCO extensions, add the following two lines to the
 :ref:`Base Emissions <hco-cfg-base>` section of :ref:`the HEMCO
 configuration file <hco-cfg>`:
@@ -349,9 +388,9 @@ GWETTOP
 
 Top soil moisture.
 
-   - **Dim**: xy
-   - **Units**: unitless
-   - **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-megan`
+- **Dim**: xy
+- **Units**: unitless
+- **Used by**: :ref:`hco-ext-list-dustl23m`, :ref:`hco-ext-list-megan`
 
 HFLUX
 -----
@@ -567,7 +606,6 @@ Roughness height.
 - **Dim**: xy
 - **Units**: m
 - **Used by**: :ref:`hco-ext-list-tomas-dustdead`
->>>>>>> docs/dev
 
 .. _hco-ext-rst-vars:
 
@@ -579,7 +617,7 @@ Some extensions rely on restart variables, i.e. variables that are
 highly dependent on historical information such as previous-day leaf
 area index or soil NOx pulsing factor. During a simulation run, the
 extensions continuously archive all necessary information and update
-estart variables accordingly. The updated variables become
+restart variables accordingly. The updated variables become
 automatically written into the HEMCO restart file
 (:file:`HEMCO_restart.YYYYMMDDhhmmss.nc`) at the end of a
 simulation. The fields from this file can then be read through the
@@ -669,7 +707,7 @@ Extensions supporting built-in scaling/masking
 
 The following extensions currently support the built-in scaling/masking
 tools: :ref:`hco-ext-list-soilnox`, :ref:`hco-ext-list-gfed`,
-:ref:`hco-ext-list-finn`.
+:ref:`hco-ext-list-finn`, :ref:`hco-ext-list-gfas`.
 
 ===========================
 Adding new HEMCO extensions
@@ -720,7 +758,7 @@ data, this pointer should be activated by setting
 
 The run call (:code:`HCOX_XXX_RUN`) calculates the 2D fluxes and
 passes them to HcoState via subroutine :code:`HCO_EmisAdd( HcoState,
-Flux, HcoID, RC)`. External data is assessed through :code:`ExtState`
+Flux, HcoID, RC)`. External data is accessed through :code:`ExtState`
 (e.g. :code:`ExtState%TX%Arr%Val(I,J,L)`), and any data automatically
 read from netCDF files (through the HEMCO interface) can be obtained
 through :code:`EmisList_GetDataArr( am_I_Root, FieldName, Pointer,

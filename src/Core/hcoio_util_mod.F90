@@ -26,7 +26,7 @@ MODULE HCOIO_Util_Mod
 !
 ! !PUBLIC MEMBER FUNCTIONS:
 !
-#if !defined(ESMF_)
+#ifndef MAPL_ESMF
   PUBLIC :: GET_TIMEIDX
   PUBLIC :: Check_AvailYMDhm
   PUBLIC :: prefYMDhm_Adjust
@@ -64,7 +64,7 @@ MODULE HCOIO_Util_Mod
 
 CONTAINS
 !EOC
-#if !defined( ESMF_ )
+#ifndef MAPL_ESMF
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -100,14 +100,23 @@ CONTAINS
 !
 ! !USES:
 !
-    USE HCO_Ncdf_Mod,  ONLY : NC_Read_Time_YYYYMMDDhhmm
-    USE HCO_tIdx_Mod,  ONLY : HCO_GetPrefTimeAttr
+#if defined(MODEL_CESM)
+    USE HCO_PIO_MOD,   ONLY : NC_Read_Time_YYYYMMDDhhmm
+    USE pio,            ONLY : file_desc_t
+#else
+    USE HCO_Ncdf_Mod,   ONLY : NC_Read_Time_YYYYMMDDhhmm
+#endif
+    USE HCO_tIdx_Mod,   ONLY : HCO_GetPrefTimeAttr
 !
 ! !INPUT PARAMETERS:
 !
     TYPE(HCO_State),  POINTER                  :: HcoState  ! HcoState object
     TYPE(ListCont),   POINTER                  :: Lct       ! List container
+#if defined(MODEL_CESM)
+    TYPE(file_desc_t), INTENT(INOUT)           :: ncLun     ! open PIO file
+#else
     INTEGER,          INTENT(IN   )            :: ncLun     ! open ncLun
+#endif
     INTEGER,          INTENT(IN   ), OPTIONAL  :: Year      ! year to be used
 !
 ! !OUTPUT PARAMETERS:
@@ -1456,8 +1465,10 @@ CONTAINS
        AREA = ( 2_hp * HcoState%Phys%PI * DLAT * HcoState%Phys%Re**2 ) &
               / REAL(nlon,hp)
 
-       ! convert array data to m-2
-       ARRAY(:,J,:,:) = ARRAY(:,J,:,:) / AREA
+       ! convert array data to m-2, preserving HCO_MISSVAL sentinels
+       WHERE ( ARRAY(:,J,:,:) /= HCO_MISSVAL )
+          ARRAY(:,J,:,:) = ARRAY(:,J,:,:) / AREA
+       END WHERE
     ENDDO
 
     ! Prompt a warning
@@ -1710,21 +1721,24 @@ CONTAINS
              ENDIF
 
              ! Get next type
+             ! Update logic so that NEWTYP can be given values of 5, 6,
+             ! or 7.  Previouly these ELSEIF blocks were unreachable.
+             ! See: https://github.com/geoschem/HEMCO/issues/358
              IF ( nextTyp ) THEN
                 NEWTYP = -1
-                IF     ( hasHr .AND. TYP < 1 ) THEN
+                IF     ( hasHr .AND.             TYP < 1 ) THEN
                    NEWTYP = 1
-                ELSEIF ( hasDy .AND. TYP < 2 ) THEN
+                ELSEIF ( hasDy .AND.             TYP < 2 ) THEN
                    NEWTYP = 2
-                ELSEIF ( hasMt .AND. TYP < 3 ) THEN
+                ELSEIF ( hasMt .AND.             TYP < 3 ) THEN
                    NEWTYP = 3
-                ELSEIF ( hasYr .AND. TYP < 4 ) THEN
+                ELSEIF ( hasYr .AND.             TYP < 4 ) THEN
                    NEWTYP = 4
-                ELSEIF ( hasDy .AND. TYP < 2 ) THEN
+                ELSEIF ( hasHr .AND. hasDy .AND. TYP < 5 ) THEN
                    NEWTYP = 5
-                ELSEIF ( hasDy .AND. TYP < 2 ) THEN
+                ELSEIF ( hasDy .AND. hasMt .AND. TYP < 6 ) THEN
                    NEWTYP = 6
-                ELSEIF ( hasDy .AND. TYP < 2 ) THEN
+                ELSEIF ( hasMt .AND. hasYr .AND. TYP < 7 ) THEN
                    NEWTYP = 7
                 ENDIF
 
@@ -1773,7 +1787,10 @@ CONTAINS
                    EXIT
              END SELECT
 
-             ! Check if we need to adjust a year/month/day/hour
+             ! Check if we need to adjust a year/month/day/hour.
+             ! We have added logic to avoid adjusting the year when 
+             ! TYP==3 (which is the "adjust month only" case).
+             ! See: https://github.com/geoschem/HEMCO/issues/358
              IF ( prefHr < 0 ) THEN
                 prefHr = 23
                 prefDy = prefDy - 1
@@ -1790,13 +1807,21 @@ CONTAINS
                 prefDy = 1
                 prefMt = prefMt + 1
              ENDIF
-             IF ( prefMt < 1  ) THEN
-                prefMt = 12
-                prefYr = prefYr - 1
+             IF ( prefMt < 1 ) THEN
+                IF ( TYP /= 3 ) THEN
+                   prefMt = 12
+                   prefYr = prefYr - 1
+                ELSE
+                   TYPCNT = 999         ! force transition to TYP=4
+                ENDIF
              ENDIF
              IF ( prefMt > 12 ) THEN
-                prefMt = 1
-                prefYr = prefYr + 1
+                IF ( TYP /= 3 ) THEN
+                   prefMt = 1
+                   prefYr = prefYr + 1
+                ELSE
+                   TYPCNT = 999         ! force transition to TYP=4
+                ENDIF
              ENDIF
 
              ! Make sure day does not exceed max. number of days in this month
@@ -1978,14 +2003,23 @@ CONTAINS
 !
 ! !USES:
 !
+#if defined(MODEL_CESM)
+    USE pio,                     ONLY : file_desc_t, pio_inq_dimid
+    USE pio,                     ONLY : pio_inq_dimlen, PIO_NOERR
+#else
     USE HCO_m_netcdf_io_checks
     USE HCO_m_netcdf_io_get_dimlen
+#endif
     USE HCO_ExtList_Mod,    ONLY : GetExtOpt
 !
 ! !INPUT PARAMETERS:
 !
     TYPE(HCO_State),  POINTER                 :: HcoState
+#if defined(MODEL_CESM)
+    TYPE(file_desc_t), INTENT(IN   )          :: Lun
+#else
     INTEGER,          INTENT(IN   )           :: Lun
+#endif
     TYPE(ListCont),   POINTER                 :: Lct
 !
 ! !OUTPUT PARAMETERS:
@@ -2007,6 +2041,9 @@ CONTAINS
     CHARACTER(LEN=255)  :: ArbDimVal
     CHARACTER(LEN=511)  :: MSG
     CHARACTER(LEN=255)  :: LOC = 'GetArbDimIndex (hcoio_util_mod.F90)'
+#if defined(MODEL_CESM)
+    INTEGER             :: pio_dimid, pio_ierr
+#endif
 
     !=================================================================
     ! GetArbDimIndex
@@ -2020,7 +2057,12 @@ CONTAINS
     IF ( TRIM(Lct%Dct%Dta%ArbDimName) == 'none' ) RETURN
 
     ! Check if variable exists
+#if defined(MODEL_CESM)
+    pio_ierr = pio_inq_dimid ( Lun, TRIM(Lct%Dct%Dta%ArbDimName), pio_dimid )
+    Found = ( pio_ierr == PIO_NOERR )
+#else
     Found = Ncdoes_Dim_Exist ( Lun, TRIM(Lct%Dct%Dta%ArbDimName) )
+#endif
     IF ( .NOT. Found ) THEN
        MSG = 'Cannot read dimension ' // TRIM(Lct%Dct%Dta%ArbDimName) &
              // ' from file ' // &
@@ -2030,7 +2072,11 @@ CONTAINS
     ENDIF
 
     ! Get dimension length
+#if defined(MODEL_CESM)
+    pio_ierr = pio_inq_dimlen ( Lun, pio_dimid, nVal )
+#else
     CALL Ncget_Dimlen ( Lun, TRIM(Lct%Dct%Dta%ArbDimName), nVal )
+#endif
 
     ! Get value to look for. This is archived in variable ArbDimVal.
     ! Eventually need to extract value from HEMCO settings

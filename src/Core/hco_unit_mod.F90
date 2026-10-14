@@ -191,9 +191,14 @@ CONTAINS
         RETURN
     ENDIF
 
-    ! Apply correction factor
+    ! Apply correction factor. Skip missing values so that the
+    ! HCO_MISSVAL sentinel stays detectable downstream (missing data
+    ! is identified by comparing against HCO_MISSVAL, e.g. in
+    ! hco_calc_mod.F90).
     IF ( Factor /= 1.0_hp ) THEN
-       ARRAY(:,:,:,:) = ARRAY(:,:,:,:) * Factor
+       WHERE ( ARRAY(:,:,:,:) /= HCO_MISSVAL )
+          ARRAY(:,:,:,:) = ARRAY(:,:,:,:) * Factor
+       END WHERE
     ENDIF
 
     ! Eventually return factor
@@ -271,9 +276,14 @@ CONTAINS
         RETURN
     ENDIF
 
-    ! Apply correction factor
+    ! Apply correction factor. Skip missing values so that the
+    ! HCO_MISSVAL sentinel stays detectable downstream (missing data
+    ! is identified by comparing against HCO_MISSVAL, e.g. in
+    ! hco_calc_mod.F90).
     IF ( Factor /= 1.0_hp ) THEN
-       ARRAY(:,:,:,:) = ARRAY(:,:,:,:) * Factor
+       WHERE ( ARRAY(:,:,:,:) /= HCO_MISSVAL )
+          ARRAY(:,:,:,:) = ARRAY(:,:,:,:) * Factor
+       END WHERE
     ENDIF
 
     ! Eventually return factor

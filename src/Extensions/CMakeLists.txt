@@ -11,6 +11,7 @@ add_library(HCOX STATIC EXCLUDE_FROM_ALL
 	hcox_gc_POPs_mod.F90
 	hcox_gc_RnPbBe_mod.F90
 	hcox_gfed_mod.F90
+	hcox_gfas_mod.F90
 	hcox_iodine_mod.F90
 	hcox_lightnox_mod.F90
 	hcox_megan_mod.F90

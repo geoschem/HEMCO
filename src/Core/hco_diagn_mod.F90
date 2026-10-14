@@ -413,7 +413,7 @@ CONTAINS
     ! ------------------------------------------------------------------
     ! HEMCO restart
     ! ------------------------------------------------------------------
-#if defined ( ESMF_ )
+#ifdef MAPL_ESMF
     deltaYMD = 0
     deltaHMS = 1
 #else
@@ -526,7 +526,7 @@ CONTAINS
     ! ------------------------------------------------------------------
     ! Manual diagnostics
     ! ------------------------------------------------------------------
-#if defined ( ESMF_ )
+#ifdef MAPL_ESMF
     deltaYMD = 0
     deltaHMS = 1
 #else
@@ -4316,9 +4316,9 @@ CONTAINS
        DeltaHMS = 0 ! = 000000
     ENDIF
 
-    ! Force to 'Always' in ESMF environment to make sure that
+#ifdef MAPL_ESMF
+    ! Force to 'Always' in MAPL/ESMF environment to make sure that
     ! diagnostics are passed to MAPL HISTORY every time.
-#if defined ( ESMF_ )
     DeltaYMD = 0 ! = 00000000
     DeltaHMS = 1 ! = 000001   ==> 1 second!
 #endif

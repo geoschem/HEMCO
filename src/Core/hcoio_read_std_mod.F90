@@ -1,10 +1,15 @@
 !BOC
-#if defined ( MODEL_GCCLASSIC ) || defined( MODEL_WRF ) || defined( MODEL_CESM ) || defined( HEMCO_STANDALONE )
+#if defined ( MODEL_GCCLASSIC ) || defined( MODEL_WRF ) || defined( HEMCO_STANDALONE )
 ! The 'standard' HEMCO I/O module is used for:
 ! - HEMCO Standalone (HEMCO_STANDALONE)
 ! - GEOS-Chem 'Classic' (MODEL_GCCLASSIC)
 ! - WRF-GC (MODEL_WRF)
-! - CESM-GC and CAM-Chem / HEMCO-CESM (MODEL_CESM)
+!
+! When using HEMCO in the CESM environment, hcoio_read_pio_mod.F90
+! is used instead.
+! Any changes to this file may also need to be applied to the
+! hcoio_read_pio_mod.F90 file for consistency.
+!
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -692,6 +697,7 @@ CONTAINS
        ! to 74 levels, (3) if you are on 47/48 levels and you are
        ! going to 72 levels. Otherwise, use MESSy (nbalasus, 8/24/2023).
        IF ( Lct%Dct%Dta%Levels == 0 ) THEN
+          IsModelLevel = .FALSE.
 
 #if defined( MODEL_CESM ) || defined( MODEL_WRF )
 
@@ -1259,7 +1265,8 @@ CONTAINS
        ELSEIF ( AreaFlag == 3 .AND. TimeFlag == 1 ) THEN
           Lct%Dct%Dta%IsConc = .TRUE.
 
-          ncArr = ncArr * HcoState%TS_EMIS
+          ! Preserve HCO_MISSVAL sentinels when scaling
+          WHERE ( ncArr /= HCO_MISSVAL ) ncArr = ncArr * HcoState%TS_EMIS
           MSG = 'Data converted from kg/m3/s to kg/m3: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(thisUnit)
           IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
@@ -1274,7 +1281,8 @@ CONTAINS
 
        ! Emission data that is not per time (kg/m2): convert to kg/m2/s
        ELSEIF ( AreaFlag == 2 .AND. TimeFlag == 0 ) THEN
-          ncArr = ncArr / HcoState%TS_EMIS
+          ! Preserve HCO_MISSVAL sentinels when scaling
+          WHERE ( ncArr /= HCO_MISSVAL ) ncArr = ncArr / HcoState%TS_EMIS
           MSG = 'Data converted from kg/m2 to kg/m2/s: ' // &
                 TRIM(Lct%Dct%cName) // ': ' // TRIM(thisUnit)
           IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )

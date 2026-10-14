@@ -19,7 +19,7 @@ Computer system requirements
 ============================
 
 Before you can run HEMCO standalone, you will need to have
-one the following items.
+one of the following items.
 
 #. A Linux based computer system, OR:
 #. An account on the Amazon Web Services cloud computing platform.
@@ -70,9 +70,9 @@ system, please make sure that your system has sufficient memory and
 disk space.
 
 We would recommend at least 4 GB of RAM to run HEMCO standalone.
-However, if you will be reading data sets at very fine horizional
+However, if you will be reading data sets at very fine horizontal
 resolution, you will want to increase the memory to perhaps 20-30
-GB/RAM.
+GB of RAM.
 
 Also make sure that you have enough disk space to store the amount of
 input data for your HEMCO standalone simulations.

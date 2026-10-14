@@ -891,7 +891,7 @@ CONTAINS
        CALL HCO_Msg( msg, sep1=' ', LUN=HcoState%Config%hcoLogLUN )
     ENDIF
 
-#if !defined ( ESMF_ )
+#ifndef MAPL_ESMF
     ! Put check for PBLHEIGHT here, if not running in ESMF/MAPL
     IF ( .NOT. ASSOCIATED( HcoState%Grid%PBLHEIGHT%Val ) ) THEN
        msg = 'PBLHEIGHT (in meters) is missing in HEMCO state'

@@ -1638,6 +1638,9 @@ CONTAINS
        DEALLOCATE( Arr )
     ENDIF
 
+    ! Make sure we return a null pointer
+    Arr => NULL()
+
   END SUBROUTINE HCO_ArrCleanup_2D_Hp
 !EOC
 !------------------------------------------------------------------------------
@@ -1684,6 +1687,9 @@ CONTAINS
        CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DeepClean=DC )
        DEALLOCATE( Arr )
     ENDIF
+
+    ! Make sure we return a null pointer
+    Arr => NULL()
 
   END SUBROUTINE HCO_ArrCleanup_2D_Sp
 !EOC
@@ -1732,6 +1738,9 @@ CONTAINS
        DEALLOCATE( Arr )
     ENDIF
 
+    ! Make sure we return a null pointer
+    Arr => NULL()
+
   END SUBROUTINE HCO_ArrCleanup_2D_I
 !EOC
 !------------------------------------------------------------------------------
@@ -1778,6 +1787,10 @@ CONTAINS
        CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DeepClean=DC )
        DEALLOCATE( Arr )
     ENDIF
+
+    ! Make sure we return a null pointer
+    Arr => NULL()
+
   END SUBROUTINE HCO_ArrCleanup_3D_Hp
 !EOC
 !------------------------------------------------------------------------------
@@ -1824,6 +1837,9 @@ CONTAINS
        CALL HCO_ValCleanup( Arr%Val, Arr%Alloc, DeepClean=DC )
        DEALLOCATE( Arr )
     ENDIF
+
+    ! Make sure we return a null pointer
+    Arr => NULL()
 
   END SUBROUTINE HCO_ArrCleanup_3D_Sp
 !EOC
@@ -1876,6 +1892,9 @@ CONTAINS
 
     ENDIF
 
+    ! Make sure we return a null pointer
+    ArrVec => NULL()
+
   END SUBROUTINE HCO_ArrVecCleanup_2D_Hp
 !EOC
 !------------------------------------------------------------------------------
@@ -1926,6 +1945,9 @@ CONTAINS
        DEALLOCATE ( ArrVec )
 
     ENDIF
+
+    ! Make sure we return a null pointer
+    ArrVec => NULL()
 
   END SUBROUTINE HCO_ArrVecCleanup_2D_Sp
 !EOC
@@ -1978,6 +2000,9 @@ CONTAINS
 
     ENDIF
 
+    ! Make sure we return a null pointer
+    ArrVec => NULL()
+
   END SUBROUTINE HCO_ArrVecCleanup_3D_Hp
 !EOC
 !------------------------------------------------------------------------------
@@ -2028,6 +2053,9 @@ CONTAINS
        DEALLOCATE ( ArrVec )
 
     ENDIF
+
+    ! Make sure we return a null pointer
+    ArrVec => NULL()
 
   END SUBROUTINE HCO_ArrVecCleanup_3D_Sp
 !EOC

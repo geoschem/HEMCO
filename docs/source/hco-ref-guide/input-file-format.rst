@@ -72,9 +72,9 @@ COARDS compatibility
 ====================
 
 Gridded input files are expected to be in the `Network Common Data
-Form (netCDF) format <http://www.unidata.ucar.edu/software/netcdf/>`_ and must
+Form (netCDF) format <http://www.unidata.ucar.edu/software/netcdf/>`__ and must
 adhere to the `COARDS metadata conventions
-<https://ferret.pmel.noaa.gov/Ferret/documentation/coards-netcdf-conventions>`_
+<https://ferret.pmel.noaa.gov/Ferret/documentation/coards-netcdf-conventions>`__
 
 For an in-depth description of the COARDS netCDF conventions, please
 see the Supplemental Guide entitled :ref:`coards-guide`.  Also be
@@ -101,15 +101,15 @@ otherwise via the :ref:`hco-cfg-base-srcunit` attribute (see the
 Mass conversion (e.g. from molecules to kg) is performed based on the
 properties (e.g. molecular weight) of the species assigned to the
 given data set.  It is also possible to convert between species-based
-and molecule-based units (e.g. kg  vs. kg(C)). This conversion is
-based on the emitted molecular  weight and the molecular ratio of the
-given species (see the HEMCO-model Interface) section. More details on
+and molecule-based units (e.g. kg vs. kg(C)). This conversion is
+based on the emitted molecular weight and the molecular ratio of the
+given species (see the HEMCO-model Interface section). More details on
 unit conversion are given in module :file:`src/Core/hco_unit_mod.F90`.
 
 Index-based data is regridded in such a manner that every grid box on
 the new grid represents the index with the largest relative
 contribution from the overlapping boxes of the original grid. All
-other data are regridded as "concentration: quantities,
+other data are regridded as "concentration" quantities,
 i.e. conserving the global weighted average.
 
 For more information, we invite you to read `our Preparing data files
@@ -146,8 +146,8 @@ input data has 72 levels on a reversed vertical axis).
 .. warning::
 
    HEMCO assumes that the input data is on the same grid as the
-   model grid if it has the same number** (:literal:`NZ`) of, or plus
-   one (:literal:`NZ+1`) vertical levels than the model.   
+   model grid if it has the same number (:literal:`NZ`), or plus
+   one (:literal:`NZ+1`), vertical levels as the model.
 
    In the case of the same number of vertical levels, HEMCO assumes
    that the input data is already on the model grid and no

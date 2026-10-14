@@ -1,7 +1,7 @@
 !BOC
-#if defined ( ESMF_ )
+#ifdef MAPL_ESMF
 ! The 'standard' HEMCO I/O module is used for:
-! - GEOS-Chem High Performance / GCHP and GEOS (ESMF_)
+! - GEOS-Chem High Performance / GCHP and GEOS
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
@@ -62,10 +62,15 @@ CONTAINS
 ! !USES:
 !
     USE ESMF
+#ifdef MAPL3    
+#include "MAPL.h"
+    USE mapl3
+    USE mapl3g_State_API, only: MAPL_StateGetPointer
+#else
+#include "MAPL_Generic.h"
     USE MAPLBase_mod
+#endif
     USE HCO_FILEDATA_MOD, ONLY : FileData_ArrInit
-
-# include "MAPL_Generic.h"
 !
 ! !INPUT PARAMETERS:
 !
@@ -87,10 +92,10 @@ CONTAINS
 !
     INTEGER                    :: II, JJ, LL, TT
     INTEGER                    :: I, J, L, T
-    INTEGER                    :: STAT
+    INTEGER                    :: STAT, status
     REAL,             POINTER  :: Ptr3D(:,:,:)
     REAL,             POINTER  :: Ptr2D(:,:)
-    TYPE(ESMF_State), POINTER  :: IMPORT
+    TYPE(ESMF_State), POINTER  :: importState
     CHARACTER(LEN=255)         :: MSG
     CHARACTER(LEN=255), PARAMETER :: LOC = 'HCOIO_READ (hcoio_read_mapl_mod.F90)'
     CHARACTER(LEN=ESMF_MAXSTR) :: Iam
@@ -107,9 +112,9 @@ CONTAINS
         RETURN
     ENDIF
 
-    ! Point to ESMF IMPORT object
-    IMPORT => HcoState%IMPORT
-    ASSERT_(ASSOCIATED(IMPORT))
+    ! Point to ESMF import state object
+    importState => HcoState%importState
+    _ASSERT(ASSOCIATED(importState),'HEMCO import state must be associated!')
 
     ! Init pointers
     Ptr3D => NULL()
@@ -127,8 +132,13 @@ CONTAINS
     IF ( Lct%Dct%Dta%SpaceDim == 3 ) THEN
 
        ! Get data
-       CALL MAPL_GetPointer( IMPORT, Ptr3D, &
-                             TRIM(Lct%Dct%Dta%ncFile), RC=STAT )
+#ifdef MAPL3
+       CALL MAPL_StateGetPointer( importState, Ptr3D, &
+            TRIM(Lct%Dct%Dta%ncFile), _RC )
+#else
+      CALL MAPL_GetPointer( importState, Ptr3D, &
+                             TRIM(Lct%Dct%Dta%ncFile), __RC__ )
+#endif
 
        ! Check for MAPL error
        IF( STAT /= ESMF_SUCCESS ) THEN
@@ -161,7 +171,7 @@ CONTAINS
        !Lct%Dct%Dta%V3(1)%Val(:,:,:) = Ptr3D(:,:,LL:1:-1)
 
        ! ewl debugging
-       if ( mapl_am_i_root() ) then
+       if ( HcoState%amIRoot ) then
           print *, "HEMCO: array pointer vertically flipped relative to MAPL Import ", trim(Lct%Dct%Dta%ncFile)
        endif
 
@@ -171,10 +181,15 @@ CONTAINS
     ELSEIF ( Lct%Dct%Dta%SpaceDim == 2 ) THEN
 
        ! Get data
-       CALL MAPL_GetPointer( IMPORT, Ptr2D, &
-                             TRIM(Lct%Dct%Dta%ncFile), RC=STAT )
+#ifdef MAPL3
+       CALL MAPL_StateGetPointer( importState, Ptr2D, &
+            TRIM(Lct%Dct%Dta%ncFile), _RC )
+#else
+      CALL MAPL_GetPointer( importState, Ptr2D, &
+           TRIM(Lct%Dct%Dta%ncFile), __RC__ )
+#endif
 
-       ! Check for MAPL error
+      ! Check for MAPL error
        IF( STAT /= ESMF_SUCCESS ) THEN
           MSG = 'Cannot get xy pointer: ' // TRIM(Lct%Dct%Dta%ncFile)
           CALL HCO_ERROR( MSG, RC )
@@ -208,7 +223,7 @@ CONTAINS
     !-----------------------------------------------------------------
     Ptr3D  => NULL()
     Ptr2D  => NULL()
-    IMPORT => NULL()
+    importState => NULL()
 
     ! Return w/ success
     CALL HCO_LEAVE ( HcoState%Config%Err,  RC )

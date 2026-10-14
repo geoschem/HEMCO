@@ -30,7 +30,7 @@ HEMCO configuration file (see below). In general, the original units
 of the input data is determined based on the units attribute on the
 netCDF file, and data is converted to HEMCO units accordingly. The
 mass conversion factor is determined based on the species assigned to
-the given field throuh attribute :ref:`hco-cfg-base-species` in the HEMCO
+the given field through attribute :ref:`hco-cfg-base-species` in the HEMCO
 configuration file. It depends on the species molecular weight (MW),
 the MW of the emitted species, and the molecular ratio (molecules of
 emitted species per molecules of species). If the input data is found
@@ -71,7 +71,7 @@ data to kg emitted species. If a species is emitted as
 adjusted based on the emitted MW, species MW, and the ratio
 emitted MW / species MW. Only input data that is already in
 :literal:`kgC/m2/s` will not be converted. This behavior can be
-avoided by explicitly set the :ref:`hco-cfg-base-srcunit` to the same
+avoided by explicitly setting the :ref:`hco-cfg-base-srcunit` to the same
 unit as on the input file. In this case, HEMCO will not convert
 between species MW and emitted MW. This is useful for cases where the
 input data does not contain data of the actual species, e.g. if VOC
@@ -180,7 +180,7 @@ species/m2/s and the following two entries have the same effect:
 .. code-block:: kconfig
 
     #--> data is converted from kgC/m2/s to kg emitted species/m2/s,
-    #    which is also kgC/m2/s``
+    #    which is also kgC/m2/s
    0 ACET  /path/to/file2.nc  DATA 2000/1/1/0 C xy kg/m2/s  ACET - 1 1
 
    #--> data is kept in kgC/m2/s

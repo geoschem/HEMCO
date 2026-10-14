@@ -7,7 +7,7 @@ Create a run directory
 .. note::
    Another useful resource for :program:`HEMCO standalone` run
    directory creation instructions is our `YouTube tutorial
-   <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`_.
+   <https://www.youtube.com/watch?v=6Bup9V0ts6U&t=69s>`__.
 
 HEMCO standalone run directories are created from within the source code.
 A new run directory should be created for each different version of
@@ -32,7 +32,7 @@ Enter ExtData path
 The first time you create a HEMCO standalone run directory on your
 system you will be prompted for a path to the :file:`ExtData` folder,
 which is the root data directory for HEMCO (as well as for `GEOS-Chem
-<https://geos-chem.readthedocs.io>`_).
+<https://geos-chem.readthedocs.io>`__).
 
 The path that you specify  should include the name of your
 :file:`ExtData/` directory and should not contain symbolic links.  The
@@ -84,7 +84,8 @@ would like to use.
      2. 2.0 x 2.5
      3. 0.5 x 0.625
      4. 0.25 x 0.3125
-     5. Custom
+     5. 0.125 x 0.15625
+     6. Custom
 
 ==========================
 Enter HEMCO_Config.rc path
@@ -111,8 +112,8 @@ settings.
    -----------------------------------------------------------
 
 If you have a pre-configured :file:`HEMCO_Config.rc` file available
-(e.g. from a `GEOS_Chem <https://geos-chem.readthedocs.io>`_ run
-directory), then then type the absolute path:
+(e.g. from a `GEOS-Chem <https://geos-chem.readthedocs.io>`__ run
+directory), then type the absolute path:
 
 .. code-block:: console
 
@@ -206,14 +207,14 @@ directory listing:
    build/    HEMCO_Config.rc  HEMCO_sa_Config.rc    HEMCO_sa_Spec.rc  OutputDir/  rundir.version
    CodeDir@  HEMCO_Diagn.rc   HEMCO_sa_Grid.4x5.rc  HEMCO_sa_Time.rc  README      runHEMCO.sh*
 
-:file:`build` is the folder is where you will :ref:`compile HEMCO
+:file:`build` is the folder where you will :ref:`compile HEMCO
 standalone <hco-sa-compile>`.
 
 :file:`CodeDir` is a symbolic link back to the HEMCO source code.
 
 :file:`OutputDir` is the folder where diagnostic outputs will be generated.
 
-Files ending in :file:`.rc` are user-edtiable configuration files
+Files ending in :file:`.rc` are user-editable configuration files
 that control HEMCO standalone simulation options.  We will discuss
 these in more detail more in the :ref:`hco-sa-sim-config` chapter.
 
