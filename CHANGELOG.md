@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed subroutine `HCO_CopyFromIntnal_ESMF` to `HCO_CopyFromInternal_ESMF`
 - Renamed state objects `HcoState%IMPORT` and `HcoStateEXPORT` to `HcoState%importState` and `HcoState%exportState` respectively
 - Updated Python packages needed for ReadTheDocs
+- Changed the yield of NOx emitted per lightning flash to 150 mol, applied globally (cf R. Dang et. al, GRL, 2026)
 
 ### Fixed
 - Fixed an error in `src/Shared/GeosUtil/hco_regrid_a2a_mod.F90` where an accumulator was uninitialized before reuse, which may inherit junk data from the previous iteration if the southmost source cell is not found
