@@ -88,11 +88,18 @@ MODULE HCOX_LightNOx_Mod
 !
   INTEGER, PARAMETER            :: NLTYPE        = 4
   INTEGER, PARAMETER            :: NNLIGHT       = 3200
-  REAL*8,  PARAMETER            :: RFLASH_MIDLAT = 3.011d26   ! 500 mol/flash applied in the N extratropics
-  REAL*8,  PARAMETER            :: RFLASH_TROPIC = 1.566d26   ! 260 mol/flash applied in the tropics / S extratropics
   REAL*8,  PARAMETER            :: EAST_WEST_DIV = -30d0
   REAL*8,  PARAMETER            :: WEST_NS_DIV   =  35d0
   REAL*8,  PARAMETER            :: EAST_NS_DIV   =  35d0
+  !--------------------------------------------------------------------------
+  ! Define the amount of NOx emitted per lightning flash here.
+  !
+  ! NH extratropics: 150 mol NOx/flash
+  REAL*8,  PARAMETER            :: RFLASH_MIDLAT = 9.033d+25
+  !
+  ! Tropics and SH extratropics: 150 mol NOx/flash
+  REAL*8,  PARAMETER            :: RFLASH_TROPIC = RFLASH_MIDLAT
+  !--------------------------------------------------------------------------
 !
 ! !PRIVATE TYPES:
 !
