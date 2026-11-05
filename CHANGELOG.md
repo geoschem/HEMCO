@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `GetMaskVal` in `src/Core/hco_calc_mod.F90` so that fractional values are mirrored properly when `Oper == 3`
 - Restored the OpenMP parallel loop in `Evolve_Plume` (`src/Extensions/hcox_paranox_mod.F90`)
 - Fixed out-of-bounds error in routine `INTERPOL_LINWEIGHTS` (in `src/Extensions/hcox_paranox_mod.F90`)
+- Fixed `SrcFile_Parse` to test the cycle flag instead of the container type; This prevents searching back in time for data flagged with exact (`E`)
 
 ### Removed
 - Removed obsolete variables from `hcox_seasalt_mod.F90`
