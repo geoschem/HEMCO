@@ -97,7 +97,7 @@ CONTAINS
 ! routines.
 !\\
 !\\
-! Two different regridding algorithm are used: NCREGRID for 3D data with
+! Two different regridding algorithms are used: NCREGRID for 3D data with
 ! vertical regridding, and map\_a2a for all other data. map\_a2a also
 ! supports index-based remapping, while this feature is currently not
 ! possible in combination with NCREGRID.
@@ -328,7 +328,7 @@ CONTAINS
              ! If MustFind flag is enabled, return with error if field isn't
              ! found. Generate explicit error messages to reduce confusion.
              IF ( Lct%Dct%Dta%MustFind ) THEN
-                MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile) )
+                MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile), FOUND )
                 CALL HCO_ERROR( MSG, RC )
                 RETURN
 
@@ -336,15 +336,16 @@ CONTAINS
              ! with a warning.
              ELSE
                 CALL FileData_Cleanup( Lct%Dct%Dta, DeepClean=.FALSE. )
-                MSG = 'No valid file found for current simulation time - data '// &
-                     'will be ignored for time being - ' // TRIM(Lct%Dct%cName)
+                MSG = 'No valid file found for current simulation '       // &
+                      'time - data will be ignored for time being - '     // &
+                      TRIM( Lct%Dct%cName )
                 IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
                 CALL HCO_LEAVE ( HcoState%Config%Err,  RC )
                 RETURN
              ENDIF
 
           ELSE
-             MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile) )
+             MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile), FOUND )
              CALL HCO_ERROR( MSG, RC )
              RETURN
           ENDIF
@@ -372,7 +373,7 @@ CONTAINS
              ! If MustFind flag is enabled, return with error if field is not
              ! found
              IF ( Lct%Dct%Dta%MustFind ) THEN
-                MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile) )
+                MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile), FOUND )
                 IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
 
                 ! Write a msg to stdout (NOT FOUND)
@@ -396,7 +397,7 @@ CONTAINS
 
           ! Not range or exact
           ELSE
-             MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile) )
+             MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile), FOUND )
              IF ( HcoState%Config%doVerbose ) CALL HCO_WARNING( MSG )
 
              ! Write a msg to stdout (NOT FOUND)
@@ -512,7 +513,7 @@ CONTAINS
        ELSEIF ( ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_RANGE ) .OR.      &
                 ( Lct%Dct%Dta%CycleFlag == HCO_CFLAG_EXACT )     ) THEN
           IF ( Lct%Dct%Dta%MustFind ) THEN
-             MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile) )
+             MSG = IO_ErrMsg( TRIM(Lct%Dct%cName), TRIM(srcFile), .TRUE. )
              CALL HCO_ERROR( MSG, RC )
              DoReturn = .TRUE.
           ELSE
@@ -1654,12 +1655,13 @@ CONTAINS
 !\\
 ! !INTERFACE:
 !
-  FUNCTION IO_ErrMsg( fldName, srcFile ) RESULT( errMsg )
+  FUNCTION IO_ErrMsg( fldName, srcFile, fileExists ) RESULT( errMsg )
 !
 ! !INPUT PARAMETERS: 
 !
-    CHARACTER(LEN=*),   INTENT(IN) :: fldName
-    CHARACTER(LEN=*),   INTENT(IN) :: srcFile
+    CHARACTER(LEN=*),   INTENT(IN) :: fldName      ! Field name (trimmed)
+    CHARACTER(LEN=*),   INTENT(IN) :: srcFile      ! File name (trimmed)
+    LOGICAL,            INTENT(IN) :: fileExists   ! Does the file exist?
 !
 ! !RETURN VALUE:
 !
@@ -1671,34 +1673,77 @@ CONTAINS
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-    IF ( fldName(1:4) == "SPC_" .and. INDEX( srcFile, "Restart" ) > 0 ) THEN
+!
+! !LOCAL VARIABLES:
+!
+    LOGICAL :: isRestart
+
+    !========================================================================
+    ! IO_ErrMsg begins here!
+    !========================================================================
+
+    ! Is the file a GEOS-Chem restart file?
+    isRestart = ( INDEX( fldName, "SPC_"    ) == 1 .and.                    &
+                  INDEX( srcFile, "Restart" ) > 0        )
+
+    ! 4 cases of error messages:
+    IF ( isRestart .and. .not. fileExists ) THEN
 
        !---------------------------------------------------------------------
-       ! Case 1: GEOS-Chem Classic restart file
+       ! Case 1: GC-Classic restart file does not exist
        !---------------------------------------------------------------------
-       errMsg = "Cannot find the " // fldName // " field in the "         // &
-                "GEOS-Chem restart file " // srcFile // "! This "         // &
-                "indicates that either (1) the timestamp in the restart " // &
-                "file does not match the simulation start date, or (2) "  // &
-                "that the restart file does not contain initial "         // &
-                "conditions for all species in the simulation. You may "  // &
-                "allow your simulation to proceed by changing the time "  // &
-                "cycle flag for the 'SPC_' entry in your "                // &
-                "'HEMCO_Config.rc' file from `EFYO` to either 'CYS' or "  // &
-                "'EY'. Please refer to hemco.readthedocs.io for more "    // &
-                "information about 'HEMCO_Config.rc' settings."
+       errMsg = 'Could not find the GEOS-Chem restart file "' // srcFile  // &
+                '"! GEOS-Chem Classic needs a restart file whose date '   // &
+                'and time match the simulation start date in '            // &
+                '"geoschem_config.yml". Please check that (1) the file '  // &
+                'exists in the "Restarts/" folder of your run '           // &
+                'directory, (2) its name matches the simulation start '   // &
+                'date and time, and (3) the path in the "SPC_" entry of ' // &
+                '"HEMCO_Config.rc" is correct. To get a restart file, '   // &
+                'rename or link an existing one so its name matches the ' // &
+                'start date, or download one by doing a GEOS-Chem dry '   // &
+                'run. See geos-chem.readthedocs.io for more information.'
+
+    ELSE IF ( isRestart ) THEN
+
+       !---------------------------------------------------------------------
+       ! Case 2: GEOS-Chem Restart file exists, but no matching time is found
+       !---------------------------------------------------------------------
+       errMsg = 'The GEOS-Chem restart file "' // srcFile // '" does '    // &
+                'not contain data for the simulation start date and '     // &
+                'time. Please check that the time stored in the restart ' // &
+                'file matches the start date in "geoschem_config.yml". '  // &
+                'You may let the simulation proceed by changing the '     // &
+                'time cycle flag for the "SPC_" entry in '                // &
+                '"HEMCO_Config.rc" from "EFYO" to "CYS" or "EY". '        // &
+                'Species not found in the file will then be set to '      // &
+                'default background values. See hemco.readthedocs.io '    // &
+                'for more information about "HEMCO_Config.rc" settings.'
+
+    ELSE IF ( .not. fileExists ) THEN
+
+       !---------------------------------------------------------------------
+       ! Case 3: Any other file does not exist
+       !---------------------------------------------------------------------
+       errMsg = 'Could not find file "' // srcFile  // '" (needed for '   // &
+                'field "' // fldName // '")! Please check that the file ' // &
+                'exists and that the path, "$ROOT" and date tokens, and ' // &
+                'time cycle flag for "' // fldName // '" in '             // &
+                '"HEMCO_Config.rc" are correct. You can find missing '    // &
+                'input data files by doing a dry run. See '               // &
+                'hemco.readthedocs.io for more information.'
+
     ELSE
 
        !---------------------------------------------------------------------
-       ! Case 2: Other files
+       ! Case 4: Any other file exists, but field/time not found
        !---------------------------------------------------------------------
-       errMsg = "Cannot find the "// fldName // " field in file "         // &
-                srcFile // "! Please doublecheck the name, time, and "    // &
-                "time cycle flag settings for field " // fldName          // &
-                " in your 'HEMCO_Config.rc' file.  Please refer to "      // &
-                "hemco.readthedocs.io for more information about "        // &
-                "'HEMCO_Config.rc' settings."
-
+       errMsg = 'Cannot find the "' // fldName // '" field in file "'     // &
+                srcFile // '"! Please doublecheck the name, time, and '   // &
+                'time cycle flag settings for field "' // fldName         // &
+                '" in your "HEMCO_Config.rc" file.  Please refer to '     // &
+                'hemco.readthedocs.io for more information about '        // &
+                '"HEMCO_Config.rc" settings.'
     ENDIF
 
  END FUNCTION IO_ErrMsg
