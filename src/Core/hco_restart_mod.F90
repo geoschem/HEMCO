@@ -754,9 +754,9 @@ CONTAINS
 !
     USE ESMF
 #ifdef MAPL3
-    USE MAPL_ErrorHandling_Mod, ONLY : MAPL_Assert, MAPL_Verify
-    USE MAPL,                   ONLY : MAPL_GridCompGetInternalState
-    USE MAPL_State_API,         ONLY : MAPL_StateGetPointer
+    USE MAPL,           ONLY : MAPL_Assert, MAPL_Verify
+    USE MAPL,           ONLY : MAPL_GridCompGetInternalState
+    USE MAPL_State_API, ONLY : MAPL_StateGetPointer
 #else
     USE ESMFL_MOD
     USE MAPL_GenericMod

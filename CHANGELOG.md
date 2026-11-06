@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Converted `GetMaskVal` in `src/Core/hco_calc_mod.F90` to an `ELEMENTAL` function instead of an OpenMP loop
 - Updated error messages such as `ERROR 1` to be more descriptive
 - Added explicit `SCHEDULE( STATIC )` clauses to OpenMP parallel loops that did not specify a schedule
+- Improved error message calls in certain places with previously no explanatory message
 
 ### Fixed
 - Fixed Mac GitHub Actions workflow (`mac.yml`) failing with a `gfortran` module-version mismatch by building NetCDF-Fortran from source against each matrix `gcc_version`, instead of relying on Homebrew's bottle (which is always built against Homebrew's own default/latest `gcc`)

@@ -5,7 +5,7 @@
 #include "MAPL_Generic.h"
 #endif
 ! The 'standard' HEMCO I/O module is used for:
-! - GEOS-Chem High Performance / GCHP and GEOS (ESMF_)
+! - GEOS-Chem High Performance / GCHP and GEOS
 !EOC
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
