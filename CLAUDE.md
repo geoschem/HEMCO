@@ -128,11 +128,11 @@ Set by this repo's CMake: `USE_REAL8`, `NO_OMP` (when `OMP` is false), `NC_HAS_C
 
 Set only by **external** build systems, never by this CMake: `MODEL_CESM`, `MODEL_WRF`, `MODEL_GEOS`, `TOMAS*`, `MESSY`.
 
-`MAPL3` selects MAPL 3 rather than MAPL 2 within the `mapl` interface; it does **not** produce a distinct `HEMCO_INTERFACE`. It swaps link targets (`MAPL.shared`/`MAPL.generic` → `mapl3g`/`MAPL.generic3g`) and adds the define. Its ~41 `#ifdef`/`#ifndef MAPL3` sites span eight files across Core, Shared *and* Interfaces — `hcoi_esmf_mod.F90`, `hco_restart_mod.F90`, `hco_geotools_mod.F90`, `hco_inquireMod.F90`, `hcoio_read_mapl_mod.F90`, `hcoio_write_mapl_mod.F90`, `HEMCO_GridCompMod.F90`, `hco_error_mod.F90` — so a change to MAPL-facing code means checking both arms in all of them, not just under `Interfaces/MAPL_ESMF/`.
+`MAPL3` selects MAPL 3 rather than MAPL 2 within the `mapl` interface; it does **not** produce a distinct `HEMCO_INTERFACE`. It swaps link targets (`MAPL.base`/`MAPL.shared`/`MAPL.generic` → the single `MAPL` target) and adds the define. Its ~41 `#ifdef`/`#ifndef MAPL3` sites span eight files across Core, Shared *and* Interfaces — `hcoi_esmf_mod.F90`, `hco_restart_mod.F90`, `hco_geotools_mod.F90`, `hco_inquireMod.F90`, `hcoio_read_mapl_mod.F90`, `hcoio_write_mapl_mod.F90`, `HEMCO_GridCompMod.F90`, `hco_error_mod.F90` — so a change to MAPL-facing code means checking both arms in all of them, not just under `Interfaces/MAPL_ESMF/`.
 
 Two traps here:
 
-- `hcoi_esmf_mod.F90` is **not** wholly wrapped in `#ifdef MAPL_ESMF` — only its USE/include preamble is. The module body is unguarded and the file is excluded by CMake instead. By contrast `hcoio_read_mapl_mod.F90` and `hcoio_write_mapl_mod.F90` *are* whole-file wrapped from line 2.
+- `hcoi_esmf_mod.F90`, `hcoio_read_mapl_mod.F90` and `hcoio_write_mapl_mod.F90` are each wholly wrapped in `#ifdef MAPL_ESMF` (from line 1, with the `MAPL.h`/`MAPL_Generic.h` include at the top of the file). `hcoi_esmf_mod.F90` is additionally excluded by CMake unless the parent sets `MAPL_ESMF`, so the wrapper there is belt-and-braces.
 - `ESMF_` was removed as a switch in 3.13.0 and no build system defines it, but two guards in `src/Extensions/hcox_paranox_mod.F90` still test it (`#if defined(ESMF_)` and `#if !defined(ESMF_)`). The first branch is now unreachable dead code; the second is always taken. Don't mistake the dead branch for live code.
 
 ### Adding an extension
