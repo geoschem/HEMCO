@@ -138,7 +138,7 @@ CONTAINS
 !
       INTEGER                    :: LUN, ExtNr, Cat, Hier, SpaceDim
       INTEGER                    :: I, FLAG, nSpc, nDiagn
-      INTEGER                    :: DefaultDim, status
+      INTEGER                    :: DefaultDim
       LOGICAL                    :: EOF
       LOGICAL                    :: FOUND, DefaultSet
       CHARACTER(LEN=31)          :: cName, SpcName, OutUnit
@@ -151,6 +151,9 @@ CONTAINS
 
 #ifndef MAPL3
       INTEGER                    :: DIMS, VLOC
+#endif
+#ifdef MAPL3
+      INTEGER                    :: status
 #endif
       
       ! ================================================================
@@ -618,7 +621,9 @@ CONTAINS
 !
       CHARACTER(LEN=255)           :: MSG
       REAL,             POINTER    :: Ptr2D(:,:)   => NULL()
+#ifdef MAPL3
       INTEGER                      :: status
+#endif
 
       ! ================================================================
       ! HCO_Imp2Ext2S begins here
@@ -699,7 +704,10 @@ CONTAINS
 !
       CHARACTER(LEN=255)           :: MSG
       REAL,             POINTER    :: Ptr3D(:,:,:)   => NULL()
-      INTEGER                      :: L, NZ, OFF, status
+      INTEGER                      :: L, NZ, OFF
+#ifdef MAPL3
+      INTEGER                      :: status
+#endif
 
       ! ================================================================
       ! HCO_Imp2Ext3S begins here
@@ -789,9 +797,11 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
       CHARACTER(LEN=255)           :: MSG
-      INTEGER                      :: status
       REAL,             POINTER    :: Ptr2D(:,:)   => NULL()
       LOGICAL                      :: Filled
+#ifdef MAPL3
+      INTEGER                      :: status
+#endif
 
       ! ================================================================
       ! HCO_Imp2Ext2R begins here
@@ -888,8 +898,11 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
       CHARACTER(LEN=255)           :: MSG
-      INTEGER                      :: L, NZ, OFF, status
+      INTEGER                      :: L, NZ, OFF
       REAL,             POINTER    :: Ptr3D(:,:,:) => NULL()
+#ifdef MAPL3
+      INTEGER                      :: status
+#endif
 
       ! ================================================================
       ! HCO_Imp2Ext3R begins here
@@ -977,8 +990,10 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
       CHARACTER(LEN=255)           :: MSG
-      INTEGER                      :: status
       REAL,             POINTER    :: Ptr2D(:,:)   => NULL()
+#ifdef MAPL3
+      INTEGER                      :: status
+#endif
 
       ! ================================================================
       ! HCO_Imp2Ext2I begins here
