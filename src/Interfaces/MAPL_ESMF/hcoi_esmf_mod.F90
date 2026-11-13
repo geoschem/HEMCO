@@ -1,3 +1,9 @@
+#ifdef MAPL_ESMF
+#ifdef MAPL3
+#include "MAPL.h"
+#else
+#include "MAPL_Generic.h"
+#endif
 !------------------------------------------------------------------------------
 !                   Harmonized Emissions Component (HEMCO)                    !
 !------------------------------------------------------------------------------
@@ -18,17 +24,14 @@ MODULE HCOI_ESMF_MOD
   USE HCO_ERROR_MOD
   USE HCO_Types_Mod
 
-#ifdef MAPL_ESMF
 #ifdef MAPL3
-#include "MAPL.h"
-  USE mapl3
-  USE mapl3g_State_API, ONLY : MAPL_StateGetPointer
-  USE mapl3g_generic,   ONLY : MAPL_GridCompAddSpec
+  USE MAPL, ONLY : MAPL_VERTICAL_STAGGER_NONE, MAPL_VERTICAL_STAGGER_CENTER
+  USE MAPL, ONLY : MAPL_UNDEF
+  USE MAPL, ONLY : MAPL_Assert, MAPL_Verify, MAPL_Return
+  USE MAPL, ONLY : MAPL_GridCompAddSpec, MAPL_StateGetPointer
 #else
-#include "MAPL_Generic.h"
   USE MAPLBase_Mod
   USE MAPL_GenericMod
-#endif
 #endif
   
   IMPLICIT NONE
@@ -149,13 +152,18 @@ CONTAINS
 #ifndef MAPL3
       INTEGER                    :: DIMS, VLOC
 #endif
+#ifdef MAPL3
+      INTEGER                    :: status
+#endif
       
       ! ================================================================
       ! HCO_SetServices begins here
       ! ================================================================
 
+#ifndef MAPL3
       ! For MAPL/ESMF error handling (defines Iam and STATUS)
       __Iam__('HCO_SetServices (HCOI_ESMF_MOD.F90)')
+#endif
 
       ! Init
       LOC      = 'HCO_SetServices (HCOI_ESMF_MOD.F90)'
@@ -166,8 +174,8 @@ CONTAINS
       ! Read file into buffer
       ! ---------------------------------------------------------------------
 
-      CALL Config_ReadFile( am_I_Root, HcoConfig, TRIM(ConfigFile), 0, STATUS )
-      ASSERT_(STATUS==HCO_SUCCESS)
+      CALL Config_ReadFile( am_I_Root, HcoConfig, TRIM(ConfigFile), 0, status )
+      _ASSERT(status==HCO_SUCCESS, 'Error reading HEMCO config file '//TRIM(ConfigFile))
 
       ! ---------------------------------------------------------------------
       ! Set services for all import fields
@@ -209,12 +217,12 @@ CONTAINS
 #ifdef MAPL3
             ! ewl: need to set restart attribute?
             CALL MAPL_GridCompAddSpec(gridcomp=GC,              &
-               short_name    = TRIM(CurrCont%Dct%Dta%ncFile),   &
-               standard_name = TRIM(CurrCont%Dct%Dta%ncFile),   &
-               units         = TRIM(CurrCont%Dct%Dta%OrigUnit), &
-               dims          = 'xy',                            &
-               vstagger      = VERTICAL_STAGGER_NONE,           &
-               state_intent  = ESMF_STATEINTENT_IMPORT,         &
+               short_name       = TRIM(CurrCont%Dct%Dta%ncFile),   &
+               standard_name    = TRIM(CurrCont%Dct%Dta%ncFile),   &
+               units            = TRIM(CurrCont%Dct%Dta%OrigUnit), &
+               dims             = 'xy',                            &
+               vertical_stagger = MAPL_VERTICAL_STAGGER_NONE,      &
+               state_intent     = ESMF_STATEINTENT_IMPORT,         &
                _RC                                               )
             IF ( am_I_Root ) WRITE(*,*) 'HCO_SetServices: adding HEMCO 2D import: ', TRIM(CurrCont%Dct%Dta%ncFile)
 #else
@@ -238,12 +246,12 @@ CONTAINS
 #ifdef MAPL3
             ! ewl: Need to add restart attribute?
             CALL MAPL_GridCompAddSpec(gridcomp=GC,              &
-               short_name    = TRIM(CurrCont%Dct%Dta%ncFile),   &
-               standard_name = TRIM(CurrCont%Dct%Dta%ncFile),   &
-               units         = TRIM(CurrCont%Dct%Dta%OrigUnit), &
-               dims          = 'xyz',                           &
-               vstagger      = VERTICAL_STAGGER_CENTER,         &
-               state_intent  = ESMF_STATEINTENT_IMPORT,         &
+               short_name       = TRIM(CurrCont%Dct%Dta%ncFile),   &
+               standard_name    = TRIM(CurrCont%Dct%Dta%ncFile),   &
+               units            = TRIM(CurrCont%Dct%Dta%OrigUnit), &
+               dims             = 'xyz',                           &
+               vertical_stagger = MAPL_VERTICAL_STAGGER_CENTER,    &
+               state_intent     = ESMF_STATEINTENT_IMPORT,         &
                _RC                                               )
             IF ( am_I_Root ) WRITE(*,*) 'HCO_SetServices: adding HEMCO 3D import: ', TRIM(CurrCont%Dct%Dta%ncFile)
 #else
@@ -263,7 +271,7 @@ CONTAINS
 
          ! Return w/ error if not 2D or 3D data
          ELSE
-            ASSERT_(.FALSE.)
+            _ASSERT(.FALSE., 'Import must be 2D or 3D: '//TRIM(CurrCont%Dct%Dta%ncFile))
          ENDIF
 
          ! Advance to next container
@@ -278,7 +286,7 @@ CONTAINS
       ! Try to open diagnostics definition file
       ! ---------------------------------------------------------------------
       CALL DiagnFileOpen( HcoConfig, LUN, RC )
-      ASSERT_(RC == HCO_SUCCESS )
+      _ASSERT(RC == HCO_SUCCESS, 'Error calling DiagnFileOpen in HEMCO')
 
       ! ---------------------------------------------------------------------
       ! If DiagnFile is found, prepare a diagnostics export for every entry
@@ -314,23 +322,23 @@ CONTAINS
             ! Add to export state
 #ifdef MAPL3
             IF ( SpaceDim == 3 ) THEN
-               CALL MAPL_GridCompAddSpec(gridcomp=GC,        &
-                    short_name    = trim(cName),             &
-                    standard_name = trim(lName),             &
-                    units         = TRIM(UnitName),          &
-                    dims          = 'xyz',                   &
-                    vstagger      = VERTICAL_STAGGER_CENTER, &
-                    state_intent  = ESMF_STATEINTENT_EXPORT, &
-                    _RC                                       )
+               CALL MAPL_GridCompAddSpec(gridcomp=GC,             &
+                    short_name       = trim(cName),                  &
+                    standard_name    = trim(lName),                  &
+                    units            = TRIM(UnitName),               &
+                    dims             = 'xyz',                        &
+                    vertical_stagger = MAPL_VERTICAL_STAGGER_CENTER, &
+                    state_intent     = ESMF_STATEINTENT_EXPORT,      &
+                    _RC                                          )
             ELSE
-               CALL MAPL_GridCompAddSpec(gridcomp=GC,        &
-                    short_name    = trim(cName),             &
-                    standard_name = trim(lName),             &
-                    units         = TRIM(UnitName),          &
-                    dims          = 'xy',                    &
-                    vstagger      = VERTICAL_STAGGER_NONE,   &
-                    state_intent  = ESMF_STATEINTENT_EXPORT, &
-                    _RC                                       )
+               CALL MAPL_GridCompAddSpec(gridcomp=GC,             &
+                    short_name       = trim(cName),                  &
+                    standard_name    = trim(lName),                  &
+                    units            = TRIM(UnitName),               &
+                    dims             = 'xy',                         &
+                    vertical_stagger = MAPL_VERTICAL_STAGGER_NONE,   &
+                    state_intent     = ESMF_STATEINTENT_EXPORT,      &
+                    _RC                                          )
             ENDIF
             IF ( am_I_Root ) WRITE(*,*) 'HCO_SetServices: adding HEMCO export: ', TRIM(cName)
 #else
@@ -351,7 +359,7 @@ CONTAINS
 
             IF ( STATUS /= ESMF_SUCCESS ) THEN
                WRITE(*,*) 'Cannot add to export: ',TRIM(cNAME)
-               ASSERT_(.FALSE.)
+               _ASSERT(.FALSE., 'Error adding MAPL export in HEMCO: '//TRIM(cName))
             ELSE
                IF ( am_I_Root ) WRITE(*,*) 'adding HEMCO export: ', TRIM(cName)
             ENDIF
@@ -395,7 +403,7 @@ CONTAINS
          ! Get # of species and species names
          nSpc = Config_GetnSpecies( HcoConfig )
          CALL Config_GetSpecNames( HcoConfig, Spc, nSpc, RC )
-         ASSERT_(RC == HCO_SUCCESS)
+         _ASSERT(RC == HCO_SUCCESS, 'Error getting species names from config in HEMCO')
 
          ! Loop over all species and add to export state
          DO I = 1, nSpc
@@ -411,7 +419,7 @@ CONTAINS
       IF ( ASSOCIATED(Spc) ) DEALLOCATE(Spc)
 
       ! Return success
-      RETURN_(ESMF_SUCCESS)
+      _RETURN(ESMF_SUCCESS)
 
       END SUBROUTINE HCO_SetServices
 !EOC
@@ -448,6 +456,9 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+#ifdef MAPL3
+      INTEGER  :: status
+#endif
 #ifndef MAPL3
       INTEGER  :: DIMS, VLOC
 #endif
@@ -456,29 +467,31 @@ CONTAINS
       ! Diagn2Exp begins here
       ! ================================================================
 
+#ifndef MAPL3
       ! For MAPL/ESMF error handling (defines Iam and STATUS)
       __Iam__('Diagn2Exp (HCOI_ESMF_MOD.F90)')
+#endif
 
       ! Add to export state
 #ifdef MAPL3
       IF ( NDIM == 3 ) THEN
-         CALL MAPL_GridCompAddSpec(gridcomp=GC,        &
-              short_name    = TRIM(SNAME),             &
-              standard_name = TRIM(LNAME),             &
-              units         = TRIM(UNITS),             &
-              dims          = 'xyz',                   &
-              vstagger      = VERTICAL_STAGGER_CENTER, &
-              state_intent  = ESMF_STATEINTENT_EXPORT, &
-              _RC                                       )
+         CALL MAPL_GridCompAddSpec(gridcomp=GC,             &
+              short_name       = TRIM(SNAME),                  &
+              standard_name    = TRIM(LNAME),                  &
+              units            = TRIM(UNITS),                  &
+              dims             = 'xyz',                        &
+              vertical_stagger = MAPL_VERTICAL_STAGGER_CENTER, &
+              state_intent     = ESMF_STATEINTENT_EXPORT,      &
+              _RC                                          )
       ELSE
-         CALL MAPL_GridCompAddSpec(gridcomp=GC,        &
-              short_name    = TRIM(SNAME),             &
-              standard_name = TRIM(LNAME),             &
-              units         = TRIM(UNITS),             &
-              dims          = 'xy',                    &
-              vstagger      = VERTICAL_STAGGER_NONE,   &
-              state_intent  = ESMF_STATEINTENT_EXPORT, &
-              _RC                                       )
+         CALL MAPL_GridCompAddSpec(gridcomp=GC,           &
+              short_name       = TRIM(SNAME),                &
+              standard_name    = TRIM(LNAME),                &
+              units            = TRIM(UNITS),                &
+              dims             = 'xy',                       &
+              vertical_stagger = MAPL_VERTICAL_STAGGER_NONE, &
+              state_intent     = ESMF_STATEINTENT_EXPORT,    &
+              _RC                                        )
       ENDIF
       !IF ( am_I_Root ) WRITE(*,*) 'HCO_SetServices: adding HEMCO export: ', TRIM(cName)
 #else
@@ -499,12 +512,12 @@ CONTAINS
 
       IF ( STATUS /= ESMF_SUCCESS ) THEN
          WRITE(*,*) 'Cannot add to export: ',TRIM(SNAME)
-         ASSERT_(.FALSE.)
+         _ASSERT(.FALSE., 'Error adding MAPL export in HEMCO: '//TRIM(SNAME))
       ENDIF
 #endif
 
       ! Return w/ success
-      RETURN_(ESMF_SUCCESS)
+      _RETURN(ESMF_SUCCESS)
 
       END SUBROUTINE Diagn2Exp
 !EOC
@@ -543,13 +556,18 @@ CONTAINS
 !
 ! !LOCAL VARIABLES:
 !
+#ifdef MAPL3
+      INTEGER :: status
+#endif
 
       ! ================================================================
       ! HCO_SetExtState_ESMF begins here
       ! ================================================================
 
+#ifndef MAPL3
       ! For MAPL/ESMF error handling (defines Iam and STATUS)
       __Iam__('HCO_SetExtState_ESMF (HCOI_ESMF_MOD.F90)')
+#endif
 
       ! Get pointers to fields
       CALL HCO_Imp2Ext ( HcoState, ExtState%BYNCY, 'BYNCY', __RC__ )
@@ -603,26 +621,30 @@ CONTAINS
 !
       CHARACTER(LEN=255)           :: MSG
       REAL,             POINTER    :: Ptr2D(:,:)   => NULL()
-      INTEGER                      :: STAT
+#ifdef MAPL3
+      INTEGER                      :: status
+#endif
 
       ! ================================================================
       ! HCO_Imp2Ext2S begins here
       ! ================================================================
 
+#ifndef MAPL3
       ! For MAPL/ESMF error handling (defines Iam and STATUS)
       __Iam__('HCO_Imp2Ext2S (HCOI_ESMF_MOD.F90)')
+#endif
 
       ! Only do if being used...
       IF ( ExtDat%DoUse ) THEN
+
+         _ASSERT( ASSOCIATED(HcoState%importState) , 'HEMCO import state not associated')
 #ifdef MAPL3
-         ASSERT_( ASSOCIATED(HcoState%importState) )
          CALL MAPL_StateGetPointer( HcoState%importState, Ptr2D, TRIM(FldName), _RC )
 #else
-         ASSERT_( ASSOCIATED(HcoState%importState) )
          CALL MAPL_GetPointer( HcoState%importState, Ptr2D, TRIM(FldName), __RC__ )
 #endif
-         CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, STAT )
-         ASSERT_(STAT==HCO_SUCCESS)
+         CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, status )
+         _ASSERT(status==HCO_SUCCESS, 'Size mismatch between import and HEMCO ExtState array: '//TRIM(FldName))
          ExtDat%Arr%Val = 0.0
          IF ( ASSOCIATED( Ptr2D ) ) THEN
             WHERE( Ptr2D /= MAPL_UNDEF )
@@ -639,7 +661,7 @@ CONTAINS
       ENDIF ! DoUse
 
       ! Return success
-      RETURN_(ESMF_SUCCESS)
+      _RETURN(ESMF_SUCCESS)
 
       END SUBROUTINE HCO_Imp2Ext2S
 !EOC
@@ -682,31 +704,35 @@ CONTAINS
 !
       CHARACTER(LEN=255)           :: MSG
       REAL,             POINTER    :: Ptr3D(:,:,:)   => NULL()
-      INTEGER                      :: L, NZ, OFF, STAT
+      INTEGER                      :: L, NZ, OFF
+#ifdef MAPL3
+      INTEGER                      :: status
+#endif
 
       ! ================================================================
       ! HCO_Imp2Ext3S begins here
       ! ================================================================
 
+#ifndef MAPL3
       ! For MAPL/ESMF error handling (defines Iam and STATUS)
       __Iam__('HCO_Imp2Ext3S (HCOI_ESMF_MOD.F90)')
+#endif
 
       ! Only do if being used...
       IF ( ExtDat%DoUse ) THEN
 
+         _ASSERT( ASSOCIATED(HcoState%importState) , 'HEMCO import state not associated')
 #ifdef MAPL3
-         ASSERT_( ASSOCIATED(HcoState%importState) )
          CALL MAPL_StateGetPointer( HcoState%importState, Ptr3D, TRIM(FldName), _RC )
 #else
-         ASSERT_( ASSOCIATED(HcoState%importState) )
          CALL MAPL_GetPointer( HcoState%importState, Ptr3D, TRIM(FldName), __RC__ )
 #endif
-         ASSERT_( ASSOCIATED(Ptr3D) )
+         _ASSERT( ASSOCIATED(Ptr3D), 'Import pointer is not associated: '//TRIM(FldName))
 
          ! Make sure the array in ExtDat is allocated and has the right size
          NZ = SIZE(Ptr3D,3)
-         CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, NZ, STAT )
-         ASSERT_(STAT==HCO_SUCCESS)
+         CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, NZ, status )
+         _ASSERT(status==HCO_SUCCESS, 'Size mismatch between import and HEMCO ExtState arrays: '//TRIM(FldName))
 
          ! Pass field to ExtDat
          OFF = LBOUND(Ptr3D,3)
@@ -728,7 +754,7 @@ CONTAINS
 
 
       ! Return success
-      RETURN_(ESMF_SUCCESS)
+      _RETURN(ESMF_SUCCESS)
 
       END SUBROUTINE HCO_Imp2Ext3S
 !EOC
@@ -771,16 +797,20 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
       CHARACTER(LEN=255)           :: MSG
-      INTEGER                      :: STAT
       REAL,             POINTER    :: Ptr2D(:,:)   => NULL()
       LOGICAL                      :: Filled
+#ifdef MAPL3
+      INTEGER                      :: status
+#endif
 
       ! ================================================================
       ! HCO_Imp2Ext2R begins here
       ! ================================================================
 
+#ifndef MAPL3
       ! For MAPL/ESMF error handling (defines Iam and STATUS)
       __Iam__('HCO_Imp2Ext2R (HCOI_ESMF_MOD.F90)')
+#endif
 
       ! Init
       Filled = .FALSE.
@@ -788,16 +818,15 @@ CONTAINS
       ! Only do if being used...
       IF ( ExtDat%DoUse ) THEN
 
+         _ASSERT( ASSOCIATED(HcoState%importState), 'HEMCO import state is not associated')
 #ifdef MAPL3
-         ASSERT_( ASSOCIATED(HcoState%importState) )
          CALL MAPL_StateGetPointer( HcoState%importState, Ptr2D, TRIM(FldName), _RC )
 #else
-         ASSERT_( ASSOCIATED(HcoState%importState) )
          CALL MAPL_GetPointer( HcoState%importState, Ptr2D, TRIM(FldName), __RC__ )
 #endif
 
-         CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, STAT )
-         ASSERT_(STAT==HCO_SUCCESS)
+         CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, status )
+         _ASSERT(status==HCO_SUCCESS, 'Size mismatch between import and HEMCO ExtState arrays: '//TRIM(FldName))
 
          ExtDat%Arr%Val = 0.0
          IF ( ASSOCIATED( Ptr2D ) ) THEN
@@ -816,7 +845,7 @@ CONTAINS
          ! Error check
          IF ( .NOT. Filled ) THEN
             CALL HCO_ERROR('Cannot fill '//TRIM(FldName),RC)
-            ASSERT_(.FALSE.)
+            _ASSERT(.FALSE., 'Cannot fill ExtState object from import:'//TRIM(FldName))
          ENDIF
 
          ! Verbose
@@ -827,7 +856,7 @@ CONTAINS
       ENDIF ! DoUse
 
       ! Return success
-      RETURN_(ESMF_SUCCESS)
+      _RETURN(ESMF_SUCCESS)
 
       END SUBROUTINE HCO_Imp2Ext2R
 !EOC
@@ -869,32 +898,36 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
       CHARACTER(LEN=255)           :: MSG
-      INTEGER                      :: L, NZ, OFF, STAT
+      INTEGER                      :: L, NZ, OFF
       REAL,             POINTER    :: Ptr3D(:,:,:) => NULL()
+#ifdef MAPL3
+      INTEGER                      :: status
+#endif
 
       ! ================================================================
       ! HCO_Imp2Ext3R begins here
       ! ================================================================
 
+#ifndef MAPL3
       ! For MAPL/ESMF error handling (defines Iam and STATUS)
       __Iam__('HCO_Imp2Ext3R (HCOI_ESMF_MOD.F90)')
+#endif
 
       ! Only do if being used...
       IF ( ExtDat%DoUse ) THEN
 
+         _ASSERT( ASSOCIATED(HcoState%importState), 'HEMCO import state not associated')
 #ifdef MAPL3
-         ASSERT_( ASSOCIATED(HcoState%importState) )
          CALL MAPL_StateGetPointer( HcoState%importState, Ptr3D, TRIM(FldName), _RC )
 #else
-         ASSERT_( ASSOCIATED(HcoState%importState) )
          CALL MAPL_GetPointer( HcoState%importState, Ptr3D, TRIM(FldName), __RC__ )
 #endif
-         ASSERT_( ASSOCIATED(Ptr3D) )
+         _ASSERT( ASSOCIATED(Ptr3D) , 'Field not found in HEMCO import state: '//TRIM(FldName))
 
          ! Make sure the array in ExtDat is allocated and has the right size
          NZ = SIZE(Ptr3D,3)
-         CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, NZ, STAT )
-         ASSERT_(STAT==HCO_SUCCESS)
+         CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, NZ, status )
+         _ASSERT(status==HCO_SUCCESS, 'Size mismatch between import and HEMCO ExtState arrays for '//TRIM(FldName))
 
          ! Pass field to ExtDat
          OFF = LBOUND(Ptr3D,3)
@@ -915,7 +948,7 @@ CONTAINS
       ENDIF ! DoUse
 
       ! Return success
-      RETURN_(ESMF_SUCCESS)
+      _RETURN(ESMF_SUCCESS)
 
       END SUBROUTINE HCO_Imp2Ext3R
 !EOC
@@ -957,29 +990,32 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
       CHARACTER(LEN=255)           :: MSG
-      INTEGER                      :: STAT
       REAL,             POINTER    :: Ptr2D(:,:)   => NULL()
+#ifdef MAPL3
+      INTEGER                      :: status
+#endif
 
       ! ================================================================
       ! HCO_Imp2Ext2I begins here
       ! ================================================================
 
+#ifndef MAPL3
       ! For MAPL/ESMF error handling (defines Iam and STATUS)
       __Iam__('HCO_Imp2Ext2I (HCOI_ESMF_MOD.F90)')
+#endif
 
       ! Only do if being used...
       IF ( ExtDat%DoUse ) THEN
 
+         _ASSERT( ASSOCIATED(HcoState%importState), 'HEMCO import state not associated')
 #ifdef MAPL3
-         ASSERT_( ASSOCIATED(HcoState%importState) )
          CALL MAPL_StateGetPointer( HcoState%importState, Ptr2D, TRIM(FldName), _RC )
 #else
-         ASSERT_( ASSOCIATED(HcoState%importState) )
          CALL MAPL_GetPointer( HcoState%importState, Ptr2D, TRIM(FldName), __RC__ )
 #endif
 
-         CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, STAT )
-         ASSERT_(STAT==HCO_SUCCESS)
+         CALL HCO_ArrAssert( ExtDat%Arr, HcoState%NX, HcoState%NY, status )
+         _ASSERT(status==HCO_SUCCESS, 'Size mismatch between import and HEMCO ExtState arrays for '//TRIM(FldName))
 
          ExtDat%Arr%Val = 0.0
          IF ( ASSOCIATED( Ptr2D ) ) THEN
@@ -997,9 +1033,9 @@ CONTAINS
       ENDIF ! DoUse
 
       ! Return success
-      RETURN_(ESMF_SUCCESS)
+      _RETURN(ESMF_SUCCESS)
 
       END SUBROUTINE HCO_Imp2Ext2I
 !EOC
 END MODULE HCOI_ESMF_MOD
-
+#endif

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `SECURITY.md` describing how to report a security vulnerability privately
 - Added `.gitattributes` to enforce LF line endings in the repository (CRLF for Windows `*.bat` files)
 - Added `.github/dependabot.yml` to open monthly version-update PRs for GitHub Actions against `main`
+- Added MAPL3 support for use in GCHP (in development) behind `MAPL3` preprocessor and CMake switches
 
 ### Changed
 - Updated `.release/changeVersionNumbers.sh` to also update `version` and `date-released` in `CITATION.cff`, and to exit with an error if those edits did not land
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated error messages such as `ERROR 1` to be more descriptive
 - Added explicit `SCHEDULE( STATIC )` clauses to OpenMP parallel loops that did not specify a schedule
 - Updated `hcoio_read_std_mod.F90` and `hcoio_read_pio_mod.F90` to report missing restart & data files separately from files that have no data for the requested time
+- Improved error message calls in certain places with previously no explanatory message
 
 ### Fixed
 - Fixed Mac GitHub Actions workflow (`mac.yml`) failing with a `gfortran` module-version mismatch by building NetCDF-Fortran from source against each matrix `gcc_version`, instead of relying on Homebrew's bottle (which is always built against Homebrew's own default/latest `gcc`)
