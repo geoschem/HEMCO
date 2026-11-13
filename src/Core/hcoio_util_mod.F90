@@ -1654,8 +1654,9 @@ CONTAINS
        RETURN
     ENDIF
 
-    ! If file does not exist, check if we can adjust prefYr, prefMt, etc.
-    IF ( .NOT. HasFile .AND. Lct%Dct%DctType /= HCO_CFLAG_EXACT ) THEN
+    ! If file does not exist, and we are not requiring an exact date/time
+    ! match (cycle flag E), check if we can adjust prefYr, prefMt, etc.
+    IF ( .NOT. HasFile .AND. Lct%Dct%Dta%CycleFlag /= HCO_CFLAG_EXACT ) THEN
 
        ! Check if any token exist
        HasYr = ( INDEX(TRIM(Lct%Dct%Dta%ncFile),'YYYY') > 0 )

@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Converted `GetMaskVal` in `src/Core/hco_calc_mod.F90` to an `ELEMENTAL` function instead of an OpenMP loop
 - Updated error messages such as `ERROR 1` to be more descriptive
 - Added explicit `SCHEDULE( STATIC )` clauses to OpenMP parallel loops that did not specify a schedule
+- Updated `hcoio_read_std_mod.F90` and `hcoio_read_pio_mod.F90` to report missing restart & data files separately from files that have no data for the requested time
 
 ### Fixed
 - Fixed Mac GitHub Actions workflow (`mac.yml`) failing with a `gfortran` module-version mismatch by building NetCDF-Fortran from source against each matrix `gcc_version`, instead of relying on Homebrew's bottle (which is always built against Homebrew's own default/latest `gcc`)
@@ -31,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `GetMaskVal` in `src/Core/hco_calc_mod.F90` so that fractional values are mirrored properly when `Oper == 3`
 - Restored the OpenMP parallel loop in `Evolve_Plume` (`src/Extensions/hcox_paranox_mod.F90`)
 - Fixed out-of-bounds error in routine `INTERPOL_LINWEIGHTS` (in `src/Extensions/hcox_paranox_mod.F90`)
+- Fixed `SrcFile_Parse` to test the cycle flag instead of the container type; This prevents searching back in time for data flagged with exact (`E`)
 
 ### Removed
 - Removed obsolete variables from `hcox_seasalt_mod.F90`
